@@ -288,7 +288,8 @@ TEST_F (TestPluginsScanTest, Lv2RescanOnlyWhenBundleChanged)
     juce::File (TEST_LV2_SEARCH_PATHS).getChildFile ("eg-amp.lv2");
   juce::OwnedArray<juce::PluginDescription> descriptions;
   format.findAllTypesForFile (descriptions, bundle.getFullPathName ());
-  ASSERT_EQ (descriptions.size (), 1);
+  // the amp and the float-window amp
+  ASSERT_EQ (descriptions.size (), 2);
   const auto &desc = *descriptions.getFirst ();
 
   EXPECT_FALSE (format.pluginNeedsRescanning (desc));
@@ -346,14 +347,22 @@ TEST_F (TestPluginsScanTest, Lv2DescriptionsExposeDeclaredMetadata)
       .getChildFile ("eg-amp.lv2")
       .getFullPathName ();
   format.findAllTypesForFile (descriptions, amp_bundle);
-  ASSERT_EQ (descriptions.size (), 1);
-  desc = descriptions.getFirst ();
+  // the amp and the float-window amp
+  ASSERT_EQ (descriptions.size (), 2);
+  const auto amp_unique_id =
+    get_hash_for_range (std::string_view{ "http://lv2plug.in/plugins/eg-amp" });
+  const juce::PluginDescription * amp_desc = nullptr;
+  for (const auto * d : descriptions)
+    {
+      if (d->uniqueId == amp_unique_id)
+        amp_desc = d;
+    }
+  ASSERT_NE (amp_desc, nullptr);
+  desc = amp_desc;
   EXPECT_EQ (
     normalize_bundle_path (desc->fileOrIdentifier),
     normalize_bundle_path (amp_bundle));
-  EXPECT_EQ (
-    desc->uniqueId,
-    get_hash_for_range (std::string_view{ "http://lv2plug.in/plugins/eg-amp" }));
+  EXPECT_EQ (desc->uniqueId, amp_unique_id);
   EXPECT_EQ (desc->category, "AmplifierPlugin");
   EXPECT_FALSE (desc->isInstrument);
   EXPECT_EQ (desc->numInputChannels, 1);
@@ -401,13 +410,14 @@ TEST_F (TestPluginsScanTest, KnownPluginListSkipsUnchangedLv2Bundles)
 
   juce::OwnedArray<juce::PluginDescription> types;
   EXPECT_TRUE (known_plugins.scanAndAddFile (bundle, true, types, *lv2_format));
-  EXPECT_EQ (types.size (), 1);
-  EXPECT_EQ (known_plugins.getNumTypes (), 1);
+  // the amp and the float-window amp
+  EXPECT_EQ (types.size (), 2);
+  EXPECT_EQ (known_plugins.getNumTypes (), 2);
 
   types.clearQuick (true);
   EXPECT_FALSE (known_plugins.scanAndAddFile (bundle, true, types, *lv2_format));
-  EXPECT_EQ (types.size (), 1);
-  EXPECT_EQ (known_plugins.getNumTypes (), 1);
+  EXPECT_EQ (types.size (), 2);
+  EXPECT_EQ (known_plugins.getNumTypes (), 2);
 }
 
 // KnownPluginList matches stored identities by exact string comparison

@@ -22,6 +22,8 @@ struct Lv2HostUrids
   uint32_t atom_Int = 0;
   uint32_t atom_Long = 0;
   uint32_t atom_Double = 0;
+  uint32_t atom_String = 0;
+  uint32_t atom_eventTransfer = 0;
   uint32_t midi_MidiEvent = 0;
   uint32_t time_Position = 0;
   uint32_t time_speed = 0;

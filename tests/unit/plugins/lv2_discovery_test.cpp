@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 
@@ -37,10 +38,13 @@ protected:
 TEST_F (Lv2DiscoveryTest, ExtractsAmpBundleMetadata)
 {
   const auto infos = get_plugins_in_bundle (world_, bundle_path ("eg-amp.lv2"));
-  ASSERT_EQ (infos.size (), 1);
+  ASSERT_EQ (infos.size (), 2);
 
-  const auto &info = infos.front ();
-  EXPECT_EQ (info.uri_, "http://lv2plug.in/plugins/eg-amp");
+  const auto info_it = std::ranges::find_if (infos, [] (const auto &i) {
+    return i.uri_ == "http://lv2plug.in/plugins/eg-amp";
+  });
+  ASSERT_NE (info_it, infos.end ());
+  const auto &info = *info_it;
   EXPECT_NE (info.name_.view ().find ("Amplifier"), std::string_view::npos);
   EXPECT_TRUE (info.author_.view ().empty ()) << info.author_;
   EXPECT_TRUE (info.version_.view ().empty ()) << info.version_;
@@ -54,7 +58,18 @@ TEST_F (Lv2DiscoveryTest, ExtractsAmpBundleMetadata)
   EXPECT_EQ (info.num_midi_outs_, 0);
   EXPECT_EQ (info.num_cv_ins_, 0);
   EXPECT_EQ (info.num_cv_outs_, 0);
-  EXPECT_FALSE (info.has_custom_ui_);
+  // The bundle declares an X11UI for the stub UI library
+  EXPECT_TRUE (info.has_custom_ui_);
+
+  // The bundle's second plugin opens its own window (ui:showInterface)
+  const auto float_window_it = std::ranges::find_if (infos, [] (const auto &i) {
+    return i.uri_ == "http://lv2plug.in/plugins/eg-amp-float-window";
+  });
+  ASSERT_NE (float_window_it, infos.end ());
+  EXPECT_NE (
+    float_window_it->name_.view ().find ("Float Window"),
+    std::string_view::npos);
+  EXPECT_TRUE (float_window_it->has_custom_ui_);
 }
 
 TEST_F (Lv2DiscoveryTest, ExtractsFifthsBundleMetadata)
@@ -133,7 +148,7 @@ TEST_F (Lv2DiscoveryTest, BundlesLoadedIntoOneWorldAreQueriedIndependently)
   // loading a bundle must not affect the results of previously loaded ones
   const auto amp_infos =
     get_plugins_in_bundle (world_, bundle_path ("eg-amp.lv2"));
-  ASSERT_EQ (amp_infos.size (), 1);
+  ASSERT_EQ (amp_infos.size (), 2);
 
   const auto instrument_infos =
     get_plugins_in_bundle (world_, bundle_path ("test-instrument.lv2"));

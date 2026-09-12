@@ -78,6 +78,8 @@ Lv2UridMap::host_urids ()
   u.atom_Int = map (LV2_ATOM__Int);
   u.atom_Long = map (LV2_ATOM__Long);
   u.atom_Double = map (LV2_ATOM__Double);
+  u.atom_String = map (LV2_ATOM__String);
+  u.atom_eventTransfer = map (LV2_ATOM__eventTransfer);
   u.midi_MidiEvent = map (LV2_MIDI__MidiEvent);
   u.time_Position = map (LV2_TIME__Position);
   u.time_speed = map (LV2_TIME__speed);

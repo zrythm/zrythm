@@ -4,9 +4,11 @@
 #include <cmath>
 #include <filesystem>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <set>
 #include <string_view>
+#include <thread>
 #include <vector>
 
 #include "dsp/midi_event.h"
@@ -15,6 +17,7 @@
 #include "plugins/lv2_world.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_library.h"
 #include "utils/audio.h"
 #include "utils/base64.h"
 #include "utils/object_registry.h"
@@ -23,6 +26,7 @@
 
 #include <QByteArray>
 #include <QCoreApplication>
+#include <QEventLoop>
 
 #include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
@@ -87,12 +91,15 @@ protected:
    * optionally preparing it for processing at 48 kHz / 256 samples.
    * Without @p pause_callbacks the host cannot pause processing, so
    * re-instantiation is refused and the current instance is kept.
+   * @p window_factory overrides the mock host window factory (e.g. with
+   * one that provides no window at all).
    */
   void load_test_plugin (
-    const char * bundle_name,
-    bool         prepare = true,
-    bool         pause_callbacks = true,
-    int          plugin_index = 0)
+    const char *            bundle_name,
+    bool                    prepare = true,
+    bool                    pause_callbacks = true,
+    int                     plugin_index = 0,
+    PluginHostWindowFactory window_factory = {})
   {
     Lv2PluginFormat                           format{ world_ };
     juce::OwnedArray<juce::PluginDescription> found;
@@ -112,7 +119,9 @@ protected:
     plugin_ = std::make_unique<Lv2Plugin> (
       *registry_, world_, std::function<units::sample_rate_t ()>{},
       std::function<units::sample_u32_t ()>{},
-      test_helpers::make_mock_plugin_host_window_factory (window_state_));
+      window_factory != nullptr
+        ? std::move (window_factory)
+        : test_helpers::make_mock_plugin_host_window_factory (window_state_));
     // Tests run without an audio thread, so "pausing" processing is a
     // pass-through
     PluginHostMainThreadCallbacks main_thread_callbacks;
@@ -204,6 +213,97 @@ protected:
       }
     return nullptr;
   }
+
+  /**
+   * @brief Drives the event loop until @p done returns true (the UI
+   * session's timers and posted actions run on it).
+   *
+   * @return The final value of @p done.
+   */
+  static bool pump_until (const std::function<bool ()> &done)
+  {
+    for (int i = 0; i < 400 && !done (); ++i)
+      {
+        QCoreApplication::processEvents (QEventLoop::AllEvents, 5);
+      }
+    return done ();
+  }
+
+  /**
+   * @brief Handle onto the stub UI library of the eg-amp fixture,
+   * loaded separately from (and sharing state with) the host's copy.
+   *
+   * @return A fully resolved stub, or nullopt when the library or any
+   * of its entry points could not be loaded. Treat nullopt as a
+   * fixture failure and abort the test instead of using the stub.
+   */
+  struct AmpUiStub
+  {
+    PluginLibrary lib;
+    int (*instantiations) () = nullptr;
+    int (*cleanups) () = nullptr;
+    int (*port_events) () = nullptr;
+    int (*show_calls) () = nullptr;
+    int (*hide_calls) () = nullptr;
+    uint32_t (*last_event_port) () = nullptr;
+    float (*last_event_value) () = nullptr;
+    void (*write_gain) (float) = nullptr;
+    void (*write_message) () = nullptr;
+    void (*set_close_on_idle) () = nullptr;
+
+    static std::optional<AmpUiStub> create (const std::filesystem::path &bundle)
+    {
+      AmpUiStub stub;
+      if (!stub.lib.load (utils::Utf8String::from_path (bundle / "amp-ui.so")))
+        return std::nullopt;
+#define AMP_UI_FN(name) \
+  stub.name = reinterpret_cast<decltype (stub.name)> ( \
+    stub.lib.resolve ("amp_ui_" #name)); \
+  if (stub.name == nullptr) \
+    return std::nullopt;
+      AMP_UI_FN (instantiations)
+      AMP_UI_FN (cleanups)
+      AMP_UI_FN (port_events)
+      AMP_UI_FN (show_calls)
+      AMP_UI_FN (hide_calls)
+      AMP_UI_FN (last_event_port)
+      AMP_UI_FN (last_event_value)
+      AMP_UI_FN (write_gain)
+      AMP_UI_FN (write_message)
+      AMP_UI_FN (set_close_on_idle)
+#undef AMP_UI_FN
+      return stub;
+    }
+
+  private:
+    AmpUiStub () = default;
+  };
+
+  /**
+   * @brief Handle onto the plugin library of the eg-amp fixture,
+   * loaded separately from (and sharing state with) the host's copy.
+   */
+  struct AmpPluginStub
+  {
+    PluginLibrary lib;
+    int (*message_events) () = nullptr;
+
+    static std::optional<AmpPluginStub>
+    create (const std::filesystem::path &bundle)
+    {
+      AmpPluginStub stub;
+      if (!stub.lib.load (utils::Utf8String::from_path (bundle / "amp.so")))
+        return std::nullopt;
+      stub.message_events = reinterpret_cast<decltype (stub.message_events)> (
+        stub.lib.resolve ("amp_message_event_count"));
+      if (stub.message_events == nullptr)
+        return std::nullopt;
+      return stub;
+    }
+
+  private:
+    AmpPluginStub () = default;
+  };
 
   std::unique_ptr<utils::ObjectRegistry> registry_;
   std::unique_ptr<::testing::NiceMock<dsp::graph_test::MockTransport>>
@@ -475,6 +575,258 @@ TEST_F (Lv2PluginTest, PresetFromSeparateBundleApplies)
     test_param->baseValue (), test_param->range ().convertTo0To1 (0.75f),
     0.001f);
 }
+
+// A plugin whose bundle declares a UI for the binary's window system
+// reports a native UI; discovery must work without the UI binary
+// existing (its .so is not part of the fixture)
+TEST_F (Lv2PluginTest, NativeUiDiscoveryFollowsWidgetType)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("test-instrument.lv2"));
+#if defined(Q_OS_LINUX)
+  // The fixture declares an X11UI and Linux binaries use X11
+  EXPECT_TRUE (plugin_->hasNativeUi ());
+#else
+  EXPECT_FALSE (plugin_->hasNativeUi ());
+#endif
+
+  // eg-fifths declares no UI at all
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-fifths.lv2"));
+  EXPECT_FALSE (plugin_->hasNativeUi ());
+}
+
+#if defined(Q_OS_LINUX)
+
+// A native UI session opens with the host window, relays the control
+// values, and is torn down with the plugin
+TEST_F (Lv2PluginTest, NativeUiSessionOpensWithHostWindow)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto      &stub = *stub_opt;
+  const auto inst_before = stub.instantiations ();
+  const auto clean_before = stub.cleanups ();
+
+  plugin_->setUiVisible (true);
+  EXPECT_TRUE (pump_until ([&] {
+    return stub.instantiations () > inst_before;
+  }));
+  EXPECT_EQ (stub.cleanups (), clean_before);
+  EXPECT_TRUE (window_state_->visible);
+  EXPECT_GE (window_state_->complete_native_embedding_calls, 1);
+  // The UI declares ui:noUserResize, so the host window must not be
+  // user-resizable
+  EXPECT_FALSE (window_state_->resizable);
+
+  // The idle pump sends the control shadow in full once (gain, mute)
+  EXPECT_TRUE (pump_until ([&] { return stub.port_events () >= 2; }));
+
+  // Hiding and re-showing the UI reuses the live session
+  plugin_->setUiVisible (false);
+  EXPECT_FALSE (window_state_->visible);
+  plugin_->setUiVisible (true);
+  EXPECT_TRUE (pump_until ([&] { return window_state_->visible; }));
+  EXPECT_EQ (stub.cleanups (), clean_before);
+
+  // Destroying the plugin tears the UI session down
+  plugin_.reset ();
+  EXPECT_GT (stub.cleanups (), clean_before);
+}
+
+// A control write from the UI rides the parameter path: the value
+// reaches the parameter as a user edit (which marks the preset dirty)
+TEST_F (Lv2PluginTest, UiControlWriteRidesParameterPath)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+  // The dirty flag is relative to the selected preset
+  plugin_->setPresetIndex (0);
+  ASSERT_FALSE (plugin_->presetDirty ());
+
+  stub.write_gain (-6.0206f);
+  EXPECT_NEAR (
+    gain->baseValue (), gain->range ().convertTo0To1 (-6.0206f), 0.001f);
+  EXPECT_TRUE (plugin_->presetDirty ());
+}
+
+// A control write from a thread other than the main thread cannot use
+// the parameter path directly: the value rides the event ring (applied
+// by the audio thread) and the parameter update is deferred
+TEST_F (Lv2PluginTest, UiControlWriteFromOtherThreadRidesRingAndDeferredParam)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+  // The dirty flag is relative to the selected preset
+  plugin_->setPresetIndex (0);
+  ASSERT_FALSE (plugin_->presetDirty ());
+  const auto initial_0_to_1 = gain->baseValue ();
+
+  fill_input_with (1.f);
+  {
+    std::jthread writer ([&] { stub.write_gain (-20.f); });
+  }
+  // No event processing has happened since the write: the deferred
+  // parameter update cannot have run, so the audio path can only see
+  // the value through the ring
+  EXPECT_NEAR (gain->baseValue (), initial_0_to_1, 0.001f);
+  process_blocks (1);
+  // The fixture amp maps -20 dB to a 0.1 coefficient
+  EXPECT_NEAR (read_first_output_sample (), 0.1f, 0.001f);
+
+  // The deferred update attributes the edit on the main thread
+  EXPECT_TRUE (pump_until ([&] { return plugin_->presetDirty (); }));
+  EXPECT_NEAR (gain->baseValue (), gain->range ().convertTo0To1 (-20.f), 0.001f);
+}
+
+// A UI atom written to a scratch atom input is delivered to the plugin
+// once: the scratch sequence is re-forged every chunk, so a delivered
+// atom is not redelivered on later chunks, and atoms do not outlive
+// their session: blocks processed after the session ended re-deliver
+// nothing
+TEST_F (Lv2PluginTest, UiAtomToScratchPortIsDeliveredOnce)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto ui_stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (ui_stub_opt.has_value ());
+  auto &ui_stub = *ui_stub_opt;
+  auto  plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto &plugin_stub = *plugin_stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return ui_stub.instantiations () >= 1; }));
+  const auto deliveries_before = plugin_stub.message_events ();
+
+  ui_stub.write_message ();
+  process_blocks (1);
+  EXPECT_EQ (plugin_stub.message_events (), deliveries_before + 1);
+
+  // Closing the UI from idle() keeps the plugin instantiated and
+  // processing without a session
+  const auto clean_after_delivery = ui_stub.cleanups ();
+  ui_stub.set_close_on_idle ();
+  ASSERT_TRUE (pump_until ([&] {
+    return ui_stub.cleanups () > clean_after_delivery;
+  }));
+
+  process_blocks (2);
+  EXPECT_EQ (plugin_stub.message_events (), deliveries_before + 1);
+}
+
+// A sample-rate change re-creates the instance, so the UI (which holds
+// the instance handle) dies with the old instance and is re-opened for
+// the new one
+TEST_F (Lv2PluginTest, SampleRateChangeRestoresUiSession)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+  const auto inst_after_show = stub.instantiations ();
+  const auto clean_after_show = stub.cleanups ();
+
+  plugin_->prepare_for_processing (
+    nullptr, units::sample_rate (96000), units::samples (256));
+  EXPECT_GT (stub.cleanups (), clean_after_show);
+  EXPECT_TRUE (pump_until ([&] {
+    return stub.instantiations () > inst_after_show;
+  }));
+  EXPECT_TRUE (window_state_->visible);
+  EXPECT_GE (window_state_->complete_native_embedding_calls, 2);
+}
+
+// Releasing the resources (every hard graph rechain does) keeps the UI
+// session alive: only the instance is deactivated
+TEST_F (Lv2PluginTest, ReleaseResourcesKeepsUiSessionAlive)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+  const auto inst_after_show = stub.instantiations ();
+  const auto clean_after_show = stub.cleanups ();
+
+  plugin_->release_resources ();
+  EXPECT_EQ (stub.cleanups (), clean_after_show);
+  EXPECT_EQ (stub.instantiations (), inst_after_show);
+  EXPECT_TRUE (window_state_->visible);
+
+  // Re-preparation reactivates the instance without disturbing the UI
+  plugin_->prepare_for_processing (
+    nullptr, units::sample_rate (48000), units::samples (256));
+  EXPECT_EQ (stub.instantiations (), inst_after_show);
+  EXPECT_EQ (stub.cleanups (), clean_after_show);
+}
+
+// A UI that declares ui:showInterface opens its own window when no host
+// window is available for embedding: show() and hide() drive it
+TEST_F (Lv2PluginTest, ShowInterfaceUiOpensWithoutHostWindow)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin (
+    "eg-amp.lv2", true, true, 1,
+    [] (Plugin &) -> std::unique_ptr<PluginHostWindow> { return nullptr; }));
+  ASSERT_NE (
+    plugin_->get_name ().view ().find ("Float Window"), std::string_view::npos)
+    << "Bundle plugin order changed: index 1 is not the float-window amp";
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto      &stub = *stub_opt;
+  const auto inst_before = stub.instantiations ();
+  const auto shows_before = stub.show_calls ();
+  const auto hides_before = stub.hide_calls ();
+  const auto clean_before = stub.cleanups ();
+
+  plugin_->setUiVisible (true);
+  EXPECT_TRUE (pump_until ([&] {
+    return stub.instantiations () > inst_before;
+  }));
+  EXPECT_GT (stub.show_calls (), shows_before);
+  EXPECT_FALSE (window_state_->visible);
+  EXPECT_EQ (window_state_->complete_native_embedding_calls, 0);
+
+  // Hiding drives hide() and keeps the session alive
+  plugin_->setUiVisible (false);
+  EXPECT_GT (stub.hide_calls (), hides_before);
+  EXPECT_EQ (stub.cleanups (), clean_before);
+
+  // Re-showing drives show() on the live session
+  const auto shows_after_hide = stub.show_calls ();
+  plugin_->setUiVisible (true);
+  EXPECT_TRUE (pump_until ([&] {
+    return stub.show_calls () > shows_after_hide;
+  }));
+  EXPECT_EQ (stub.cleanups (), clean_before);
+
+  // Destroying the plugin tears the UI session down
+  plugin_.reset ();
+  EXPECT_GT (stub.cleanups (), clean_before);
+}
+
+#endif // Q_OS_LINUX
 
 // A change of the processing sample rate re-instantiates the plugin,
 // carrying the current state over
@@ -798,9 +1150,10 @@ TEST_F (Lv2PluginTest, InstanceIsLiveAtConfiguration)
   EXPECT_FALSE (plugin_->save_state ().empty ());
 }
 
-// Releasing the resources (every hard graph rechain does) frees the
-// instance; the snapshotted state is re-applied at the next processing
-// preparation
+// Releasing the resources (every hard graph rechain does) deactivates
+// the instance instead of freeing it: control values persist in the
+// host-owned buffers and the next processing preparation reactivates
+// the instance
 TEST_F (Lv2PluginTest, StateSurvivesReleaseAndReprepare)
 {
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
@@ -822,10 +1175,10 @@ TEST_F (Lv2PluginTest, StateSurvivesReleaseAndReprepare)
   EXPECT_NEAR (read_first_output_sample (), 2.f, 0.01f);
 }
 
-// A pending state that fails to restore is kept and retried on every
-// processing preparation; the plugin keeps processing and a valid state
-// still applies afterwards
-TEST_F (Lv2PluginTest, FailedPendingRestoreIsRetried)
+// A garbage state is refused outright when an instance exists — also
+// while released by a graph rechain — and never becomes pending; the
+// instance stays healthy and a valid state still applies afterwards
+TEST_F (Lv2PluginTest, GarbageStateIsRefusedAndInstanceStaysHealthy)
 {
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
 
@@ -843,18 +1196,16 @@ TEST_F (Lv2PluginTest, FailedPendingRestoreIsRetried)
 
   plugin_->release_resources ();
 
-  // Non-archive garbage becomes pending and fails to restore at
-  // preparation
   const auto garbage_state =
     utils::to_std_string (QByteArray ("not a zip archive").toBase64 ());
-  EXPECT_TRUE (plugin_->load_state (garbage_state));
+  EXPECT_FALSE (plugin_->load_state (garbage_state));
   plugin_->prepare_for_processing (
     nullptr, units::sample_rate (48000), units::samples (256));
-  // Retry on a live, unchanged instance
+  // Repeated preparations on a live, unchanged instance are harmless
   plugin_->prepare_for_processing (
     nullptr, units::sample_rate (48000), units::samples (256));
 
-  // The failed restores leave a healthy instance that still processes
+  // The refused state leaves a healthy instance that still processes
   fill_input_with (1.f);
   process_blocks (1);
   EXPECT_TRUE (std::isfinite (read_first_output_sample ()));

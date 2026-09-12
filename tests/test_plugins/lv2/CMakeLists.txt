@@ -7,30 +7,41 @@
 # plugin binary side by side, as a real .lv2 bundle is laid out).
 
 # add_lv2_fixture(<target> <bundle-dir-name> <binary-name>
-#   TTL_FILES <ttl...> SOURCES <sources...>)
+#   [NO_MANIFEST] [TTL_FILES <ttl...>] [SOURCES <sources...>])
 #
 # SOURCES may be omitted for ttl-only bundles (e.g. presets), which contain no
-# plugin library at all.
+# plugin library at all. NO_MANIFEST skips the manifest/ttl staging for
+# additional libraries in an already-staged bundle (e.g. a plugin's UI).
 function(add_lv2_fixture target bundle_dir output_name)
-  cmake_parse_arguments(ARG "" "" "TTL_FILES;SOURCES" ${ARGN})
+  cmake_parse_arguments(ARG "NO_MANIFEST" "" "TTL_FILES;SOURCES" ${ARGN})
   set(bundle_root ${ZRYTHM_LV2_FIXTURE_ROOT}/$<CONFIG>/${bundle_dir})
 
   # The bundle path contains $<CONFIG>, which configure_file() cannot emit,
   # so files are staged with configure_file() and then generated into the
   # bundle with file(GENERATE)
-  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/manifest.ttl.in)
-    set(manifest_src ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/manifest.ttl.in)
-  else()
-    set(manifest_src ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/manifest.ttl)
-  endif()
-  configure_file(${manifest_src} ${bundle_dir}.manifest.ttl.staged @ONLY)
-  file(READ ${CMAKE_CURRENT_BINARY_DIR}/${bundle_dir}.manifest.ttl.staged manifest_content)
-  file(GENERATE OUTPUT ${bundle_root}/manifest.ttl CONTENT "${manifest_content}")
+  if(NOT ARG_NO_MANIFEST)
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/manifest.ttl.in)
+      set(manifest_src ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/manifest.ttl.in)
+    else()
+      set(manifest_src ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/manifest.ttl)
+    endif()
+    configure_file(${manifest_src} ${bundle_dir}.manifest.ttl.staged @ONLY)
+    file(READ ${CMAKE_CURRENT_BINARY_DIR}/${bundle_dir}.manifest.ttl.staged manifest_content)
+    file(GENERATE OUTPUT ${bundle_root}/manifest.ttl CONTENT "${manifest_content}")
 
-  foreach(ttl_file ${ARG_TTL_FILES})
-    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/${ttl_file} ttl_content)
-    file(GENERATE OUTPUT ${bundle_root}/${ttl_file} CONTENT "${ttl_content}")
-  endforeach()
+    foreach(ttl_file ${ARG_TTL_FILES})
+      # a .ttl.in source is configured like the manifest (substituting
+      # @VARS@) and staged under the plain .ttl name
+      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/${ttl_file}.in)
+        set(ttl_src ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/${ttl_file}.in)
+      else()
+        set(ttl_src ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/${ttl_file})
+      endif()
+      configure_file(${ttl_src} ${bundle_dir}.${ttl_file}.staged @ONLY)
+      file(READ ${CMAKE_CURRENT_BINARY_DIR}/${bundle_dir}.${ttl_file}.staged ttl_content)
+      file(GENERATE OUTPUT ${bundle_root}/${ttl_file} CONTENT "${ttl_content}")
+    endforeach()
+  endif()
 
   if(NOT ARG_SOURCES)
     return()
@@ -54,8 +65,14 @@ function(add_lv2_fixture target bundle_dir output_name)
 endfunction()
 
 add_lv2_fixture(eg_amp_lv2 eg-amp.lv2 amp
-  TTL_FILES amp.ttl presets.ttl
+  TTL_FILES amp.ttl amp-ui.ttl amp-float-window.ttl presets.ttl
   SOURCES eg-amp.lv2/amp.c)
+# stub X11UI for the eg-amp plugin (live UI session tests); not a plugin,
+# so it is not part of the fixture plugin target list, but it must still
+# build with the tests: the UI session tests dlopen it
+add_lv2_fixture(eg_amp_ui_lv2 eg-amp.lv2 amp-ui
+  NO_MANIFEST
+  SOURCES eg-amp.lv2/amp-ui.c)
 add_lv2_fixture(eg_enum_lv2 eg-enum.lv2 enumamp
   TTL_FILES enumamp.ttl
   SOURCES eg-enum.lv2/enumamp.c)
@@ -89,9 +106,11 @@ add_lv2_fixture(broken_lv2 broken.lv2 broken
   SOURCES broken.lv2/broken.c)
 
 # Exported so the parent scope can derive the plugin count for test compile
-# definitions
+# definitions, and ensure every fixture library (including non-plugin UI
+# libraries) builds with the tests
 set(zrythm_test_lv2_fixture_targets
   eg_amp_lv2
+  eg_amp_ui_lv2
   eg_enum_lv2
   eg_fifths_lv2
   plumbing_lv2

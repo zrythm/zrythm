@@ -10,6 +10,7 @@ add_executable(zrythm_plugins_unit_tests
   juce_plugin_test.cpp
   lv2_discovery_test.cpp
   lv2_plugin_test.cpp
+  lv2_ui_event_ring_test.cpp
   lv2_urid_map_test.cpp
   plugin_test.cpp
   plugin_descriptor_test.cpp

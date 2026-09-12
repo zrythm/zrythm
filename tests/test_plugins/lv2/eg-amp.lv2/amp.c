@@ -14,6 +14,8 @@
    replacing `http:/` with `lv2` any header in the specification bundle can be
    included, in this case `lv2.h`.
 */
+#include "lv2/atom/atom.h"
+#include "lv2/atom/util.h"
 #include "lv2/core/lv2.h"
 
 /**
@@ -25,6 +27,20 @@
 */
 #define AMP_URI "http://lv2plug.in/plugins/eg-amp"
 
+/* Same implementation, exposed under a second URI so the bundle holds a
+    plugin whose only UI opens its own window (ui:showInterface) */
+#define AMP_FLOAT_WINDOW_URI "http://lv2plug.in/plugins/eg-amp-float-window"
+
+/* Atom events delivered to the message port, observable by tests
+   through dlopen() */
+static int g_message_events = 0;
+
+int
+amp_message_event_count (void)
+{
+  return g_message_events;
+}
+
 /**
    In code, ports are referred to by index.  An enumeration of port indices
    should be defined for readability.
@@ -34,7 +50,8 @@ typedef enum
   AMP_GAIN = 0,
   AMP_INPUT = 1,
   AMP_OUTPUT = 2,
-  AMP_MUTE = 3
+  AMP_MUTE = 3,
+  AMP_MESSAGE = 4
 } PortIndex;
 
 /**
@@ -46,10 +63,11 @@ typedef enum
 typedef struct
 {
   // Port buffers
-  const float * gain;
-  const float * input;
-  float *       output;
-  const float * mute;
+  const float *            gain;
+  const float *            input;
+  float *                  output;
+  const float *            mute;
+  const LV2_Atom_Sequence *message;
 } Amp;
 
 /**
@@ -101,6 +119,9 @@ connect_port (LV2_Handle instance, uint32_t port, void * data)
     case AMP_MUTE:
       amp->mute = (const float *) data;
       break;
+    case AMP_MESSAGE:
+      amp->message = (const LV2_Atom_Sequence *) data;
+      break;
     }
 }
 
@@ -141,6 +162,17 @@ run (LV2_Handle instance, uint32_t n_samples)
   for (uint32_t pos = 0; pos < n_samples; pos++)
     {
       output[pos] = input[pos] * coef;
+    }
+
+  /* The message port is only connected for the main eg-amp plugin; the
+     float-window twin has no such port in its data */
+  if (amp->message != NULL)
+    {
+      LV2_ATOM_SEQUENCE_FOREACH (amp->message, ev)
+        {
+          (void) ev;
+          ++g_message_events;
+        }
     }
 }
 
@@ -198,6 +230,11 @@ static const LV2_Descriptor descriptor = {
   run,     deactivate,  cleanup,      extension_data
 };
 
+static const LV2_Descriptor float_window_descriptor = {
+  AMP_FLOAT_WINDOW_URI, instantiate, connect_port, activate,
+  run,                  deactivate,  cleanup,      extension_data
+};
+
 /**
    The `lv2_descriptor()` function is the entry point to the plugin library.  The
    host will load the library and call this function repeatedly with increasing
@@ -216,6 +253,8 @@ lv2_descriptor (uint32_t index)
     {
     case 0:
       return &descriptor;
+    case 1:
+      return &float_window_descriptor;
     default:
       return NULL;
     }

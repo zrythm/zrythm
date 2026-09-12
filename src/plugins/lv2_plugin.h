@@ -29,6 +29,12 @@ class Lv2World;
  * are unset). LV2 binds both at instantiation, so processing preparation
  * re-creates the instance when the engine's values differ, carrying the
  * current state over.
+ *
+ * Native UIs are hosted embedded in a parent window provided through
+ * ui:parent when a host window is available; otherwise a UI declaring
+ * ui:showInterface opens its own toplevel window driven through
+ * show()/hide() (the show interface also serves as the fallback when
+ * embedding fails).
  */
 class Lv2Plugin : public Plugin
 {
@@ -63,6 +69,16 @@ public:
 
   std::span<const PresetEntry> presetEntries () const override;
 
+  /**
+   * @brief Whether the loaded plugin declares a UI of the widget type this
+   * build embeds.
+   *
+   * True once a matching UI was found for the loaded plugin; a discovered
+   * UI can still fail to present (reported through the base class), in
+   * which case the generic parameter UI is shown instead.
+   */
+  bool hasNativeUi () const override;
+
 protected:
   void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,
@@ -72,6 +88,8 @@ protected:
     dsp::graph::ProcessBlockInfo time_info,
     const dsp::ITransport       &transport,
     const dsp::TempoMap         &tempo_map) noexcept override;
+
+  void on_ui_visibility_changed () override;
 
   void release_resources_impl () override;
 
@@ -119,6 +137,12 @@ private:
    * @brief Applies a preset by restoring its state from the lilv world.
    */
   void apply_preset_impl (const PresetId &id) override;
+
+  /** Creates the native UI window and instantiates the plugin's UI. */
+  void show_editor (bool force_float_window = false);
+
+  /** Hides the native UI window (the UI stays instantiated). */
+  void hide_editor ();
 
   /**
    * @brief Rebuilds the cached preset list from the lilv world.

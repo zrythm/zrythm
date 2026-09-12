@@ -13,6 +13,7 @@
 #include <filesystem>
 #include <fstream>
 #include <limits>
+#include <mutex>
 #include <optional>
 #include <ranges>
 #include <stdexcept>
@@ -26,29 +27,42 @@
 
 #include "dsp/audio_bus_configuration.h"
 #include "dsp/midi_event.h"
+#include "plugins/gl_context_utils.h"
+#include "plugins/host_window_units.h"
 #include "plugins/lv2_discovery.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/lv2_ui_event_ring.h"
 #include "plugins/lv2_urid_map.h"
 #include "plugins/lv2_world.h"
 #include "plugins/plugin_format_utils.h"
+#include "plugins/plugin_host_window.h"
+#include "plugins/plugin_library.h"
+#include "plugins/plugin_run_loop.h"
 #include "plugins/plugin_transport_context.h"
 #include "utils/base64.h"
 #include "utils/exceptions.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
+#include "utils/math_utils.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
 #include "utils/serialization.h"
 #include "utils/views.h"
 #include "utils/zip_utils.h"
 
+#include <QTimer>
+#include <QUrl>
+
 #include <fmt/format.h>
+#include <juce_core/juce_core.h>
 #include <lilv/lilv.h>
 #include <lv2/atom/atom.h>
 #include <lv2/atom/forge.h>
 #include <lv2/atom/util.h>
 #include <lv2/buf-size/buf-size.h>
 #include <lv2/core/lv2.h>
+#include <lv2/data-access/data-access.h>
+#include <lv2/instance-access/instance-access.h>
 #include <lv2/midi/midi.h>
 #include <lv2/options/options.h>
 #include <lv2/parameters/parameters.h>
@@ -58,6 +72,7 @@
 #include <lv2/resize-port/resize-port.h>
 #include <lv2/state/state.h>
 #include <lv2/time/time.h>
+#include <lv2/ui/ui.h>
 #include <lv2/units/units.h>
 #include <lv2/urid/urid.h>
 
@@ -100,6 +115,14 @@ constexpr auto kProvisionalMaxBlockLength = units::samples (512u);
 
 /** A whole note is four quarter notes. */
 constexpr double kQuartersPerWholeNote = 4.0;
+
+/**
+ * Capacity of the UI<->plugin atom and control relay rings, in bytes.
+ * Events beyond the capacity are dropped and counted. AbstractFifo
+ * reserves one slot internally, so the usable capacity is one byte
+ * less: a record sized at exactly this constant may still be dropped.
+ */
+constexpr size_t kUiEventRingCapacity = size_t{ 1 } << 16;
 
 /** Returns the last path segment of a URI (after '#' or '/'). */
 std::string_view
@@ -336,6 +359,180 @@ public:
   bool
   restore_preset_from_world (const std::string &preset_uri) [[clang::blocking]];
 
+  /**
+   * Finds the UI of plugin_ whose widget type this build embeds and
+   * caches it in ui_info_. Emits hasNativeUiChanged when the presence
+   * of a usable UI changed.
+   */
+  void resolve_ui ();
+
+  /** Tears the live UI down (idle pump, UI instance, library, host
+   * window, in that order). */
+  void destroy_ui ();
+
+  /** LV2 UI write callback: UI -> plugin control/atom input. */
+  static void ui_write (
+    LV2UI_Controller controller,
+    uint32_t         port_index,
+    uint32_t         buffer_size,
+    uint32_t         port_protocol,
+    const void *     buffer);
+
+  /** LV2 UI port map callback: port symbol -> port index. */
+  static uint32_t
+  ui_port_index (LV2UI_Feature_Handle handle, const char * symbol);
+
+  /** LV2 UI resize feature callback: the UI requests a view size. */
+  static int ui_resize (LV2UI_Feature_Handle handle, int width, int height);
+
+  /**
+   * Runs one UI pump cycle on the main thread: drains plugin -> UI
+   * events into port_event, forwards changed control input values and
+   * calls the UI idle interface.
+   */
+  void ui_idle_tick ();
+
+  /**
+   * Drains UI -> plugin events from the ring on the audio thread:
+   * control floats are applied to their buffers directly, atom events
+   * are appended to their port's sequence during this chunk's forging.
+   *
+   * @return True while a UI session is dispatched; the audio thread
+   * must not touch the drained events when false.
+   */
+  bool drain_ui_atom_events () noexcept [[clang::nonblocking]];
+
+  /**
+   * Pushes the events of the atom output sequences to the plugin -> UI
+   * ring on the audio thread.
+   */
+  void dispatch_atom_outputs_to_ui () noexcept [[clang::nonblocking]];
+
+  /** Writes one record into the plugin -> UI ring, dropping and
+   * counting on overflow. */
+  void push_ui_event (
+    uint32_t                   port_index,
+    uint32_t                   protocol,
+    std::span<const std::byte> body) noexcept [[clang::nonblocking]];
+
+  /** Atom events collected by drain_ui_atom_events() for this chunk. */
+  struct PendingUiAtom
+  {
+    uint32_t                               port_index;
+    uint32_t                               size;
+    std::array<std::byte, kAtomBufferSize> bytes;
+
+    /** Copies @p src into the body. The body array stays
+     * default-initialized until the copy: zeroing 16 KiB per record
+     * would be wasted real-time work. */
+    PendingUiAtom (uint32_t port_index_, std::span<const std::byte> src)
+        : port_index (port_index_), size (static_cast<uint32_t> (src.size ()))
+    {
+      std::ranges::copy (src, bytes.begin ());
+    }
+  };
+  std::vector<PendingUiAtom> pending_ui_atoms_;
+  /** Scratch for draining one record body on the audio thread. */
+  std::array<std::byte, kAtomBufferSize> ui_drain_scratch_{};
+
+  /** UI of the loaded plugin matching this build's window system. */
+  struct UiInfo
+  {
+    std::string           uri;
+    std::filesystem::path binary_path;
+    /** Bundle directory with a trailing separator, as the UI's
+     * instantiate() expects it. */
+    std::string bundle_path;
+    bool        fixed_size{};
+    bool        no_user_resize{};
+    /** The UI declares ui:showInterface: it opens its own toplevel
+     * window instead of being embedded. */
+    bool show_interface{};
+  };
+  std::optional<UiInfo> ui_info_;
+
+  /** A control port relayed to the UI on each idle tick: the LV2 port
+   * index paired with the index of its control buffer. */
+  struct RelayedControl
+  {
+    uint32_t lv2_port_index;
+    size_t   buffer_index;
+  };
+
+  /** Live UI session between show_editor() and destroy_ui(). */
+  struct UiSession
+  {
+    std::unique_ptr<PluginHostWindow>                    editor_window;
+    utils::QObjectUniquePtr<PluginViewResizeCoordinator> resize_coordinator;
+    PluginRunLoop                                        run_loop_;
+    PluginLibrary                                        lib;
+    const LV2UI_Descriptor *                             descriptor{};
+    LV2UI_Handle                                         handle{};
+    bool                                                 created{};
+    bool                                                 visible{};
+    bool                                                 initial_size_applied{};
+    const LV2UI_Idle_Interface *                         idle_iface{};
+    const LV2UI_Resize *                                 plugin_resize_iface{};
+    /** The UI shows itself through ui:showInterface instead of being
+     * embedded in the host window (which then stays hidden). */
+    bool                         float_window{};
+    const LV2UI_Show_Interface * show_iface{};
+    PluginRunLoop::Token         idle_token_{};
+    /** Feature storage; the UI keeps these pointers after
+     * instantiation, so they must stay stable until cleanup. */
+    std::vector<LV2_Feature>          features;
+    std::vector<const LV2_Feature *>  feature_ptrs;
+    LV2UI_Resize                      resize_feature_{};
+    LV2UI_Port_Map                    port_map_feature_{};
+    LV2_Extension_Data_Feature        ext_data_feature_{};
+    std::array<LV2_Options_Option, 3> options_{};
+    std::string                       window_title_;
+    float                             scale_opt_{ 1.f };
+    /** Native window handle passed as the ui:parent feature data (an X11
+     * Window, HWND or NSView* value; the LV2 UI spec requires the value
+     * itself, the same type as the LV2UI_Widget, not a pointer to it). */
+    quintptr parent_window_{};
+    /** Control inputs/outputs relayed to the UI on each idle tick. */
+    std::vector<RelayedControl> relayed_control_ins_;
+    std::vector<RelayedControl> relayed_control_outs_;
+    /** Values last sent to the UI, inputs first then outputs (NaN
+     * before the initial full send). */
+    std::vector<float> last_control_values_;
+    /** Scratch of one drained record body (audio-thread and
+     * main-thread sides each use their own). */
+    std::array<std::byte, kAtomBufferSize> event_scratch_{};
+  };
+  std::optional<UiSession> ui_;
+
+  /**
+   * Whether atom outputs are relayed to the UI ring: read on the audio
+   * thread, set while a UI instance exists.
+   */
+  std::atomic<bool> ui_dispatch_{ false };
+
+  /** Byte rings relaying events between the UI (main thread) and the
+   * plugin (audio thread) in both directions. */
+  juce::AbstractFifo ui_to_plugin_fifo_{
+    static_cast<int> (kUiEventRingCapacity)
+  };
+  std::array<std::byte, kUiEventRingCapacity> ui_to_plugin_buf_;
+  juce::AbstractFifo                          plugin_to_ui_fifo_{
+    static_cast<int> (kUiEventRingCapacity)
+  };
+  std::array<std::byte, kUiEventRingCapacity> plugin_to_ui_buf_;
+
+  /** Serializes UI -> plugin record writers (a UI may write from
+   * several of its own threads) against the session-open reset. The
+   * write path never runs on the audio thread. */
+  std::mutex ui_write_mutex_;
+
+  /** Events dropped by drain_ui_atom_events() (port not routable or
+   * ring full) since the last processing preparation. */
+  std::atomic<uint64_t> ui_to_plugin_dropped_{ 0 };
+  /** Events dropped because the plugin -> UI ring was full since the
+   * last processing preparation. */
+  std::atomic<uint64_t> plugin_to_ui_dropped_{ 0 };
+
   /** LV2 state:makePath callback: returns a path under the current
    * makePath root, creating leading directories. */
   static char *
@@ -393,6 +590,43 @@ public:
     if (ports_idx < 0)
       return kAtomBufferSize;
     return atom_port_capacity (ports_[static_cast<size_t> (ports_idx)]);
+  }
+
+  /**
+   * Invokes @p fn for every event of the output sequence at @p buf.
+   *
+   * The sequence and its events are plugin-controlled: sizes are
+   * validated before any body is read, and only frame-timed sequences
+   * are accepted (a beat-timed sequence's unit URID would be misread as
+   * frames). Events whose declared end passes the sequence end stop the
+   * walk.
+   *
+   * @return False when @p buf holds no well-formed sequence.
+   */
+  template <typename Fn>
+  bool
+  for_each_atom_output_event (const uint8_t * buf, size_t buf_size, Fn &&fn) noexcept
+  {
+    const auto * seq = reinterpret_cast<const LV2_Atom_Sequence *> (buf);
+    if (buf_size < sizeof (LV2_Atom))
+      return false;
+    if (seq->atom.type != host_urids_.atom_Sequence)
+      return false;
+    if (
+      seq->atom.size < sizeof (LV2_Atom_Sequence_Body)
+      || seq->atom.size > buf_size - sizeof (LV2_Atom) || seq->body.unit != 0)
+      return false;
+    const auto * seq_end = buf + sizeof (LV2_Atom) + seq->atom.size;
+    LV2_ATOM_SEQUENCE_FOREACH (seq, ev)
+    {
+      if (
+        reinterpret_cast<const uint8_t *> (ev) + sizeof (LV2_Atom_Event)
+          + ev->body.size
+        > seq_end)
+        break;
+      std::forward<Fn> (fn) (ev);
+    }
+    return true;
   }
 
   struct CtrlInParam;
@@ -457,6 +691,9 @@ public:
   const LilvPlugin * plugin_ = nullptr;
 
   LilvInstance * instance_ = nullptr;
+
+  /** True while the instance is activated (run() is only legal then). */
+  bool instance_active_ = false;
 
   std::vector<PortInfo> ports_;
 
@@ -615,6 +852,10 @@ Lv2Plugin::Lv2Plugin (
 
 Lv2Plugin::~Lv2Plugin ()
 {
+  // Signals from a dying object have no meaningful receivers: blocking
+  // them keeps unload_current_plugin() from emitting changes
+  // mid-destruction
+  blockSignals (true);
   // Unload before member destruction: pimpl_ is destroyed after the
   // world it borrows the plugin data from, and freeing the instance
   // touches that data
@@ -1194,6 +1435,7 @@ Lv2Plugin::load_plugin (
     }
   create_ports_and_parameters (generate_new);
   rebuild_preset_list ();
+  pimpl_->resolve_ui ();
 
   return true;
 }
@@ -1201,7 +1443,14 @@ Lv2Plugin::load_plugin (
 void
 Lv2Plugin::unload_current_plugin ()
 {
+  // free_instance() tears the UI down before the instance whose handle
+  // it captured (instance access)
   pimpl_->free_instance ();
+  if (pimpl_->ui_info_.has_value ())
+    {
+      pimpl_->ui_info_.reset ();
+      Q_EMIT hasNativeUiChanged ();
+    }
   // Session files are archived on every save, so they must not
   // outlive the plugin they belong to: a plugin loaded into this
   // object later starts with an empty session
@@ -1236,7 +1485,14 @@ Lv2Plugin::Lv2PluginImpl::free_instance ()
   if (instance_ == nullptr)
     return;
 
-  lilv_instance_deactivate (instance_);
+  // The UI holds the instance handle (instance access) and must die
+  // before the instance is freed
+  destroy_ui ();
+  if (instance_active_)
+    {
+      lilv_instance_deactivate (instance_);
+      instance_active_ = false;
+    }
   lilv_instance_free (instance_);
   instance_ = nullptr;
   latency_.store (units::samples (0u), std::memory_order_relaxed);
@@ -1660,6 +1916,8 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
   time_in_buf_.assign (time_in_capacity, 0);
   atom_out_buf_.assign (atom_out_capacity, 0);
 
+  pending_ui_atoms_.clear ();
+
   // The forge caches the URIDs it stamps into atoms at init time
   lv2_atom_forge_init (&forge_, &urid_map_feature_);
 
@@ -1721,6 +1979,7 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
     }
 
   lilv_instance_activate (instance_);
+  instance_active_ = true;
   return true;
 }
 
@@ -1814,6 +2073,28 @@ Lv2Plugin::prepare_plugin_for_processing (
         get_name (), dropped_output_events);
     }
 
+  if (
+    const auto dropped_ui_events =
+      pimpl_->ui_to_plugin_dropped_.exchange (0, std::memory_order_relaxed);
+    dropped_ui_events > 0)
+    {
+      z_warning (
+        "LV2: '{}' dropped {} UI events (unsupported target port or full "
+        "relay ring)",
+        get_name (), dropped_ui_events);
+    }
+
+  if (
+    const auto dropped_ui_output_events =
+      pimpl_->plugin_to_ui_dropped_.exchange (0, std::memory_order_relaxed);
+    dropped_ui_output_events > 0)
+    {
+      z_warning (
+        "LV2: '{}' dropped {} plugin to UI events because the relay ring "
+        "was full",
+        get_name (), dropped_ui_output_events);
+    }
+
   // LV2 binds the sample rate and the buffer-size options at
   // instantiation: a change requires a new instance, carrying the current
   // state over. The scratch buffers are resized inside instantiate(),
@@ -1883,6 +2164,13 @@ Lv2Plugin::prepare_plugin_for_processing (
     pimpl_->pair_ports_with_engine_ports ();
     pimpl_->last_sample_rate_ = sample_rate;
     pimpl_->last_max_block_length_ = max_block_length;
+
+    // A UI that died with the freed instance (instance access) is
+    // re-opened for the new one
+    if (uiVisible ())
+      {
+        show_editor ();
+      }
   };
 
   // Freeing and re-creating a live instance must not overlap audio
@@ -1909,6 +2197,28 @@ Lv2Plugin::prepare_plugin_for_processing (
     {
       prepare ();
       return;
+    }
+
+  // An instance released by a graph rechain at unchanged settings is
+  // only reactivated
+  if (!pimpl_->instance_active_)
+    {
+      const auto reactivate = [this] () {
+        z_debug ("LV2: reactivating '{}'", get_name ());
+        lilv_instance_activate (pimpl_->instance_);
+        pimpl_->instance_active_ = true;
+      };
+      if (main_thread_callbacks_.with_paused_processing_)
+        {
+          main_thread_callbacks_.with_paused_processing_ (reactivate);
+        }
+      else
+        {
+          z_warning (
+            "LV2: cannot reactivate '{}' while processing; the host "
+            "cannot pause processing",
+            get_name ());
+        }
     }
 
   // Live instance at an unchanged rate and block length: retry any
@@ -1939,24 +2249,18 @@ Lv2Plugin::prepare_plugin_for_processing (
 void
 Lv2Plugin::release_resources_impl ()
 {
-  // Plugin-internal state (LV2 State extension data) cannot survive the
-  // instance being freed: snapshot it as pending so it is re-applied at
-  // the next processing preparation
-  if (pimpl_->instance_ != nullptr)
-    {
-      if (const auto state = pimpl_->save_state_to_blob (); state.has_value ())
-        {
-          state_to_apply_ = QByteArray::fromStdString (*state);
-        }
-      else
-        {
-          z_warning (
-            "LV2: failed to snapshot the state of '{}' before releasing "
-            "its resources; plugin-internal state is lost",
-            get_name ());
-        }
-    }
-  pimpl_->free_instance ();
+  // Like the other backends, releasing resources deactivates the
+  // instance instead of freeing it: hard graph rechains are frequent,
+  // and the instance — and any open UI, which holds the instance handle
+  // through instance access — must survive them. Control values live in
+  // host-owned buffers and persist; per the LV2 activate() contract the
+  // plugin resets run-history-dependent internal state (e.g. delay
+  // tails) on reactivation.
+  if (pimpl_->instance_ == nullptr || !pimpl_->instance_active_)
+    return;
+
+  pimpl_->instance_active_ = false;
+  lilv_instance_deactivate (pimpl_->instance_);
 }
 
 void
@@ -2105,7 +2409,7 @@ Lv2Plugin::process_impl (
   const dsp::ITransport       &transport,
   const dsp::TempoMap         &tempo_map) noexcept
 {
-  if (pimpl_->instance_ == nullptr)
+  if (pimpl_->instance_ == nullptr || !pimpl_->instance_active_)
     return;
 
   const auto local_offset = time_info.buffer_offset_;
@@ -2135,6 +2439,7 @@ Lv2Plugin::process_impl (
 
   pimpl_->parse_atom_outputs (local_offset, nframes);
   pimpl_->read_control_outputs ();
+  pimpl_->dispatch_atom_outputs_to_ui ();
 }
 
 void
@@ -2146,6 +2451,47 @@ Lv2Plugin::Lv2PluginImpl::forge_atom_inputs (
   const auto &urids = host_urids_;
   const auto  local_offset = time_info.buffer_offset_;
   const auto  nframes = time_info.nframes_;
+
+  // The drained events exist only while a session is dispatched; the
+  // flag is read once here (acquire, pairing with the session open and
+  // teardown stores) and gates every use below
+  const bool ui_session_live = drain_ui_atom_events ();
+
+  // Atom events from the UI land at the end of the chunk: they carry
+  // no frame of their own, and the last chunk frame keeps them inside
+  // the sequence's time range
+  const auto ui_atom_chunk_time = [&] () -> int64_t {
+    const auto frames = nframes.in<uint32_t> (units::samples);
+    return frames > 0 ? frames - 1 : 0;
+  }();
+  // Appends the pending UI atoms targeting @p port_index to the
+  // sequence currently open in the forge, dropping events that do not
+  // fit whole
+  const auto append_ui_atoms = [&] (uint32_t port_index) {
+    uint32_t dropped_events = 0;
+    for (const auto &atom : pending_ui_atoms_)
+      {
+        if (atom.port_index != port_index)
+          continue;
+        const auto * event_atom =
+          reinterpret_cast<const LV2_Atom *> (atom.bytes.data ());
+        const auto needed =
+          sizeof (LV2_Atom_Event) + lv2_atom_pad_size (event_atom->size);
+        if (forge_.offset + needed > forge_.size)
+          {
+            ++dropped_events;
+            continue;
+          }
+        lv2_atom_forge_frame_time (&forge_, ui_atom_chunk_time);
+        lv2_atom_forge_atom (&forge_, event_atom->size, event_atom->type);
+        lv2_atom_forge_write (&forge_, event_atom + 1, event_atom->size);
+      }
+    if (dropped_events > 0)
+      {
+        atom_events_dropped_.fetch_add (
+          dropped_events, std::memory_order_relaxed);
+      }
+  };
 
   // Forges the position object as a frame-timed event of the sequence
   // currently open in the forge, at frame 0 so it sorts before the
@@ -2252,8 +2598,35 @@ Lv2Plugin::Lv2PluginImpl::forge_atom_inputs (
           atom_events_dropped_.fetch_add (
             dropped_events, std::memory_order_relaxed);
         }
+      if (ui_session_live)
+        {
+          append_ui_atoms (ports_[midi_in_port_idx_].index);
+        }
       lv2_atom_forge_pop (&forge_, &seq_frame);
       connect_port_rt (ports_[midi_in_port_idx_].index, atom_in_buf_.data ());
+    }
+
+  // Scratch atom inputs (atom inputs this host cannot route and
+  // unknown-type ports) receive the UI's atoms in their own sequence.
+  // The empty sequence is re-forged every chunk: connect_port is
+  // sticky, so a sequence left over from an earlier chunk would be
+  // delivered again on every later run()
+  for (const auto &port : ports_)
+    {
+      if (
+        !port.has_atom_scratch || port.flow == dsp::PortFlow::Output
+        || (port.type != PortInfo::Type::Atom && port.type != PortInfo::Type::Unknown))
+        continue;
+      auto * scratch = atom_scratch_buf_.data () + port.atom_scratch_byte_offset;
+      lv2_atom_forge_set_buffer (&forge_, scratch, atom_port_capacity (port));
+      LV2_Atom_Forge_Frame seq_frame;
+      lv2_atom_forge_sequence_head (&forge_, &seq_frame, 0);
+      if (ui_session_live)
+        {
+          append_ui_atoms (port.index);
+        }
+      lv2_atom_forge_pop (&forge_, &seq_frame);
+      connect_port_rt (port.index, scratch);
     }
 }
 
@@ -2294,54 +2667,32 @@ Lv2Plugin::Lv2PluginImpl::parse_atom_outputs (
   if (midi_out_port_idx_ < 0 || owner_.midi_out_ports_.empty ())
     return;
 
-  const auto  &urids = host_urids_;
-  const auto * seq =
-    reinterpret_cast<const LV2_Atom_Sequence *> (atom_out_buf_.data ());
-  if (seq->atom.type != urids.atom_Sequence)
-    return;
-
-  // The sequence header is plugin-controlled: only accept sizes that
-  // fit the buffer the host owns (integer bounds first: the end
-  // pointer must not be formed from a hostile size) and only frame-timed
-  // sequences (the unit URID of a beat-timed sequence would be misread
-  // as frames); malformed data is dropped (this runs on the audio
-  // thread, which cannot log)
-  if (
-    seq->atom.size < sizeof (LV2_Atom_Sequence_Body)
-    || seq->atom.size > atom_out_buf_.size () - sizeof (LV2_Atom)
-    || seq->body.unit != 0)
-    return;
-  const auto * seq_end =
-    reinterpret_cast<const uint8_t *> (seq) + sizeof (LV2_Atom) + seq->atom.size;
+  const auto &urids = host_urids_;
 
   auto *   midi_out_port = owner_.midi_out_ports_.front ();
   uint32_t dropped_events = 0;
-  LV2_ATOM_SEQUENCE_FOREACH (seq, ev)
-  {
-    if (
-      reinterpret_cast<const uint8_t *> (ev) + sizeof (LV2_Atom_Event)
-        + ev->body.size
-      > seq_end)
-      break;
-    if (ev->body.type != urids.midi_MidiEvent)
-      continue;
-    // Events must land inside this chunk: negative times and times past
-    // the chunk end carry stale timestamps
-    if (
-      ev->time.frames < 0
-      || ev->time.frames
-           >= static_cast<int64_t> (nframes.in<uint32_t> (units::samples)))
-      continue;
-    const auto time =
-      units::samples (static_cast<uint32_t> (ev->time.frames)) + local_offset;
-    const auto * data =
-      reinterpret_cast<const midi_byte_t *> (LV2_ATOM_BODY_CONST (&ev->body));
-    if (!midi_out_port->buffer_.push_back (
-          time, std::span<const midi_byte_t> (data, ev->body.size)))
-      {
-        ++dropped_events;
-      }
-  }
+  for_each_atom_output_event (
+    atom_out_buf_.data (), atom_out_buf_.size (),
+    [&] (const LV2_Atom_Event * ev) {
+      if (ev->body.type != urids.midi_MidiEvent)
+        return;
+      // Events must land inside this chunk: negative times and times past
+      // the chunk end carry stale timestamps
+      if (
+        ev->time.frames < 0
+        || ev->time.frames
+             >= static_cast<int64_t> (nframes.in<uint32_t> (units::samples)))
+        return;
+      const auto time =
+        units::samples (static_cast<uint32_t> (ev->time.frames)) + local_offset;
+      const auto * data =
+        reinterpret_cast<const midi_byte_t *> (LV2_ATOM_BODY_CONST (&ev->body));
+      if (!midi_out_port->buffer_.push_back (
+            time, std::span<const midi_byte_t> (data, ev->body.size)))
+        {
+          ++dropped_events;
+        }
+    });
   if (dropped_events > 0)
     {
       midi_output_events_dropped_.fetch_add (
@@ -3219,6 +3570,1064 @@ Lv2Plugin::clear_preset_list ()
 
   preset_entries_.clear ();
   notify_presets_rebuilt ();
+}
+
+// ============================================================================
+// UI
+// ============================================================================
+
+bool
+Lv2Plugin::hasNativeUi () const
+{
+  return pimpl_->ui_info_.has_value ();
+}
+
+void
+Lv2Plugin::on_ui_visibility_changed ()
+{
+  // The session is kept alive while hidden, so the live-session check
+  // is on visibility: a re-show of a hidden UI goes back through
+  // show_editor(), which re-shows the existing window
+  if (uiVisible () && !(pimpl_->ui_.has_value () && pimpl_->ui_->visible))
+    {
+      show_editor ();
+    }
+  else if (!uiVisible () && pimpl_->ui_.has_value () && pimpl_->ui_->visible)
+    {
+      hide_editor ();
+    }
+}
+
+void
+Lv2Plugin::show_editor (bool force_float_window)
+{
+  assert (QThread::currentThread () == thread ());
+
+  if (!pimpl_->ui_info_.has_value ())
+    return;
+
+  // The UI is kept alive while hidden: just re-show its window
+  if (pimpl_->ui_.has_value () && pimpl_->ui_->created)
+    {
+      auto &ui = *pimpl_->ui_;
+      if (ui.float_window)
+        {
+          const ScopedGlContextRelease gl_release;
+          ui.show_iface->show (ui.handle);
+        }
+      else
+        {
+          ui.editor_window->setVisible (true);
+        }
+      ui.visible = true;
+      return;
+    }
+
+  set_native_ui_unavailable (false);
+
+  if (pimpl_->instance_ == nullptr)
+    {
+      // The UI features reference the plugin instance (instance access)
+      z_warning (
+        "LV2: cannot show the UI of '{}' while it is not instantiated",
+        get_name ());
+      set_native_ui_unavailable (true);
+      return;
+    }
+
+  auto &ui = pimpl_->ui_.emplace ();
+  ui.float_window = force_float_window;
+
+  if (!ui.float_window)
+    {
+      ui.editor_window = pimpl_->host_window_factory_ (*this);
+      // Without a windowing connection no embedding is possible, but a
+      // UI that opens its own window can still be shown
+      if (ui.editor_window == nullptr && pimpl_->ui_info_->show_interface)
+        {
+          ui.float_window = true;
+        }
+    }
+  if (!ui.float_window && ui.editor_window == nullptr)
+    {
+      z_warning (
+        "LV2: no host window available for the UI of '{}'; showing the "
+        "generic UI",
+        get_name ());
+      pimpl_->destroy_ui ();
+      set_native_ui_unavailable (true);
+      return;
+    }
+
+  if (!ui.float_window)
+    {
+      // The UI was discovered for this build's window system; a window
+      // of a different system (e.g. a Wayland window where X11 was
+      // expected) cannot host it
+      if (
+        ui.editor_window->windowSystem ()
+        != PluginHostWindow::currentWindowSystem ())
+        {
+          z_warning (
+            "LV2: the host window of '{}' uses a window system this build "
+            "cannot embed LV2 UIs in; showing the generic UI",
+            get_name ());
+          pimpl_->destroy_ui ();
+          set_native_ui_unavailable (true);
+          return;
+        }
+
+      // The host window may hide itself before the embedding handshake
+      // completes; teardown must be deferred because the emission comes
+      // from within the window's own call stack
+      connect (
+        ui.editor_window.get (), &PluginHostWindow::embeddingFailed, this,
+        [this] {
+          QTimer::singleShot (std::chrono::milliseconds{ 0 }, this, [this] {
+            pimpl_->destroy_ui ();
+            // A UI that can open its own window gets a second chance
+            // as a floating window
+            if (
+              pimpl_->ui_info_.has_value () && pimpl_->ui_info_->show_interface)
+              {
+                show_editor (/*force_float_window=*/true);
+              }
+            else
+              {
+                set_native_ui_unavailable (true);
+              }
+          });
+        });
+    }
+
+  {
+    const auto lib_opened = ui.lib.load (
+      utils::Utf8String::from_path (pimpl_->ui_info_->binary_path));
+    auto descriptor_fn = reinterpret_cast<LV2UI_DescriptorFunction> (
+      ui.lib.resolve ("lv2ui_descriptor"));
+    if (!lib_opened || descriptor_fn == nullptr)
+      {
+        z_warning (
+          "LV2: failed to load the UI library of '{}' from '{}'; showing "
+          "the generic UI",
+          get_name (), pimpl_->ui_info_->binary_path);
+        pimpl_->destroy_ui ();
+        set_native_ui_unavailable (true);
+        return;
+      }
+    for (auto i = 0u;; ++i)
+      {
+        const auto * descriptor = descriptor_fn (i);
+        if (descriptor == nullptr)
+          break;
+        if (pimpl_->ui_info_->uri == descriptor->URI)
+          {
+            ui.descriptor = descriptor;
+            break;
+          }
+      }
+    if (ui.descriptor == nullptr)
+      {
+        z_warning (
+          "LV2: the UI library of '{}' holds no UI '{}'; showing the "
+          "generic UI",
+          get_name (), pimpl_->ui_info_->uri);
+        pimpl_->destroy_ui ();
+        set_native_ui_unavailable (true);
+        return;
+      }
+  }
+
+  // Features; their storage lives in the session and stays valid until
+  // cleanup
+  {
+    const auto &urids = pimpl_->host_urids_;
+    const auto window_title_urid = world_->urid_map ().map (LV2_UI__windowTitle);
+    const auto scale_factor_urid = world_->urid_map ().map (LV2_UI__scaleFactor);
+    ui.window_title_ = get_name ().str ();
+    ui.scale_opt_ =
+      ui.editor_window != nullptr ? ui.editor_window->contentScaleFactor () : 1.f;
+    ui.options_[0] = LV2_Options_Option{
+      .context = LV2_OPTIONS_INSTANCE,
+      .subject = 0,
+      .key = window_title_urid,
+      .size = static_cast<uint32_t> (ui.window_title_.size () + 1),
+      .type = urids.atom_String,
+      .value = ui.window_title_.c_str ()
+    };
+    ui.options_[1] = LV2_Options_Option{
+      .context = LV2_OPTIONS_INSTANCE,
+      .subject = 0,
+      .key = scale_factor_urid,
+      .size = sizeof (float),
+      .type = urids.atom_Float,
+      .value = &ui.scale_opt_
+    };
+    ui.options_[2] = LV2_Options_Option{};
+
+    if (ui.editor_window != nullptr)
+      {
+        ui.parent_window_ =
+          static_cast<quintptr> (ui.editor_window->getEmbedWindowId ());
+      }
+    ui.resize_feature_ = LV2UI_Resize{
+      .handle = pimpl_.get (), .ui_resize = &Lv2PluginImpl::ui_resize
+    };
+    ui.port_map_feature_ = LV2UI_Port_Map{
+      .handle = pimpl_.get (), .port_index = &Lv2PluginImpl::ui_port_index
+    };
+    ui.ext_data_feature_.data_access =
+      lilv_instance_get_descriptor (pimpl_->instance_)->extension_data;
+
+    ui.features.clear ();
+    ui.feature_ptrs.clear ();
+    const auto push_feature = [&ui] (const char * uri, void * data) {
+      ui.features.push_back (LV2_Feature{ uri, data });
+    };
+    push_feature (LV2_URID__map, &pimpl_->urid_map_feature_);
+    push_feature (LV2_URID__unmap, &pimpl_->urid_unmap_feature_);
+    push_feature (LV2_OPTIONS__options, ui.options_.data ());
+    // A self-shown UI owns its toplevel window and is never parented
+    if (!ui.float_window)
+      {
+        push_feature (
+          LV2_UI__parent, reinterpret_cast<void *> (ui.parent_window_));
+      }
+    push_feature (LV2_UI__resize, &ui.resize_feature_);
+    push_feature (LV2_UI__portMap, &ui.port_map_feature_);
+    // ui:idleInterface is extension data with no feature payload; the
+    // feature is passed to acknowledge that this host drives idle (the
+    // idle pump below), which UIs may declare required
+    push_feature (LV2_UI__idleInterface, nullptr);
+    // The resizability hints are passed as features so UIs requiring
+    // them instantiate; the host honors both by pinning the window
+    if (pimpl_->ui_info_->fixed_size)
+      push_feature (LV2_UI__fixedSize, nullptr);
+    if (pimpl_->ui_info_->no_user_resize)
+      push_feature (LV2_UI__noUserResize, nullptr);
+    push_feature (
+      LV2_INSTANCE_ACCESS_URI, lilv_instance_get_handle (pimpl_->instance_));
+    push_feature (LV2_DATA_ACCESS_URI, &ui.ext_data_feature_);
+    for (const auto &feature : ui.features)
+      {
+        ui.feature_ptrs.push_back (&feature);
+      }
+    ui.feature_ptrs.push_back (nullptr);
+  }
+
+  // The pending-atom list never allocates on the audio thread: extra
+  // events are dropped and counted. The reservation happens when a UI
+  // session starts — records can only exist once a UI does, so plugins
+  // whose UI is never opened do not pay for it. The audio thread
+  // touches the list only while the session dispatch flag is set, and
+  // this reservation runs strictly before the flag is stored, so the
+  // allocation never races the drain; later reservations are no-ops
+  // because clear() never shrinks capacity
+  pimpl_->pending_ui_atoms_.reserve (64);
+
+  // Records of a previous session must not leak into this one: a later
+  // plugin in this object may have fewer ports. The reset runs before
+  // instantiate (a UI may write during instantiate and those records
+  // must survive) and under the writer mutex, which orders it against
+  // any record still being pushed
+  {
+    const std::scoped_lock lock (pimpl_->ui_write_mutex_);
+    pimpl_->ui_to_plugin_fifo_.reset ();
+    pimpl_->plugin_to_ui_fifo_.reset ();
+  }
+
+  LV2UI_Widget widget = nullptr;
+  {
+    const ScopedGlContextRelease gl_release;
+    ui.handle = ui.descriptor->instantiate (
+      ui.descriptor, lilv_node_as_uri (lilv_plugin_get_uri (pimpl_->plugin_)),
+      pimpl_->ui_info_->bundle_path.c_str (), &Lv2PluginImpl::ui_write,
+      pimpl_.get (), &widget, ui.feature_ptrs.data ());
+  }
+  if (ui.handle == nullptr)
+    {
+      z_warning (
+        "LV2: failed to instantiate the UI of '{}'; showing the generic UI",
+        get_name ());
+      pimpl_->destroy_ui ();
+      set_native_ui_unavailable (true);
+      return;
+    }
+  ui.created = true;
+  ui.visible = true;
+
+  // For X11UI the widget out-parameter is the X11 Window ID: adopt the
+  // view now so the window can host it and adopt its size. The UI's own
+  // ui:resize call during instantiate may have set a size already; the
+  // adopted geometry is the view's actual size and wins. A nullopt
+  // return is not a final failure: the view may be invalid or appear
+  // late, and the window's retry scan still runs; the window emits
+  // embeddingFailed once the embedding is definitely over, and the
+  // fallback queued for it tears this session (including the idle
+  // pump) down before it can tick
+  if (!ui.float_window && widget != nullptr)
+    {
+      const auto view_size = ui.editor_window->attachNativeView (
+        reinterpret_cast<quintptr> (widget));
+      if (view_size.has_value ())
+        {
+          const auto [w, h] = plugin_view_size_to_host_window_size (
+            view_size->width (), view_size->height (),
+            ui.editor_window->contentScaleFactor ());
+          if (!ui.initial_size_applied)
+            {
+              ui.editor_window->setSizeAndCenter (w, h);
+              ui.initial_size_applied = true;
+            }
+          else
+            {
+              ui.editor_window->setSize (w, h);
+            }
+        }
+    }
+
+  if (ui.descriptor->extension_data != nullptr)
+    {
+      ui.idle_iface = static_cast<const LV2UI_Idle_Interface *> (
+        ui.descriptor->extension_data (LV2_UI__idleInterface));
+      ui.plugin_resize_iface = static_cast<const LV2UI_Resize *> (
+        ui.descriptor->extension_data (LV2_UI__resize));
+      if (ui.float_window)
+        {
+          ui.show_iface = static_cast<const LV2UI_Show_Interface *> (
+            ui.descriptor->extension_data (LV2_UI__showInterface));
+        }
+    }
+  if (ui.float_window && (ui.show_iface == nullptr || ui.show_iface->show == nullptr || ui.show_iface->hide == nullptr))
+    {
+      z_warning (
+        "LV2: the UI of '{}' declares ui:showInterface but provides no "
+        "show/hide functions; showing the generic UI",
+        get_name ());
+      pimpl_->destroy_ui ();
+      set_native_ui_unavailable (true);
+      return;
+    }
+
+  // Control values are sent in full on the first pump cycle
+  const auto collect_relayed =
+    [this] (dsp::PortFlow flow) -> std::vector<Lv2PluginImpl::RelayedControl> {
+    std::vector<Lv2PluginImpl::RelayedControl> relayed;
+    for (const auto &port : pimpl_->ports_)
+      {
+        if (
+          port.type == Lv2PluginImpl::PortInfo::Type::Control
+          && port.flow == flow)
+          {
+            relayed.push_back ({ port.index, port.control_buffer_index });
+          }
+      }
+    return relayed;
+  };
+  ui.relayed_control_ins_ = collect_relayed (dsp::PortFlow::Input);
+  ui.relayed_control_outs_ = collect_relayed (dsp::PortFlow::Output);
+  ui.last_control_values_.assign (
+    ui.relayed_control_ins_.size () + ui.relayed_control_outs_.size (),
+    std::numeric_limits<float>::quiet_NaN ());
+  pimpl_->ui_dispatch_.store (true, std::memory_order_release);
+  ui.idle_token_ = ui.run_loop_.register_timer (
+    std::chrono::milliseconds{ 16 }, [this] { pimpl_->ui_idle_tick (); });
+
+  if (!ui.float_window)
+    {
+      // Host-initiated embed area resizes are forwarded to the UI's own
+      // resize interface; LV2 defines no way to constrain a size first
+      ui.resize_coordinator = utils::make_qobject_unique<
+        PluginViewResizeCoordinator> (
+        *ui.editor_window,
+        PluginViewResizeCoordinator::Hooks{
+          .gui_active =
+            [this] { return pimpl_->ui_.has_value () && pimpl_->ui_->created; },
+          .can_resize =
+            [this] {
+              return pimpl_->ui_info_.has_value () && !pimpl_->ui_info_->fixed_size
+                     && !pimpl_->ui_info_->no_user_resize;
+            },
+          .adjust_size = [] (int &, int &) { },
+          .apply_size =
+            [this] (int width, int height) {
+              if (
+                !pimpl_->ui_.has_value () || !pimpl_->ui_->created
+                || pimpl_->ui_->plugin_resize_iface == nullptr)
+                return;
+              const auto scale =
+                pimpl_->ui_->editor_window->contentScaleFactor ();
+              const ScopedGlContextRelease gl_release;
+              pimpl_->ui_->plugin_resize_iface->ui_resize (
+                pimpl_->ui_->handle,
+                host_window_logical_to_physical (width, scale),
+                host_window_logical_to_physical (height, scale));
+            },
+        });
+      ui.editor_window->setResizable (
+        !pimpl_->ui_info_->fixed_size && !pimpl_->ui_info_->no_user_resize);
+      ui.editor_window->setVisible (true);
+      ui.editor_window->completeNativeEmbedding ();
+    }
+  else
+    {
+      const ScopedGlContextRelease gl_release;
+      const auto                   shown = ui.show_iface->show (ui.handle);
+      if (shown != 0)
+        {
+          z_warning (
+            "LV2: the UI of '{}' refused to show its window; showing the "
+            "generic UI",
+            get_name ());
+          pimpl_->destroy_ui ();
+          set_native_ui_unavailable (true);
+          return;
+        }
+    }
+}
+
+void
+Lv2Plugin::hide_editor ()
+{
+  if (!pimpl_->ui_.has_value () || !pimpl_->ui_->visible)
+    return;
+
+  auto &ui = *pimpl_->ui_;
+  if (ui.float_window)
+    {
+      const ScopedGlContextRelease gl_release;
+      ui.show_iface->hide (ui.handle);
+    }
+  else
+    {
+      ui.editor_window->setVisible (false);
+    }
+  ui.visible = false;
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::resolve_ui ()
+{
+  std::optional<UiInfo> new_info;
+
+  const char * widget_type_uri = [] -> const char * {
+    switch (PluginHostWindow::currentWindowSystem ())
+      {
+      case WindowSystem::X11:
+        return LV2_UI__X11UI;
+      case WindowSystem::Win32:
+        return LV2_UI__WindowsUI;
+      case WindowSystem::Cocoa:
+        return LV2_UI__CocoaUI;
+      case WindowSystem::Wayland:
+        return nullptr;
+      }
+    return nullptr;
+  }();
+
+  if (widget_type_uri != nullptr)
+    {
+      auto *             world = owner_.world_->raw ();
+      const LilvNodeUPtr widget_type{ lilv_new_uri (world, widget_type_uri) };
+      const LilvNodeUPtr fixed_size{ lilv_new_uri (world, LV2_UI__fixedSize) };
+      const LilvNodeUPtr no_user_resize{
+        lilv_new_uri (world, LV2_UI__noUserResize)
+      };
+      // ui:fixedSize and ui:noUserResize are features: the UI announces
+      // them through the standard feature predicates, with the feature URI
+      // as the object
+      const LilvNodeUPtr optional_feature_pred{
+        lilv_new_uri (world, LV2_CORE__optionalFeature)
+      };
+      const LilvNodeUPtr required_feature_pred{
+        lilv_new_uri (world, LV2_CORE__requiredFeature)
+      };
+      const LilvNodeUPtr extension_data_pred{
+        lilv_new_uri (world, LV2_CORE__extensionData)
+      };
+      const LilvNodeUPtr show_interface{
+        lilv_new_uri (world, LV2_UI__showInterface)
+      };
+      const auto declares_feature =
+        [world, &optional_feature_pred, &required_feature_pred] (
+          const LilvNode * ui_node, const LilvNode * feature) {
+          return lilv_world_ask (
+                   world, ui_node, optional_feature_pred.get (), feature)
+                 || lilv_world_ask (
+                   world, ui_node, required_feature_pred.get (), feature);
+        };
+      // The feature set below is what UI instantiation passes; a UI
+      // requiring anything else must be skipped, not instantiated.
+      // ui:parent is included although self-shown UIs do not get it:
+      // those open no embed area at all, so a UI requiring it cannot
+      // be floated either way
+      const std::string_view supported_ui_features[] = {
+        LV2_URID__map,       LV2_URID__unmap,      LV2_OPTIONS__options,
+        LV2_UI__parent,      LV2_UI__resize,       LV2_UI__portMap,
+        LV2_UI__fixedSize,   LV2_UI__noUserResize, LV2_INSTANCE_ACCESS_URI,
+        LV2_DATA_ACCESS_URI, LV2_UI__idleInterface
+      };
+      const LilvUIsUPtr uis{ lilv_plugin_get_uis (plugin_) };
+      if (uis != nullptr)
+        {
+          LILV_FOREACH (uis, iter, uis.get ())
+            {
+              const auto * ui = lilv_uis_get (uis.get (), iter);
+              if (!lilv_ui_is_a (ui, widget_type.get ()))
+                continue;
+
+              const auto * uri = lilv_node_as_uri (lilv_ui_get_uri (ui));
+              const auto * binary_uri =
+                lilv_node_as_uri (lilv_ui_get_binary_uri (ui));
+              const auto * bundle_uri =
+                lilv_node_as_uri (lilv_ui_get_bundle_uri (ui));
+              if (
+                uri == nullptr || binary_uri == nullptr || bundle_uri == nullptr)
+                continue;
+
+              // The URIs are file URIs; non-file locations cannot be
+              // hosted
+              const auto binary_path =
+                utils::Utf8String::from_qstring (
+                  QUrl (QString::fromUtf8 (binary_uri)).toLocalFile ())
+                  .to_path ();
+              const auto bundle_path =
+                utils::Utf8String::from_qstring (
+                  QUrl (QString::fromUtf8 (bundle_uri)).toLocalFile ())
+                  .to_path ();
+              if (binary_path.empty () || bundle_path.empty ())
+                {
+                  z_warning (
+                    "LV2: UI '{}' of '{}' does not live in a local bundle; "
+                    "skipping it",
+                    uri, owner_.get_name ());
+                  continue;
+                }
+
+              const LilvNodeUPtr ui_node{ lilv_new_uri (world, uri) };
+              // UI descriptions usually live in a separate data file
+              // linked from the manifest via rdfs:seeAlso, and lilv
+              // loads those on demand only: without this call, feature
+              // and extension-data statements (ui:noUserResize,
+              // ui:showInterface, ...) are missing from the model
+              lilv_world_load_resource (world, ui_node.get ());
+              bool                ui_features_supported = true;
+              const LilvNodesUPtr ui_required_features{ lilv_world_find_nodes (
+                world, ui_node.get (), required_feature_pred.get (), nullptr) };
+              if (ui_required_features != nullptr)
+                {
+                  LILV_FOREACH (nodes, riter, ui_required_features.get ())
+                    {
+                      const auto * req_uri = lilv_node_as_uri (
+                        lilv_nodes_get (ui_required_features.get (), riter));
+                      if (
+                        req_uri != nullptr
+                        && std::ranges::none_of (
+                          supported_ui_features,
+                          [req_uri] (const auto s) { return s == req_uri; }))
+                        {
+                          ui_features_supported = false;
+                          z_warning (
+                            "LV2: UI '{}' of '{}' requires unsupported "
+                            "feature '{}'; skipping it",
+                            uri, owner_.get_name (), req_uri);
+                          break;
+                        }
+                    }
+                }
+              if (!ui_features_supported)
+                continue;
+              UiInfo info;
+              info.uri = uri;
+              info.binary_path = binary_path;
+              info.bundle_path =
+                utils::Utf8String::from_path (bundle_path / "").str ();
+              info.fixed_size =
+                declares_feature (ui_node.get (), fixed_size.get ());
+              info.no_user_resize =
+                declares_feature (ui_node.get (), no_user_resize.get ());
+              info.show_interface = lilv_world_ask (
+                world, ui_node.get (), extension_data_pred.get (),
+                show_interface.get ());
+              new_info = std::move (info);
+              break;
+            }
+        }
+    }
+
+  const bool presence_changed = new_info.has_value () != ui_info_.has_value ();
+  ui_info_ = std::move (new_info);
+  if (presence_changed)
+    {
+      Q_EMIT owner_.hasNativeUiChanged ();
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::destroy_ui ()
+{
+  if (!ui_.has_value ())
+    return;
+
+  auto &ui = *ui_;
+  // The pump stops first: no further ticks may run against the dying
+  // session
+  ui.run_loop_.unregister_timer (ui.idle_token_);
+  ui_dispatch_.store (false, std::memory_order_release);
+  ui.resize_coordinator.reset ();
+  // A shown self-managed window is hidden before the host stops
+  // driving the UI, per the show interface contract
+  if (
+    ui.float_window && ui.visible && ui.show_iface != nullptr
+    && ui.show_iface->hide != nullptr)
+    {
+      const ScopedGlContextRelease gl_release;
+      ui.show_iface->hide (ui.handle);
+    }
+  if (ui.handle != nullptr && ui.descriptor->cleanup != nullptr)
+    {
+      const ScopedGlContextRelease gl_release;
+      ui.descriptor->cleanup (ui.handle);
+    }
+  ui.handle = nullptr;
+  ui.created = false;
+  ui.visible = false;
+  ui.lib.unload ();
+  // The host window is destroyed only after the UI was cleaned up: UIs
+  // may touch the embed parent during their own teardown
+  ui.editor_window.reset ();
+  ui_.reset ();
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::ui_write (
+  LV2UI_Controller controller,
+  uint32_t         port_index,
+  uint32_t         buffer_size,
+  uint32_t         port_protocol,
+  const void *     buffer)
+{
+  auto * impl = static_cast<Lv2PluginImpl *> (controller);
+
+  if (port_index >= impl->ports_.size ())
+    {
+      z_warning (
+        "LV2: the UI of '{}' wrote to unknown port index {}; ignoring it",
+        impl->owner_.get_name (), port_index);
+      return;
+    }
+  const auto &port = impl->ports_[port_index];
+
+  const auto push_record =
+    [impl] (std::span<const std::byte> a, std::span<const std::byte> b) {
+      // The ring admits a single writer: concurrent writes from the
+      // UI's own threads are serialized here
+      const std::scoped_lock lock (impl->ui_write_mutex_);
+      if (
+        fifo_write_record (
+          impl->ui_to_plugin_fifo_, impl->ui_to_plugin_buf_, a, b))
+        return;
+      impl->ui_to_plugin_dropped_.fetch_add (1, std::memory_order_relaxed);
+      z_warning (
+        "LV2: the UI event ring of '{}' is full; dropping an event",
+        impl->owner_.get_name ());
+    };
+
+  if (port_protocol == 0)
+    {
+      if (buffer_size != sizeof (float))
+        {
+          z_warning (
+            "LV2: the UI of '{}' wrote {} bytes to control port {} instead "
+            "of a float; ignoring it",
+            impl->owner_.get_name (), buffer_size, port.symbol);
+          return;
+        }
+      if (
+        port.type != PortInfo::Type::Control
+        || port.flow != dsp::PortFlow::Input)
+        {
+          z_warning (
+            "LV2: the UI of '{}' wrote a float to port {} which is no "
+            "control input; ignoring it",
+            impl->owner_.get_name (), port.symbol);
+          return;
+        }
+      const auto  value = *static_cast<const float *> (buffer);
+      const auto &ctrl_param = impl->ctrl_in_params_[port.control_buffer_index];
+      if (ctrl_param.param != nullptr)
+        {
+          // Ports with a parameter ride the parameter path: the value
+          // reaches the audio thread through the change tracker and the
+          // edit is attributed as a user edit
+          if (QThread::currentThread () == impl->owner_.thread ())
+            {
+              ctrl_param.param->setBaseValueByUser (
+                impl->param_value_0_to_1_for_control (ctrl_param, value));
+              return;
+            }
+          // UIs may call write() from their own threads, where Qt
+          // signal emission is not allowed. The value is delivered
+          // twice by design: the ring record applies it to the
+          // control buffer on the audio thread, and the deferred
+          // parameter update attributes the edit as a user action
+          const auto   header = UiEventHeader{ port_index, 0, sizeof (float) };
+          const auto * value_bytes =
+            reinterpret_cast<const std::byte *> (&value);
+          push_record (
+            { reinterpret_cast<const std::byte *> (&header), sizeof (header) },
+            { value_bytes, sizeof (float) });
+          auto *     param = ctrl_param.param;
+          const auto normalized =
+            impl->param_value_0_to_1_for_control (ctrl_param, value);
+          impl->owner_.post_main_thread_action_deferred ([param, normalized] {
+            param->setBaseValueByUser (normalized);
+          });
+          return;
+        }
+      const auto   header = UiEventHeader{ port_index, 0, sizeof (float) };
+      const auto * value_bytes = reinterpret_cast<const std::byte *> (&value);
+      push_record (
+        { reinterpret_cast<const std::byte *> (&header), sizeof (header) },
+        { value_bytes, sizeof (float) });
+      return;
+    }
+
+  if (port_protocol == impl->host_urids_.atom_eventTransfer)
+    {
+      if (buffer_size < sizeof (LV2_Atom))
+        return;
+      const auto * atom = static_cast<const LV2_Atom *> (buffer);
+      const auto   total = sizeof (LV2_Atom) + atom->size;
+      if (
+        total > buffer_size || total > kAtomBufferSize
+        || (port.type != PortInfo::Type::Atom && port.type != PortInfo::Type::Unknown))
+        {
+          z_warning (
+            "LV2: the UI of '{}' wrote an atom the port {} cannot take; "
+            "ignoring it",
+            impl->owner_.get_name (), port.symbol);
+          return;
+        }
+      // Only atom inputs this host routes to the plugin (the MIDI input
+      // or a scratch port) receive UI atoms: the routed time port is
+      // host-driven and output ports are plugin-driven
+      if (
+        port.flow != dsp::PortFlow::Input
+        || (impl->midi_in_port_idx_ != static_cast<int32_t> (port_index)
+            && !port.has_atom_scratch))
+        {
+          impl->ui_to_plugin_dropped_.fetch_add (1, std::memory_order_relaxed);
+          z_warning (
+            "LV2: the UI of '{}' wrote an atom to port {} which this host "
+            "does not route from UIs; ignoring it",
+            impl->owner_.get_name (), port.symbol);
+          return;
+        }
+      const auto header = UiEventHeader{
+        port_index, port_protocol, static_cast<uint32_t> (total)
+      };
+      push_record (
+        { reinterpret_cast<const std::byte *> (&header), sizeof (header) },
+        { reinterpret_cast<const std::byte *> (atom), total });
+      return;
+    }
+
+  z_warning (
+    "LV2: the UI of '{}' wrote with an unsupported protocol; ignoring it",
+    impl->owner_.get_name ());
+}
+
+uint32_t
+Lv2Plugin::Lv2PluginImpl::ui_port_index (
+  LV2UI_Feature_Handle handle,
+  const char *         symbol)
+{
+  const auto * impl = static_cast<const Lv2PluginImpl *> (handle);
+  const auto   it =
+    std::ranges::find_if (impl->ports_, [symbol] (const PortInfo &p) {
+      return p.symbol.view () == symbol;
+    });
+  return it == impl->ports_.end () ? LV2UI_INVALID_PORT_INDEX : it->index;
+}
+
+int
+Lv2Plugin::Lv2PluginImpl::
+  ui_resize (LV2UI_Feature_Handle handle, int width, int height)
+{
+  auto * impl = static_cast<Lv2PluginImpl *> (handle);
+  if (
+    !impl->ui_.has_value () || impl->ui_->editor_window == nullptr
+    || impl->ui_->float_window)
+    return 0;
+
+  if (width <= 0 || height <= 0)
+    {
+      z_warning (
+        "LV2: the UI of '{}' requested an invalid size {}x{}; refusing it",
+        impl->owner_.get_name (), width, height);
+      return -1;
+    }
+
+  auto &ui = *impl->ui_;
+  const auto [w, h] = plugin_view_size_to_host_window_size (
+    width, height, ui.editor_window->contentScaleFactor ());
+  z_debug (
+    "LV2: the UI of '{}' resized its view to {}x{} physical ({}x{} logical)",
+    impl->owner_.get_name (), width, height, w, h);
+  if (!ui.initial_size_applied)
+    {
+      ui.editor_window->setSizeAndCenter (w, h);
+      ui.initial_size_applied = true;
+    }
+  else
+    {
+      ui.editor_window->setSize (w, h);
+    }
+  return 0;
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::ui_idle_tick ()
+{
+  if (!ui_.has_value () || !ui_->created)
+    return;
+
+  auto &ui = *ui_;
+
+  // port_event() and idle() re-enter the host synchronously (e.g. a
+  // write() during port_event() running parameter change handlers), and
+  // a re-entrant call may tear this session down or replace it. The
+  // pump re-checks after every such call that the session storage it
+  // holds is still a live session: a session synchronously recreated at
+  // the same address is safe to keep pumping (its callbacks tolerate an
+  // extra round)
+  auto * const session = &*ui_;
+  const auto   session_alive = [this, session] () {
+    return ui_.has_value () && &*ui_ == session && ui_->created;
+  };
+
+  // Relay the events the audio thread collected; the record layout
+  // matches the atom transfer protocol (atom header + body) or a plain
+  // float
+  UiEventHeader header{};
+  while (fifo_read_bytes (
+    plugin_to_ui_fifo_, plugin_to_ui_buf_,
+    { reinterpret_cast<std::byte *> (&header), sizeof (header) }))
+    {
+      if (
+        header.size > ui.event_scratch_.size ()
+        || !fifo_read_bytes (
+          plugin_to_ui_fifo_, plugin_to_ui_buf_,
+          { ui.event_scratch_.data (), header.size }))
+        break;
+      if (ui.descriptor->port_event != nullptr)
+        {
+          const ScopedGlContextRelease gl_release;
+          ui.descriptor->port_event (
+            ui.handle, header.port_index, header.size, header.protocol,
+            ui.event_scratch_.data ());
+        }
+      if (!session_alive ())
+        return;
+    }
+
+  // Forward changed control values, inputs and outputs (the initial
+  // NaN shadow sends every value once). The audio thread writes these
+  // buffers; they hold plain floats, so torn reads are benign
+  // Returns false when a re-entrant call ended this session
+  const auto relay_changed =
+    [&] (
+      const std::vector<RelayedControl> &relayed, std::span<const float> values,
+      size_t shadow_base) {
+      for (const auto &[i, entry] : utils::views::enumerate (relayed))
+        {
+          auto  value = values[entry.buffer_index];
+          auto &last = ui.last_control_values_[shadow_base + i];
+          if (utils::math::floats_equal (last, value))
+            continue;
+          last = value;
+          if (ui.descriptor->port_event != nullptr)
+            {
+              const ScopedGlContextRelease gl_release;
+              ui.descriptor->port_event (
+                ui.handle, entry.lv2_port_index, sizeof (float), 0, &value);
+            }
+          if (!session_alive ())
+            return false;
+        }
+      return true;
+    };
+  if (!relay_changed (ui.relayed_control_ins_, control_in_bufs_, 0))
+    return;
+  if (
+    !relay_changed (
+      ui.relayed_control_outs_, control_out_bufs_,
+      ui.relayed_control_ins_.size ()))
+    return;
+
+  if (ui.idle_iface == nullptr)
+    return;
+
+  auto closed = 0;
+  {
+    const ScopedGlContextRelease gl_release;
+    closed = ui.idle_iface->idle (ui.handle);
+  }
+  if (!session_alive ())
+    return;
+  if (closed != 0)
+    {
+      // The UI closed itself: stop the pump, then tear down outside
+      // this callback's stack
+      ui.run_loop_.unregister_timer (ui.idle_token_);
+      QTimer::singleShot (std::chrono::milliseconds{ 0 }, &owner_, [this] {
+        destroy_ui ();
+        owner_.setUiVisible (false);
+      });
+    }
+}
+
+bool
+Lv2Plugin::Lv2PluginImpl::drain_ui_atom_events () noexcept
+{
+  // Acquire pairs with the release stores at session open/teardown:
+  // the rings and the pending-atom list are reset at session open on
+  // the main thread, and a reset racing this drain could leave the
+  // fifo indices half-updated here. Records pushed during instantiate
+  // stay in the freshly reset ring and are read once the session is
+  // dispatched
+  if (!ui_dispatch_.load (std::memory_order_acquire))
+    return false;
+
+  pending_ui_atoms_.clear ();
+
+  UiEventHeader header{};
+  while (fifo_read_bytes (
+    ui_to_plugin_fifo_, ui_to_plugin_buf_,
+    { reinterpret_cast<std::byte *> (&header), sizeof (header) }))
+    {
+      // The body is always drained so the record stream stays aligned;
+      // records larger than the scratch cannot exist because the
+      // writer rejects them, so this failure would mean a corrupted
+      // stream and stops the drain
+      if (
+        header.size > kAtomBufferSize
+        || !fifo_read_bytes (
+          ui_to_plugin_fifo_, ui_to_plugin_buf_,
+          { ui_drain_scratch_.data (), header.size }))
+        break;
+
+      // Port indices are only validated against the current ports_ on
+      // the drain side (a record may predate a reconfiguration)
+      if (header.port_index >= ports_.size ())
+        {
+          ui_to_plugin_dropped_.fetch_add (1, std::memory_order_relaxed);
+          continue;
+        }
+
+      if (header.protocol == 0)
+        {
+          if (header.size != sizeof (float))
+            {
+              ui_to_plugin_dropped_.fetch_add (1, std::memory_order_relaxed);
+              continue;
+            }
+          float value = 0.f;
+          std::memcpy (&value, ui_drain_scratch_.data (), sizeof (value));
+          const auto &port = ports_[header.port_index];
+          if (
+            port.type == PortInfo::Type::Control
+            && port.flow == dsp::PortFlow::Input)
+            {
+              control_in_bufs_[port.control_buffer_index] = value;
+            }
+          else
+            {
+              ui_to_plugin_dropped_.fetch_add (1, std::memory_order_relaxed);
+            }
+          continue;
+        }
+
+      // Atom records are collected and appended to their port's
+      // sequence during this chunk's forging
+      if (pending_ui_atoms_.size () >= pending_ui_atoms_.capacity ())
+        {
+          ui_to_plugin_dropped_.fetch_add (1, std::memory_order_relaxed);
+          continue;
+        }
+      pending_ui_atoms_.emplace_back (
+        header.port_index,
+        std::span<const std::byte>{
+          ui_drain_scratch_.data (), static_cast<size_t> (header.size) });
+    }
+  return true;
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::push_ui_event (
+  uint32_t                   port_index,
+  uint32_t                   protocol,
+  std::span<const std::byte> body) noexcept
+{
+  if (body.size () > kAtomBufferSize)
+    {
+      plugin_to_ui_dropped_.fetch_add (1, std::memory_order_relaxed);
+      return;
+    }
+  const auto header =
+    UiEventHeader{ port_index, protocol, static_cast<uint32_t> (body.size ()) };
+  if (
+    !fifo_write_record (
+      plugin_to_ui_fifo_, plugin_to_ui_buf_,
+      { reinterpret_cast<const std::byte *> (&header), sizeof (header) }, body))
+    {
+      plugin_to_ui_dropped_.fetch_add (1, std::memory_order_relaxed);
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::dispatch_atom_outputs_to_ui () noexcept
+{
+  // Acquire pairs with the release stores at session open/teardown:
+  // the ring reset of a freshly opened session must be visible before
+  // its first record is pushed. A call that already passed this check
+  // during teardown can still push after the next session's reset, at
+  // worst desyncing the byte stream — the read-side size validation
+  // detects that and stops the drain — and the rings are reset again
+  // at the next session open; only paused processing (the sample-rate
+  // recreation path) fully excludes the audio thread
+  if (!ui_dispatch_.load (std::memory_order_acquire))
+    return;
+
+  // The sequence and its events carry the same validation as the MIDI
+  // output parser
+  const auto dispatch_sequence =
+    [this] (uint32_t port_index, const uint8_t * buf, size_t buf_size) noexcept {
+      for_each_atom_output_event (buf, buf_size, [&] (const LV2_Atom_Event * ev) {
+        push_ui_event (
+          port_index, host_urids_.atom_eventTransfer,
+          { reinterpret_cast<const std::byte *> (&ev->body),
+            sizeof (LV2_Atom) + ev->body.size });
+      });
+    };
+
+  if (midi_out_port_idx_ >= 0)
+    {
+      dispatch_sequence (
+        ports_[midi_out_port_idx_].index, atom_out_buf_.data (),
+        atom_out_buf_.size ());
+    }
+  for (const auto &port : ports_)
+    {
+      if (
+        !port.has_atom_scratch || port.flow != dsp::PortFlow::Output
+        || (port.type != PortInfo::Type::Atom && port.type != PortInfo::Type::Unknown))
+        continue;
+      dispatch_sequence (
+        port.index, atom_scratch_buf_.data () + port.atom_scratch_byte_offset,
+        atom_port_capacity (port));
+    }
 }
 
 void
