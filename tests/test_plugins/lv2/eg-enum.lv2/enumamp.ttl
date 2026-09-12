@@ -24,13 +24,16 @@
 		units:unit units:db ;
 		lv2:portProperty lv2:enumeration ;
 		lv2:scalePoint [
-			rdfs:label "-6 dB" ;
+			rdfs:label "-6 dB" ,
+				"Leise"@de ;
 			rdf:value -6.0
 		] , [
-			rdfs:label "0 dB" ;
+			rdfs:label "0 dB" ,
+				"Neutral"@de ;
 			rdf:value 0.0
 		] , [
-			rdfs:label "+6 dB" ;
+			rdfs:label "+6 dB" ,
+				"Laut"@de ;
 			rdf:value 6.0
 		]
 	] , [

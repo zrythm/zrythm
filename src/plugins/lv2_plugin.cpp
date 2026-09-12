@@ -1005,6 +1005,13 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
   const LilvNodeUPtr toggled{ lilv_new_uri (world, LV2_CORE__toggled) };
   const LilvNodeUPtr integer{ lilv_new_uri (world, LV2_CORE__integer) };
   const LilvNodeUPtr enumeration{ lilv_new_uri (world, LV2_CORE__enumeration) };
+  const LilvNodeUPtr scale_point{ lilv_new_uri (world, LV2_CORE__scalePoint) };
+  const LilvNodeUPtr rdf_value{
+    lilv_new_uri (world, "http://www.w3.org/1999/02/22-rdf-syntax-ns#value")
+  };
+  const LilvNodeUPtr rdfs_label{
+    lilv_new_uri (world, "http://www.w3.org/2000/01/rdf-schema#label")
+  };
   const LilvNodeUPtr logarithmic{
     lilv_new_uri (world, LV2_PORT_PROPS__logarithmic)
   };
@@ -1157,29 +1164,41 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
                       .view ());
                 }
 
-              // Scale points: lilv returns them in undefined order, so sort
-              // by value for deterministic enumeration indices; non-numeric
-              // point values are skipped like non-numeric ranges above
+              // Scale points are read through direct world queries:
+              // lilv_port_get_scale_points() requires a unique rdfs:label
+              // per point and aborts when a point carries several
+              // language-tagged labels, while these queries tolerate any
+              // number of value or label statements. Labels cannot be
+              // told apart by language through lilv's API, so the first
+              // one wins. Non-numeric point values are skipped like
+              // non-numeric ranges above
               std::vector<std::pair<utils::Utf8String, float>> points;
               {
-                const LilvScalePointsUPtr scale_points{
-                  lilv_port_get_scale_points (plugin_, port)
+                const LilvNodesUPtr scale_point_nodes{
+                  lilv_port_get_value (plugin_, port, scale_point.get ())
                 };
-                if (scale_points != nullptr)
+                if (scale_point_nodes != nullptr)
                   {
-                    LILV_FOREACH (scale_points, sp_iter, scale_points.get ())
+                    LILV_FOREACH (nodes, sp_iter, scale_point_nodes.get ())
                       {
-                        const auto * sp =
-                          lilv_scale_points_get (scale_points.get (), sp_iter);
+                        const auto * point_node =
+                          lilv_nodes_get (scale_point_nodes.get (), sp_iter);
+                        const LilvNodesUPtr value_nodes{ lilv_world_find_nodes (
+                          world, point_node, rdf_value.get (), nullptr) };
+                        const LilvNodesUPtr label_nodes{ lilv_world_find_nodes (
+                          world, point_node, rdfs_label.get (), nullptr) };
+                        if (value_nodes == nullptr || label_nodes == nullptr)
+                          continue;
                         const auto * value_node =
-                          lilv_scale_point_get_value (sp);
+                          lilv_nodes_get_first (value_nodes.get ());
                         if (
                           !lilv_node_is_float (value_node)
                           && !lilv_node_is_int (value_node)
                           && !lilv_node_is_bool (value_node))
                           continue;
                         points.emplace_back (
-                          node_to_utf8 (lilv_scale_point_get_label (sp)),
+                          node_to_utf8 (
+                            lilv_nodes_get_first (label_nodes.get ())),
                           lilv_node_as_float (value_node));
                       }
                   }

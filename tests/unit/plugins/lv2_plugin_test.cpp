@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <array>
 #include <cmath>
 #include <filesystem>
 #include <memory>
@@ -1248,6 +1249,26 @@ TEST_F (Lv2PluginTest, EnumerationPortUsesScalePointValues)
   fill_input_with (1.f);
   process_blocks (1);
   EXPECT_NEAR (read_first_output_sample (), 1.f, 0.01f);
+}
+
+// Scale points carrying several labels (language-tagged, as shipped by
+// real plugins) contribute one label each: every point survives with
+// one of its labels
+TEST_F (Lv2PluginTest, ScalePointsWithLanguageTaggedLabelsAreRead)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-enum.lv2"));
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+  ASSERT_EQ (gain->range ().enumCount (), 3);
+
+  const std::array<std::string_view, 3> expected_labels{
+    "-6 dB", "0 dB", "+6 dB"
+  };
+  for (auto i = 0u; i < 3; ++i)
+    {
+      EXPECT_EQ (gain->range ().enum_label (i).view (), expected_labels[i]);
+    }
 }
 
 // A plugin with malformed port data is refused at configuration time and
