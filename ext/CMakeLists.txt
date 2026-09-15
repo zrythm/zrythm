@@ -36,6 +36,18 @@ if(APPLE)
   find_library(AUDIO_UNIT_LIB CoreAudioKit REQUIRED)
   target_link_libraries(juce_lib INTERFACE ${AUDIO_UNIT_LIB})
 endif()
+
+# JUCE bundles harfbuzz and freetype. These symbols must not be exported
+# from executables linking this archive statically: dlopened plugin UIs
+# (e.g. pango-based ones) would resolve their harfbuzz/freetype calls
+# against these copies instead of the system libraries and crash on the
+# internal version mismatches. Hidden visibility keeps them out of the
+# dynamic symbol table in every link configuration.
+set_target_properties(juce_lib PROPERTIES
+  C_VISIBILITY_PRESET hidden
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN YES
+)
 if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
   target_link_libraries(juce_lib
     PUBLIC juce::juce_recommended_lto_flags

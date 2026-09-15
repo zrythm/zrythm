@@ -63,6 +63,10 @@ PluginLibrary::load (const utils::Utf8String &path)
 #endif
 
   impl_->library.setFileName (load_path.to_qstring ());
+  // DeepBindHint makes the plugin's dependencies resolve within the
+  // plugin's own group first. Sanitizer runtimes rely on interceptors
+  // that deep binding bypasses (ASan warns on every RTLD_DEEPBIND
+  // dlopen), so it stays disabled while sanitizers are active.
   impl_->library.setLoadHints (
     QLibrary::ResolveAllSymbolsHint
 #if !defined(__has_feature) \
