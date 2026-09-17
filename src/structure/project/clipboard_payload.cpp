@@ -108,7 +108,8 @@ bool
 is_boundary_key (std::string_view key)
 {
   return key == tracks::ChannelSend::kDestinationPortKey
-         || key == dsp::ProcessorParameter::kModulationSourcePortIdKey;
+         || key == dsp::ProcessorParameter::kModulationSourcePortIdKey
+         || key == ClipboardPayload::kRoutingTargetMetadataKey;
 }
 
 /** Collects UUID references found anywhere in @p j that resolve via @p
@@ -329,9 +330,13 @@ clear_unresolvable_external_refs (
               if (is_uuid_string (str) && !resolvable (to_uuid (str)))
                 {
                   ++severed_count;
+                  // Modulation sources and paste-routing targets become
+                  // "none"; send destinations are map entries and are
+                  // removed instead
                   if (
                     it.key ()
-                    == dsp::ProcessorParameter::kModulationSourcePortIdKey)
+                      == dsp::ProcessorParameter::kModulationSourcePortIdKey
+                    || it.key () == ClipboardPayload::kRoutingTargetMetadataKey)
                     {
                       it.value () = nullptr;
                       ++it;

@@ -39,7 +39,7 @@
     },
     "metadata": {
       "type": "object",
-      "description": "Free-form per-payload-type paste context (anchor position, lane indices, plugin group category, source slot indices, in-set routing)",
+      "description": "Free-form per-payload-type paste context (anchor position, lane indices, plugin group category, source slot indices, track routing, folder nesting)",
       "properties": {
         "anchorTicks": {
           "type": "number",
@@ -74,8 +74,37 @@
           }
         },
         "routing": {
+          "type": "array",
+          "maxItems": 100000,
+          "description": "Output routing of the copied track roots: an entry per routed root. The target may point outside the payload (e.g. the master track) and is then kept as-is for same-project paste or cleared cross-project",
+          "items": {
+            "type": "object",
+            "required": [
+              "source",
+              "routingTarget"
+            ],
+            "properties": {
+              "source": {
+                "$ref": "common.schema.json#/definitions/uuid"
+              },
+              "routingTarget": {
+                "oneOf": [
+                  {
+                    "$ref": "common.schema.json#/definitions/uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "folderParents": {
           "type": "object",
-          "description": "Track output routing within the copied set (source track UUID to destination track UUID)",
+          "maxProperties": 100000,
+          "description": "Folder nesting of the copied roots: child root UUID to parent root UUID (both part of the payload)",
           "additionalProperties": {
             "$ref": "common.schema.json#/definitions/uuid"
           }

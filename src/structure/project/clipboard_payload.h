@@ -48,6 +48,16 @@ public:
   static constexpr auto kAnchorTicksMetadataKey = "anchorTicks"sv;
   static constexpr auto kLaneIndicesMetadataKey = "laneIndices"sv;
 
+  /** Metadata keys of track payloads: the copied roots' output routing
+   * (an array of {source, routingTarget} entries — the target may point
+   * outside the payload, e.g. at the master track, so it is a boundary
+   * reference) and the folder nesting of the copied roots (child root
+   * UUID → parent root UUID; both are always part of the payload). */
+  static constexpr auto kRoutingMetadataKey = "routing"sv;
+  static constexpr auto kRoutingSourceMetadataKey = "source"sv;
+  static constexpr auto kRoutingTargetMetadataKey = "routingTarget"sv;
+  static constexpr auto kFolderParentsMetadataKey = "folderParents"sv;
+
   /** Prefix of the text form put on the OS clipboard. */
   static constexpr auto kTextPrefix = "ZRYTHM-CLIPBOARD:v1:"sv;
 

@@ -122,6 +122,18 @@ ProjectSession::ProjectSession (
           *project_->tracklist ()->trackRouting (),
           *project_->tracklist ()->singletonTracks (),
           this)),
+      track_collection_operator_ (
+        utils::make_qobject_unique<actions::TrackCollectionOperator> (
+          *undo_stack_,
+          project_->projectRegistry (),
+          clipboard_,
+          *project_->tracklist ()->collection (),
+          *project_->tracklist ()->trackRouting (),
+          *project_->tracklist ()->singletonTracks (),
+          [this] () -> QString {
+            return project_->project_id ().toString (QUuid::WithoutBraces);
+          },
+          this)),
       generic_plugin_ui_controller_ (
         utils::make_qobject_unique<qquick::GenericPluginUiController> (this)),
       plugin_importer_ (
@@ -545,6 +557,12 @@ zrythm::actions::TrackCreator *
 ProjectSession::trackCreator () const
 {
   return track_creator_.get ();
+}
+
+zrythm::actions::TrackCollectionOperator *
+ProjectSession::trackCollectionOperator () const
+{
+  return track_collection_operator_.get ();
 }
 
 actions::PluginImporter *

@@ -629,8 +629,9 @@ TEST_F (TrackCollectionTest, GetEnclosingFolderExpanded)
   EXPECT_FALSE (track_collection->get_enclosing_folder (3).has_value ());
 }
 
-// Test get_enclosing_folder with collapsed folder returns nullopt.
-TEST_F (TrackCollectionTest, GetEnclosingFolderCollapsed)
+// Test get_enclosing_folder with collapsed folder still encloses (the
+// expanded state does not affect enclosure).
+TEST_F (TrackCollectionTest, GetEnclosingFolderIgnoresExpandedState)
 {
   auto folder = create_folder_track ();
   auto child = create_audio_bus_track ();
@@ -644,8 +645,12 @@ TEST_F (TrackCollectionTest, GetEnclosingFolderCollapsed)
   track_collection->set_folder_parent (child.id (), folder.id ());
   track_collection->set_track_expanded (folder.id (), false);
 
-  // Collapsed folder should not enclose
-  EXPECT_FALSE (track_collection->get_enclosing_folder (1).has_value ());
+  // A position inside the folder's child range is enclosed by it
+  // regardless of the expanded state; positions outside are not
+  const auto enclosing = track_collection->get_enclosing_folder (1);
+  ASSERT_TRUE (enclosing.has_value ());
+  EXPECT_EQ (enclosing.value (), folder.id ());
+  EXPECT_FALSE (track_collection->get_enclosing_folder (2).has_value ());
 }
 
 // Test get_enclosing_folder with nested folders returns innermost.

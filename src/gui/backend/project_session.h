@@ -9,6 +9,7 @@
 #include "actions/file_importer.h"
 #include "actions/plugin_importer.h"
 #include "actions/plugin_operator.h"
+#include "actions/track_collection_operator.h"
 #include "actions/track_creator.h"
 #include "actions/uuid_property_operator.h"
 #include "controllers/clipboard.h"
@@ -72,6 +73,9 @@ class ProjectSession : public QObject
   Q_PROPERTY (
     zrythm::actions::TrackCreator * trackCreator READ trackCreator CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::actions::TrackCollectionOperator * trackCollectionOperator READ
+      trackCollectionOperator CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::actions::PluginImporter * pluginImporter READ pluginImporter
       CONSTANT FINAL)
   Q_PROPERTY (
@@ -109,20 +113,21 @@ public:
   QString                       projectDirectory () const;
   void                          setProjectDirectory (const QString &directory);
   structure::project::Project * project () const;
-  structure::project::ProjectUiState *     uiState () const;
-  undo::UndoStack *                        undoStack () const;
-  TimelineArrangerObjectsModel *           timelineArrangerObjects () const;
-  EditorArrangerObjectsModel *             editorArrangerObjects () const;
-  zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator () const;
-  zrythm::actions::ClipOperator *          clipOperator () const;
-  zrythm::actions::TrackCreator *          trackCreator () const;
-  actions::PluginImporter *                pluginImporter () const;
-  actions::PluginOperator *                pluginOperator () const;
-  qquick::GenericPluginUiController *      genericPluginUiController () const;
-  actions::FileImporter *                  fileImporter () const;
-  actions::UuidPropertyOperator *          uuidPropertyOperator () const;
-  controllers::TransportController *       transportController () const;
-  controllers::RecordingCoordinator *      recordingCoordinator () const;
+  structure::project::ProjectUiState *       uiState () const;
+  undo::UndoStack *                          undoStack () const;
+  TimelineArrangerObjectsModel *             timelineArrangerObjects () const;
+  EditorArrangerObjectsModel *               editorArrangerObjects () const;
+  zrythm::actions::ArrangerObjectCreator *   arrangerObjectCreator () const;
+  zrythm::actions::ClipOperator *            clipOperator () const;
+  zrythm::actions::TrackCreator *            trackCreator () const;
+  zrythm::actions::TrackCollectionOperator * trackCollectionOperator () const;
+  actions::PluginImporter *                  pluginImporter () const;
+  actions::PluginOperator *                  pluginOperator () const;
+  qquick::GenericPluginUiController *        genericPluginUiController () const;
+  actions::FileImporter *                    fileImporter () const;
+  actions::UuidPropertyOperator *            uuidPropertyOperator () const;
+  controllers::TransportController *         transportController () const;
+  controllers::RecordingCoordinator *        recordingCoordinator () const;
 
   /**
    * @brief Returns the application-wide object clipboard.
@@ -224,6 +229,8 @@ private:
   utils::QObjectUniquePtr<actions::ArrangerObjectSelectionOperator>
     arranger_object_selection_operator_;
   utils::QObjectUniquePtr<actions::TrackCreator> track_creator_;
+  utils::QObjectUniquePtr<actions::TrackCollectionOperator>
+    track_collection_operator_;
   utils::QObjectUniquePtr<qquick::GenericPluginUiController>
     generic_plugin_ui_controller_;
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;

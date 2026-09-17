@@ -25,12 +25,7 @@ ColumnLayout {
 
   spacing: 0
 
-  TrackCollectionOperator {
-    id: trackCollectionOperator
-
-    collection: root.project.tracklist.collection
-    undoStack: root.session.undoStack
-  }
+  readonly property TrackCollectionOperator trackCollectionOperator: root.session.trackCollectionOperator
 
   Connections {
     function onTracksMoved(rows) {
@@ -102,7 +97,7 @@ ColumnLayout {
           audioEngine: root.project.engine
           pinned: true
           portObservationManager: root.project.portObservationManager
-          trackCollectionOperator: trackCollectionOperator
+          trackCollectionOperator: root.trackCollectionOperator
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
           undoStack: root.session.undoStack
@@ -116,7 +111,7 @@ ColumnLayout {
           audioEngine: root.project.engine
           pinned: false
           portObservationManager: root.project.portObservationManager
-          trackCollectionOperator: trackCollectionOperator
+          trackCollectionOperator: root.trackCollectionOperator
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
           undoStack: root.session.undoStack

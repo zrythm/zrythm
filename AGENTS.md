@@ -280,6 +280,7 @@ Zrythm makes extensive use of modern C++ features:
 - Avoid variable shadowing: use descriptive prefixes (e.g., `project_foo` instead of `foo`) when local variables would shadow class members
 - Use west const style for simple const qualifiers (e.g., `const int x`, not `int const x`)
 - Use `auto` for type-deduced variable declarations where the type is obvious from the initializer (e.g., `const auto &changes = tracker.changes();`, `auto * port = ...`)
+- Prefer an immediately invoked lambda over a mutable variable pre-instantiated with a placeholder value and assigned inside a nested scope (e.g. `const auto status = [&] { std::lock_guard lock (m); return iface->work (...); } ();` instead of declaring `LV2_Worker_Status status = SUCCESS;` and assigning it in a brace block) — the result stays `const` and needs no dummy initializer
 - Prefer pimpl (pointer to implementation) for non-trivial class members that don't need to be exposed in the header, to reduce include dependencies and improve compile times
 - API doc comments (Doxygen `@brief`, `@param`, `@return`) must describe the contract — what the function does, its parameters, return value, preconditions, and edge cases — not who calls it or why it was introduced. Mentioning specific callers (e.g. "exposed for use by X") couples the docs to internal architecture and goes stale when those callers change; design rationale belongs in commit messages or architecture docs, not the method's API comment
 - When a class derives the same template twice (e.g. `TempoObjectManager` derives both `ArrangerObjectOwner<TempoObject>` and `ArrangerObjectOwner<TimeSignatureObject>`), member lookup is ambiguous. Disambiguate with explicit base-class scope resolution (e.g. `manager->structure::arrangement::ArrangerObjectOwner<...TempoObject>::get_sorted_children_view()`), not `static_cast`
@@ -328,6 +329,7 @@ Zrythm makes extensive use of modern C++ features:
 - Never use dead-expression tricks (e.g., `root.selectionModel.selection; // binding`) to create binding dependencies — they are unreliable in packaged builds where the QML engine may optimize away the statement
 - Instead, use `Connections` with the appropriate signal handler (e.g., `onSelectionChanged`) to reactively update properties
 - Never use `parent.parent.someProperty` chains to access delegate properties from child items — they are fragile and break easily. Use IDs instead (e.g., give the delegate an `id: myDelegate` and reference `myDelegate.someProperty`)
+- Always qualify the right-hand side of a property assignment with an explicit id (`trackCollectionOperator: root.trackCollectionOperator`), and never write `x: x`. An unqualified name in a binding can resolve to the object being configured (its own property of the same name), a component id, or the component root — and shadowing between these is silent. The dangerous case is passing a property down a chain as `prop: prop`: it looks like a pass-through but self-binds the target to `null`
 
 ### UI Design
 
@@ -430,4 +432,4 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 ---
 
-*This document is maintained by the Zrythm development team. Last updated: 2026-07-23*
+*This document is maintained by the Zrythm development team. Last updated: 2026-09-11*

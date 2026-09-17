@@ -48,6 +48,9 @@ public:
     TrackDepthRole,
 
     TrackNameRole,
+
+    // The track's UUID in brace-less string form
+    TrackUuidStringRole,
   };
   Q_ENUM (TrackRoles)
 
@@ -236,6 +239,17 @@ public:
   utils::IObjectRegistry &get_registry () const { return registry_; }
 
   /**
+   * @brief Returns a name based on @p name that no track in the collection
+   * has, appending/incrementing a numeric suffix as needed.
+   *
+   * @param track_to_skip Track whose current name does not count as a
+   * collision (its own rename keeps its name when no other track has it).
+   */
+  utils::Utf8String get_unique_name_for_track (
+    const Track::Uuid       &track_to_skip,
+    const utils::Utf8String &name) const;
+
+  /**
    * @brief Set the expanded state of a foldable track.
    */
   void set_track_expanded (const Track::Uuid &track_id, bool expanded);
@@ -256,6 +270,13 @@ public:
     const Track::Uuid &child_id,
     const Track::Uuid &parent_id,
     bool               auto_reposition = false);
+
+  /**
+   * @brief Notifies views that a track's data (e.g. its depth) changed.
+   */
+  void notify_track_data_changed (
+    const Track::Uuid  &track_id,
+    const QVector<int> &roles);
 
   /**
    * @brief Get the folder parent for a track.
@@ -292,9 +313,10 @@ public:
   /**
    * @brief Get the innermost enclosing folder at the given track index.
    *
-   * Walks backward from the given index to find the nearest expanded foldable
-   * track whose child range covers the index. Returns nullopt if the position
-   * is not inside any folder.
+   * Walks backward from the given index to find the nearest foldable
+   * track whose child range covers the index, regardless of expanded
+   * state (operations that nest into the result expand it themselves).
+   * Returns nullopt if the position is not inside any folder.
    */
   std::optional<Track::Uuid> get_enclosing_folder (size_t index) const;
 

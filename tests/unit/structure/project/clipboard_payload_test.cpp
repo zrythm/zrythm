@@ -1023,4 +1023,72 @@ TEST_F (ClipboardPayloadTest, EmittedVariantTypesMatchEmbeddedSchema)
   EXPECT_EQ (emitted_types.size (), schema_definitions.size ());
 }
 
+// A track payload's routing metadata may point at tracks outside the
+// payload (e.g. the master track): it must survive the clipboard text
+// round-trip instead of being rejected as a dangling reference
+TEST_F (ClipboardPayloadTest, OutOfSetRoutingTargetDecodes)
+{
+  nlohmann::json metadata = nlohmann::json::object (
+    {
+      { std::string (ClipboardPayload::kRoutingMetadataKey),
+       nlohmann::json::array (
+          { nlohmann::json{
+            { std::string (ClipboardPayload::kRoutingSourceMetadataKey),
+              to_quuid (marker_ref_.id ())
+                .toString (QUuid::WithoutBraces)
+                .toStdString () },
+            { std::string (ClipboardPayload::kRoutingTargetMetadataKey),
+              QUuid::createUuid ()
+                .toString (QUuid::WithoutBraces)
+                .toStdString () } } }) }
+  });
+
+  auto payload = ClipboardPayload::create (
+    source_registry_, ClipboardPayload::Type::Tracks,
+    { to_quuid (marker_ref_.id ()) }, QStringLiteral ("project-a"),
+    std::move (metadata));
+
+  const auto decoded = ClipboardPayload::decode_from_clipboard_text (
+    payload.encode_to_clipboard_text ());
+  ASSERT_TRUE (decoded.has_value ());
+  const auto &routing = decoded->metadata ().at (
+    std::string (ClipboardPayload::kRoutingMetadataKey));
+  EXPECT_EQ (routing.size (), 1);
+}
+
+TEST_F (ClipboardPayloadTest, FilterSeversUnresolvableRoutingTarget)
+{
+  nlohmann::json metadata = nlohmann::json::object (
+    {
+      { std::string (ClipboardPayload::kRoutingMetadataKey),
+       nlohmann::json::array (
+          { nlohmann::json{
+            { std::string (ClipboardPayload::kRoutingSourceMetadataKey),
+              to_quuid (marker_ref_.id ())
+                .toString (QUuid::WithoutBraces)
+                .toStdString () },
+            { std::string (ClipboardPayload::kRoutingTargetMetadataKey),
+              QUuid::createUuid ()
+                .toString (QUuid::WithoutBraces)
+                .toStdString () } } }) }
+  });
+
+  auto payload = ClipboardPayload::create (
+    source_registry_, ClipboardPayload::Type::Tracks,
+    { to_quuid (marker_ref_.id ()) }, QStringLiteral ("project-a"),
+    std::move (metadata));
+
+  const auto filtered = payload.filtered_for_target (target_registry_);
+  ASSERT_TRUE (filtered.payload.has_value ());
+  EXPECT_GE (filtered.severed_references, 1);
+  const auto &routing = filtered.payload->metadata ().at (
+    std::string (ClipboardPayload::kRoutingMetadataKey));
+  ASSERT_EQ (routing.size (), 1);
+  // The severed target becomes null (no route) instead of dangling
+  EXPECT_TRUE (
+    routing.at (0)
+      .at (std::string (ClipboardPayload::kRoutingTargetMetadataKey))
+      .is_null ());
+}
+
 } // namespace zrythm::structure::project

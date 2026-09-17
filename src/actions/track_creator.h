@@ -36,14 +36,6 @@ public:
   addEmptyTrackFromType (structure::tracks::Track::Type trackType) const;
 
 private:
-  /**
-   * Returns a unique name for a new track based on the given name.
-   */
-  utils::Utf8String get_unique_name_for_track (
-    const structure::tracks::Track::Uuid &track_to_skip,
-    const utils::Utf8String              &name) const;
-
-private:
   structure::tracks::TrackFactory    &track_factory_;
   structure::tracks::TrackCollection &track_collection_;
   structure::tracks::TrackRouting    &track_routing_;

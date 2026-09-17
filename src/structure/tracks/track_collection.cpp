@@ -8,6 +8,8 @@
 #include "structure/tracks/track_collection.h"
 #include "utils/views.h"
 
+#include <fmt/format.h>
+
 namespace zrythm::structure::tracks
 {
 
@@ -116,6 +118,7 @@ TrackCollection::roleNames () const
   roles[TrackExpandedRole] = "expanded";
   roles[TrackDepthRole] = "depth";
   roles[TrackNameRole] = "trackName";
+  roles[TrackUuidStringRole] = "trackUuidString";
   return roles;
 }
 
@@ -140,6 +143,8 @@ TrackCollection::data (const QModelIndex &index, int role) const
       return QVariant::fromValue (track_ptr);
     case TrackNameRole:
       return track_ptr->name ();
+    case TrackUuidStringRole:
+      return type_safe::get (track_ref.id ()).toString (QUuid::WithoutBraces);
     case TrackFoldableRole:
       return Track::type_is_foldable (track_ref.get ()->type ());
     case TrackExpandedRole:
@@ -243,6 +248,35 @@ TrackCollection::contains (const Track::Uuid &track_id) const
 {
   return std::ranges::find (tracks_, track_id, &TrackUuidReference::id)
          != tracks_.end ();
+}
+
+utils::Utf8String
+TrackCollection::get_unique_name_for_track (
+  const Track::Uuid       &track_to_skip,
+  const utils::Utf8String &name) const
+{
+  const auto name_is_unique = [&] (const utils::Utf8String &name_to_check) {
+    return !std::ranges::any_of (tracks (), [&] (const auto &ref) {
+      return ref.id () != track_to_skip
+             && ref.get ()->get_name () == name_to_check;
+    });
+  };
+
+  auto new_name = name;
+  while (!name_is_unique (new_name))
+    {
+      auto [ending_num, name_without_num] = new_name.get_int_after_last_space ();
+      if (ending_num == -1)
+        {
+          new_name += u8" 1";
+        }
+      else
+        {
+          new_name = utils::Utf8String::from_utf8_encoded_string (
+            fmt::format ("{} {}", name_without_num, ending_num + 1));
+        }
+    }
+  return new_name;
 }
 
 void
@@ -400,11 +434,7 @@ TrackCollection::set_track_expanded (const Track::Uuid &track_id, bool expanded)
       expanded_tracks_.erase (track_id);
     }
 
-  const auto   track_index = static_cast<int> (get_track_index (track_id));
-  QModelIndex  model_index = createIndex (track_index, 0);
-  QVector<int> roles;
-  roles << TrackExpandedRole;
-  Q_EMIT dataChanged (model_index, model_index, roles);
+  notify_track_data_changed (track_id, { TrackExpandedRole });
 
   // Also emit dataChanged for all descendants so proxy filters re-evaluate.
   // This ensures child tracks appear/disappear when a folder is
@@ -412,10 +442,18 @@ TrackCollection::set_track_expanded (const Track::Uuid &track_id, bool expanded)
   const auto descendants = get_all_descendants (track_id);
   for (const auto &desc_id : descendants)
     {
-      const auto  desc_idx = static_cast<int> (get_track_index (desc_id));
-      QModelIndex desc_mi = createIndex (desc_idx, 0);
-      Q_EMIT dataChanged (desc_mi, desc_mi, roles);
+      notify_track_data_changed (desc_id, { TrackExpandedRole });
     }
+}
+
+void
+TrackCollection::notify_track_data_changed (
+  const Track::Uuid  &track_id,
+  const QVector<int> &roles)
+{
+  const auto  track_index = static_cast<int> (get_track_index (track_id));
+  QModelIndex model_index = createIndex (track_index, 0);
+  Q_EMIT dataChanged (model_index, model_index, roles);
 }
 
 bool
@@ -532,12 +570,12 @@ TrackCollection::get_enclosing_folder (size_t index) const
   if (tracks_.empty () || index == 0)
     return std::nullopt;
 
-  // Walk backward from index to find the nearest expanded foldable track
-  // whose child range covers `index`.
+  // Walk backward from index to find the nearest foldable track whose
+  // child range covers `index`, regardless of expanded state.
   auto candidates =
     tracks_ | std::views::take (index) | std::views::reverse
     | std::views::filter ([&] (const auto &ref) {
-        return is_track_foldable (ref.id ()) && get_track_expanded (ref.id ())
+        return is_track_foldable (ref.id ())
                && get_last_child_index (ref.id ()) >= index;
       });
 

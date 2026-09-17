@@ -55,6 +55,16 @@ Control {
   ContextMenu.menu: Menu {
     id: contextMenu
 
+    function selectedTracks(): list<Track> {
+      const tracks = [];
+      for (const idx of root.trackSelectionModel.selectedIndexes) {
+        const t = idx.data(TrackCollection.TrackPtrRole);
+        if (t !== null)
+          tracks.push(t);
+      }
+      return tracks;
+    }
+
     onAboutToShow: {
       const selectedIndexes = root.trackSelectionModel.selectedIndexes;
       let anyUndeletable = false;
@@ -66,8 +76,71 @@ Control {
         }
       }
       const selCount = selectedIndexes.length;
+      // Copyability follows deletability (both exclude the singleton
+      // track types)
+      cutMenuItem.text = selCount > 1 ? qsTr("Cut %1 Tracks").arg(selCount) : qsTr("Cut Track");
+      cutMenuItem.enabled = !anyUndeletable && selCount > 0;
+      copyMenuItem.text = selCount > 1 ? qsTr("Copy %1 Tracks").arg(selCount) : qsTr("Copy Track");
+      copyMenuItem.enabled = !anyUndeletable && selCount > 0;
+      pasteMenuItem.enabled = root.trackCollectionOperator.canPasteTracks;
+      duplicateMenuItem.text = selCount > 1 ? qsTr("Duplicate %1 Tracks").arg(selCount) : qsTr("Duplicate Track");
+      duplicateMenuItem.enabled = !anyUndeletable && selCount > 0;
       deleteMenuItem.text = selCount > 1 ? qsTr("Delete %1 Tracks").arg(selCount) : qsTr("Delete Track");
       deleteMenuItem.enabled = !anyUndeletable && selCount > 0;
+    }
+
+    MenuItem {
+      id: cutMenuItem
+
+      text: qsTr("Cut Track")
+
+      onTriggered: {
+        root.trackCollectionOperator.cutTracks(contextMenu.selectedTracks());
+      }
+    }
+
+    MenuItem {
+      id: copyMenuItem
+
+      text: qsTr("Copy Track")
+
+      onTriggered: {
+        root.trackCollectionOperator.copyTracks(contextMenu.selectedTracks());
+      }
+    }
+
+    MenuItem {
+      id: pasteMenuItem
+
+      text: qsTr("Paste Tracks")
+
+      onTriggered: {
+        // Insert after the last selected track (appends when the
+        // selection is empty)
+        let targetPosition = -1;
+        for (const idx of root.trackSelectionModel.selectedIndexes) {
+          if (targetPosition < idx.row + 1)
+            targetPosition = idx.row + 1;
+        }
+        const newUuidStrings = root.trackCollectionOperator.pasteTracks(targetPosition);
+        if (newUuidStrings.length > 0)
+          root.trackSelectionModel.selectTracksByUuidStrings(newUuidStrings);
+      }
+    }
+
+    MenuItem {
+      id: duplicateMenuItem
+
+      text: qsTr("Duplicate Track")
+
+      onTriggered: {
+        const newUuidStrings = root.trackCollectionOperator.duplicateTracks(contextMenu.selectedTracks());
+        if (newUuidStrings.length > 0)
+          root.trackSelectionModel.selectTracksByUuidStrings(newUuidStrings);
+      }
+    }
+
+    MenuSeparator {
     }
 
     MenuItem {
