@@ -710,11 +710,65 @@ AudioEngine::advance_playhead_after_processing (
     }
 }
 
+AudioEngine::OfflineRenderSession::OfflineRenderSession (AudioEngine &engine)
+    : engine_ (engine)
+{
+  engine_.wait_for_pause (state_, false, true);
+  engine_.offline_render_active_.store (true);
+}
+
+AudioEngine::OfflineRenderSession::~OfflineRenderSession ()
+{
+  finish ();
+}
+
+void
+AudioEngine::OfflineRenderSession::finish () noexcept
+{
+  if (finished_.exchange (true))
+    return;
+  engine_.offline_render_active_.store (false);
+  // Each step runs on its own: a failed graph recalculation must not
+  // keep the engine paused
+  try
+    {
+      // FIXME: this is needed because node caches are not per-graph and
+      // they were destroyed via the renderer.
+      engine_.graph_dispatcher_.recalc_graph (false);
+    }
+  catch (...)
+    {
+      z_warning ("graph recalculation after the offline render failed");
+    }
+  try
+    {
+      engine_.resume (state_);
+    }
+  catch (...)
+    {
+      z_critical ("resuming the engine after the offline render failed");
+    }
+}
+
 void
 AudioEngine::execute_function_with_paused_processing_synchronously (
   const std::function<void ()> &func,
   bool                          recalculate_graph)
 {
+  if (offline_render_active_.load ())
+    {
+      // This check and the OfflineRenderSession flag transitions both
+      // run on the main thread, so a session cannot begin between the
+      // check and the work below
+      // The pause this function relies on is already in effect for the
+      // render, but the render thread is processing the same instances:
+      // the function must not run until the render finishes
+      z_warning (
+        "an offline render owns processing; refusing the "
+        "paused-processing function call");
+      return;
+    }
+
   EngineState state{};
   wait_for_pause (state, false, true);
 

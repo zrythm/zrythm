@@ -234,6 +234,20 @@ public:
     return change_tracker_;
   }
 
+  /**
+   * @brief Switches the processor into or out of offline rendering
+   * mode.
+   *
+   * Offline rendering processes the same blocks without a realtime
+   * deadline, so processors may trade latency for determinism (for
+   * example, running scheduled background work inline). Implementations
+   * must keep realtime processing safe when offline mode is off.
+   *
+   * @param offline True during offline rendering. Must be toggled
+   * while processing is stopped.
+   */
+  virtual void set_offline_mode (bool offline) noexcept { }
+
   // ============================================================================
   // IProcessable Interface
   // ============================================================================

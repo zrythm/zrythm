@@ -2,10 +2,13 @@
 @prefix opts: <http://lv2plug.in/ns/ext/options#> .
 @prefix ui:   <http://lv2plug.in/ns/extensions/ui#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+@prefix work: <http://lv2plug.in/ns/ext/worker#> .
 
 <http://lv2plug.in/plugins/eg-amp#ui>
-	lv2:extensionData ui:idleInterface ;
+	lv2:extensionData ui:idleInterface ,
+		work:interface ;
 	lv2:optionalFeature ui:noUserResize ;
 	lv2:requiredFeature opts:options ,
 		ui:idleInterface ,
-		urid:map .
+		urid:map ,
+		work:schedule .

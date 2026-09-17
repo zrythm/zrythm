@@ -10,24 +10,29 @@
 #include "lv2/core/lv2.h"
 #include "lv2/ui/ui.h"
 #include "lv2/urid/urid.h"
+#include "lv2/worker/worker.h"
 
 #include <stdint.h>
+#include <stdatomic.h>
 #include <string.h>
 
-static int g_instantiations = 0;
-static int g_cleanups = 0;
-static int g_port_events = 0;
-static int g_idle_calls = 0;
-static int g_show_calls = 0;
-static int g_hide_calls = 0;
-static int g_close_on_idle = 0;
+static atomic_int g_instantiations = 0;
+static atomic_int g_cleanups = 0;
+static atomic_int g_port_events = 0;
+static atomic_int g_idle_calls = 0;
+static atomic_int g_show_calls = 0;
+static atomic_int g_hide_calls = 0;
+static atomic_int g_close_on_idle = 0;
+static atomic_int g_ui_worker_responses = 0;
 
 static uint32_t g_last_event_port = UINT32_MAX;
-static float g_last_event_value = 0.0f;
+static _Atomic float g_last_event_value = 0.0f;
+static _Atomic float g_ui_last_worker_response = 0.0f;
 
 static LV2UI_Write_Function g_write = NULL;
 static LV2UI_Controller g_controller = NULL;
 static const LV2_URID_Map * g_map = NULL;
+static const LV2_Worker_Schedule * g_ui_schedule = NULL;
 
 int
 amp_ui_instantiations (void)
@@ -75,6 +80,18 @@ float
 amp_ui_last_event_value (void)
 {
   return g_last_event_value;
+}
+
+int
+amp_ui_worker_responses (void)
+{
+  return g_ui_worker_responses;
+}
+
+float
+amp_ui_last_worker_response (void)
+{
+  return g_ui_last_worker_response;
 }
 
 /* Makes the next idle() report that the UI wants its window closed
@@ -138,6 +155,10 @@ ui_instantiate (
         {
           g_map = (const LV2_URID_Map *) (*f)->data;
         }
+      else if (strcmp ((*f)->URI, LV2_WORKER__schedule) == 0)
+        {
+          g_ui_schedule = (const LV2_Worker_Schedule *) (*f)->data;
+        }
     }
 
   g_write = write_function;
@@ -158,6 +179,7 @@ ui_cleanup (LV2UI_Handle ui)
   g_write = NULL;
   g_controller = NULL;
   g_map = NULL;
+  g_ui_schedule = NULL;
   ++g_cleanups;
 }
 
@@ -175,7 +197,52 @@ ui_port_event (
       g_last_event_port = port_index;
       g_last_event_value = *(const float *) buffer;
       ++g_port_events;
+
+      /* A gain change makes the UI schedule one worker job carrying
+         the gain value */
+      if (port_index == 0 && g_ui_schedule != NULL)
+        {
+          g_ui_schedule->schedule_work (
+            g_ui_schedule->handle, sizeof (float), buffer);
+        }
     }
+}
+
+/* UI worker jobs double the payload; the response counter and last
+   value are observable by tests through dlopen() */
+static LV2_Worker_Status
+ui_work (
+  LV2_Handle                  ui,
+  LV2_Worker_Respond_Function respond,
+  LV2_Worker_Respond_Handle   handle,
+  uint32_t                    size,
+  const void *                data)
+{
+  (void) ui;
+
+  if (size < sizeof (float))
+    {
+      return LV2_WORKER_ERR_UNKNOWN;
+    }
+
+  const float doubled = *(const float *) data * 2.0f;
+  respond (handle, sizeof (float), &doubled);
+  return LV2_WORKER_SUCCESS;
+}
+
+static LV2_Worker_Status
+ui_work_response (LV2_Handle ui, uint32_t size, const void * data)
+{
+  (void) ui;
+
+  if (size < sizeof (float))
+    {
+      return LV2_WORKER_ERR_UNKNOWN;
+    }
+
+  g_ui_last_worker_response = *(const float *) data;
+  ++g_ui_worker_responses;
+  return LV2_WORKER_SUCCESS;
 }
 
 static int
@@ -204,6 +271,9 @@ ui_hide (LV2UI_Handle ui)
 
 static const LV2UI_Idle_Interface g_idle_interface = { ui_idle };
 static const LV2UI_Show_Interface g_show_interface = { ui_show, ui_hide };
+static const LV2_Worker_Interface g_ui_worker_interface = {
+  ui_work, ui_work_response, NULL
+};
 
 static const void *
 ui_extension_data (const char * uri)
@@ -211,6 +281,10 @@ ui_extension_data (const char * uri)
   if (strcmp (uri, LV2_UI__idleInterface) == 0)
     {
       return &g_idle_interface;
+    }
+  if (strcmp (uri, LV2_WORKER__interface) == 0)
+    {
+      return &g_ui_worker_interface;
     }
   return NULL;
 }

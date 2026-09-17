@@ -79,6 +79,18 @@ public:
    */
   bool hasNativeUi () const override;
 
+  /**
+   * @brief Switches the worker between queued and inline execution.
+   *
+   * While offline, work scheduled from the processing context runs on
+   * the calling thread and responses are delivered within the same
+   * cycle.
+   *
+   * @param offline True during offline rendering. Must be toggled
+   * while processing is stopped.
+   */
+  void set_offline_mode (bool offline) noexcept override;
+
 protected:
   void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,

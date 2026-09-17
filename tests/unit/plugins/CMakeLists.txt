@@ -12,6 +12,7 @@ add_executable(zrythm_plugins_unit_tests
   lv2_plugin_test.cpp
   lv2_ui_event_ring_test.cpp
   lv2_urid_map_test.cpp
+  lv2_worker_queue_test.cpp
   plugin_test.cpp
   plugin_descriptor_test.cpp
   plugin_descriptor_list_test.cpp

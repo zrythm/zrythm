@@ -1,11 +1,13 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <utility>
+#include <vector>
 
 #include "dsp/audio_port.h"
 #include "dsp/graph_renderer.h"
 #include "dsp/graph_scheduler.h"
+#include "dsp/processor_base.h"
 #include "dsp/transport.h"
 #include "utils/audio.h"
 #include "utils/format.h"
@@ -33,6 +35,33 @@ GraphRenderer::render (
   graph_scheduler.rechain_from_node_collection (
     std::move (nodes), options.sample_rate_, options.block_length_);
   graph_scheduler.start_threads (options.num_threads_);
+
+  // Offline render: processors trade latency for determinism (the
+  // LV2 worker runs inline). Restored on scope exit, including the
+  // cancel path
+  struct OfflineModeSession
+  {
+    explicit OfflineModeSession (graph::GraphNodeCollection &nodes)
+    {
+      for (const auto &node : nodes.graph_nodes_)
+        {
+          auto * processor =
+            dynamic_cast<ProcessorBase *> (&node->get_processable ());
+          if (processor == nullptr)
+            continue;
+          processor->set_offline_mode (true);
+          flipped_.push_back (processor);
+        }
+    }
+    ~OfflineModeSession ()
+    {
+      for (auto * processor : flipped_)
+        {
+          processor->set_offline_mode (false);
+        }
+    }
+    std::vector<ProcessorBase *> flipped_;
+  } offline_mode_session (graph_scheduler.get_nodes ());
 
   // Update latencies and get max latency for preroll
   graph_scheduler.get_nodes ().update_latencies ();

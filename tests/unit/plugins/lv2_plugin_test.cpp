@@ -251,6 +251,8 @@ protected:
     void (*write_gain) (float) = nullptr;
     void (*write_message) () = nullptr;
     void (*set_close_on_idle) () = nullptr;
+    int (*worker_responses) () = nullptr;
+    float (*last_worker_response) () = nullptr;
 
     static std::optional<AmpUiStub> create (const std::filesystem::path &bundle)
     {
@@ -272,6 +274,8 @@ protected:
       AMP_UI_FN (write_gain)
       AMP_UI_FN (write_message)
       AMP_UI_FN (set_close_on_idle)
+      AMP_UI_FN (worker_responses)
+      AMP_UI_FN (last_worker_response)
 #undef AMP_UI_FN
       return stub;
     }
@@ -288,6 +292,12 @@ protected:
   {
     PluginLibrary lib;
     int (*message_events) () = nullptr;
+    int (*worker_responses) () = nullptr;
+    float (*worker_last_response) () = nullptr;
+    float (*last_freewheel) () = nullptr;
+    int (*float_window_end_runs) () = nullptr;
+    int (*concurrent_work) () = nullptr;
+    void (*set_mixed_restore) (int) = nullptr;
 
     static std::optional<AmpPluginStub>
     create (const std::filesystem::path &bundle)
@@ -299,12 +309,60 @@ protected:
         stub.lib.resolve ("amp_message_event_count"));
       if (stub.message_events == nullptr)
         return std::nullopt;
+      stub.worker_responses = reinterpret_cast<decltype (stub.worker_responses)> (
+        stub.lib.resolve ("amp_worker_response_count"));
+      if (stub.worker_responses == nullptr)
+        return std::nullopt;
+      stub.worker_last_response =
+        reinterpret_cast<decltype (stub.worker_last_response)> (
+          stub.lib.resolve ("amp_worker_last_response"));
+      if (stub.worker_last_response == nullptr)
+        return std::nullopt;
+      stub.last_freewheel = reinterpret_cast<decltype (stub.last_freewheel)> (
+        stub.lib.resolve ("amp_last_freewheel"));
+      if (stub.last_freewheel == nullptr)
+        return std::nullopt;
+      stub.float_window_end_runs =
+        reinterpret_cast<decltype (stub.float_window_end_runs)> (
+          stub.lib.resolve ("amp_float_window_end_run_count"));
+      if (stub.float_window_end_runs == nullptr)
+        return std::nullopt;
+      stub.concurrent_work = reinterpret_cast<decltype (stub.concurrent_work)> (
+        stub.lib.resolve ("amp_concurrent_work"));
+      if (stub.concurrent_work == nullptr)
+        return std::nullopt;
+      stub.set_mixed_restore =
+        reinterpret_cast<decltype (stub.set_mixed_restore)> (
+          stub.lib.resolve ("amp_set_mixed_restore"));
+      if (stub.set_mixed_restore == nullptr)
+        return std::nullopt;
       return stub;
     }
 
   private:
     AmpPluginStub () = default;
   };
+
+  /**
+   * @brief Processes blocks until @p stub reports @p count worker
+   * responses.
+   *
+   * Yields between blocks so the fixture's worker thread gets
+   * scheduled even under parallel test load.
+   *
+   * @return True when the count was reached.
+   */
+  bool process_until_worker_responses (AmpPluginStub &stub, int count)
+  {
+    for (int i = 0; i < 1000; ++i)
+      {
+        if (stub.worker_responses () >= count)
+          return true;
+        process_blocks (1);
+        std::this_thread::yield ();
+      }
+    return stub.worker_responses () >= count;
+  }
 
   std::unique_ptr<utils::ObjectRegistry> registry_;
   std::unique_ptr<::testing::NiceMock<dsp::graph_test::MockTransport>>
@@ -729,6 +787,244 @@ TEST_F (Lv2PluginTest, UiAtomToScratchPortIsDeliveredOnce)
 
   process_blocks (2);
   EXPECT_EQ (plugin_stub.message_events (), deliveries_before + 1);
+}
+
+// A rising edge on a trigger port (the host resets trigger ports to
+// their default after each run) schedules exactly one worker job;
+// later cycles without a new edge schedule nothing
+TEST_F (Lv2PluginTest, WorkerJobsFollowTriggerPortEdges)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+  auto plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto &plugin_stub = *plugin_stub_opt;
+
+  // Wait for the activate probe so it cannot interleave with the
+  // edge assertions below
+  const auto target_responses = plugin_stub.worker_responses () + 1;
+  ASSERT_TRUE (process_until_worker_responses (plugin_stub, target_responses));
+  ASSERT_FLOAT_EQ (plugin_stub.worker_last_response (), 6.f);
+
+  auto * trigger = find_param_by_unique_id ("trigger"sv);
+  ASSERT_NE (trigger, nullptr);
+
+  trigger->setBaseValue (trigger->range ().convertTo0To1 (1.f));
+  ASSERT_TRUE (
+    process_until_worker_responses (plugin_stub, target_responses + 1));
+  EXPECT_FLOAT_EQ (plugin_stub.worker_last_response (), 2.f);
+
+  // The reset after each run keeps the port low: no further jobs
+  process_blocks (10);
+  EXPECT_EQ (plugin_stub.worker_responses (), target_responses + 1);
+
+  // A fresh edge after a low cycle schedules another job
+  trigger->setBaseValue (trigger->range ().convertTo0To1 (0.f));
+  process_blocks (1);
+  trigger->setBaseValue (trigger->range ().convertTo0To1 (1.f));
+  ASSERT_TRUE (
+    process_until_worker_responses (plugin_stub, target_responses + 2));
+  EXPECT_EQ (plugin_stub.worker_responses (), target_responses + 2);
+}
+
+// Work scheduled from activate() must already find the worker
+// running: the job is processed and its response delivered
+TEST_F (Lv2PluginTest, WorkScheduledDuringActivateIsProcessed)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+  auto plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto &plugin_stub = *plugin_stub_opt;
+
+  ASSERT_TRUE (process_until_worker_responses (
+    plugin_stub, plugin_stub.worker_responses () + 1));
+  EXPECT_FLOAT_EQ (plugin_stub.worker_last_response (), 6.f);
+}
+
+// In offline mode the worker runs inline: a job scheduled during a
+// cycle is answered within the same cycle, without waiting for the
+// worker thread
+TEST_F (Lv2PluginTest, WorkerRunsInlineInOfflineMode)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+  auto plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto &plugin_stub = *plugin_stub_opt;
+
+  // Wait for the activate probe so it cannot interleave with the
+  // inline assertions below
+  const auto probe_target = plugin_stub.worker_responses () + 1;
+  ASSERT_TRUE (process_until_worker_responses (plugin_stub, probe_target));
+  ASSERT_FLOAT_EQ (plugin_stub.worker_last_response (), 6.f);
+
+  auto * trigger = find_param_by_unique_id ("trigger"sv);
+  ASSERT_NE (trigger, nullptr);
+
+  plugin_->set_offline_mode (true);
+  trigger->setBaseValue (trigger->range ().convertTo0To1 (1.f));
+  process_blocks (1);
+  plugin_->set_offline_mode (false);
+
+  EXPECT_EQ (plugin_stub.worker_responses (), probe_target + 1);
+  EXPECT_FLOAT_EQ (plugin_stub.worker_last_response (), 2.f);
+}
+
+// Work scheduled from the plugin's set_state() runs to completion
+// before the restore returns, without any processing cycle
+TEST_F (Lv2PluginTest, WorkScheduledDuringStateRestoreIsCompletedInline)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+  auto plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto &plugin_stub = *plugin_stub_opt;
+
+  const auto state = plugin_->save_state ();
+  EXPECT_FALSE (state.empty ());
+
+  // set_state schedules through the restore feature array: the job
+  // completes before the restore returns
+  const auto responses_before = plugin_stub.worker_responses ();
+  EXPECT_TRUE (plugin_->load_state (state));
+  EXPECT_EQ (plugin_stub.worker_responses (), responses_before + 1);
+  EXPECT_FLOAT_EQ (plugin_stub.worker_last_response (), 8.f);
+}
+
+// work() calls from the worker thread and from inline restore
+// execution never overlap, even when set_state schedules through both
+// schedule features at once
+TEST_F (Lv2PluginTest, ConcurrentWorkDuringRestoreIsSerialized)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+  auto plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto &plugin_stub = *plugin_stub_opt;
+
+  const auto state = plugin_->save_state ();
+  EXPECT_FALSE (state.empty ());
+
+  // The cached-feature job holds work() open: the inline job scheduled
+  // right after overlaps it unless the host serializes work() calls
+  plugin_stub.set_mixed_restore (1);
+  const auto responses_before = plugin_stub.worker_responses ();
+  EXPECT_TRUE (plugin_->load_state (state));
+  plugin_stub.set_mixed_restore (0);
+
+  // The inline job completes during the restore; the worker-thread
+  // job's response is delivered in the next cycle
+  EXPECT_EQ (plugin_stub.worker_responses (), responses_before + 1);
+  EXPECT_FLOAT_EQ (plugin_stub.worker_last_response (), 8.f);
+  ASSERT_TRUE (
+    process_until_worker_responses (plugin_stub, responses_before + 2));
+  EXPECT_FLOAT_EQ (plugin_stub.worker_last_response (), 12.f);
+  EXPECT_EQ (plugin_stub.concurrent_work (), 0);
+}
+
+// Entering offline mode drains queued worker requests: a job
+// scheduled by the previous cycle is completed before the offline
+// session starts, and the next cycle delivers its response
+TEST_F (Lv2PluginTest, OfflineTransitionDrainsPendingWorkerRequests)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+  auto plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto &plugin_stub = *plugin_stub_opt;
+
+  // Wait for the activate probe so it cannot interleave below
+  const auto probe_target = plugin_stub.worker_responses () + 1;
+  ASSERT_TRUE (process_until_worker_responses (plugin_stub, probe_target));
+  ASSERT_FLOAT_EQ (plugin_stub.worker_last_response (), 6.f);
+
+  auto * trigger = find_param_by_unique_id ("trigger"sv);
+  ASSERT_NE (trigger, nullptr);
+
+  // One cycle applies the value and queues the job; the worker may
+  // complete it during the same cycle (responses are delivered after
+  // run()) or it may still be queued here
+  trigger->setBaseValue (trigger->range ().convertTo0To1 (1.f));
+  process_blocks (1);
+  EXPECT_LE (plugin_stub.worker_responses (), probe_target + 1);
+
+  plugin_->set_offline_mode (true);
+  plugin_->set_offline_mode (false);
+
+  process_blocks (1);
+  EXPECT_EQ (plugin_stub.worker_responses (), probe_target + 1);
+  EXPECT_FLOAT_EQ (plugin_stub.worker_last_response (), 2.f);
+}
+
+// The freeWheeling-designated port is host-driven: no parameter is
+// created for it, it reads 0 during live processing, and it reads 1
+// while the plugin renders offline
+TEST_F (Lv2PluginTest, FreewheelDesignatedPortSignalsOfflineMode)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+  auto plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto &plugin_stub = *plugin_stub_opt;
+
+  EXPECT_EQ (find_param_by_unique_id ("freewheel"sv), nullptr);
+
+  process_blocks (1);
+  EXPECT_FLOAT_EQ (plugin_stub.last_freewheel (), 0.f);
+
+  plugin_->set_offline_mode (true);
+  process_blocks (1);
+  EXPECT_FLOAT_EQ (plugin_stub.last_freewheel (), 1.f);
+  plugin_->set_offline_mode (false);
+
+  process_blocks (1);
+  EXPECT_FLOAT_EQ (plugin_stub.last_freewheel (), 0.f);
+}
+
+// end_run() is optional worker interface data: a plugin shipping none
+// processes normally, and a plugin shipping it has it called after
+// every run cycle, with or without scheduled work
+TEST_F (Lv2PluginTest, WorkerEndRunIsOptionalAndRunsEveryCycle)
+{
+  // The main plugin ships no end_run
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+  fill_input_with (1.f);
+  process_blocks (3);
+
+  // The float-window twin counts its end_run calls: one per cycle
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2", true, true, 1));
+  auto plugin_stub_opt = AmpPluginStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (plugin_stub_opt.has_value ());
+  auto      &plugin_stub = *plugin_stub_opt;
+  const auto end_runs_before = plugin_stub.float_window_end_runs ();
+
+  fill_input_with (1.f);
+  process_blocks (3);
+  EXPECT_EQ (plugin_stub.float_window_end_runs (), end_runs_before + 3);
+}
+
+// Control values relayed to the UI make it schedule worker jobs through
+// its work:schedule feature; the idle pump runs the jobs and delivers
+// the responses back to the UI
+TEST_F (Lv2PluginTest, UiWorkerJobsArePumpedByIdle)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto ui_stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (ui_stub_opt.has_value ());
+  auto &ui_stub = *ui_stub_opt;
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+  gain->setBaseValue (gain->range ().convertTo0To1 (-6.0206f));
+  // The relay sends the control buffers, so the change must reach the
+  // buffer before the session opens
+  process_blocks (1);
+
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return ui_stub.instantiations () >= 1; }));
+
+  // The initial relay carries the gain value; the job's doubled
+  // response arrives through the idle pump
+  ASSERT_TRUE (pump_until ([&] {
+    return ui_stub.worker_responses () >= 1
+           && std::abs (ui_stub.last_worker_response () + 6.0206f * 2.f) < 0.01f;
+  }));
+  EXPECT_NEAR (ui_stub.last_worker_response (), -6.0206f * 2.f, 0.01f);
 }
 
 // A sample-rate change re-creates the instance, so the UI (which holds

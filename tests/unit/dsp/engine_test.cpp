@@ -1037,4 +1037,60 @@ TEST_F (AudioEngineTest, ExecuteFunctionWithPausedProcessingResumesOnThrow)
   EXPECT_TRUE (engine->running ());
 }
 
+TEST_F (AudioEngineTest, OfflineRenderSessionBlocksStateEditsWhileActive)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  auto render_session =
+    std::make_shared<AudioEngine::OfflineRenderSession> (*engine);
+  EXPECT_TRUE (engine->offline_render_active ());
+
+  auto func_ran = false;
+  engine->execute_function_with_paused_processing_synchronously (
+    [&func_ran] () { func_ran = true; }, false);
+  EXPECT_FALSE (func_ran);
+
+  render_session->finish ();
+}
+
+TEST_F (AudioEngineTest, OfflineRenderSessionFinishAllowsStateEditsAgain)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  AudioEngine::OfflineRenderSession render_session (*engine);
+  render_session.finish ();
+  // A second finish must be a no-op
+  render_session.finish ();
+  EXPECT_FALSE (engine->offline_render_active ());
+
+  auto func_ran = false;
+  engine->execute_function_with_paused_processing_synchronously (
+    [&func_ran] () { func_ran = true; }, false);
+  EXPECT_TRUE (func_ran);
+}
+
+TEST_F (
+  AudioEngineTest,
+  OfflineRenderSessionDestructorCleansUpWhenFinishNotCalled)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  {
+    AudioEngine::OfflineRenderSession render_session (*engine);
+    EXPECT_TRUE (engine->offline_render_active ());
+  }
+  EXPECT_FALSE (engine->offline_render_active ());
+
+  auto func_ran = false;
+  engine->execute_function_with_paused_processing_synchronously (
+    [&func_ran] () { func_ran = true; }, false);
+  EXPECT_TRUE (func_ran);
+}
+
 } // namespace zrythm::dsp

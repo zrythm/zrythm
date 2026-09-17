@@ -4,8 +4,11 @@
 
 /** Include standard C headers */
 #include <math.h>
+#include <stdatomic.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 /**
    LV2 headers are based on the URI of the specification they come from, so a
@@ -17,6 +20,8 @@
 #include "lv2/atom/atom.h"
 #include "lv2/atom/util.h"
 #include "lv2/core/lv2.h"
+#include "lv2/state/state.h"
+#include "lv2/worker/worker.h"
 
 /**
    The URI is the identifier for a plugin, and how the host associates this
@@ -33,12 +38,66 @@
 
 /* Atom events delivered to the message port, observable by tests
    through dlopen() */
-static int g_message_events = 0;
+static atomic_int g_message_events = 0;
 
 int
 amp_message_event_count (void)
 {
   return g_message_events;
+}
+
+/* Worker responses delivered back to the plugin, observable by tests
+   through dlopen() */
+static atomic_int   g_worker_responses = 0;
+static _Atomic float g_worker_last_response = 0.0f;
+static _Atomic float g_last_freewheel = 0.0f;
+/* Overlapping work() call detector and the probe value whose job
+   holds work() open, observable by tests through dlopen() */
+static atomic_int g_work_in_progress;
+static atomic_int g_concurrent_work;
+static const float kSlowJobProbe = 6.0f;
+/* When set, set_state also schedules through the cached feature, for
+   tests that verify work() serialization */
+static atomic_int g_mixed_restore;
+
+/* end_run() calls on the float-window twin, observable by tests
+   through dlopen() */
+static atomic_int g_float_window_end_runs = 0;
+
+int
+amp_worker_response_count (void)
+{
+  return g_worker_responses;
+}
+
+float
+amp_worker_last_response (void)
+{
+  return g_worker_last_response;
+}
+
+float
+amp_last_freewheel (void)
+{
+  return g_last_freewheel;
+}
+
+int
+amp_concurrent_work (void)
+{
+  return atomic_load (&g_concurrent_work);
+}
+
+void
+amp_set_mixed_restore (int enabled)
+{
+  atomic_store (&g_mixed_restore, enabled);
+}
+
+int
+amp_float_window_end_run_count (void)
+{
+  return g_float_window_end_runs;
 }
 
 /**
@@ -51,7 +110,9 @@ typedef enum
   AMP_INPUT = 1,
   AMP_OUTPUT = 2,
   AMP_MUTE = 3,
-  AMP_MESSAGE = 4
+  AMP_MESSAGE = 4,
+  AMP_TRIGGER = 5,
+  AMP_FREEWHEEL = 6
 } PortIndex;
 
 /**
@@ -68,6 +129,10 @@ typedef struct
   float *                  output;
   const float *            mute;
   const LV2_Atom_Sequence *message;
+  const float *            trigger;
+  const float *            freewheel;
+  // Host-provided worker feature
+  const LV2_Worker_Schedule *schedule;
 } Amp;
 
 /**
@@ -88,6 +153,14 @@ instantiate (
   const LV2_Feature * const * features)
 {
   Amp * amp = (Amp *) calloc (1, sizeof (Amp));
+
+  for (const LV2_Feature * const * f = features; *f != NULL; ++f)
+    {
+      if (strcmp ((*f)->URI, LV2_WORKER__schedule) == 0)
+        {
+          amp->schedule = (const LV2_Worker_Schedule *) (*f)->data;
+        }
+    }
 
   return (LV2_Handle) amp;
 }
@@ -122,14 +195,19 @@ connect_port (LV2_Handle instance, uint32_t port, void * data)
     case AMP_MESSAGE:
       amp->message = (const LV2_Atom_Sequence *) data;
       break;
+    case AMP_TRIGGER:
+      amp->trigger = (const float *) data;
+      break;
+    case AMP_FREEWHEEL:
+      amp->freewheel = (const float *) data;
+      break;
     }
 }
 
 /**
    The `activate()` method is called by the host to initialise and prepare the
    plugin instance for running.  The plugin must reset all internal state
-   except for buffer locations set by `connect_port()`.  Since this plugin has
-   no other internal state, this method does nothing.
+   except for buffer locations set by `connect_port()`.
 
    This method is in the ``instantiation'' threading class, so no other
    methods on this instance will be called concurrently with it.
@@ -137,6 +215,15 @@ connect_port (LV2_Handle instance, uint32_t port, void * data)
 static void
 activate (LV2_Handle instance)
 {
+  /* Schedule a job to verify the worker is already running when the
+     instance is activated */
+  Amp * amp = (Amp *) instance;
+  if (amp->schedule != NULL)
+    {
+      const float activation_probe = 3.0f;
+      amp->schedule->schedule_work (
+        amp->schedule->handle, sizeof (float), &activation_probe);
+    }
 }
 
 /** Define a macro for converting a gain in dB to a coefficient. */
@@ -151,7 +238,7 @@ activate (LV2_Handle instance)
 static void
 run (LV2_Handle instance, uint32_t n_samples)
 {
-  const Amp * amp = (const Amp *) instance;
+  Amp * amp = (Amp *) instance;
 
   const float         gain = *(amp->gain);
   const float * const input = amp->input;
@@ -173,6 +260,23 @@ run (LV2_Handle instance, uint32_t n_samples)
           (void) ev;
           ++g_message_events;
         }
+    }
+
+  /* The freeWheeling-designated port is host-driven: record what the
+     host last wrote so tests can observe it */
+  if (amp->freewheel != NULL)
+    {
+      g_last_freewheel = *amp->freewheel;
+    }
+
+  /* The trigger port is a port-props trigger: the host resets it to
+     its default after each run, so one high value produces one job
+     whose response doubles it */
+  if (amp->trigger != NULL && amp->schedule != NULL && *amp->trigger > 0.5f)
+    {
+      const float trigger = *amp->trigger;
+      amp->schedule->schedule_work (
+        amp->schedule->handle, sizeof (float), &trigger);
     }
 }
 
@@ -208,15 +312,169 @@ cleanup (LV2_Handle instance)
    The `extension_data()` function returns any extension data supported by the
    plugin.  Note that this is not an instance method, but a function on the
    plugin descriptor.  It is usually used by plugins to implement additional
-   interfaces.  This plugin does not have any extension data, so this function
-   returns NULL.
+   interfaces.  This plugin provides the worker interface.
 
    This method is in the ``discovery'' threading class, so no other functions
    or methods in this plugin library will be called concurrently with it.
 */
+static LV2_Worker_Status
+work (
+  LV2_Handle                  instance,
+  LV2_Worker_Respond_Function respond,
+  LV2_Worker_Respond_Handle   handle,
+  uint32_t                    size,
+  const void *                data)
+{
+  (void) instance;
+
+  if (size < sizeof (float))
+    {
+      return LV2_WORKER_ERR_UNKNOWN;
+    }
+
+  // Detects overlapping work() calls, observable by tests through
+  // dlopen()
+  if (atomic_fetch_add (&g_work_in_progress, 1) != 0)
+    {
+      atomic_store (&g_concurrent_work, 1);
+    }
+
+  const float probe = * (const float *) data;
+  // The restore-path slow job holds work() open long enough for the
+  // inline job to overlap it unless the host serializes work() calls
+  if (probe == kSlowJobProbe)
+    {
+      usleep (250000);
+    }
+
+  const float doubled = probe * 2.0f;
+  respond (handle, sizeof (float), &doubled);
+
+  atomic_fetch_sub (&g_work_in_progress, 1);
+  return LV2_WORKER_SUCCESS;
+}
+
+static LV2_Worker_Status
+work_response (LV2_Handle instance, uint32_t size, const void * data)
+{
+  (void) instance;
+
+  if (size < sizeof (float))
+    {
+      return LV2_WORKER_ERR_UNKNOWN;
+    }
+
+  g_worker_last_response = * (const float *) data;
+  ++g_worker_responses;
+  return LV2_WORKER_SUCCESS;
+}
+
+static LV2_Worker_Status
+float_window_end_run (LV2_Handle instance)
+{
+  (void) instance;
+  ++g_float_window_end_runs;
+  return LV2_WORKER_SUCCESS;
+}
+
+/* The two plugins share work() and work_response() and differ in
+   end_run: the main plugin ships none (end_run is optional), the
+   float-window twin counts its calls */
+static const LV2_Worker_Interface main_worker_interface = {
+  work, work_response, NULL
+};
+static const LV2_Worker_Interface float_window_worker_interface = {
+  work, work_response, float_window_end_run
+};
+
+/* save() stores no properties: the host still records control port
+   values, so state round trips keep their meaning */
+static LV2_State_Status
+save (LV2_Handle                  instance,
+      LV2_State_Store_Function    store,
+      LV2_State_Handle            handle,
+      uint32_t                    flags,
+      const LV2_Feature *const *  features)
+{
+  (void) instance;
+  (void) store;
+  (void) handle;
+  (void) flags;
+  (void) features;
+  return LV2_STATE_SUCCESS;
+}
+
+/* set_state schedules a worker job through the schedule feature in
+   the state feature array: a host that runs work synchronously during
+   restore completes it before restore returns. When mixed restore is
+   enabled, it also schedules through the cached feature (processed
+   by the worker thread): the two jobs only overlap when the host
+   fails to serialize work() calls */
+static LV2_State_Status
+set_state (LV2_Handle                   instance,
+           LV2_State_Retrieve_Function  retrieve,
+           LV2_State_Handle             handle,
+           uint32_t                     flags,
+           const LV2_Feature *const *   features)
+{
+  (void) retrieve;
+  (void) handle;
+  (void) flags;
+  Amp * amp = (Amp *) instance;
+
+  if (atomic_load (&g_mixed_restore) && amp->schedule != NULL)
+    {
+      const float slow_probe = kSlowJobProbe;
+      amp->schedule->schedule_work (
+        amp->schedule->handle, sizeof (float), &slow_probe);
+
+      // Wait (bounded) for the worker thread to enter work() so the
+      // inline job below overlaps it deterministically
+      for (int i = 0; i < 2000; ++i)
+        {
+          if (atomic_load (&g_work_in_progress) != 0)
+            break;
+          usleep (1000);
+        }
+    }
+
+  for (const LV2_Feature *const * f = features; f != NULL && *f != NULL; ++f)
+    {
+      if (strcmp ((*f)->URI, LV2_WORKER__schedule) == 0)
+        {
+          const LV2_Worker_Schedule * schedule =
+            (const LV2_Worker_Schedule *) (*f)->data;
+          const float restore_probe = 4.0f;
+          schedule->schedule_work (
+            schedule->handle, sizeof (float), &restore_probe);
+        }
+    }
+  return LV2_STATE_SUCCESS;
+}
+
+static const LV2_State_Interface state_interface = { save, set_state };
+
 static const void *
 extension_data (const char * uri)
 {
+  if (strcmp (uri, LV2_WORKER__interface) == 0)
+    {
+      return &main_worker_interface;
+    }
+  if (strcmp (uri, LV2_STATE__interface) == 0)
+    {
+      return &state_interface;
+    }
+  return NULL;
+}
+
+static const void *
+float_window_extension_data (const char * uri)
+{
+  if (strcmp (uri, LV2_WORKER__interface) == 0)
+    {
+      return &float_window_worker_interface;
+    }
   return NULL;
 }
 
@@ -232,7 +490,7 @@ static const LV2_Descriptor descriptor = {
 
 static const LV2_Descriptor float_window_descriptor = {
   AMP_FLOAT_WINDOW_URI, instantiate, connect_port, activate,
-  run,                  deactivate,  cleanup,      extension_data
+  run,                   deactivate,  cleanup,      float_window_extension_data
 };
 
 /**

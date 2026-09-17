@@ -6,19 +6,24 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <deque>
 #include <filesystem>
 #include <fstream>
 #include <limits>
 #include <mutex>
 #include <optional>
 #include <ranges>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -33,6 +38,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2_ui_event_ring.h"
 #include "plugins/lv2_urid_map.h"
+#include "plugins/lv2_worker_queue.h"
 #include "plugins/lv2_world.h"
 #include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_host_window.h"
@@ -75,6 +81,7 @@
 #include <lv2/ui/ui.h>
 #include <lv2/units/units.h>
 #include <lv2/urid/urid.h>
+#include <lv2/worker/worker.h>
 
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)
 #  include <sanitizer/rtsan_interface.h>
@@ -210,6 +217,12 @@ public:
     bool  is_integer{};
     bool  is_logarithmic{};
     bool  is_enumeration{};
+    /** Input control port with a port-props trigger property: the host
+     * must reset it to its port default after each run(). */
+    bool is_trigger{};
+    /** Input control port with lv2:designation lv2:freeWheeling: the
+     * host writes 1 while rendering offline. */
+    bool is_freewheel{};
     /** Scale point labels, sorted by their values. */
     std::vector<utils::Utf8String> scale_point_labels;
     std::vector<float>             scale_point_values;
@@ -360,6 +373,36 @@ public:
   restore_preset_from_world (const std::string &preset_uri) [[clang::blocking]];
 
   /**
+   * @brief Builds the per-restore feature array: makePath points at
+   * the restore's root and the worker schedule runs work inline.
+   */
+  std::vector<const LV2_Feature *>
+  features_for_restore (const LV2_Feature * make_path_replacement);
+
+  /**
+   * @brief Runs lilv_state_restore with a worker schedule feature
+   * that executes work inline.
+   *
+   * The plugin's set_state() may schedule work through the feature
+   * array passed to the restore; the inline schedule completes it
+   * before the restore returns. Work scheduled through the
+   * instantiate-provided feature during a restore is queued for the
+   * worker thread; work_mutex_ serializes its work() against the
+   * inline work, and draining the worker first completes requests
+   * queued before the restore.
+   *
+   * Preconditions: callers pause processing, and the restore must not
+   * overlap an offline render of the same plugin (the render thread
+   * runs work inline during a render).
+   *
+   * @param state State to restore.
+   * @param features Features to pass to the restore.
+   */
+  void restore_state_with_inline_worker (
+    const LilvState                     &state,
+    std::span<const LV2_Feature * const> features) [[clang::blocking]];
+
+  /**
    * Finds the UI of plugin_ whose widget type this build embeds and
    * caches it in ui_info_. Emits hasNativeUiChanged when the presence
    * of a usable UI changed.
@@ -414,6 +457,111 @@ public:
     uint32_t                   port_index,
     uint32_t                   protocol,
     std::span<const std::byte> body) noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Queues a worker request (the LV2_Worker_Schedule callback
+   * passed to the plugin).
+   */
+  static LV2_Worker_Status schedule_work_callback (
+    LV2_Worker_Schedule_Handle handle,
+    uint32_t                   size,
+    const void *               data) noexcept;
+
+  /**
+   * @brief Runs a worker request inline (the LV2_Worker_Schedule
+   * callback passed to the plugin's set_state() in the restore
+   * feature array).
+   */
+  static LV2_Worker_Status restore_schedule_work_callback (
+    LV2_Worker_Schedule_Handle handle,
+    uint32_t                   size,
+    const void *               data) noexcept;
+
+  /**
+   * @brief Queues a worker response produced by work() (the respond
+   * callback passed to the plugin's work()).
+   */
+  static LV2_Worker_Status respond_callback (
+    LV2_Worker_Respond_Handle handle,
+    uint32_t                  size,
+    const void *              data) noexcept;
+
+  /** Pops requests and runs the plugin's work() until the thread is
+   * stopped. */
+  void worker_thread_func (std::stop_token stop_token);
+
+  /**
+   * @brief Warns about worker queue drops recorded since the last
+   * report.
+   *
+   * Called from the worker thread (at most once per wakeup) and once
+   * after the worker thread joins, never from the audio thread.
+   */
+  void warn_dropped_records ();
+
+  /**
+   * @brief Blocks until the worker thread is idle with an empty
+   * request queue.
+   *
+   * Spins with yield instead of waiting on a condition variable to
+   * stay usable from noexcept contexts; the wait is bounded by the
+   * duration of an in-flight work() call. No-op when no worker thread
+   * is running.
+   */
+  void wait_for_worker_idle () noexcept;
+
+  /**
+   * @brief Runs one work() call inline on the calling thread and
+   * delivers its responses immediately (offline rendering).
+   */
+  LV2_Worker_Status
+  run_work_inline (uint32_t size, const std::byte * data) noexcept;
+
+  /**
+   * @brief Delivers queued worker responses to the plugin's
+   * work_response() (audio thread, after run()).
+   *
+   * Delivery happens after this cycle's run() and before end_run(),
+   * like the reference hosts; atoms a plugin writes during
+   * work_response() are then read by the same cycle's output parsing.
+   */
+  void deliver_worker_responses () noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Calls the plugin's end_run() after run() when the worker
+   * interface provides one (audio thread).
+   */
+  void finish_worker_cycle () noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Resets every port-props trigger control input buffer to its
+   * port default (audio thread, after run()).
+   */
+  void reset_trigger_ports () noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Queues a UI worker request (the LV2_Worker_Schedule
+   * callback passed to the UI).
+   */
+  static LV2_Worker_Status ui_schedule_work_callback (
+    LV2_Worker_Schedule_Handle handle,
+    uint32_t                   size,
+    const void *               data) noexcept;
+
+  /**
+   * @brief Collects a response produced by the UI's work() (the
+   * respond callback passed to the UI's work()).
+   */
+  static LV2_Worker_Status ui_respond_callback (
+    LV2_Worker_Respond_Handle handle,
+    uint32_t                  size,
+    const void *              data) noexcept;
+
+  /**
+   * @brief Runs queued UI worker jobs and delivers their responses on
+   * the UI thread (called from ui_idle_tick()).
+   */
+  void pump_ui_worker ();
 
   /** Atom events collected by drain_ui_atom_events() for this chunk. */
   struct PendingUiAtom
@@ -501,6 +649,16 @@ public:
     /** Scratch of one drained record body (audio-thread and
      * main-thread sides each use their own). */
     std::array<std::byte, kAtomBufferSize> event_scratch_{};
+    /** UI worker: the schedule feature passed to the UI, the interface
+     * it serves, and the request queue pumped by the idle tick. This
+     * host runs and responds to UI worker jobs on the UI thread, the
+     * only thread a UI may assume its code runs on. The queued byte
+     * count bounds the deque like the plugin-side queues. */
+    LV2_Worker_Schedule                ui_worker_schedule_feature_{};
+    const LV2_Worker_Interface *       ui_worker_interface_ = nullptr;
+    std::mutex                         ui_worker_mutex_;
+    std::deque<std::vector<std::byte>> ui_worker_requests_;
+    size_t                             ui_worker_queued_bytes_ = 0;
   };
   std::optional<UiSession> ui_;
 
@@ -720,6 +878,22 @@ public:
   MakePathContext     make_path_context_{};
   LV2_State_Make_Path make_path_feature_{};
   LV2_State_Free_Path free_path_feature_{};
+  /** Inline worker schedule handed to the plugin's set_state() in the
+   * restore feature array. */
+  LV2_Worker_Schedule restore_worker_schedule_feature_{};
+  /** Feature wrapper for restore_worker_schedule_feature_, kept as a
+   * direct member so features_for_restore() can hand it out. */
+  LV2_Feature restore_worker_schedule_feature_wrapper_{};
+  /**
+   * The work:schedule feature handed to the plugin at instantiation.
+   * Direct member: it is pushed into the feature array before
+   * lilv_instance_instantiate(), before the worker state exists (the
+   * plugin's interface data is only queryable afterwards). Work
+   * scheduled during instantiate() is refused with
+   * LV2_WORKER_ERR_UNKNOWN: the worker state is created once
+   * instantiation succeeds.
+   */
+  LV2_Worker_Schedule schedule_feature_{};
   /** Copy of the world's host URIDs, read on the audio thread without
    * touching the world. */
   Lv2HostUrids                      host_urids_{};
@@ -731,6 +905,50 @@ public:
   int32_t                           max_block_opt_{};
   int32_t                           nominal_block_opt_{};
   int32_t                           sequence_size_opt_{};
+
+  /**
+   * Worker extension state, created when the plugin exposes
+   * LV2_Worker_Interface and torn down with the instance. The
+   * schedule_work() callback runs on the main thread during load and
+   * restore and on the audio thread while processing; the host
+   * sequence keeps those phases from overlapping, so each queue has
+   * one producer at a time.
+   */
+  struct WorkerState
+  {
+    static constexpr size_t      kQueueCapacity = 256uz * 1024;
+    const LV2_Worker_Interface * interface_ = nullptr;
+    /** Serializes work() calls across the worker thread and inline
+     * execution (state restores, offline rendering). Recursive: work()
+     * may schedule more work that runs inline within the same call. */
+    std::recursive_mutex    work_mutex_;
+    Lv2WorkerQueue          requests_{ kQueueCapacity };
+    Lv2WorkerQueue          responses_{ kQueueCapacity };
+    std::jthread            thread_;
+    std::mutex              sleep_mutex_;
+    std::condition_variable sleep_cv_;
+    /** Request pop scratch, owned by the worker thread. */
+    std::array<std::byte, kMaxWorkerRecordSize> request_scratch_{};
+    /** Response pop scratch, owned by the audio thread. */
+    std::array<std::byte, kMaxWorkerRecordSize> response_scratch_{};
+    /**
+     * True while the processor renders offline: work scheduled from
+     * the processing context runs inline instead of being queued for
+     * the worker thread. Toggled while processing is stopped; a
+     * producer racing the toggle is out of contract.
+     */
+    std::atomic<bool> offline_{ false };
+    /**
+     * True while the worker thread sits in its idle wait with an
+     * empty request queue and no in-flight work().
+     */
+    std::atomic<bool> idle_{ false };
+    /** Drop counts already reported by warn_dropped_records(). */
+    std::atomic<uint32_t> warned_request_drops_{ 0 };
+    std::atomic<uint32_t> warned_response_drops_{ 0 };
+  };
+  /** Null while the instance exposes no LV2_Worker_Interface. */
+  std::unique_ptr<WorkerState> worker_;
 
   /** Control port buffers, indexed by PortInfo::control_buffer_index. */
   std::vector<float> control_in_bufs_;
@@ -745,6 +963,13 @@ public:
   };
   /** Parallel to control_in_bufs_. */
   std::vector<CtrlInParam> ctrl_in_params_;
+  /** Control input buffer indices of port-props trigger ports and the
+   * port defaults they are reset to after each run(). */
+  std::vector<std::pair<size_t, float>> trigger_control_ins_;
+  /** Control input buffer indices of freeWheeling-designated ports.
+   * The host writes 1 while rendering offline; no parameter is
+   * created for them. */
+  std::vector<size_t> freewheel_control_ins_;
   /** Parameter list index -> control input buffer index, or -1. */
   std::vector<int32_t> param_to_ctrl_in_;
   /** control_out_bufs_ index of the latency port, or -1. */
@@ -995,6 +1220,9 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
   const LilvNodeUPtr atom_sequence{ lilv_new_uri (world, LV2_ATOM__Sequence) };
   const LilvNodeUPtr designation{ lilv_new_uri (world, LV2_CORE__designation) };
   const LilvNodeUPtr latency_uri{ lilv_new_uri (world, LV2_CORE__latency) };
+  const LilvNodeUPtr freewheeling_uri{
+    lilv_new_uri (world, LV2_CORE__freeWheeling)
+  };
   const LilvNodeUPtr group{ lilv_new_uri (world, LV2_PORT_GROUPS__group) };
   const LilvNodeUPtr main_input{
     lilv_new_uri (world, LV2_PORT_GROUPS__mainInput)
@@ -1005,6 +1233,7 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
   const LilvNodeUPtr toggled{ lilv_new_uri (world, LV2_CORE__toggled) };
   const LilvNodeUPtr integer{ lilv_new_uri (world, LV2_CORE__integer) };
   const LilvNodeUPtr enumeration{ lilv_new_uri (world, LV2_CORE__enumeration) };
+  const LilvNodeUPtr trigger{ lilv_new_uri (world, LV2_PORT_PROPS__trigger) };
   const LilvNodeUPtr scale_point{ lilv_new_uri (world, LV2_CORE__scalePoint) };
   const LilvNodeUPtr rdf_value{
     lilv_new_uri (world, "http://www.w3.org/1999/02/22-rdf-syntax-ns#value")
@@ -1141,6 +1370,9 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
                 lilv_port_has_property (plugin_, port, integer.get ());
               info.is_enumeration =
                 lilv_port_has_property (plugin_, port, enumeration.get ());
+              info.is_trigger =
+                info.flow == dsp::PortFlow::Input
+                && lilv_port_has_property (plugin_, port, trigger.get ());
               info.is_logarithmic =
                 lilv_port_has_property (plugin_, port, logarithmic.get ());
               if (info.is_logarithmic && info.min <= 0.f)
@@ -1218,13 +1450,14 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
             designation_nodes != nullptr
             && lilv_nodes_size (designation_nodes.get ()) > 0)
             {
-              // The latency designation is the full lv2:latency URI; a
-              // local-name match would misread any '#latency' URI
-              if (
-                lilv_node_equals (
-                  lilv_nodes_get_first (designation_nodes.get ()),
-                  latency_uri.get ()))
+              const auto * designation_node =
+                lilv_nodes_get_first (designation_nodes.get ());
+              // The designations are full lv2core URIs; a local-name
+              // match would misread any '#latency' URI
+              if (lilv_node_equals (designation_node, latency_uri.get ()))
                 info.is_latency = true;
+              if (lilv_node_equals (designation_node, freewheeling_uri.get ()))
+                info.is_freewheel = true;
             }
         }
 
@@ -1482,6 +1715,8 @@ Lv2Plugin::unload_current_plugin ()
   pimpl_->control_out_bufs_.clear ();
   pimpl_->ctrl_in_params_.clear ();
   pimpl_->param_to_ctrl_in_.clear ();
+  pimpl_->trigger_control_ins_.clear ();
+  pimpl_->freewheel_control_ins_.clear ();
   pimpl_->latency_buf_index_ = -1;
   pimpl_->audio_in_ports_by_bus_.clear ();
   pimpl_->audio_out_ports_by_bus_.clear ();
@@ -1507,6 +1742,20 @@ Lv2Plugin::Lv2PluginImpl::free_instance ()
   // The UI holds the instance handle (instance access) and must die
   // before the instance is freed
   destroy_ui ();
+  // The worker calls into the instance and must stop before it dies;
+  // pending requests and responses are dropped with it
+  if (worker_ != nullptr)
+    {
+      worker_->thread_.request_stop ();
+      {
+        std::lock_guard lock (worker_->sleep_mutex_);
+        worker_->sleep_cv_.notify_all ();
+      }
+      worker_->thread_.join ();
+      // Report drops that landed after the worker's last poll
+      warn_dropped_records ();
+      worker_.reset ();
+    }
   if (instance_active_)
     {
       lilv_instance_deactivate (instance_);
@@ -1680,6 +1929,20 @@ Lv2Plugin::create_ports_and_parameters (bool generate_new)
 
   pimpl_->ctrl_in_params_.assign (pimpl_->control_in_bufs_.size (), {});
   pimpl_->param_to_ctrl_in_.assign (params.size (), -1);
+  pimpl_->trigger_control_ins_.clear ();
+  pimpl_->freewheel_control_ins_.clear ();
+  for (const auto &port : pimpl_->ports_)
+    {
+      if (port.is_trigger)
+        {
+          pimpl_->trigger_control_ins_.emplace_back (
+            port.control_buffer_index, port.def);
+        }
+      if (port.is_freewheel)
+        {
+          pimpl_->freewheel_control_ins_.push_back (port.control_buffer_index);
+        }
+    }
 
   for (const auto &port : pimpl_->ports_)
     {
@@ -1693,13 +1956,14 @@ Lv2Plugin::create_ports_and_parameters (bool generate_new)
       const auto unique_id_view = type_safe::get (unique_id).view ();
 
       dsp::ProcessorParameter * param = nullptr;
-      if (
-        const auto it = param_index_by_id.find (unique_id_view);
-        it != param_index_by_id.end ())
+      // freeWheeling-designated ports are host-driven: they never
+      // adopt or create a parameter
+      const auto param_it = param_index_by_id.find (unique_id_view);
+      if (!port.is_freewheel && param_it != param_index_by_id.end ())
         {
-          param = params[it->second].get ();
+          param = params[param_it->second].get ();
         }
-      else if (generate_new)
+      else if (generate_new && !port.is_freewheel)
         {
           const auto range = [&] {
             if (port.is_toggled)
@@ -1788,7 +2052,10 @@ Lv2Plugin::create_ports_and_parameters (bool generate_new)
         }
       else
         {
-          pimpl_->control_in_bufs_[buf_index] = port.def;
+          // freeWheeling-designated ports always start at 0 (live
+          // processing): the host drives their value
+          pimpl_->control_in_bufs_[buf_index] =
+            port.is_freewheel ? 0.f : port.def;
         }
     }
 }
@@ -1882,6 +2149,15 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
   push_feature (LV2_CORE__hardRTCapable, nullptr);
   push_feature (LV2_STATE__makePath, &make_path_feature_);
   push_feature (LV2_STATE__freePath, &free_path_feature_);
+  schedule_feature_ = LV2_Worker_Schedule{
+    .handle = this, .schedule_work = &schedule_work_callback
+  };
+  push_feature (LV2_WORKER__schedule, &schedule_feature_);
+  restore_worker_schedule_feature_ = LV2_Worker_Schedule{
+    .handle = this, .schedule_work = &restore_schedule_work_callback
+  };
+  restore_worker_schedule_feature_wrapper_ =
+    LV2_Feature{ LV2_WORKER__schedule, &restore_worker_schedule_feature_ };
   for (const auto &feature : features_)
     {
       feature_ptrs_.push_back (&feature);
@@ -1899,7 +2175,8 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
                || std::string_view{ uri } == LV2_BUF_SIZE__boundedBlockLength
                || std::string_view{ uri } == LV2_CORE__hardRTCapable
                || std::string_view{ uri } == LV2_STATE__makePath
-               || std::string_view{ uri } == LV2_STATE__freePath;
+               || std::string_view{ uri } == LV2_STATE__freePath
+               || std::string_view{ uri } == LV2_WORKER__schedule;
       };
       std::string         unsupported_features;
       const LilvNodesUPtr required_features{
@@ -1997,8 +2274,26 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
         instance_, ports_[midi_out_port_idx_].index, atom_out_buf_.data ());
     }
 
+  // The worker runs from instantiation (restore and activate may
+  // schedule work) until the instance is freed
+  const auto * instance_descriptor = lilv_instance_get_descriptor (instance_);
+  if (instance_descriptor->extension_data != nullptr)
+    {
+      const auto * worker_interface = static_cast<const LV2_Worker_Interface *> (
+        instance_descriptor->extension_data (LV2_WORKER__interface));
+      if (worker_interface != nullptr)
+        {
+          worker_ = std::make_unique<WorkerState> ();
+          worker_->interface_ = worker_interface;
+          worker_->thread_ = std::jthread ([this] (std::stop_token stop_token) {
+            worker_thread_func (stop_token);
+          });
+        }
+    }
+
   lilv_instance_activate (instance_);
   instance_active_ = true;
+
   return true;
 }
 
@@ -2456,6 +2751,12 @@ Lv2Plugin::process_impl (
     lilv_instance_run (pimpl_->instance_, nframes.in<uint32_t> (units::samples));
   }
 
+  // Responses are delivered after run() and before end_run(), like
+  // the reference hosts; atoms written during work_response() are
+  // then picked up by this cycle's output parsing below
+  pimpl_->deliver_worker_responses ();
+  pimpl_->finish_worker_cycle ();
+  pimpl_->reset_trigger_ports ();
   pimpl_->parse_atom_outputs (local_offset, nframes);
   pimpl_->read_control_outputs ();
   pimpl_->dispatch_atom_outputs_to_ui ();
@@ -2735,6 +3036,335 @@ Lv2Plugin::Lv2PluginImpl::apply_changed_param_values () noexcept
     }
 }
 
+namespace
+{
+// Collects responses while work() runs inline for offline rendering or
+// a state restore on this thread; null when work() is not running
+// inline. Appending allocates, which is acceptable because inline work
+// only ever runs on the offline-render or main thread, never the live
+// audio thread
+thread_local std::vector<std::vector<std::byte>> * t_inline_responses = nullptr;
+}
+
+/* Runs a work() call inline on the calling thread: used through the
+ * restore feature array, so set_state()'s scheduled work completes
+ * before the restore returns. */
+LV2_Worker_Status
+Lv2Plugin::Lv2PluginImpl::restore_schedule_work_callback (
+  LV2_Worker_Schedule_Handle handle,
+  uint32_t                   size,
+  const void *               data) noexcept
+{
+  auto &self = *static_cast<Lv2PluginImpl *> (handle);
+  if (self.worker_ == nullptr)
+    return LV2_WORKER_ERR_UNKNOWN;
+  return self.run_work_inline (size, static_cast<const std::byte *> (data));
+}
+
+/* Queues a request and wakes the worker. The queue push is a bounded
+ * copy; the wake is futex-based and does not block. */
+LV2_Worker_Status
+Lv2Plugin::Lv2PluginImpl::schedule_work_callback (
+  LV2_Worker_Schedule_Handle handle,
+  uint32_t                   size,
+  const void *               data) noexcept
+{
+  auto &self = *static_cast<Lv2PluginImpl *> (handle);
+  if (self.worker_ == nullptr)
+    return LV2_WORKER_ERR_UNKNOWN;
+  const auto * bytes = static_cast<const std::byte *> (data);
+  if (self.worker_->offline_)
+    return self.run_work_inline (size, bytes);
+  if (!self.worker_->requests_.push ({ bytes, size }))
+    return LV2_WORKER_ERR_NO_SPACE;
+  self.worker_->sleep_cv_.notify_one ();
+  return LV2_WORKER_SUCCESS;
+}
+
+LV2_Worker_Status
+Lv2Plugin::Lv2PluginImpl::respond_callback (
+  LV2_Worker_Respond_Handle handle,
+  uint32_t                  size,
+  const void *              data) noexcept
+{
+  auto        &self = *static_cast<Lv2PluginImpl *> (handle);
+  const auto * bytes = static_cast<const std::byte *> (data);
+  if (t_inline_responses != nullptr)
+    {
+      // Collected here and delivered once work() returns, so
+      // work_response() never reenters work()
+      try
+        {
+          if (bytes == nullptr)
+            {
+              t_inline_responses->emplace_back ();
+            }
+          else
+            {
+              t_inline_responses->emplace_back (bytes, bytes + size);
+            }
+          return LV2_WORKER_SUCCESS;
+        }
+      catch (...)
+        {
+          return LV2_WORKER_ERR_NO_SPACE;
+        }
+    }
+  return self.worker_->responses_.push ({ bytes, size })
+           ? LV2_WORKER_SUCCESS
+           : LV2_WORKER_ERR_NO_SPACE;
+}
+
+LV2_Worker_Status
+Lv2Plugin::Lv2PluginImpl::run_work_inline (
+  uint32_t          size,
+  const std::byte * data) noexcept
+{
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+  // Plugin code is not ours; RTSan violations inside it are not actionable
+  __rtsan::ScopedDisabler d;
+#endif
+  std::vector<std::vector<std::byte>> responses;
+  auto *                              previous_responses = t_inline_responses;
+  t_inline_responses = &responses;
+  const auto status = [&] {
+    std::lock_guard work_lock (worker_->work_mutex_);
+    return worker_->interface_->work (
+      lilv_instance_get_handle (instance_), respond_callback, this, size, data);
+  }();
+  t_inline_responses = previous_responses;
+  for (const auto &response : responses)
+    {
+      worker_->interface_->work_response (
+        lilv_instance_get_handle (instance_),
+        static_cast<uint32_t> (response.size ()), response.data ());
+    }
+  return status;
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::worker_thread_func (std::stop_token stop_token)
+{
+  std::unique_lock lock (worker_->sleep_mutex_);
+  while (!stop_token.stop_requested ())
+    {
+      warn_dropped_records ();
+      uint32_t size = 0;
+      if (worker_->requests_.pop (worker_->request_scratch_, size))
+        {
+          // work() runs without sleep_mutex_ held (it may block or
+          // take arbitrarily long); work_mutex_ serializes it against
+          // inline execution
+          lock.unlock ();
+          {
+            std::lock_guard work_lock (worker_->work_mutex_);
+            worker_->interface_->work (
+              lilv_instance_get_handle (instance_), respond_callback, this,
+              size, worker_->request_scratch_.data ());
+          }
+          lock.lock ();
+          continue;
+        }
+      worker_->idle_.store (true, std::memory_order_release);
+      // The timeout bounds the wake when a notify races the wait
+      worker_->sleep_cv_.wait_for (lock, std::chrono::milliseconds (10), [&] {
+        return stop_token.stop_requested () || !worker_->requests_.empty ();
+      });
+      worker_->idle_.store (false, std::memory_order_release);
+    }
+  // Report drops that landed after the last poll inside the loop
+  warn_dropped_records ();
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::warn_dropped_records ()
+{
+  const auto request_drops = worker_->requests_.dropped_records ();
+  const auto response_drops = worker_->responses_.dropped_records ();
+  const auto reported_requests =
+    worker_->warned_request_drops_.load (std::memory_order_relaxed);
+  const auto reported_responses =
+    worker_->warned_response_drops_.load (std::memory_order_relaxed);
+  if (request_drops <= reported_requests && response_drops <= reported_responses)
+    {
+      return;
+    }
+  z_warning (
+    "LV2 worker of '{}': dropped {} request(s) and {} response(s) because the queues were full",
+    owner_.get_name (), request_drops - reported_requests,
+    response_drops - reported_responses);
+  worker_->warned_request_drops_.store (
+    request_drops, std::memory_order_relaxed);
+  worker_->warned_response_drops_.store (
+    response_drops, std::memory_order_relaxed);
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::wait_for_worker_idle () noexcept
+{
+  if (worker_ == nullptr)
+    return;
+  while (
+    !worker_->idle_.load (std::memory_order_acquire)
+    || !worker_->requests_.empty ())
+    {
+      std::this_thread::yield ();
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::deliver_worker_responses () noexcept
+{
+  if (worker_ == nullptr)
+    return;
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+  // Plugin code is not ours; RTSan violations inside it are not actionable
+  __rtsan::ScopedDisabler d;
+#endif
+  uint32_t size = 0;
+  while (worker_->responses_.pop (worker_->response_scratch_, size))
+    {
+      worker_->interface_->work_response (
+        lilv_instance_get_handle (instance_), size,
+        worker_->response_scratch_.data ());
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::finish_worker_cycle () noexcept
+{
+  // end_run is optional worker interface data; when present, the spec
+  // requires calling it after every run cycle, with or without
+  // scheduled work
+  if (worker_ != nullptr && worker_->interface_->end_run != nullptr)
+    {
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+      // Plugin code is not ours; RTSan violations inside it are not actionable
+      __rtsan::ScopedDisabler d;
+#endif
+      worker_->interface_->end_run (lilv_instance_get_handle (instance_));
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::reset_trigger_ports () noexcept
+{
+  for (const auto &[buffer_index, default_value] : trigger_control_ins_)
+    {
+      control_in_bufs_[buffer_index] = default_value;
+    }
+}
+
+LV2_Worker_Status
+Lv2Plugin::Lv2PluginImpl::ui_schedule_work_callback (
+  LV2_Worker_Schedule_Handle handle,
+  uint32_t                   size,
+  const void *               data) noexcept
+{
+  auto *       session = static_cast<UiSession *> (handle);
+  const auto * bytes = static_cast<const std::byte *> (data);
+  // The payload size comes from plugin UI code: bound it like the
+  // plugin-side queue and refuse allocation failures instead of
+  // terminating the host
+  if (size > kMaxWorkerRecordSize)
+    return LV2_WORKER_ERR_NO_SPACE;
+  try
+    {
+      std::lock_guard lock (session->ui_worker_mutex_);
+      // Total queued bytes are bounded like the plugin-side queue
+      // capacity: a UI scheduling faster than the idle pump drains
+      // must not grow the deque without limit
+      if (session->ui_worker_queued_bytes_ + size > WorkerState::kQueueCapacity)
+        return LV2_WORKER_ERR_NO_SPACE;
+      if (bytes == nullptr)
+        {
+          session->ui_worker_requests_.emplace_back ();
+        }
+      else
+        {
+          session->ui_worker_requests_.emplace_back (bytes, bytes + size);
+        }
+      session->ui_worker_queued_bytes_ += size;
+      return LV2_WORKER_SUCCESS;
+    }
+  catch (...)
+    {
+      return LV2_WORKER_ERR_NO_SPACE;
+    }
+}
+
+LV2_Worker_Status
+Lv2Plugin::Lv2PluginImpl::ui_respond_callback (
+  LV2_Worker_Respond_Handle handle,
+  uint32_t                  size,
+  const void *              data) noexcept
+{
+  auto * responses = static_cast<std::vector<std::vector<std::byte>> *> (handle);
+  const auto * bytes = static_cast<const std::byte *> (data);
+  // The payload size comes from plugin UI code: bound it like the
+  // plugin-side queue and refuse allocation failures instead of
+  // terminating the host
+  if (size > kMaxWorkerRecordSize)
+    return LV2_WORKER_ERR_NO_SPACE;
+  try
+    {
+      if (bytes == nullptr)
+        {
+          responses->emplace_back ();
+        }
+      else
+        {
+          responses->emplace_back (bytes, bytes + size);
+        }
+      return LV2_WORKER_SUCCESS;
+    }
+  catch (...)
+    {
+      return LV2_WORKER_ERR_NO_SPACE;
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::pump_ui_worker ()
+{
+  auto      &ui = *ui_;
+  const auto session_alive = [this, session = &ui] () {
+    return ui_.has_value () && &*ui_ == session && ui_->created;
+  };
+
+  std::deque<std::vector<std::byte>> requests;
+  const LV2_Worker_Interface *       interface = nullptr;
+  {
+    std::lock_guard lock (ui.ui_worker_mutex_);
+    interface = ui.ui_worker_interface_;
+    if (interface == nullptr)
+      return;
+    requests.swap (ui.ui_worker_requests_);
+    ui.ui_worker_queued_bytes_ = 0;
+  }
+  // work() and work_response() run outside the lock: they may
+  // schedule more UI work through the same mutex. The handle is
+  // copied because work() may re-enter the host and close the UI,
+  // tearing the session down
+  const auto handle = ui.handle;
+  for (const auto &request : requests)
+    {
+      std::vector<std::vector<std::byte>> responses;
+      interface->work (
+        handle, ui_respond_callback, &responses,
+        static_cast<uint32_t> (request.size ()), request.data ());
+      if (!session_alive ())
+        return;
+      for (const auto &response : responses)
+        {
+          interface->work_response (
+            handle, static_cast<uint32_t> (response.size ()), response.data ());
+          if (!session_alive ())
+            return;
+        }
+    }
+}
+
 void
 Lv2Plugin::Lv2PluginImpl::read_control_outputs () noexcept
 {
@@ -2902,6 +3532,24 @@ first_node_label (
 }
 
 } // namespace
+
+// Builds the per-restore feature array: makePath points at the
+// restore's root, and the worker schedule runs work inline so
+// set_state()'s scheduled work completes before the restore returns
+std::vector<const LV2_Feature *>
+Lv2Plugin::Lv2PluginImpl::features_for_restore (
+  const LV2_Feature * make_path_replacement)
+{
+  auto result = features_with_make_path (feature_ptrs_, make_path_replacement);
+  std::ranges::replace_if (
+    result,
+    [] (const LV2_Feature * feature) {
+      return feature != nullptr
+             && std::string_view (feature->URI) == LV2_WORKER__schedule;
+    },
+    &restore_worker_schedule_feature_wrapper_);
+  return result;
+}
 
 void
 Lv2Plugin::Lv2PluginImpl::ensure_session_dirs ()
@@ -3290,11 +3938,23 @@ Lv2Plugin::Lv2PluginImpl::restore_state_from_blob (
     LV2_STATE__makePath, &restore_make_path
   };
   const auto restore_features =
-    features_with_make_path (feature_ptrs_, &restore_make_path_feature);
-  lilv_state_restore (
-    state.get (), instance_, state_set_port_value, this, 0,
-    restore_features.data ());
+    features_for_restore (&restore_make_path_feature);
+  restore_state_with_inline_worker (*state, restore_features);
   return true;
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::restore_state_with_inline_worker (
+  const LilvState                     &state,
+  std::span<const LV2_Feature * const> features) [[clang::blocking]]
+{
+  // Complete requests queued before the caller paused processing
+  // first; work() scheduled during set_state() through the cached
+  // instantiate feature is serialized against the inline work by
+  // work_mutex_
+  wait_for_worker_idle ();
+  lilv_state_restore (
+    &state, instance_, state_set_port_value, this, 0, features.data ());
 }
 
 bool
@@ -3332,10 +3992,8 @@ Lv2Plugin::Lv2PluginImpl::restore_preset_from_world (
     LV2_STATE__makePath, &restore_make_path
   };
   const auto restore_features =
-    features_with_make_path (feature_ptrs_, &restore_make_path_feature);
-  lilv_state_restore (
-    state.get (), instance_, state_set_port_value, this, 0,
-    restore_features.data ());
+    features_for_restore (&restore_make_path_feature);
+  restore_state_with_inline_worker (*state, restore_features);
   return true;
 }
 
@@ -3393,6 +4051,10 @@ Lv2Plugin::Lv2PluginImpl::state_set_port_value (
   const auto * port_info = impl->find_control_input (port_symbol);
   if (port_info == nullptr)
     return;
+  // freeWheeling-designated ports are host-driven: state saved by
+  // other hosts may record them, but the value does not apply here
+  if (port_info->is_freewheel)
+    return;
 
   const auto buf_index = port_info->control_buffer_index;
   impl->control_in_bufs_[buf_index] = *new_value;
@@ -3417,6 +4079,10 @@ Lv2Plugin::Lv2PluginImpl::state_get_port_value (
   // run(); the control buffers are plain shared memory for this read
   const auto * port_info = impl->find_control_input (port_symbol);
   if (port_info == nullptr)
+    return nullptr;
+  // freeWheeling-designated ports are host-driven: their value is not
+  // project state and is never saved
+  if (port_info->is_freewheel)
     return nullptr;
 
   *size = sizeof (float);
@@ -3599,6 +4265,32 @@ bool
 Lv2Plugin::hasNativeUi () const
 {
   return pimpl_->ui_info_.has_value ();
+}
+
+void
+Lv2Plugin::set_offline_mode (bool offline) noexcept
+{
+  if (pimpl_->worker_ != nullptr)
+    {
+      if (offline)
+        {
+          // Drain before the switch: with the flag already set, work
+          // scheduled by an in-flight work() would run inline on the
+          // worker thread instead of the render thread
+          pimpl_->wait_for_worker_idle ();
+          pimpl_->worker_->offline_.store (true, std::memory_order_release);
+        }
+      else
+        {
+          pimpl_->worker_->offline_.store (false, std::memory_order_release);
+        }
+    }
+  // FreeWheeling-designated ports are host-driven and written here
+  // only; processing is stopped across the toggle
+  for (const auto buffer_index : pimpl_->freewheel_control_ins_)
+    {
+      pimpl_->control_in_bufs_[buffer_index] = offline ? 1.f : 0.f;
+    }
 }
 
 void
@@ -3818,6 +4510,11 @@ Lv2Plugin::show_editor (bool force_float_window)
     // feature is passed to acknowledge that this host drives idle (the
     // idle pump below), which UIs may declare required
     push_feature (LV2_UI__idleInterface, nullptr);
+    // UI worker jobs run on the idle pump (the UI thread)
+    ui.ui_worker_schedule_feature_ = LV2_Worker_Schedule{
+      .handle = &ui, .schedule_work = &Lv2PluginImpl::ui_schedule_work_callback
+    };
+    push_feature (LV2_WORKER__schedule, &ui.ui_worker_schedule_feature_);
     // The resizability hints are passed as features so UIs requiring
     // them instantiate; the host honors both by pinning the window
     if (pimpl_->ui_info_->fixed_size)
@@ -3911,6 +4608,8 @@ Lv2Plugin::show_editor (bool force_float_window)
         ui.descriptor->extension_data (LV2_UI__idleInterface));
       ui.plugin_resize_iface = static_cast<const LV2UI_Resize *> (
         ui.descriptor->extension_data (LV2_UI__resize));
+      ui.ui_worker_interface_ = static_cast<const LV2_Worker_Interface *> (
+        ui.descriptor->extension_data (LV2_WORKER__interface));
       if (ui.float_window)
         {
           ui.show_iface = static_cast<const LV2UI_Show_Interface *> (
@@ -4081,10 +4780,10 @@ Lv2Plugin::Lv2PluginImpl::resolve_ui ()
       // those open no embed area at all, so a UI requiring it cannot
       // be floated either way
       const std::string_view supported_ui_features[] = {
-        LV2_URID__map,       LV2_URID__unmap,      LV2_OPTIONS__options,
-        LV2_UI__parent,      LV2_UI__resize,       LV2_UI__portMap,
-        LV2_UI__fixedSize,   LV2_UI__noUserResize, LV2_INSTANCE_ACCESS_URI,
-        LV2_DATA_ACCESS_URI, LV2_UI__idleInterface
+        LV2_URID__map,       LV2_URID__unmap,       LV2_OPTIONS__options,
+        LV2_UI__parent,      LV2_UI__resize,        LV2_UI__portMap,
+        LV2_UI__fixedSize,   LV2_UI__noUserResize,  LV2_INSTANCE_ACCESS_URI,
+        LV2_DATA_ACCESS_URI, LV2_UI__idleInterface, LV2_WORKER__schedule
       };
       const LilvUIsUPtr uis{ lilv_plugin_get_uis (plugin_) };
       if (uis != nullptr)
@@ -4193,6 +4892,12 @@ Lv2Plugin::Lv2PluginImpl::destroy_ui ()
   // session
   ui.run_loop_.unregister_timer (ui.idle_token_);
   ui_dispatch_.store (false, std::memory_order_release);
+  {
+    std::lock_guard lock (ui.ui_worker_mutex_);
+    ui.ui_worker_requests_.clear ();
+    ui.ui_worker_queued_bytes_ = 0;
+    ui.ui_worker_interface_ = nullptr;
+  }
   ui.resize_coordinator.reset ();
   // A shown self-managed window is hidden before the host stops
   // driving the UI, per the show interface contract
@@ -4269,6 +4974,14 @@ Lv2Plugin::Lv2PluginImpl::ui_write (
           z_warning (
             "LV2: the UI of '{}' wrote a float to port {} which is no "
             "control input; ignoring it",
+            impl->owner_.get_name (), port.symbol);
+          return;
+        }
+      if (port.is_freewheel)
+        {
+          z_warning (
+            "LV2: the UI of '{}' wrote to freeWheeling-designated port {}, "
+            "which is host-driven; ignoring it",
             impl->owner_.get_name (), port.symbol);
           return;
         }
@@ -4450,6 +5163,10 @@ Lv2Plugin::Lv2PluginImpl::ui_idle_tick ()
       if (!session_alive ())
         return;
     }
+
+  pump_ui_worker ();
+  if (!session_alive ())
+    return;
 
   // Forward changed control values, inputs and outputs (the initial
   // NaN shadow sends every value once). The audio thread writes these
