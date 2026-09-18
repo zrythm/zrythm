@@ -155,6 +155,15 @@ Dependencies follow a three-tier hierarchy — try the first tier before falling
 
 To add a dependency: add it to `conanfile.py` and consume via `find_package`; if it's not available in Conan, add a `CPMDeclarePackage` block to [`package-lock.cmake`](package-lock.cmake) plus a matching `CPMGetPackage(<name>)` in `CMakeLists.txt`; only vendor into `ext/` as a last resort.
 
+### Patching Conan Recipes (the `zrythm_fixes` fork)
+
+Some Conan recipes carry local patches in the [`ext/conan-center-index`](ext/conan-center-index) submodule (the [`zrythm_fixes`](https://gitlab.zrythm.org/zrythm/conan-center-index/-/tree/zrythm_fixes) branch of our conan-center-index fork, e.g. `qt` and the lilv chain). To change one:
+
+1. Commit the recipe change on the fork's `zrythm_fixes` branch and push it
+2. Update the submodule pointer in this repo
+3. Run `python3 tools/export_conan_recipes.py`
+4. Run `./tools/regen_conan_lockfile.sh` to regenerate `conan.lock`
+
 ### Build System Notes
 
 - **Binary Output**: `conanbuild/Debug/products/bin/`
