@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/tracks/track_all.h"
+#include "structure/tracks/track_collection.h"
 
 #include <QUndoCommand>
 

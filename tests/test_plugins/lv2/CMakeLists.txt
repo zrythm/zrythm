@@ -59,6 +59,10 @@ function(add_lv2_fixture target bundle_dir output_name)
   endif()
 
   add_library(${target} MODULE ${ARG_SOURCES})
+  # MSVC needs C11 atomics enabled explicitly for <stdatomic.h> in C
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /experimental:c11atomics)
+  endif()
   # Sanitizers (when enabled) let violations inside the fixture be caught;
   # the fixtures are only ever loaded by sanitizer-enabled test binaries
   target_link_libraries(${target} PRIVATE lv2::lv2 zrythm::sanitizers)
