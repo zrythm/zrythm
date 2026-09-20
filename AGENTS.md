@@ -247,6 +247,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 
 ### Additional Documentation
 
+- [DESIGN.md](DESIGN.md): UI design system specification (DESIGN.md format, machine-readable tokens + rationale)
 - [debugging.md](doc/dev/debugging.md): Debugging techniques and tips
 - [repo-management.md](doc/dev/repo-management.md): Repository management guidelines
 - [versioning.md](doc/dev/versioning.md): Versioning policies
@@ -322,6 +323,7 @@ Zrythm makes extensive use of modern C++ features:
 ### Qt/QML Integration
 
 **GUI Development:**
+- Follow the design system defined in [DESIGN.md](DESIGN.md) (repo root) — the single source of truth for colors, typography, spacing, shapes, and component states. Its tokens are implemented in `src/gui/qml/ZrythmStyle/ZrythmTheme.qml`; consume those tokens or palette roles instead of hardcoding colors, fonts, or radii
 - Use Qt6 QML for modern UI components
 - Follow Qt coding conventions
 - Use Qt's signal/slot system for event handling
