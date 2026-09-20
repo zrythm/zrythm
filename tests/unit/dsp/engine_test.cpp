@@ -1055,6 +1055,27 @@ TEST_F (AudioEngineTest, OfflineRenderSessionBlocksStateEditsWhileActive)
   render_session->finish ();
 }
 
+// Deactivation would tear the engine down under the render thread's
+// feet, so an active session refuses it
+TEST_F (AudioEngineTest, OfflineRenderSessionRefusesEngineDeactivation)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->activate ();
+  EXPECT_TRUE (engine->activated ());
+
+  auto render_session =
+    std::make_shared<AudioEngine::OfflineRenderSession> (*engine);
+  engine->deactivate ();
+  EXPECT_TRUE (engine->activated ());
+
+  render_session->finish ();
+  engine->deactivate ();
+  EXPECT_FALSE (engine->activated ());
+}
+
 TEST_F (AudioEngineTest, OfflineRenderSessionFinishAllowsStateEditsAgain)
 {
   auto engine = std::make_unique<AudioEngine> (

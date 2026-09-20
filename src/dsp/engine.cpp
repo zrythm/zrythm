@@ -387,6 +387,17 @@ AudioEngine::activate_impl (const bool activate)
     }
   else
     {
+      // This check and the OfflineRenderSession flag transitions both
+      // run on the main thread, so a session cannot begin between the
+      // check and the teardown below
+      if (offline_render_active_.load ())
+        {
+          z_warning (
+            "an offline render owns processing; refusing engine "
+            "deactivation");
+          return;
+        }
+
       EngineState state{};
       wait_for_pause (state, true, true);
 
