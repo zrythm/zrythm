@@ -8,7 +8,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include <threads.h>
+
+/** Sleeps for the given number of microseconds. */
+static void
+sleep_us (long us)
+{
+  struct timespec ts = { us / 1000000, (us % 1000000) * 1000 };
+  thrd_sleep (&ts, NULL);
+}
 
 /**
    LV2 headers are based on the URI of the specification they come from, so a
@@ -344,7 +352,7 @@ work (
   // inline job to overlap it unless the host serializes work() calls
   if (probe == kSlowJobProbe)
     {
-      usleep (250000);
+      sleep_us (250000);
     }
 
   const float doubled = probe * 2.0f;
@@ -434,7 +442,7 @@ set_state (LV2_Handle                   instance,
         {
           if (atomic_load (&g_work_in_progress) != 0)
             break;
-          usleep (1000);
+          sleep_us (1000);
         }
     }
 
