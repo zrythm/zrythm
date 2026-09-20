@@ -284,6 +284,7 @@ Zrythm makes extensive use of modern C++ features:
 - Utilize `std::views` where possible to make code more readable, for example for filtering, transforming, or even to simply loop n times using `std::views::iota`
 - Use `_` as the name for unused loop variables (e.g., `for (const auto _ : std::views::iota (0, n))`)
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
+- Don't validate untrusted numeric input with `std::isfinite`/NaN checks: `ZRYTHM_EXTRA_OPTIMIZATIONS` builds compile with `-ffast-math` (implied `-ffinite-math-only`), which folds those checks away. Prefer comparisons that hold for any value (e.g. reject a range with `min >= max`)
 - Prefer `std::ranges::next` and `std::ranges::prev` over the legacy `std::next`/`std::prev` (and over adding/subtracting to iterators directly) — the `std::ranges::` versions work correctly on range-adaptor iterators where the legacy ones don't
 - Prefer `std::erase_if` over `std::remove_if` + `erase()`
 - Avoid variable shadowing: use descriptive prefixes (e.g., `project_foo` instead of `foo`) when local variables would shadow class members

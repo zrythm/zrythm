@@ -13,6 +13,7 @@
 #include <lv2/buf-size/buf-size.h>
 #include <lv2/midi/midi.h>
 #include <lv2/parameters/parameters.h>
+#include <lv2/patch/patch.h>
 #include <lv2/time/time.h>
 
 namespace zrythm::plugins
@@ -79,8 +80,13 @@ Lv2UridMap::host_urids ()
   u.atom_Long = map (LV2_ATOM__Long);
   u.atom_Double = map (LV2_ATOM__Double);
   u.atom_String = map (LV2_ATOM__String);
+  u.atom_Object = map (LV2_ATOM__Object);
+  u.atom_URID = map (LV2_ATOM__URID);
   u.atom_eventTransfer = map (LV2_ATOM__eventTransfer);
   u.midi_MidiEvent = map (LV2_MIDI__MidiEvent);
+  u.patch_Set = map (LV2_PATCH__Set);
+  u.patch_property = map (LV2_PATCH__property);
+  u.patch_value = map (LV2_PATCH__value);
   u.time_Position = map (LV2_TIME__Position);
   u.time_speed = map (LV2_TIME__speed);
   u.time_frame = map (LV2_TIME__frame);

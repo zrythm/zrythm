@@ -405,6 +405,12 @@ SPDX-FileCopyrightText = ["", "2006-2016 David Robillard <d@drobilla.net>", "200
 SPDX-License-Identifier = "ISC"
 
 [[annotations]]
+path = ["tests/test_plugins/lv2/eg-sampler.lv2/**.ttl**", "tests/test_plugins/lv2/eg-sampler.lv2/click.wav"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["", "2011-2016 David Robillard <d@drobilla.net>", "2011 Gabriel M. Beddingfield <gabriel@teuton.org>", "2011 James Morris <jwm.art.net@gmail.com>"]
+SPDX-License-Identifier = "ISC"
+
+[[annotations]]
 path = ["tests/test_plugins/lv2/eg-fifths.lv2/**.ttl**", "tests/test_plugins/lv2/test-instrument.lv2/**.ttl**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = ["", "2014-2016 David Robillard <d@drobilla.net>"]

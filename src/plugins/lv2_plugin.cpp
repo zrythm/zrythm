@@ -72,6 +72,7 @@
 #include <lv2/midi/midi.h>
 #include <lv2/options/options.h>
 #include <lv2/parameters/parameters.h>
+#include <lv2/patch/patch.h>
 #include <lv2/port-groups/port-groups.h>
 #include <lv2/port-props/port-props.h>
 #include <lv2/presets/presets.h>
@@ -237,6 +238,9 @@ public:
     bool supports_midi{};
     bool supports_time_position{};
     bool has_sequence_buffer_type{};
+    /** Atom input port designated lv2:control (the conventional carrier
+     * of MIDI events and patch messages). */
+    bool is_control_designated{};
     /** rsz:minimumSize declared for the port (0 when undeclared). */
     uint32_t rsz_minimum_size{};
 
@@ -344,6 +348,44 @@ public:
   /** Writes changed parameter values into the control input buffers. */
   void apply_changed_param_values () noexcept [[clang::nonblocking]];
 
+  /**
+   * @brief Creates parameters for the plugin's patch:writable
+   * parameters and wires them into patch_params_.
+   *
+   * Parameters with a non-numeric range (e.g. atom:Path files) and
+   * parameters without a declared default are skipped with a log.
+   *
+   * @param param_index_by_id Unique id -> parameter list index.
+   * @param generate_new Whether new parameters may be created (false
+   * while deserializing, where existing parameters are matched).
+   */
+  void discover_patch_parameters (
+    const std::unordered_map<std::string_view, size_t> &param_index_by_id,
+    bool                                                generate_new);
+
+  /**
+   * @brief Forges the queued patch sets into the atom sequence the
+   * forge currently points at.
+   *
+   * Sets that do not fit the buffer are dropped and counted.
+   */
+  void forge_pending_patch_sets () noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Reads patch:Set messages from the atom outputs and syncs
+   * the values of matching patch parameters.
+   *
+   * The first Set a parameter reports after a state restore is
+   * applied as value synchronization (setBaseValue); this is also how
+   * state-restored parameter values (delivered through the plugin's
+   * own state interface) reach the parameter model. Any other Set is
+   * a live edit from the plugin side and is applied as a user edit.
+   * Outside a pending synchronization, a value equal to the last
+   * forged set is dropped (the plugin echoing the host's own
+   * message).
+   */
+  void parse_patch_messages () noexcept [[clang::nonblocking]];
+
   /** Reads the control output ports (latency). */
   void read_control_outputs () noexcept [[clang::nonblocking]];
 
@@ -371,6 +413,23 @@ public:
   /** Restores the instance from the state of a preset in the world. */
   bool
   restore_preset_from_world (const std::string &preset_uri) [[clang::blocking]];
+
+  /**
+   * @brief Applies the default state of the plugin (the
+   * state:loadDefaultState feature) read from the world's data.
+   *
+   * A no-op for plugins that do not declare the feature. Plugins that
+   * declare it expect the state described in their data to be loaded
+   * into a freshly created instance.
+   */
+  void restore_default_state_if_declared () [[clang::blocking]];
+
+  /**
+   * @brief Restores a state with makePath rooted at the scratch
+   * directory.
+   */
+  void
+  restore_state_with_scratch_paths (const LilvState &state) [[clang::blocking]];
 
   /**
    * @brief Builds the per-restore feature array: makePath points at
@@ -972,6 +1031,47 @@ public:
   std::vector<size_t> freewheel_control_ins_;
   /** Parameter list index -> control input buffer index, or -1. */
   std::vector<int32_t> param_to_ctrl_in_;
+  /**
+   * A patch:writable parameter (an lv2:Parameter the plugin reads from
+   * its control atom port instead of a control port).
+   */
+  struct PatchParam
+  {
+    dsp::ProcessorParameter * param{};
+    /** URID of the parameter URI. */
+    uint32_t uri_id{};
+    /** Atom type of patch:value (atom:Float, atom:Int or atom:Bool). */
+    uint32_t value_type{};
+    /** Normalization of the value forged in the last patch:Set
+     * (integer and boolean values quantized); a Set echoed back at
+     * this value is dropped. */
+    float last_sent_0_to_1{};
+    /**
+     * Set by a state restore (with processing paused): the first
+     * patch:Set the parameter reports afterwards is applied as value
+     * synchronization, not a user edit.
+     */
+    bool expect_sync_notify{};
+  };
+  /** patch:writable parameters. */
+  std::vector<PatchParam> patch_params_;
+  /** Parameter list index -> index into patch_params_, or -1. */
+  std::vector<int32_t> param_to_patch_;
+  /**
+   * Patch sets queued by apply_changed_param_values() for the next
+   * forge_atom_inputs(). Fixed-capacity: sets beyond the capacity are
+   * dropped and counted.
+   */
+  struct PendingPatchSet
+  {
+    uint32_t patch_idx{};
+    float    value_0_to_1{};
+  };
+  static constexpr size_t kPendingPatchSetCapacity = 32;
+  std::array<PendingPatchSet, kPendingPatchSetCapacity> pending_patch_sets_{};
+  size_t pending_patch_set_count_ = 0;
+  /** Number of patch sets dropped since the last report. */
+  std::atomic<uint32_t> patch_sets_dropped_{ 0 };
   /** control_out_bufs_ index of the latency port, or -1. */
   int32_t latency_buf_index_ = -1;
 
@@ -989,6 +1089,10 @@ public:
   int32_t midi_in_port_idx_ = -1;
   int32_t midi_out_port_idx_ = -1;
   int32_t time_in_port_idx_ = -1;
+  /** Atom input the patch sets are forged into: the ports_ index of
+   * the control-designated port, else the MIDI-routed port, else -1
+   * (the first atom input at forge time). */
+  int32_t patch_in_port_idx_ = -1;
 
   /** Engine ports paired with the audio buses, indexed by bus (nullptr
    * while unpaired); CV ports pair positionally in ports_ order. */
@@ -1219,6 +1323,7 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
   const LilvNodeUPtr buffer_type{ lilv_new_uri (world, LV2_ATOM__bufferType) };
   const LilvNodeUPtr atom_sequence{ lilv_new_uri (world, LV2_ATOM__Sequence) };
   const LilvNodeUPtr designation{ lilv_new_uri (world, LV2_CORE__designation) };
+  const LilvNodeUPtr control_uri{ lilv_new_uri (world, LV2_CORE__control) };
   const LilvNodeUPtr latency_uri{ lilv_new_uri (world, LV2_CORE__latency) };
   const LilvNodeUPtr freewheeling_uri{
     lilv_new_uri (world, LV2_CORE__freeWheeling)
@@ -1338,11 +1443,9 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
                 if (
                   !defs.has_value () || !mins.has_value () || !maxs.has_value ())
                   return false;
-                // min >= max breaks the linear range conversion, and
-                // non-finite values would propagate NaN into the audio
-                // path; both fall back to a usable dummy
-                return std::isfinite (*mins) && std::isfinite (*maxs)
-                       && std::isfinite (*defs) && *mins < *maxs;
+                // min >= max breaks the linear range conversion; such
+                // ports fall back to a usable dummy
+                return *mins < *maxs;
               }();
               if (!range_usable)
                 {
@@ -1468,6 +1571,19 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
           info.supports_time_position =
             lilv_port_supports_event (plugin_, port, time_position.get ());
           if (
+            const LilvNodesUPtr designation_nodes{
+              lilv_port_get_value (plugin_, port, designation.get ()) };
+            designation_nodes != nullptr
+            && lilv_nodes_size (designation_nodes.get ()) > 0)
+            {
+              const auto * designation_node =
+                lilv_nodes_get_first (designation_nodes.get ());
+              if (lilv_node_equals (designation_node, control_uri.get ()))
+                {
+                  info.is_control_designated = true;
+                }
+            }
+          if (
             const LilvNodesUPtr buffer_type_nodes{
               lilv_port_get_value (plugin_, port, buffer_type.get ()) };
             buffer_type_nodes != nullptr
@@ -1531,6 +1647,18 @@ Lv2Plugin::Lv2PluginImpl::read_port_metadata ()
     return p.type == PortInfo::Type::Atom && p.flow == dsp::PortFlow::Input
            && p.has_sequence_buffer_type && p.supports_time_position;
   });
+
+  // The atom input the patch sets ride: the control-designated port
+  // per convention, else the MIDI-routed one, else the first atom
+  // input (a scratch buffer at forge time)
+  patch_in_port_idx_ = find_port ([] (const PortInfo &p) {
+    return p.type == PortInfo::Type::Atom && p.flow == dsp::PortFlow::Input
+           && p.has_sequence_buffer_type && p.is_control_designated;
+  });
+  if (patch_in_port_idx_ < 0)
+    {
+      patch_in_port_idx_ = midi_in_port_idx_;
+    }
 
   for (const auto flow : { dsp::PortFlow::Input, dsp::PortFlow::Output })
     {
@@ -1715,6 +1843,9 @@ Lv2Plugin::unload_current_plugin ()
   pimpl_->control_out_bufs_.clear ();
   pimpl_->ctrl_in_params_.clear ();
   pimpl_->param_to_ctrl_in_.clear ();
+  pimpl_->patch_params_.clear ();
+  pimpl_->param_to_patch_.clear ();
+  pimpl_->pending_patch_set_count_ = 0;
   pimpl_->trigger_control_ins_.clear ();
   pimpl_->freewheel_control_ins_.clear ();
   pimpl_->latency_buf_index_ = -1;
@@ -1728,6 +1859,7 @@ Lv2Plugin::unload_current_plugin ()
   pimpl_->unroutable_ports_warned_ = false;
   pimpl_->midi_in_port_idx_ = -1;
   pimpl_->midi_out_port_idx_ = -1;
+  pimpl_->patch_in_port_idx_ = -1;
   clear_preset_list ();
   pimpl_->time_in_port_idx_ = -1;
   pimpl_->latency_.store (units::samples (0u), std::memory_order_relaxed);
@@ -1929,6 +2061,8 @@ Lv2Plugin::create_ports_and_parameters (bool generate_new)
 
   pimpl_->ctrl_in_params_.assign (pimpl_->control_in_bufs_.size (), {});
   pimpl_->param_to_ctrl_in_.assign (params.size (), -1);
+  pimpl_->patch_params_.clear ();
+  pimpl_->param_to_patch_.assign (params.size (), -1);
   pimpl_->trigger_control_ins_.clear ();
   pimpl_->freewheel_control_ins_.clear ();
   for (const auto &port : pimpl_->ports_)
@@ -2022,6 +2156,7 @@ Lv2Plugin::create_ports_and_parameters (bool generate_new)
           param = param_ref.get ();
           // The new parameter extends the parameter-to-control-buffer map
           pimpl_->param_to_ctrl_in_.push_back (-1);
+          pimpl_->param_to_patch_.push_back (-1);
           param->set_automatable (true);
           if (!port.group_uri.empty ())
             {
@@ -2057,6 +2192,190 @@ Lv2Plugin::create_ports_and_parameters (bool generate_new)
           pimpl_->control_in_bufs_[buf_index] =
             port.is_freewheel ? 0.f : port.def;
         }
+    }
+
+  pimpl_->discover_patch_parameters (param_index_by_id, generate_new);
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::discover_patch_parameters (
+  const std::unordered_map<std::string_view, size_t> &param_index_by_id,
+  bool                                                generate_new)
+{
+  auto * world = owner_.world_->raw ();
+
+  const LilvNodeUPtr writable{ lilv_new_uri (world, LV2_PATCH__writable) };
+  const LilvNodeUPtr range{ lilv_new_uri (world, LILV_NS_RDFS "range") };
+  const LilvNodeUPtr default_p{ lilv_new_uri (world, LV2_CORE__default) };
+  const LilvNodeUPtr minimum{ lilv_new_uri (world, LV2_CORE__minimum) };
+  const LilvNodeUPtr maximum{ lilv_new_uri (world, LV2_CORE__maximum) };
+  const LilvNodeUPtr label{ lilv_new_uri (world, LILV_NS_RDFS "label") };
+  const LilvNodeUPtr unit{ lilv_new_uri (world, LV2_UNITS__unit) };
+
+  // The parameter URI is the parameter's unique id, so lilv's value
+  // nodes are URIs of lv2:Parameter subjects in the world's data
+  const LilvNodesUPtr writables{
+    lilv_plugin_get_value (plugin_, writable.get ())
+  };
+  if (writables == nullptr)
+    return;
+
+  const auto first_uri =
+    [world] (const LilvNode * subject, const LilvNode * predicate) {
+      utils::Utf8String   uri;
+      const LilvNodesUPtr nodes{
+        lilv_world_find_nodes (world, subject, predicate, nullptr)
+      };
+      if (nodes != nullptr)
+        {
+          const auto * node = lilv_nodes_get_first (nodes.get ());
+          if (node != nullptr && lilv_node_is_uri (node))
+            {
+              uri = utils::Utf8String::from_utf8_encoded_string (
+                lilv_node_as_uri (node));
+            }
+        }
+      return uri;
+    };
+  const auto first_float =
+    [world] (const LilvNode * subject, const LilvNode * predicate) {
+      const LilvNodesUPtr nodes{
+        lilv_world_find_nodes (world, subject, predicate, nullptr)
+      };
+      if (nodes != nullptr)
+        {
+          const auto * node = lilv_nodes_get_first (nodes.get ());
+          if (
+            node != nullptr
+            && (lilv_node_is_float (node) || lilv_node_is_int (node)))
+            return std::optional<float>{ lilv_node_as_float (node) };
+          if (node != nullptr && lilv_node_is_bool (node))
+            return std::optional<float>{ lilv_node_as_bool (node) ? 1.f : 0.f };
+        }
+      return std::optional<float>{ std::nullopt };
+    };
+
+  // rdfs:label values are string literals
+  const auto first_string =
+    [world] (const LilvNode * subject, const LilvNode * predicate) {
+      utils::Utf8String   str;
+      const LilvNodesUPtr nodes{
+        lilv_world_find_nodes (world, subject, predicate, nullptr)
+      };
+      if (nodes != nullptr)
+        {
+          str = node_to_utf8 (lilv_nodes_get_first (nodes.get ()));
+        }
+      return str;
+    };
+
+  LILV_FOREACH (nodes, it, writables.get ())
+    {
+      const auto * param_node = lilv_nodes_get (writables.get (), it);
+      if (param_node == nullptr || !lilv_node_is_uri (param_node))
+        continue;
+      const auto param_uri = utils::Utf8String::from_utf8_encoded_string (
+        lilv_node_as_uri (param_node));
+
+      // Only numeric parameters are host-controllable: files and other
+      // patch subjects stay between the plugin and its state
+      const auto range_uri = first_uri (param_node, range.get ());
+      bool       is_toggle = false;
+      dsp::ParameterRange::Type type = dsp::ParameterRange::Type::Linear;
+      uint32_t                  value_type = host_urids_.atom_Float;
+      if (range_uri.view () == LV2_ATOM__Bool)
+        {
+          is_toggle = true;
+          value_type = host_urids_.atom_Bool;
+        }
+      else if (range_uri.view () == LV2_ATOM__Int)
+        {
+          type = dsp::ParameterRange::Type::Integer;
+          value_type = host_urids_.atom_Int;
+        }
+      else if (range_uri.view () == LV2_ATOM__Double)
+        {
+          value_type = host_urids_.atom_Double;
+        }
+      else if (range_uri.view () != LV2_ATOM__Float)
+        {
+          z_debug (
+            "LV2: patch parameter '{}' of '{}' has the non-numeric range "
+            "'{}'; skipping it",
+            param_uri.view (), owner_.get_name (), range_uri.view ());
+          continue;
+        }
+
+      const auto def = first_float (param_node, default_p.get ());
+      const auto min = first_float (param_node, minimum.get ());
+      const auto max = first_float (param_node, maximum.get ());
+      if (!def.has_value () || !min.has_value () || !max.has_value ())
+        {
+          z_warning (
+            "LV2: patch parameter '{}' of '{}' does not declare a numeric "
+            "default, minimum and maximum; skipping it",
+            param_uri.view (), owner_.get_name ());
+          continue;
+        }
+      // min >= max breaks the normalized-range conversion
+      if (*min >= *max)
+        {
+          z_warning (
+            "LV2: patch parameter '{}' of '{}' declares an unusable "
+            "default/min/max; skipping it",
+            param_uri.view (), owner_.get_name ());
+          continue;
+        }
+
+      dsp::ProcessorParameter * param = nullptr;
+      const auto found_it = param_index_by_id.find (param_uri.view ());
+      if (found_it != param_index_by_id.end ())
+        {
+          param = owner_.get_parameters ()[found_it->second].get ();
+          param_to_patch_[found_it->second] =
+            static_cast<int32_t> (patch_params_.size ());
+        }
+      else if (generate_new)
+        {
+          auto name = first_string (param_node, label.get ());
+          if (name.view ().empty ())
+            name = uri_local_name_string (param_uri.view ());
+          dsp::ParameterRange parameter_range =
+            is_toggle
+              ? dsp::ParameterRange::make_toggle (*def > 0.5f)
+              : dsp::ParameterRange (type, *min, *max, 0.f, *def);
+          const auto unit_uri = first_uri (param_node, unit.get ());
+          if (!unit_uri.view ().empty ())
+            {
+              parameter_range.unit_ = unit_from_lv2_uri (unit_uri.view ());
+            }
+          auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+            owner_.registry (), owner_.registry (),
+            dsp::ProcessorParameter::UniqueId (param_uri), parameter_range,
+            name);
+          owner_.add_parameter (param_ref);
+          param = param_ref.get ();
+          param_to_ctrl_in_.push_back (-1);
+          param_to_patch_.push_back (
+            static_cast<int32_t> (patch_params_.size ()));
+          param->set_automatable (true);
+        }
+      else
+        {
+          z_warning (
+            "LV2: no saved parameter matches the patch parameter '{}' of "
+            "'{}'",
+            param_uri.view (), owner_.get_name ());
+          continue;
+        }
+
+      patch_params_.push_back (
+        {
+          param,
+          owner_.world_->urid_map ().map (param_uri.c_str ()),
+          value_type,
+          param->baseValue (),
+        });
     }
 }
 
@@ -2149,6 +2468,7 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
   push_feature (LV2_CORE__hardRTCapable, nullptr);
   push_feature (LV2_STATE__makePath, &make_path_feature_);
   push_feature (LV2_STATE__freePath, &free_path_feature_);
+  push_feature (LV2_STATE__loadDefaultState, nullptr);
   schedule_feature_ = LV2_Worker_Schedule{
     .handle = this, .schedule_work = &schedule_work_callback
   };
@@ -2176,6 +2496,7 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
                || std::string_view{ uri } == LV2_CORE__hardRTCapable
                || std::string_view{ uri } == LV2_STATE__makePath
                || std::string_view{ uri } == LV2_STATE__freePath
+               || std::string_view{ uri } == LV2_STATE__loadDefaultState
                || std::string_view{ uri } == LV2_WORKER__schedule;
       };
       std::string         unsupported_features;
@@ -2290,6 +2611,8 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
           });
         }
     }
+
+  restore_default_state_if_declared ();
 
   lilv_instance_activate (instance_);
   instance_active_ = true;
@@ -2407,6 +2730,17 @@ Lv2Plugin::prepare_plugin_for_processing (
         "LV2: '{}' dropped {} plugin to UI events because the relay ring "
         "was full",
         get_name (), dropped_ui_output_events);
+    }
+
+  if (
+    const auto dropped_patch_sets =
+      pimpl_->patch_sets_dropped_.exchange (0, std::memory_order_relaxed);
+    dropped_patch_sets > 0)
+    {
+      z_warning (
+        "LV2: '{}' dropped {} patch parameter sets (queue or sequence "
+        "full, or no carrier port)",
+        get_name (), dropped_patch_sets);
     }
 
   // LV2 binds the sample rate and the buffer-size options at
@@ -2758,6 +3092,7 @@ Lv2Plugin::process_impl (
   pimpl_->finish_worker_cycle ();
   pimpl_->reset_trigger_ports ();
   pimpl_->parse_atom_outputs (local_offset, nframes);
+  pimpl_->parse_patch_messages ();
   pimpl_->read_control_outputs ();
   pimpl_->dispatch_atom_outputs_to_ui ();
 }
@@ -2856,6 +3191,11 @@ Lv2Plugin::Lv2PluginImpl::forge_atom_inputs (
     lv2_atom_forge_pop (&forge_, &pos_frame);
   };
 
+  // The sequence the patch sets are forged into: the carrier resolved
+  // from the port metadata (a dedicated buffer block below or a
+  // carrier port in the scratch loop)
+  bool patch_sets_forged = false;
+
   if (time_in_port_idx_ >= 0 && time_in_port_idx_ != midi_in_port_idx_)
     {
       // A time:Position port of its own receives its own sequence
@@ -2865,6 +3205,11 @@ Lv2Plugin::Lv2PluginImpl::forge_atom_inputs (
       LV2_Atom_Forge_Frame seq_frame;
       lv2_atom_forge_sequence_head (&forge_, &seq_frame, 0);
       forge_position_event ();
+      if (patch_in_port_idx_ == time_in_port_idx_)
+        {
+          forge_pending_patch_sets ();
+          patch_sets_forged = true;
+        }
       lv2_atom_forge_pop (&forge_, &seq_frame);
       connect_port_rt (ports_[time_in_port_idx_].index, time_in_buf_.data ());
     }
@@ -2882,6 +3227,11 @@ Lv2Plugin::Lv2PluginImpl::forge_atom_inputs (
       lv2_atom_forge_sequence_head (&forge_, &seq_frame, 0);
       if (time_in_port_idx_ == midi_in_port_idx_)
         forge_position_event ();
+      if (patch_in_port_idx_ == midi_in_port_idx_)
+        {
+          forge_pending_patch_sets ();
+          patch_sets_forged = true;
+        }
       const auto in_chunk = [local_offset, nframes] (const auto &ev) {
         return ev.time () >= local_offset && ev.time () < local_offset + nframes;
       };
@@ -2941,12 +3291,29 @@ Lv2Plugin::Lv2PluginImpl::forge_atom_inputs (
       lv2_atom_forge_set_buffer (&forge_, scratch, atom_port_capacity (port));
       LV2_Atom_Forge_Frame seq_frame;
       lv2_atom_forge_sequence_head (&forge_, &seq_frame, 0);
+      const auto ports_idx = static_cast<int32_t> (&port - ports_.data ());
+      if (
+        !patch_sets_forged
+        && (patch_in_port_idx_ < 0 || ports_idx == patch_in_port_idx_))
+        {
+          forge_pending_patch_sets ();
+          patch_sets_forged = true;
+        }
       if (ui_session_live)
         {
           append_ui_atoms (port.index);
         }
       lv2_atom_forge_pop (&forge_, &seq_frame);
       connect_port_rt (port.index, scratch);
+    }
+  if (!patch_sets_forged && pending_patch_set_count_ > 0)
+    {
+      // No atom input can carry the messages: the sets can never be
+      // delivered
+      patch_sets_dropped_.fetch_add (
+        static_cast<uint32_t> (pending_patch_set_count_),
+        std::memory_order_relaxed);
+      pending_patch_set_count_ = 0;
     }
 }
 
@@ -3025,6 +3392,25 @@ Lv2Plugin::Lv2PluginImpl::apply_changed_param_values () noexcept
 {
   for (const auto &change : owner_.change_tracker ().changes ())
     {
+      if (change.index >= param_to_patch_.size ())
+        continue;
+      const auto patch_idx = param_to_patch_[change.index];
+      if (patch_idx >= 0)
+        {
+          // patch:writable parameters reach the plugin as patch:Set
+          // messages in the control sequence
+          if (pending_patch_set_count_ < kPendingPatchSetCapacity)
+            {
+              pending_patch_sets_[pending_patch_set_count_++] = {
+                static_cast<uint32_t> (patch_idx), change.modulated_value
+              };
+            }
+          else
+            {
+              patch_sets_dropped_.fetch_add (1, std::memory_order_relaxed);
+            }
+          continue;
+        }
       if (change.index >= param_to_ctrl_in_.size ())
         continue;
       const auto ctrl_in = param_to_ctrl_in_[change.index];
@@ -3033,6 +3419,193 @@ Lv2Plugin::Lv2PluginImpl::apply_changed_param_values () noexcept
       const auto &ctrl_param = ctrl_in_params_[static_cast<size_t> (ctrl_in)];
       control_in_bufs_[static_cast<size_t> (ctrl_in)] =
         control_value_for_param (ctrl_param, change.modulated_value);
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::forge_pending_patch_sets () noexcept
+{
+  if (pending_patch_set_count_ == 0)
+    return;
+
+  const auto &urids = host_urids_;
+  // Bytes a set takes in the sequence: the event's frame stamp, an
+  // object head, and two properties (a URID and a 4-byte value; every
+  // supported value kind is 4 bytes), each padded to 64-bit boundaries
+  const auto property_bytes =
+    2 * sizeof (uint32_t)
+    + lv2_atom_pad_size (sizeof (LV2_Atom) + sizeof (float));
+  const auto needed =
+    sizeof (int64_t)
+    + lv2_atom_pad_size (sizeof (LV2_Atom_Object) + 2 * property_bytes);
+
+  uint32_t dropped = 0;
+  for (size_t i = 0; i < pending_patch_set_count_; ++i)
+    {
+      const auto &set = pending_patch_sets_[i];
+      auto       &patch_param = patch_params_[set.patch_idx];
+      const auto  range_value =
+        patch_param.param->range ().convertFrom0To1 (set.value_0_to_1);
+
+      // Sets that do not fit are skipped whole: a partially forged set
+      // would claim body bytes that were never written
+      if (forge_.offset + needed > forge_.size)
+        {
+          ++dropped;
+          continue;
+        }
+
+      LV2_Atom_Forge_Frame object_frame;
+      lv2_atom_forge_frame_time (&forge_, 0);
+      lv2_atom_forge_object (&forge_, &object_frame, 0, urids.patch_Set);
+      lv2_atom_forge_key (&forge_, urids.patch_property);
+      lv2_atom_forge_urid (&forge_, patch_param.uri_id);
+      lv2_atom_forge_key (&forge_, urids.patch_value);
+      // Integer and boolean values are quantized before forging
+      auto forged_value = range_value;
+      if (patch_param.value_type == urids.atom_Int)
+        {
+          forged_value = static_cast<float> (std::lround (range_value));
+          lv2_atom_forge_int (&forge_, static_cast<int32_t> (forged_value));
+        }
+      else if (patch_param.value_type == urids.atom_Bool)
+        {
+          forged_value = range_value > 0.5f ? 1.f : 0.f;
+          lv2_atom_forge_bool (&forge_, forged_value > 0.5f);
+        }
+      else if (patch_param.value_type == urids.atom_Double)
+        {
+          lv2_atom_forge_double (&forge_, static_cast<double> (range_value));
+        }
+      else
+        {
+          lv2_atom_forge_float (&forge_, range_value);
+        }
+      lv2_atom_forge_pop (&forge_, &object_frame);
+      patch_param.last_sent_0_to_1 =
+        patch_param.param->range ().convertTo0To1 (forged_value);
+    }
+  pending_patch_set_count_ = 0;
+  if (dropped > 0)
+    {
+      patch_sets_dropped_.fetch_add (dropped, std::memory_order_relaxed);
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::parse_patch_messages () noexcept
+{
+  if (patch_params_.empty ())
+    return;
+
+  const auto &urids = host_urids_;
+  const auto  handle_set = [&] (const LV2_Atom_Object * object) noexcept {
+    uint32_t         property = 0;
+    const LV2_Atom * value = nullptr;
+    LV2_ATOM_OBJECT_FOREACH (object, prop)
+    {
+      if (
+        prop->key == urids.patch_property && prop->value.type == urids.atom_URID
+        && prop->value.size == sizeof (uint32_t))
+        {
+          property = *reinterpret_cast<const uint32_t *> (
+            LV2_ATOM_BODY_CONST (&prop->value));
+        }
+      else if (prop->key == urids.patch_value)
+        {
+          value = &prop->value;
+        }
+    }
+    if (property == 0 || value == nullptr)
+      return;
+
+    const auto patch_it =
+      std::ranges::find_if (patch_params_, [property] (const PatchParam &p) {
+        return p.uri_id == property;
+      });
+    if (patch_it == patch_params_.end ())
+      return;
+
+    float range_value = 0.f;
+    if (value->type == urids.atom_Float && value->size == sizeof (float))
+      {
+        range_value =
+          *reinterpret_cast<const float *> (LV2_ATOM_BODY_CONST (value));
+      }
+    else if (value->type == urids.atom_Int && value->size == sizeof (int32_t))
+      {
+        range_value = static_cast<float> (
+          *reinterpret_cast<const int32_t *> (LV2_ATOM_BODY_CONST (value)));
+      }
+    else if (value->type == urids.atom_Bool && value->size == sizeof (int32_t))
+      {
+        range_value =
+          *reinterpret_cast<const int32_t *> (LV2_ATOM_BODY_CONST (value)) != 0
+            ? 1.f
+            : 0.f;
+      }
+    else if (value->type == urids.atom_Double && value->size == sizeof (double))
+      {
+        range_value = static_cast<float> (
+          *reinterpret_cast<const double *> (LV2_ATOM_BODY_CONST (value)));
+      }
+    else
+      {
+        return;
+      }
+
+    const auto normalized =
+      patch_it->param->range ().convertTo0To1 (range_value);
+
+    // The first Set a parameter reports after a state restore
+    // synchronizes the value; later ones are live edits from the
+    // plugin side. A pending sync is applied even when the value
+    // equals the last forged set
+    const auto sync = patch_it->expect_sync_notify;
+    patch_it->expect_sync_notify = false;
+
+    // A value equal to the last forged set is the plugin echoing the
+    // host's own message back
+    if (!sync && std::abs (normalized - patch_it->last_sent_0_to_1) < 1e-6f)
+      return;
+
+    auto * param = patch_it->param;
+    owner_.post_main_thread_action_deferred ([param, normalized, sync] {
+      if (sync)
+        {
+          param->setBaseValue (normalized);
+        }
+      else
+        {
+          param->setBaseValueByUser (normalized);
+        }
+    });
+  };
+
+  const auto walk_sequence =
+    [this, &handle_set] (const uint8_t * buf, size_t buf_size) noexcept {
+      for_each_atom_output_event (buf, buf_size, [&] (const LV2_Atom_Event * ev) {
+        if (
+          ev->body.type != host_urids_.atom_Object
+          || ev->body.size < sizeof (LV2_Atom_Object_Body))
+          return;
+        handle_set (reinterpret_cast<const LV2_Atom_Object *> (&ev->body));
+      });
+    };
+
+  if (midi_out_port_idx_ >= 0)
+    {
+      walk_sequence (atom_out_buf_.data (), atom_out_buf_.size ());
+    }
+  for (const auto &port : ports_)
+    {
+      if (
+        !port.has_atom_scratch || port.flow != dsp::PortFlow::Output
+        || (port.type != PortInfo::Type::Atom && port.type != PortInfo::Type::Unknown))
+        continue;
+      walk_sequence (
+        atom_scratch_buf_.data () + port.atom_scratch_byte_offset,
+        atom_port_capacity (port));
     }
 }
 
@@ -3925,21 +4498,7 @@ Lv2Plugin::Lv2PluginImpl::restore_state_from_blob (
       return false;
     }
 
-  // The plugin's restore() may create files through makePath: they
-  // are rooted at the scratch directory so they behave like runtime
-  // files and are carried into the next saved state (the state
-  // directory is wiped by the next restore, and paths in it would be
-  // stored as absolute paths outside the archive)
-  MakePathContext     restore_context{ this, &session_scratch_dir_ };
-  LV2_State_Make_Path restore_make_path{
-    .handle = &restore_context, .path = state_make_path
-  };
-  LV2_Feature restore_make_path_feature{
-    LV2_STATE__makePath, &restore_make_path
-  };
-  const auto restore_features =
-    features_for_restore (&restore_make_path_feature);
-  restore_state_with_inline_worker (*state, restore_features);
+  restore_state_with_scratch_paths (*state);
   return true;
 }
 
@@ -3984,6 +4543,47 @@ Lv2Plugin::Lv2PluginImpl::restore_preset_from_world (
       return false;
     }
 
+  restore_state_with_scratch_paths (*state);
+  return true;
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::restore_default_state_if_declared ()
+{
+  const LilvNodeUPtr load_default_state{
+    lilv_new_uri (owner_.world_->raw (), LV2_STATE__loadDefaultState)
+  };
+  if (
+    load_default_state == nullptr
+    || !lilv_plugin_has_feature (plugin_, load_default_state.get ()))
+    {
+      return;
+    }
+
+  // The default state is described by the plugin's own data: files it
+  // references keep their bundle locations, resolved by the mapPath
+  // feature lilv adds itself
+  const LilvStateUPtr state{ lilv_state_new_from_world (
+    owner_.world_->raw (), &urid_map_feature_, lilv_plugin_get_uri (plugin_)) };
+  if (state == nullptr)
+    {
+      z_warning (
+        "LV2: failed to load the default state of '{}'", owner_.get_name ());
+      return;
+    }
+
+  restore_state_with_scratch_paths (*state);
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::restore_state_with_scratch_paths (
+  const LilvState &state)
+{
+  // The plugin's restore() may create files through makePath: they
+  // are rooted at the scratch directory so they behave like runtime
+  // files and are carried into the next saved state (the state
+  // directory is wiped by the next restore, and paths in it would be
+  // stored as absolute paths outside the archive)
   MakePathContext     restore_context{ this, &session_scratch_dir_ };
   LV2_State_Make_Path restore_make_path{
     .handle = &restore_context, .path = state_make_path
@@ -3993,8 +4593,11 @@ Lv2Plugin::Lv2PluginImpl::restore_preset_from_world (
   };
   const auto restore_features =
     features_for_restore (&restore_make_path_feature);
-  restore_state_with_inline_worker (*state, restore_features);
-  return true;
+  restore_state_with_inline_worker (state, restore_features);
+  for (auto &patch_param : patch_params_)
+    {
+      patch_param.expect_sync_notify = true;
+    }
 }
 
 std::string

@@ -7,13 +7,15 @@
 # plugin binary side by side, as a real .lv2 bundle is laid out).
 
 # add_lv2_fixture(<target> <bundle-dir-name> <binary-name>
-#   [NO_MANIFEST] [TTL_FILES <ttl...>] [SOURCES <sources...>])
+#   [NO_MANIFEST] [TTL_FILES <ttl...>] [SOURCES <sources...>]
+#   [DATA_FILES <files...>])
 #
 # SOURCES may be omitted for ttl-only bundles (e.g. presets), which contain no
 # plugin library at all. NO_MANIFEST skips the manifest/ttl staging for
 # additional libraries in an already-staged bundle (e.g. a plugin's UI).
+# DATA_FILES stage bundle-local data files verbatim.
 function(add_lv2_fixture target bundle_dir output_name)
-  cmake_parse_arguments(ARG "NO_MANIFEST" "" "TTL_FILES;SOURCES" ${ARGN})
+  cmake_parse_arguments(ARG "NO_MANIFEST" "" "TTL_FILES;SOURCES;DATA_FILES" ${ARGN})
   set(bundle_root ${ZRYTHM_LV2_FIXTURE_ROOT}/$<CONFIG>/${bundle_dir})
 
   # The bundle path contains $<CONFIG>, which configure_file() cannot emit,
@@ -42,6 +44,15 @@ function(add_lv2_fixture target bundle_dir output_name)
       file(GENERATE OUTPUT ${bundle_root}/${ttl_file} CONTENT "${ttl_content}")
     endforeach()
   endif()
+
+  # Data files (e.g. the sample the eg-sampler fixture loads) are staged
+  # verbatim; unlike the ttl staging above they hold binary content, so
+  # they go through file(GENERATE)'s INPUT form
+  foreach(data_file ${ARG_DATA_FILES})
+    file(GENERATE
+      OUTPUT ${bundle_root}/${data_file}
+      INPUT ${CMAKE_CURRENT_SOURCE_DIR}/${bundle_dir}/${data_file})
+  endforeach()
 
   if(NOT ARG_SOURCES)
     return()
@@ -79,6 +90,21 @@ add_lv2_fixture(eg_enum_lv2 eg-enum.lv2 enumamp
 add_lv2_fixture(eg_fifths_lv2 eg-fifths.lv2 fifths
   TTL_FILES fifths.ttl
   SOURCES eg-fifths.lv2/fifths.c)
+# unmodified upstream plugin (conformance fixture): loads a sample file
+# through the worker extension and applies it in run(); samplerate.h in
+# the compat/ include dir redirects its libsamplerate usage to soxr's
+# libsamplerate-compatible bindings
+add_lv2_fixture(eg_sampler_lv2 eg-sampler.lv2 sampler
+  TTL_FILES sampler.ttl
+  SOURCES eg-sampler.lv2/sampler.c
+  DATA_FILES click.wav)
+target_include_directories(eg_sampler_lv2 PRIVATE eg-sampler.lv2/compat)
+target_link_libraries(eg_sampler_lv2 PRIVATE soxr-lsr SndFile::sndfile)
+# stub for the GtkUI the fixture's TTL declares: this host cannot embed
+# it; the binary completes the bundle metadata and is never loaded
+add_lv2_fixture(eg_sampler_ui_lv2 eg-sampler.lv2 sampler_ui
+  NO_MANIFEST
+  SOURCES eg-sampler.lv2/sampler_ui.c)
 add_lv2_fixture(pos_probe_lv2 pos-probe.lv2 pos_probe
   TTL_FILES pos-probe.ttl
   SOURCES pos-probe.lv2/pos_probe.c)
@@ -113,6 +139,8 @@ set(zrythm_test_lv2_fixture_targets
   eg_amp_ui_lv2
   eg_enum_lv2
   eg_fifths_lv2
+  eg_sampler_lv2
+  eg_sampler_ui_lv2
   plumbing_lv2
   pos_probe_lv2
   sigabrt_lv2

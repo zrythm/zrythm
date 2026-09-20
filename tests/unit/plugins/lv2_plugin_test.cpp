@@ -28,6 +28,7 @@
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <QSignalSpy>
 
 #include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
@@ -1211,6 +1212,140 @@ TEST_F (Lv2PluginTest, FifthsTransposesMidiNotes)
         }
     }
   EXPECT_TRUE (found_transposed) << "No transposed note-on found in the output";
+}
+
+// eg-sampler (an unmodified upstream plugin) requires the
+// state:loadDefaultState feature: the default state's sample file is
+// loaded through the worker extension, and a note-on plays it back
+TEST_F (Lv2PluginTest, SamplerDefaultStateLoadsAndPlaysSample)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-sampler.lv2"));
+
+  // The default state ran through the plugin's state interface, which
+  // loaded click.wav: the saved state records the sample path
+  EXPECT_FALSE (plugin_->save_state ().empty ());
+
+  auto * midi_in = midi_in_port ();
+  ASSERT_NE (midi_in, nullptr);
+  auto * audio_out = first_audio_port (dsp::PortFlow::Output);
+  ASSERT_NE (audio_out, nullptr);
+  ASSERT_NE (audio_out->buffers (), nullptr);
+
+  const auto note_on =
+    dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+  midi_in->buffer_.push_back (note_on.time_, note_on.data ());
+
+  float peak = 0.f;
+  for (const auto _ : std::views::iota (0, 8))
+    {
+      process_blocks (1);
+      const auto * data = audio_out->buffers ()->getReadPointer (0);
+      for (const auto i : std::views::iota (0, 256))
+        {
+          peak = std::max (peak, std::abs (data[i]));
+        }
+    }
+  EXPECT_GT (peak, 0.01f) << "The default-state sample produced silence";
+}
+
+// A patch:writable parameter is exposed as a plugin parameter whose
+// changes reach the plugin as patch:Set messages on the control
+// sequence: eg-sampler's gain scales its output
+TEST_F (Lv2PluginTest, SamplerPatchGainParameterScalesOutput)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-sampler.lv2"));
+
+  constexpr std::string_view gain_uri =
+    "http://lv2plug.in/ns/ext/parameters#gain";
+  auto * gain = find_param_by_unique_id (gain_uri);
+  ASSERT_NE (gain, nullptr);
+  // The parameters ontology declares a -20..+20 dB range with 0 dB
+  // (normalized 0.5) as the default
+  EXPECT_NEAR (gain->baseValue (), 0.5f, 0.001f);
+
+  auto * audio_out = first_audio_port (dsp::PortFlow::Output);
+  ASSERT_NE (audio_out, nullptr);
+  ASSERT_NE (audio_out->buffers (), nullptr);
+  auto * midi_in = midi_in_port ();
+  ASSERT_NE (midi_in, nullptr);
+  const auto note_on =
+    dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+  midi_in->buffer_.push_back (note_on.time_, note_on.data ());
+
+  const auto peak_of_next_blocks = [&] (int num_blocks) {
+    float peak = 0.f;
+    for (const auto _ : std::views::iota (0, num_blocks))
+      {
+        process_blocks (1);
+        const auto * data = audio_out->buffers ()->getReadPointer (0);
+        for (const auto i : std::views::iota (0, 256))
+          {
+            peak = std::max (peak, std::abs (data[i]));
+          }
+      }
+    return peak;
+  };
+
+  // The buffered note-on replays the sample on every block
+  const auto unity_peak = peak_of_next_blocks (4);
+  EXPECT_GT (unity_peak, 0.01f);
+
+  // Minimum gain (-20 dB) plays at a tenth of the amplitude
+  gain->setBaseValueByUser (0.f);
+  const auto quiet_peak = peak_of_next_blocks (4);
+  EXPECT_LT (quiet_peak, 0.3f * unity_peak);
+}
+
+// A saved state round-trips into a fresh instance: the sample comes
+// back through the state files, and the patch parameter through the
+// plugin's notify messages
+TEST_F (Lv2PluginTest, SamplerStateRoundTripsIntoNewInstance)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-sampler.lv2"));
+
+  constexpr std::string_view gain_uri =
+    "http://lv2plug.in/ns/ext/parameters#gain";
+  auto * gain = find_param_by_unique_id (gain_uri);
+  ASSERT_NE (gain, nullptr);
+  gain->setBaseValueByUser (0.75f);
+  process_blocks (1);
+  const auto state = plugin_->save_state ();
+  ASSERT_FALSE (state.empty ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-sampler.lv2"));
+  EXPECT_TRUE (plugin_->load_state (state));
+
+  auto * reloaded_gain = find_param_by_unique_id (gain_uri);
+  ASSERT_NE (reloaded_gain, nullptr);
+  // The plugin reports the restored gain back through its notify port;
+  // the deferred parameter update rides the main thread dispatcher and
+  // is value synchronization, not a user edit
+  QSignalSpy user_edits{
+    reloaded_gain, &dsp::ProcessorParameter::baseValueEditedByUser
+  };
+  process_blocks (1);
+  EXPECT_TRUE (pump_until ([&] { return reloaded_gain->baseValue () > 0.7f; }));
+  EXPECT_TRUE (user_edits.isEmpty ());
+
+  auto * midi_in = midi_in_port ();
+  ASSERT_NE (midi_in, nullptr);
+  auto * audio_out = first_audio_port (dsp::PortFlow::Output);
+  ASSERT_NE (audio_out, nullptr);
+  const auto note_on =
+    dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+  midi_in->buffer_.push_back (note_on.time_, note_on.data ());
+
+  float peak = 0.f;
+  for (const auto _ : std::views::iota (0, 8))
+    {
+      process_blocks (1);
+      const auto * data = audio_out->buffers ()->getReadPointer (0);
+      for (const auto i : std::views::iota (0, 256))
+        {
+          peak = std::max (peak, std::abs (data[i]));
+        }
+    }
+  EXPECT_GT (peak, 0.01f) << "The reloaded sample produced silence";
 }
 
 // The input port supports both MIDI and time:Position: both arrive in
