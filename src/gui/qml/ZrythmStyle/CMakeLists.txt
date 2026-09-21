@@ -12,6 +12,8 @@ qt_add_qml_module(zrythm_style
   URI ZrythmStyle
   VERSION 1.0
   IMPORTS QtQuick.Controls.Basic/6.11 # fallback to Basic
+  SOURCES
+    shortcututils.h
   QML_FILES
     ApplicationWindow.qml
     # Action.qml
@@ -61,6 +63,4 @@ qt_add_qml_module(zrythm_style
   # ENABLE_TYPE_COMPILER
 )
 
-# target_link_libraries(zrythm_style
-#   PRIVATE Qt6::QmlPrivate Qt6::QuickPrivate Qt6::Quick
-# )
+target_link_libraries(zrythm_style PUBLIC Qt6::Gui)

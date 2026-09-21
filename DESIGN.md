@@ -482,6 +482,9 @@ Flat 24 × 24 (radius 6) icon buttons with
 Menus and menu items sit on the shared popup surface. Items
 are 24 px tall, radius 4, inset 1 px inside the popup with an 8 px text pad,
 `semiBoldTextFont`; checkable items show a check glyph, submenus an arrow.
+Items with an associated shortcut show it right-aligned in the trailing
+padding in `fadedTextFont` (11 px Normal) at 62 % text opacity; submenu
+rows and rows without a shortcut reserve nothing.
 
 | State | Fill | Text |
 |---|---|---|
