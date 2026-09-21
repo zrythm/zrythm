@@ -10,6 +10,8 @@ import ZrythmStyle 1.0
 T.MenuBarItem {
   id: control
 
+  readonly property bool menuOpen: control.menu?.visible ?? false
+
   font: ZrythmTheme.semiBoldTextFont
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
@@ -21,13 +23,13 @@ T.MenuBarItem {
   background: Rectangle {
     readonly property color baseColor: control.highlighted ? ZrythmTheme.backgroundAppendColor : "transparent"
 
-    color: control.down ? control.palette.highlight : baseColor
+    color: control.down || control.menuOpen ? control.palette.highlight : baseColor
     implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 40
   }
   contentItem: IconLabel {
     alignment: Qt.AlignLeft
-    color: control.palette.buttonText
+    color: control.down || control.menuOpen ? control.palette.highlightedText : control.palette.buttonText
     display: control.display
     font: control.font
     icon: control.icon
@@ -38,7 +40,7 @@ T.MenuBarItem {
 
   icon {
     // height: 24
-    color: control.palette.buttonText
+    color: control.down || control.menuOpen ? control.palette.highlightedText : control.palette.buttonText
     width: ZrythmTheme.buttonHeight - padding * 2
   }
 }
