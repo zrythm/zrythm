@@ -15,6 +15,7 @@ Button {
   palette {
     accent: ZrythmTheme.dangerColor
     buttonText: ZrythmTheme.dangerColor
+    brightText: "#FFFFFF"
   }
 
   ToolTip {

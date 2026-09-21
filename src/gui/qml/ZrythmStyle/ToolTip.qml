@@ -10,7 +10,7 @@ T.ToolTip {
 
   closePolicy: T.Popup.CloseOnEscape | T.Popup.CloseOnPressOutsideParent | T.Popup.CloseOnReleaseOutsideParent
   delay: ZrythmTheme.toolTipDelay
-  font.pointSize: ZrythmTheme.fontPointSize
+  font: ZrythmTheme.normalTextFont
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
   margins: ZrythmTheme.buttonPadding

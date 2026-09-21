@@ -36,8 +36,8 @@ typography:
     fontWeight: 400
   track-name:
     fontFamily: Noto Sans
-    fontSize: 14px
-    fontWeight: 400
+    fontSize: 12px
+    fontWeight: 500
   faded:
     fontFamily: Noto Sans
     fontSize: 11px
@@ -78,7 +78,7 @@ components:
     typography: "{typography.button}"
     rounded: "{rounded.lg}"
     height: 24px
-    padding: 12px
+    padding: 6px
   button-hover:
     backgroundColor: "#414141"
   button-pressed:
@@ -285,7 +285,7 @@ shown; `blend` means "button background blended toward contrast × 1.3"
 | `buttonTextFont` | 12 px | Bold | Buttons, combos, toolbuttons |
 | `semiBoldTextFont` | 12 px | Medium (500) | Tabs, menu-bar labels, menu items, checkboxes, list rows |
 | `normalTextFont` | 12 px | Normal (400) | Labels, text fields, tooltips |
-| `trackNameTextFont` | 14 px | Normal (400) | Track headers in the arrangement view |
+| `trackNameTextFont` | 12 px | Medium (500) | Track headers in the arrangement view |
 | `fadedTextFont` | 11 px | Normal | Secondary/disabled text |
 | `arrangerObjectTextFont` | 11 px | Medium | Text inside arranger objects |
 | `arrangerObjectBoldTextFont` | 11 px | Bold | Emphasized arranger object text |
@@ -324,7 +324,7 @@ a scale of elevations:
 | Level | Shadow | Applied to |
 |---|---|---|
 | Flat | none | Panels, lists, fields, tabs, toolbar buttons at rest on the page |
-| Raised | 2 px offset (both axes), blur 0.6, black @ 70 % (`shadowColor`) | Buttons and popup surfaces (tooltips, menus, combo popups, dialogs) |
+| Raised | 2 px offset (both axes), blur 0.6, black @ 70 % (`shadowColor`) | Buttons and popup surfaces (tooltips, menus, combo popups) |
 
 ## Shapes
 
@@ -348,7 +348,7 @@ only deviations are spelled out. Dark-mode values shown.
 
 ### Buttons
 
-Rounded (radius 9), 24 px tall, bold 12 px label with a 12 px horizontal
+Rounded (radius 9), 24 px tall, bold 12 px label with a 6 px horizontal
 text inset, drop shadow.
 
 | Variant / state | Fill | Text |
@@ -409,8 +409,10 @@ Tabs activate on drag-hover after a short dwell (drag-to-switch-tab).
 
 The shared popup surface: `button` fill `#323232`,
 radius 4, 1 px `backgroundAppendColor` (white @ 25 %) border, drop shadow.
-Used by tooltips, combo/menu popups, and dialogs. Content (menu and combo
-items) sits on 4 px padding inside the surface.
+Used by tooltips and combo/menu popups. Content (menu and combo items) sits
+on 4 px padding inside the surface. Dialogs open as native windows: the OS
+provides the title bar, frame and shadow, and the dialog paints a flat
+window-colored client area inside that frame.
 
 Tooltips: 12 px text in `toolTipText`, 4 px padding, 700 ms
 delay, placed 3 px above the control (below if it does not fit), closing on
@@ -502,9 +504,13 @@ used by combo popup and menu items. Alternating row backgrounds use
 | Selected (highlighted) | accent `#FFAE00` | dark `#161616` |
 | Pressed | strengthened | unchanged |
 
-### Clips
+### Selection
 
-Selected clips draw a 1 px `textColor` border around the clip rectangle.
+Selected arranger objects (clips, chords, MIDI notes, automation points,
+markers, and tempo-map badges) draw a 1 px `textColor` outline around
+their bounds, following each object's corner radius (fully round for
+automation points). On top of the outline, the fill brightens slightly
+toward contrast and the object name is rendered bold.
 
 ## Do's and Don'ts
 

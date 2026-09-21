@@ -36,6 +36,11 @@ Control {
   required property Track track
   required property UndoStack undoStack
 
+  // Corner radius of the selection outline; types whose shape has corners
+  // other than the default set this to match (e.g. half the height for the
+  // fully-round automation point).
+  property real selectionCornerRadius: ZrythmTheme.toolButtonRadius
+
   signal selectionRequested(var mouse)
   signal objectDoubleClicked
 
@@ -97,6 +102,16 @@ Control {
         isLeft: false
       }
     }
+  }
+
+  Rectangle {
+    anchors.fill: parent
+    border.color: root.palette.windowText
+    border.width: 1
+    color: "transparent"
+    radius: root.selectionCornerRadius
+    visible: root.isSelected
+    z: 200
   }
 
   component Handle: Rectangle {

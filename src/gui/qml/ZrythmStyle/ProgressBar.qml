@@ -32,7 +32,7 @@ T.ProgressBar {
     Rectangle {
       color: palette.highlight
       height: parent.height
-      radius: 4
+      radius: 3
       visible: !control.indeterminate
       width: control.visualPosition * parent.width
     }
@@ -55,7 +55,7 @@ T.ProgressBar {
 
             color: control.palette.highlight
             height: control.height
-            radius: 4
+            radius: 3
             width: control.width / 3
 
             NumberAnimation on x {

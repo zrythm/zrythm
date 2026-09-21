@@ -13,6 +13,7 @@ QtObject {
 
   readonly property real animationDuration: 200
   readonly property int animationEasingType: Easing.OutExpo
+  property color alternateBackgroundColor: darkMode ? "#0F0F0F" : "#D9D9D9"
   readonly property font arrangerObjectBoldTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 11,
@@ -39,7 +40,7 @@ QtObject {
   readonly property color clipContentColor: Qt.rgba(colorPalette.highlightedText.r, colorPalette.highlightedText.g, colorPalette.highlightedText.b, 0.85)
   readonly property Palette colorPalette: Palette {
     accent: root.primaryColor
-    alternateBase: root.getColorBlendedTowardsContrast(root.buttonBackgroundColor)
+    alternateBase: root.alternateBackgroundColor
     base: root.buttonBackgroundColor // background color for text editor controls and item views
     brightText: root.pageColor
     button: root.buttonBackgroundColor
@@ -140,7 +141,13 @@ QtObject {
     })
   readonly property color soloGreenColor: "#009B86"
   readonly property color springGreen: "#40FFA0"
+  readonly property color superorangeColor: "#FF5500"
   property color textColor: darkMode ? "#E3E3E3" : "#161616" // used in contrast with pageColor
+  readonly property font trackNameTextFont: ({
+      "family": root.fontFamily,
+      "pixelSize": 12,
+      "weight": Font.Medium
+    })
   readonly property real textFieldRadius: 4
   readonly property real toolButtonRadius: 6
   readonly property int toolTipDelay: 700
@@ -187,7 +194,12 @@ QtObject {
 
   // Makes dark colors darker and light colors lighter by the down enhancement factor.
   function getStrongerColor(arg: color): color {
-    return root.isColorDark(arg) ? arg.darker(root.downEnhancementFactor) : arg.lighter(root.downEnhancementFactor);
+    if (root.isColorDark(arg))
+      return arg.darker(root.downEnhancementFactor);
+    const lightened = arg.lighter(root.downEnhancementFactor);
+    // lighter() clamps at maximum brightness, in which case darkening is
+    // used to strengthen the color
+    return lightened == arg ? arg.darker(root.downEnhancementFactor) : lightened;
   }
 
   function isColorDark(arg: color): bool {

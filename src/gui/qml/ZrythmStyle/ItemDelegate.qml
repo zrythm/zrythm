@@ -16,7 +16,9 @@ T.ItemDelegate {
   icon.width: 24
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  leftPadding: 6
   padding: 4
+  rightPadding: 6
   spacing: 4
 
   background: Rectangle {
@@ -26,6 +28,7 @@ T.ItemDelegate {
     color: colorAdjustedForHoverOrFocusOrDown
     implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 100
+    radius: ZrythmTheme.textFieldRadius
     visible: control.down || control.highlighted || control.visualFocus || hoverHandler.hovered
 
     Behavior on color {

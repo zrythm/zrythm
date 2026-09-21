@@ -22,10 +22,10 @@ qt_add_qml_module(zrythm_style
     CheckIndicator.qml
     ComboBox.qml
     DialogButtonBox.qml
-    # Dialog.qml
+    Dialog.qml
     DropShadowEffect.qml
-    # Label.qml
     ItemDelegate.qml
+    Label.qml
     Menu.qml
     MenuBar.qml
     MenuBarItem.qml

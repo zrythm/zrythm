@@ -31,7 +31,6 @@ T.Menu {
   }
   background: PopupBackgroundRect {
     implicitWidth: 200
-    radius: 0
   }
   contentItem: ListView {
     clip: true

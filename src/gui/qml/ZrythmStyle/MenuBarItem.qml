@@ -10,6 +10,7 @@ import ZrythmStyle 1.0
 T.MenuBarItem {
   id: control
 
+  font: ZrythmTheme.semiBoldTextFont
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
   leftPadding: 12
@@ -33,11 +34,6 @@ T.MenuBarItem {
     mirrored: control.mirrored
     spacing: control.spacing
     text: control.text
-  }
-
-  font {
-    family: control.font.family
-    pointSize: ZrythmTheme.fontPointSize
   }
 
   icon {

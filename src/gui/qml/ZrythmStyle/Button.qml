@@ -13,7 +13,7 @@ T.Button {
   property real styleHeight: ZrythmTheme.buttonHeight
 
   font: ZrythmTheme.buttonTextFont
-  horizontalPadding: padding + 2
+  horizontalPadding: 6
   hoverEnabled: true
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)

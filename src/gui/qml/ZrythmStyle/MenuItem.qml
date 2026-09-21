@@ -11,20 +11,22 @@ T.MenuItem {
   id: control
 
   font: ZrythmTheme.semiBoldTextFont
-  icon.color: ZrythmTheme.colorPalette.windowText
+  icon.color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
   icon.width: ZrythmTheme.buttonHeight - 2 * control.padding
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
   // icon.height: 24
+  leftPadding: 8
   opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
   padding: ZrythmTheme.buttonPadding
+  rightPadding: 8
   spacing: ZrythmTheme.buttonPadding
 
   arrow: ColorImage {
-    color: ZrythmTheme.colorPalette.windowText
+    color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
     defaultColor: "#353637"
     mirror: control.mirrored
-    source: control.subMenu ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/arrow-indicator.png" : ""
+    source: control.subMenu ? "qrc:/qt/qml/Zrythm/icons/lucide/chevron-right.svg" : ""
     sourceSize.height: control.icon.width - 4
     sourceSize.width: control.icon.width - 4
     visible: control.subMenu
@@ -39,6 +41,7 @@ T.MenuItem {
     height: control.height - 2
     implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 200
+    radius: ZrythmTheme.textFieldRadius
     width: control.width - 2
     x: 1
     y: 1
@@ -63,9 +66,9 @@ T.MenuItem {
     text: control.text
   }
   indicator: ColorImage {
-    color: ZrythmTheme.colorPalette.windowText
+    color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
     defaultColor: "#353637"
-    source: control.checkable ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/check.png" : ""
+    source: control.checkable ? "qrc:/qt/qml/Zrythm/icons/noto-glyphs/check.svg" : ""
     sourceSize.height: control.icon.width
     sourceSize.width: control.icon.width
     visible: control.checked
