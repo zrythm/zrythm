@@ -318,12 +318,12 @@
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="102"/>
         <source>Chord Selector</source>
-        <translation>Sélecteur d&apos;accords</translation>
+        <translation>Sélecteur d&apos;accord</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="113"/>
         <source>Custom</source>
-        <translation type="unfinished">Personnalisé</translation>
+        <translation>Personnalisé</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="117"/>
@@ -333,7 +333,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="146"/>
         <source>Constrain to %1</source>
-        <translation>Contraindre à H, V</translation>
+        <translation>Contraindre à %1</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="187"/>
@@ -348,7 +348,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="195"/>
         <source>dim</source>
-        <translation type="unfinished"></translation>
+        <translation>dim</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="199"/>
