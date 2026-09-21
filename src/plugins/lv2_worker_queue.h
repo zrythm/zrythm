@@ -95,7 +95,7 @@ public:
     // caller's scratch buffer
     assert (size <= payload_out.size ());
     // The record was published whole, so its payload bytes are present
-    const bool payload_read = fifo_read_bytes (
+    [[maybe_unused]] const bool payload_read = fifo_read_bytes (
       fifo_, data_, { payload_out.data (), static_cast<size_t> (size) });
     // A partial record would leave the stream misaligned: the framing
     // guarantees this cannot happen
