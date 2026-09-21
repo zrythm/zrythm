@@ -270,7 +270,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Transposar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>
@@ -403,7 +403,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="59"/>
         <source>Highlight</source>
-        <translation type="unfinished"></translation>
+        <translation>realçar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="65"/>
@@ -418,7 +418,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="73"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Escala</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="77"/>
@@ -1184,17 +1184,17 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="76"/>
         <source>Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Quadre esquerre</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="87"/>
         <source>Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Quadre inferior</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="98"/>
         <source>Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Quadre dret</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="110"/>

@@ -270,7 +270,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Транспонировать (Transpose)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>
@@ -325,7 +325,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="102"/>
         <source>Chord Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Селектор аккордов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="113"/>
@@ -403,7 +403,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="59"/>
         <source>Highlight</source>
-        <translation type="unfinished"></translation>
+        <translation>Выделение</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="65"/>
@@ -418,7 +418,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="73"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Гамма</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="77"/>
@@ -1182,7 +1182,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="64"/>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="64"/>
         <source>Redo</source>
-        <translation type="unfinished"></translation>
+        <translation>Повторить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="71"/>
@@ -1192,17 +1192,17 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="76"/>
         <source>Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Левая Панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="87"/>
         <source>Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Нижняя Панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="98"/>
         <source>Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Правая Панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="110"/>
@@ -4211,7 +4211,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="128"/>
         <source>Timebase</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовой пояс</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="136"/>
@@ -4247,7 +4247,7 @@ Support this project at {}
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="206"/>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="355"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет (None)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="262"/>
@@ -4262,7 +4262,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="328"/>
         <source>Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="401"/>

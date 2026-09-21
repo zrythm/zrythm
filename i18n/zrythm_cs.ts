@@ -877,14 +877,14 @@
     <name>src/audio/region.c:506</name>
     <message>
         <source>MIDI</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/file_browser_filters.ui:17</name>
     <message>
         <source>MIDI</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI</translation>
     </message>
 </context>
 <context>
@@ -3518,14 +3518,14 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/channel_slot.c:736</name>
     <message>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_selector_popover.ui:60</name>
     <message>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin</translation>
     </message>
 </context>
 <context>
@@ -4554,7 +4554,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/help_toolbar.c:42</name>
     <message>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Podpořte nás</translation>
     </message>
 </context>
 <context>
@@ -4720,28 +4720,28 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/right_dock_edge.c:133</name>
     <message>
         <source>File Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Prohlížeč souborů</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/file_browser_window.c:38</name>
     <message>
         <source>File Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Prohlížeč souborů</translation>
     </message>
 </context>
 <context>
     <name>src/utils/gtk.c:1250</name>
     <message>
         <source>File Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Prohlížeč souborů</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/right_dock_edge.c:168</name>
     <message>
         <source>Monitor Section</source>
-        <translation type="unfinished"></translation>
+        <translation>Monitorovací sekce</translation>
     </message>
 </context>
 <context>
@@ -9373,14 +9373,14 @@ Please select a format to export as</source>
     <name>resources/gtk/help-overlay.ui:98</name>
     <message>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/header.ui:50</name>
     <message>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt</translation>
     </message>
 </context>
 <context>
@@ -9576,7 +9576,7 @@ Please select a format to export as</source>
     <name>resources/gtk/help-overlay.ui:301</name>
     <message>
         <source>Looping</source>
-        <translation type="unfinished"></translation>
+        <translation>Smyčkování</translation>
     </message>
 </context>
 <context>
@@ -11322,7 +11322,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>data/zrythm.desktop.in:11</name>
     <message>
         <source>Digital Audio Workstation</source>
-        <translation type="unfinished"></translation>
+        <translation>Digitální zvuková pracovní stanice</translation>
     </message>
 </context>
 <context>
@@ -13135,14 +13135,14 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>build/data/org.zrythm.Zrythm.gschema.xml:992</name>
     <message>
         <source>Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Pluginy</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1023</name>
     <message>
         <source>Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Pluginy</translation>
     </message>
 </context>
 <context>
@@ -13254,21 +13254,21 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1051</name>
     <message>
         <source>Editing</source>
-        <translation type="unfinished"></translation>
+        <translation>Úpravy</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1065</name>
     <message>
         <source>Editing</source>
-        <translation type="unfinished"></translation>
+        <translation>Úpravy</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1079</name>
     <message>
         <source>Editing</source>
-        <translation type="unfinished"></translation>
+        <translation>Úpravy</translation>
     </message>
 </context>
 <context>
