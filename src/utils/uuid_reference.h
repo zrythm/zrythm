@@ -17,7 +17,6 @@ namespace zrythm::utils
  * reference counts on construction/destruction so the registry can manage
  * object lifetimes. Returns UuidIdentifiableBase* from get() — callers
  * that need a specific type should use TypedUuidReference<T> instead.
- *
  * Can be in an unengaged state (no id) for deferred initialization during
  * deserialization.
  */
@@ -78,17 +77,6 @@ public:
   ~UuidReference () { release_ref (); }
 
   QUuid id () const { return id_.value (); }
-
-  void set_id (const QUuid &id)
-  {
-    if (id_.has_value ())
-      {
-        throw std::runtime_error (
-          "Cannot set id of UuidReference that already has an id");
-      }
-    id_ = id;
-    acquire_ref ();
-  }
 
   UuidIdentifiableBase * get () const
   {

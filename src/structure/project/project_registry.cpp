@@ -14,6 +14,7 @@
 #include "structure/project/project_registry.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_fwd.h"
+#include "structure/tracks/track_lane.h"
 #include "utils/exceptions.h"
 #include "utils/serialization.h"
 #include "utils/traits.h"
@@ -38,6 +39,8 @@ struct ProjectRegistry::Impl
       std::visit ([] (auto * p) { delete p; }, var);
     for (auto &[id, var] : tracks_)
       std::visit ([] (auto * p) { delete p; }, var);
+    for (auto &[id, ptr] : lanes_)
+      delete ptr;
     for (auto &[id, var] : arranger_objects_)
       std::visit ([] (auto * p) { delete p; }, var);
     for (auto &[id, ptr] : file_audio_sources_)
@@ -49,6 +52,8 @@ struct ProjectRegistry::Impl
   boost::unordered::unordered_flat_map<QUuid, plugins::PluginPtrVariant> plugins_;
   boost::unordered::unordered_flat_map<QUuid, structure::tracks::TrackPtrVariant>
     tracks_;
+  boost::unordered::unordered_flat_map<QUuid, structure::tracks::TrackLane *>
+    lanes_;
   boost::unordered::
     unordered_flat_map<QUuid, structure::arrangement::ArrangerObjectPtrVariant>
       arranger_objects_;
@@ -129,6 +134,14 @@ ProjectRegistry::register_object_impl (utils::UuidIdentifiableBase &base)
       return;
     }
 
+  if (auto * lane = qobject_cast<structure::tracks::TrackLane *> (qobj))
+    {
+      impl_->lanes_.emplace (uuid, lane);
+      impl_->uuid_to_category_.emplace (uuid, Impl::Category::Lane);
+      qobj->setParent (this);
+      return;
+    }
+
   if (auto * obj = qobject_cast<structure::arrangement::ArrangerObject *> (qobj))
     {
       auto var = utils::convert_to_variant_qobj<
@@ -154,6 +167,11 @@ ProjectRegistry::register_object_impl (utils::UuidIdentifiableBase &base)
 void
 ProjectRegistry::acquire_reference_impl (const QUuid &id)
 {
+  if (!impl_->uuid_to_category_.contains (id))
+    {
+      throw std::runtime_error (
+        fmt::format ("acquire_reference: unknown UUID {}", id.toString ()));
+    }
   impl_->ref_counts_[id]++;
 }
 
@@ -206,6 +224,11 @@ ProjectRegistry::find_by_raw_uuid_impl (const QUuid &id) const
       {
         auto it = impl_->tracks_.find (id);
         return it != impl_->tracks_.end () ? extract_base (it->second) : nullptr;
+      }
+    case Impl::Category::Lane:
+      {
+        auto it = impl_->lanes_.find (id);
+        return it != impl_->lanes_.end () ? it->second : nullptr;
       }
     case Impl::Category::ArrangerObject:
       {
@@ -261,6 +284,12 @@ ProjectRegistry::for_each_matching_impl (
     {
       for (const auto &[uuid, var] : impl_->tracks_)
         std::visit ([&] (auto * p) { visit_if_matching (*p); }, var);
+      return;
+    }
+  if (meta_type.inherits (&structure::tracks::TrackLane::staticMetaObject))
+    {
+      for (const auto &[uuid, ptr] : impl_->lanes_)
+        visit_if_matching (*ptr);
       return;
     }
   if (meta_type.inherits (&plugins::Plugin::staticMetaObject))
@@ -388,6 +417,16 @@ ProjectRegistry::delete_object_by_id (const QUuid &id)
           }
         break;
       }
+    case Impl::Category::Lane:
+      {
+        auto it = impl_->lanes_.find (id);
+        if (it != impl_->lanes_.end ())
+          {
+            raw = it->second;
+            impl_->lanes_.erase (it);
+          }
+        break;
+      }
     case Impl::Category::ArrangerObject:
       {
         auto it = impl_->arranger_objects_.find (id);
@@ -442,6 +481,9 @@ ProjectRegistry::serialize_object_by_uuid (
     case ObjectCategory::Track:
       j_out = impl_->tracks_.at (id);
       break;
+    case ObjectCategory::Lane:
+      j_out = *impl_->lanes_.at (id);
+      break;
     case ObjectCategory::ArrangerObject:
       j_out = impl_->arranger_objects_.at (id);
       break;
@@ -485,6 +527,7 @@ to_json (nlohmann::json &j, const ProjectRegistry &registry)
     serialize_bucket_variant (registry.impl_->plugins_);
   j[ProjectRegistry::kTracksKey] =
     serialize_bucket_variant (registry.impl_->tracks_);
+  j[ProjectRegistry::kLanesKey] = serialize_bucket_ptr (registry.impl_->lanes_);
   j[ProjectRegistry::kArrangerObjectsKey] =
     serialize_bucket_variant (registry.impl_->arranger_objects_);
   j[ProjectRegistry::kFileAudioSourcesKey] =
@@ -546,6 +589,19 @@ struct TrackBuilder
   template <typename T> std::unique_ptr<T> build () const
   {
     return factory.get_builder<T> ().build_for_deserialization ();
+  }
+};
+
+struct TrackLaneBuilder
+{
+  ProjectRegistry                         &registry;
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    static_assert (std::is_same_v<T, structure::tracks::TrackLane>);
+    // Neutral dependencies: the owning TrackLaneList rewires the lane when
+    // it attaches it
+    return std::make_unique<T> (
+      structure::tracks::TrackLane::TrackLaneDependencies{ registry, nullptr });
   }
 };
 
@@ -706,6 +762,8 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
     deferred_arranger_objects;
   std::vector<std::pair<structure::tracks::TrackPtrVariant, nlohmann::json>>
     deferred_tracks;
+  std::vector<std::pair<structure::tracks::TrackLane *, nlohmann::json>>
+    deferred_lanes;
 
   // --- Phase 1: Create and register ALL objects from ALL buckets ---
   // All objects are created, assigned their UUIDs from JSON, and registered.
@@ -763,10 +821,21 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
         TrackBuilder{ deps.track_factory }, deferred_tracks);
     }
 
+  if (j.contains (ProjectRegistry::kLanesKey))
+    {
+      deferred_lanes.reserve (j[ProjectRegistry::kLanesKey].size ());
+      create_and_register_ptr_all<structure::tracks::TrackLane> (
+        registry, j[ProjectRegistry::kLanesKey], TrackLaneBuilder{ registry },
+        deferred_lanes);
+    }
+
   // --- Phase 2: Deserialize data into ALL objects from ALL buckets ---
   // Same order as Phase 1: ports → params → plugins → file audio sources →
-  // arranger objects → tracks. Within each bucket, JSON array order is
-  // preserved so children are deserialized before parents.
+  // arranger objects → tracks → lanes. Within each bucket, JSON array order
+  // is preserved so children are deserialized before parents. Lanes come
+  // after tracks: the tracks' TrackLaneLists attach the (still empty) lanes
+  // and wire their dependencies, so the clips arriving during lane data
+  // deserialization see a live timebase source.
 
   deserialize_all<dsp::PortPtrVariant> (deferred_ports);
   deserialize_ptr_all<dsp::ProcessorParameter> (deferred_params);
@@ -775,6 +844,7 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
   deserialize_all<structure::arrangement::ArrangerObjectPtrVariant> (
     deferred_arranger_objects);
   deserialize_all<structure::tracks::TrackPtrVariant> (deferred_tracks);
+  deserialize_ptr_all<structure::tracks::TrackLane> (deferred_lanes);
 }
 
 } // namespace zrythm::structure::project

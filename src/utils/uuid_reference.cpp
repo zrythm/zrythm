@@ -30,9 +30,16 @@ from_json (const nlohmann::json &j, UuidReference &ref)
       auto new_id = j.get<QUuid> ();
       if (ref.id_.has_value () && *ref.id_ == new_id)
         return;
-      ref.release_ref ();
-      ref.id_ = new_id;
-      ref.acquire_ref ();
+      if (ref.registry_ == nullptr)
+        {
+          throw std::runtime_error (
+            "deserializing a UUID into a reference without a registry");
+        }
+      // acquire through a fresh reference first: if the registry rejects
+      // the id, @p ref keeps its previous state instead of holding an id
+      // it never acquired
+      UuidReference new_ref{ new_id, *ref.registry_ };
+      ref = std::move (new_ref);
     }
 }
 

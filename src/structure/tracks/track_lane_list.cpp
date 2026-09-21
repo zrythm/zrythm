@@ -2,8 +2,13 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <ranges>
+#include <set>
+
+#include "utils/format_qt.h"
 
 #include "structure/tracks/track_lane_list.h"
+#include "utils/exceptions.h"
+#include "utils/registry_utils.h"
 #include "utils/views.h"
 
 #include <scn/scan.h>
@@ -18,10 +23,6 @@ TrackLaneList::TrackLaneList (
       dependencies_ (
         TrackLane::TrackLaneDependencies{
           .registry_ = registry,
-          .soloed_lanes_exist_func_ =
-            [this] () {
-              return std::ranges::any_of (lanes_view (), &TrackLane::soloed);
-            },
           .timebase_provider_ = timebase_provider })
 {
   QObject::connect (
@@ -29,7 +30,7 @@ TrackLaneList::TrackLaneList (
     [this] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
-          const auto &lane = lanes ().at (i);
+          auto * lane = lanes ().at (i).get ();
           QObject::connect (
             lane->arrangement::ArrangerObjectOwner<
               arrangement::MidiClip>::get_model (),
@@ -41,7 +42,7 @@ TrackLaneList::TrackLaneList (
             &arrangement::ArrangerObjectListModel::contentChanged, this,
             &TrackLaneList::laneObjectsNeedRecache, Qt::QueuedConnection);
           QObject::connect (
-            lane.get (), &TrackLane::heightChanged, this,
+            lane, &TrackLane::heightChanged, this,
             &TrackLaneList::totalHeightChanged);
         }
       Q_EMIT totalHeightChanged ();
@@ -51,7 +52,7 @@ TrackLaneList::TrackLaneList (
     [this] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
-          const auto &lane = lanes ().at (i);
+          auto * lane = lanes ().at (i).get ();
           QObject::disconnect (
             lane->arrangement::ArrangerObjectOwner<
               arrangement::MidiClip>::get_model (),
@@ -63,7 +64,7 @@ TrackLaneList::TrackLaneList (
             &arrangement::ArrangerObjectListModel::contentChanged, this,
             &TrackLaneList::laneObjectsNeedRecache);
           QObject::disconnect (
-            lane.get (), &TrackLane::heightChanged, this,
+            lane, &TrackLane::heightChanged, this,
             &TrackLaneList::totalHeightChanged);
         }
     });
@@ -107,7 +108,7 @@ TrackLaneList::data (const QModelIndex &index, int role) const
     case TrackLanePtrRole:
       return QVariant::fromValue (lane.get ());
     case Qt::DisplayRole:
-      return lane->name ();
+      return lane.get ()->name ();
     default:
       return {};
     }
@@ -121,11 +122,17 @@ TrackLaneList::insertLane (size_t index)
   if (index > size ())
     throw std::out_of_range ("index out of range");
 
+  auto lane_ref =
+    utils::create_object<TrackLane> (dependencies_.registry_, dependencies_);
+  // the lane's owner pointer is set before the row insert so rowsInserted
+  // handlers observe an attached lane
+  lane_ref.get ()->set_owner_list (this);
+
   beginInsertRows (
     QModelIndex (), static_cast<int> (index), static_cast<int> (index));
   lanes_.insert (
     std::ranges::next (std::begin (lanes_), static_cast<int> (index)),
-    utils::make_qobject_unique<TrackLane> (dependencies_, this));
+    std::move (lane_ref));
   endInsertRows ();
 
   auto * lane = lanes_.at (index).get ();
@@ -192,8 +199,8 @@ TrackLaneList::remove_empty_last_lanes ()
   const auto empty_pred = [] (const auto &lane) {
     // Both lists: lanes use only one in practice, so checking just MIDI
     // would erase audio lanes.
-    return lane->midiClips ()->rowCount () == 0
-           && lane->audioClips ()->rowCount () == 0;
+    return lane.get ()->midiClips ()->rowCount () == 0
+           && lane.get ()->audioClips ()->rowCount () == 0;
   };
   // Find the last non-matching element from the end
   auto last_non_matching =
@@ -202,9 +209,7 @@ TrackLaneList::remove_empty_last_lanes ()
   if (last_non_matching == lanes_.rend ())
     {
       // All elements match, keep only the first one
-      beginRemoveRows ({}, 1, static_cast<int> (lanes_.size () - 1));
-      lanes_.erase (lanes_.begin () + 1, lanes_.end ());
-      endRemoveRows ();
+      remove_lanes (1, lanes_.size () - 1);
       return;
     }
 
@@ -220,40 +225,19 @@ TrackLaneList::remove_empty_last_lanes ()
   if (keep_from == lanes_.end ())
     return;
 
-  // Erase from keep_from to end
-  const int first_row =
-    static_cast<int> (std::ranges::distance (lanes_.begin (), keep_from));
-  const int last_row = static_cast<int> (lanes_.size () - 1);
-  beginRemoveRows ({}, first_row, last_row);
-  lanes_.erase (keep_from, lanes_.end ());
-  endRemoveRows ();
+  const auto first_row =
+    static_cast<size_t> (std::ranges::distance (lanes_.begin (), keep_from));
+  remove_lanes (first_row, lanes_.size () - first_row);
 }
 
 void
 TrackLaneList::clear ()
 {
   if (!empty ())
-    {
-      beginRemoveRows (QModelIndex (), 0, static_cast<int> (lanes_.size () - 1));
-      lanes_.clear ();
-      endRemoveRows ();
-    }
-}
-
-utils::QObjectUniquePtr<TrackLane>
-TrackLaneList::pop_back ()
-{
-  if (!empty ())
-    {
-      const int idx = static_cast<int> (lanes_.size () - 1);
-      beginRemoveRows (QModelIndex (), idx, idx);
-      auto lane = std::move (lanes_.back ());
-      lane->setParent (nullptr);
-      lanes_.pop_back ();
-      endRemoveRows ();
-      return lane;
-    }
-  return {};
+    // Releasing these references deletes lanes that are not referenced
+    // anywhere else (e.g. the default lanes each new track creates
+    // before its serialized lanes are attached)
+    remove_lanes (0, lanes_.size ());
 }
 
 void
@@ -261,18 +245,31 @@ TrackLaneList::erase (const size_t pos)
 {
   if (pos < lanes_.size ())
     {
-      beginRemoveRows (
-        QModelIndex (), static_cast<int> (pos), static_cast<int> (pos));
-      lanes_.erase (
-        lanes_.begin () + static_cast<decltype (lanes_)::difference_type> (pos));
+      remove_lanes (pos, 1);
       update_default_lane_names ();
-      endRemoveRows ();
     }
   else
     {
       throw std::out_of_range (
         fmt::format ("position {} out of range ({})", pos, lanes_.size ()));
     }
+}
+
+void
+TrackLaneList::remove_lanes (const size_t first_row, const size_t count)
+{
+  if (count == 0)
+    return;
+
+  beginRemoveRows (
+    QModelIndex (), static_cast<int> (first_row),
+    static_cast<int> (first_row + count - 1));
+  const auto from = std::ranges::next (lanes_.begin (), first_row);
+  const auto to = std::ranges::next (from, static_cast<long> (count));
+  for (auto it = from; it != to; ++it)
+    it->get ()->set_owner_list (nullptr);
+  lanes_.erase (from, to);
+  endRemoveRows ();
 }
 
 void
@@ -296,19 +293,62 @@ TrackLaneList::update_default_lane_names ()
 void
 to_json (nlohmann::json &j, const TrackLaneList &p)
 {
-  j[TrackLaneList::kLanesKey] = p.lanes_;
+  j[TrackLaneList::kLaneIdsKey] = p.lanes_;
   j[TrackLaneList::kLanesVisibleKey] = p.lanes_visible_;
 }
 
 void
 from_json (const nlohmann::json &j, TrackLaneList &p)
 {
+  // Dropping the list's references deletes lanes not referenced anywhere
+  // else (the default lanes every constructed track creates), so the ids
+  // this call attaches must not be ones the list itself already holds
   p.clear ();
-  for (const auto &lane_json : j.at (TrackLaneList::kLanesKey))
+
+  std::vector<QUuid> lane_ids;
+  lane_ids.reserve (j.at (TrackLaneList::kLaneIdsKey).size ());
+  for (const auto &lane_id_json : j.at (TrackLaneList::kLaneIdsKey))
+    lane_ids.emplace_back (lane_id_json.get<QUuid> ());
+
+  // Validate before touching the model or the vector: every laneIds entry
+  // must reference a registered track lane exactly once (a lane may be
+  // attached by several lists — the last one wins its owner pointer)
+  std::set<QUuid> seen_lane_ids;
+  for (const auto &lane_id : lane_ids)
     {
-      auto * lane = p.insertLane (p.size ());
-      lane_json.get_to (*lane);
+      if (!seen_lane_ids.insert (lane_id).second)
+        {
+          throw ZrythmException (
+            fmt::format (
+              "{} contains {} more than once", TrackLaneList::kLaneIdsKey,
+              lane_id.toString ()));
+        }
+      const auto * lane = qobject_cast<TrackLane *> (
+        p.dependencies_.registry_.find_by_raw_uuid (lane_id));
+      if (lane == nullptr)
+        {
+          throw ZrythmException (
+            fmt::format (
+              "{} references {} which is not a registered track lane",
+              TrackLaneList::kLaneIdsKey, lane_id.toString ()));
+        }
     }
+
+  if (!lane_ids.empty ())
+    {
+      p.beginInsertRows (
+        QModelIndex (), 0, static_cast<int> (lane_ids.size () - 1));
+      for (const auto &lane_id : lane_ids)
+        {
+          p.lanes_.emplace_back (
+            TrackLane::Uuid{ lane_id }, p.dependencies_.registry_);
+          auto * lane = p.lanes_.back ().get ();
+          lane->set_owner_list (&p);
+          lane->rewire_dependencies (p.dependencies_);
+        }
+      p.endInsertRows ();
+    }
+
   bool lanes_visible = false;
   j.at (TrackLaneList::kLanesVisibleKey).get_to (lanes_visible);
   p.setLanesVisible (lanes_visible);

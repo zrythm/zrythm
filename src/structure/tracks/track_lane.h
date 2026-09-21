@@ -11,6 +11,7 @@
 
 namespace zrythm::structure::tracks
 {
+class TrackLaneList;
 
 /**
  * @brief A container of MIDI or Audio clips.
@@ -48,23 +49,38 @@ class TrackLane
   static constexpr double DEFAULT_HEIGHT = 48;
 
 public:
-  /**
-   * @brief Function to check if other soloed lanes exist in the owner.
-   */
-  using SoloedLanesExistFunc = std::function<bool ()>;
-
   static constexpr auto default_format_str = QT_TR_NOOP_UTF8 ("Lane {}");
 
   struct TrackLaneDependencies
   {
     utils::IObjectRegistry &registry_;
-    SoloedLanesExistFunc    soloed_lanes_exist_func_;
     dsp::TimebaseProvider * timebase_provider_ = nullptr;
   };
 
   TrackLane (TrackLaneDependencies dependencies, QObject * parent = nullptr);
   Q_DISABLE_COPY_MOVE (TrackLane)
   ~TrackLane () override;
+
+  /**
+   * @brief Replaces the lane's list-derived dependencies.
+   *
+   * Lanes created for deserialization start without a timebase source;
+   * the owning TrackLaneList calls this when it attaches the lane.
+   */
+  void rewire_dependencies (const TrackLaneDependencies &dependencies)
+  {
+    timebase_provider_ = dependencies.timebase_provider_;
+  }
+
+  /**
+   * @brief The list this lane belongs to, or null for a detached lane.
+   *
+   * The list assigns this when it attaches the lane and clears it when
+   * it detaches it. The reference is weak: it becomes null when the
+   * list is destroyed.
+   */
+  void            set_owner_list (TrackLaneList * list);
+  TrackLaneList * owner_list () const;
 
   // ========================================================================
   // QML Interface
@@ -118,19 +134,11 @@ public:
   /**
    * @brief Returns if the lane is effectively muted (explicitly or implicitly
    * muted).
+   *
+   * A lane not attached to a list is never implicitly muted: it has no
+   * sibling lanes whose solo state could mute it.
    */
-  Q_INVOKABLE bool effectivelyMuted () const
-  {
-    if (muted ())
-      return true;
-
-    /* if lane is non-soloed while other soloed lanes exist, this should
-     * be muted */
-    if (soloed_lanes_exist_func_ () && !soloed ())
-      return true;
-
-    return false;
-  }
+  Q_INVOKABLE bool effectivelyMuted () const;
 
   std::uint8_t midiChannel () const { return midi_ch_; }
   void         setMidiChannel (std::uint8_t midi_ch)
@@ -185,9 +193,9 @@ private:
     utils::ObjectCloneType clone_type);
 
 private:
-  SoloedLanesExistFunc soloed_lanes_exist_func_;
-
   QPointer<dsp::TimebaseProvider> timebase_provider_;
+
+  QPointer<TrackLaneList> owner_list_;
 
   /** Name of lane, e.g. "Lane 1". */
   utils::Utf8String name_;
@@ -215,4 +223,6 @@ private:
     (),
     (name_, height_, mute_, solo_, midi_ch_))
 };
+
+using TrackLaneUuidReference = utils::TypedUuidReference<TrackLane>;
 }

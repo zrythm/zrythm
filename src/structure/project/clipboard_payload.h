@@ -21,9 +21,10 @@ struct FilterResult;
  * objects, tracks or plugins) for clipboard operations.
  *
  * The payload mirrors the project file's registry format: flat buckets
- * (ports, parameters, plugins, tracks, arrangerObjects, fileAudioSources)
- * containing every object reachable from the copied roots, the root UUIDs,
- * and free-form per-type metadata (paste positioning context).
+ * (ports, parameters, plugins, tracks, lanes, arrangerObjects,
+ * fileAudioSources) containing every object reachable from the copied
+ * roots, the root UUIDs, and free-form per-type metadata (paste
+ * positioning context).
  *
  * Paste flow: filtered_for_target() → with_regenerated_uuids() →
  * import_into(), then attach the imported roots to their new owners with
@@ -218,6 +219,11 @@ public:
   /**
    * @brief Imports the payload's objects into @p registry (two-phase
    * deserialization).
+   *
+   * Every UUID the payload carries must resolve in @p registry or inside
+   * the payload itself: run filtered_for_target() first so references that
+   * point outside (e.g. modulation source ports of the source project)
+   * are severed instead of failing the import.
    *
    * FileAudioSources already registered in the target are skipped (shared
    * assets). Plugin instantiation begins during import and may finish

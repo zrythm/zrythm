@@ -78,6 +78,7 @@ create_minimal_valid_project_json ()
   pd["registry"]["parameters"] = nlohmann::json::array ();
   pd["registry"]["plugins"] = nlohmann::json::array ();
   pd["registry"]["tracks"] = nlohmann::json::array ();
+  pd["registry"]["lanes"] = nlohmann::json::array ();
   pd["registry"]["arrangerObjects"] = nlohmann::json::array ();
   pd["registry"]["fileAudioSources"] = nlohmann::json::array ();
 

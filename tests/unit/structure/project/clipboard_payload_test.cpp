@@ -6,15 +6,39 @@
 #include "dsp/cv_port.h"
 #include "dsp/file_audio_source.h"
 #include "dsp/parameter.h"
+#include "plugins/faust/faust_plugin.h"
+#include "plugins/plugin_configuration.h"
+#include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/audio_clip.h"
 #include "structure/arrangement/audio_source_object.h"
+#include "structure/arrangement/automation_clip.h"
+#include "structure/arrangement/automation_point.h"
+#include "structure/arrangement/chord_clip.h"
+#include "structure/arrangement/chord_object.h"
 #include "structure/arrangement/marker.h"
 #include "structure/arrangement/midi_clip.h"
+#include "structure/arrangement/midi_control_event.h"
 #include "structure/arrangement/midi_note.h"
+#include "structure/arrangement/scale_object.h"
+#include "structure/arrangement/tempo_object.h"
+#include "structure/arrangement/time_signature_object.h"
 #include "structure/project/clipboard_json_schema.h"
 #include "structure/project/clipboard_payload.h"
+#include "structure/tracks/audio_bus_track.h"
+#include "structure/tracks/audio_group_track.h"
+#include "structure/tracks/audio_track.h"
+#include "structure/tracks/channel_send.h"
+#include "structure/tracks/chord_track.h"
+#include "structure/tracks/folder_track.h"
+#include "structure/tracks/instrument_track.h"
+#include "structure/tracks/marker_track.h"
+#include "structure/tracks/master_track.h"
+#include "structure/tracks/midi_bus_track.h"
+#include "structure/tracks/midi_group_track.h"
+#include "structure/tracks/midi_track.h"
+#include "structure/tracks/modulator_track.h"
 #include "structure/tracks/track_factory.h"
 #include "utils/app_settings.h"
 #include "utils/compression.h"
@@ -33,7 +57,7 @@
 namespace zrythm::structure::project
 {
 
-class ClipboardPayloadTest
+class ClipboardPayloadTestBase
     : public ::testing::Test,
       public test_helpers::ScopedQCoreApplication
 {
@@ -96,6 +120,69 @@ protected:
     target_registry_.set_deserialization_dependencies (
       { *target_track_factory_, *target_arranger_factory_,
         *target_plugin_factory_ });
+  }
+
+  static bool json_contains_uuid (const nlohmann::json &j, const QUuid &id)
+  {
+    const auto str = id.toString (QUuid::WithoutBraces).toStdString ();
+    if (j.is_string ())
+      return j.get<std::string> () == str;
+    if (j.is_object ())
+      {
+        for (const auto &value : j)
+          if (json_contains_uuid (value, id))
+            return true;
+        return false;
+      }
+    if (j.is_array ())
+      {
+        for (const auto &el : j)
+          if (json_contains_uuid (el, id))
+            return true;
+      }
+    return false;
+  }
+
+  static QUuid to_quuid (const auto &typed_uuid)
+  {
+    return type_safe::get (typed_uuid);
+  }
+
+  static const nlohmann::json *
+  find_entry (const nlohmann::json &bucket, const QUuid &id)
+  {
+    const auto str = id.toString (QUuid::WithoutBraces).toStdString ();
+    const auto it = std::ranges::find_if (bucket, [&] (const auto &entry) {
+      return entry.at ("id").template get<std::string> () == str;
+    });
+    return it == bucket.end () ? nullptr : &*it;
+  }
+
+  ProjectRegistry source_registry_;
+  ProjectRegistry target_registry_;
+
+  std::unique_ptr<dsp::TempoMap>        tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper_;
+
+  std::unique_ptr<arrangement::ArrangerObjectFactory> arranger_factory_;
+  std::unique_ptr<arrangement::ArrangerObjectFactory> target_arranger_factory_;
+  std::unique_ptr<structure::tracks::TrackFactory>    track_factory_;
+  std::unique_ptr<plugins::PluginFactory>             plugin_factory_;
+  std::unique_ptr<structure::tracks::TrackFactory>    target_track_factory_;
+  std::unique_ptr<plugins::PluginFactory>             target_plugin_factory_;
+
+  QObject                            dispatcher_context_;
+  utils::MainThreadClosureDispatcher main_dispatcher_{
+    dispatcher_context_, std::chrono::milliseconds{ 10 }
+  };
+};
+
+class ClipboardPayloadTest : public ClipboardPayloadTestBase
+{
+protected:
+  void SetUp () override
+  {
+    ClipboardPayloadTestBase::SetUp ();
 
     // --- Source objects ---
     midi_clip_ref_ = utils::create_object<arrangement::MidiClip> (
@@ -156,60 +243,6 @@ protected:
       param_json.get_to (*param_ref_.get ());
     }
   }
-
-  static bool json_contains_uuid (const nlohmann::json &j, const QUuid &id)
-  {
-    const auto str = id.toString (QUuid::WithoutBraces).toStdString ();
-    if (j.is_string ())
-      return j.get<std::string> () == str;
-    if (j.is_object ())
-      {
-        for (const auto &value : j)
-          if (json_contains_uuid (value, id))
-            return true;
-        return false;
-      }
-    if (j.is_array ())
-      {
-        for (const auto &el : j)
-          if (json_contains_uuid (el, id))
-            return true;
-      }
-    return false;
-  }
-
-  static QUuid to_quuid (const auto &typed_uuid)
-  {
-    return type_safe::get (typed_uuid);
-  }
-
-  static const nlohmann::json *
-  find_entry (const nlohmann::json &bucket, const QUuid &id)
-  {
-    const auto str = id.toString (QUuid::WithoutBraces).toStdString ();
-    const auto it = std::ranges::find_if (bucket, [&] (const auto &entry) {
-      return entry.at ("id").template get<std::string> () == str;
-    });
-    return it == bucket.end () ? nullptr : &*it;
-  }
-
-  ProjectRegistry source_registry_;
-  ProjectRegistry target_registry_;
-
-  std::unique_ptr<dsp::TempoMap>        tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper_;
-
-  std::unique_ptr<arrangement::ArrangerObjectFactory> arranger_factory_;
-  std::unique_ptr<arrangement::ArrangerObjectFactory> target_arranger_factory_;
-  std::unique_ptr<structure::tracks::TrackFactory>    track_factory_;
-  std::unique_ptr<plugins::PluginFactory>             plugin_factory_;
-  std::unique_ptr<structure::tracks::TrackFactory>    target_track_factory_;
-  std::unique_ptr<plugins::PluginFactory>             target_plugin_factory_;
-
-  QObject                            dispatcher_context_;
-  utils::MainThreadClosureDispatcher main_dispatcher_{
-    dispatcher_context_, std::chrono::milliseconds{ 10 }
-  };
 
   arrangement::ArrangerObjectUuidReference midi_clip_ref_{ source_registry_ };
   arrangement::ArrangerObjectUuidReference note1_ref_{ source_registry_ };
@@ -1089,6 +1122,362 @@ TEST_F (ClipboardPayloadTest, FilterSeversUnresolvableRoutingTarget)
     routing.at (0)
       .at (std::string (ClipboardPayload::kRoutingTargetMetadataKey))
       .is_null ());
+}
+
+// ==========================================================================
+// Closure property test
+//
+// The clipboard's closure walk rests on one invariant: every reference
+// between registry objects is serialized as a bare UUID string the walk
+// can find and follow. These tests populate a project with every object
+// type, copy it, regenerate the UUIDs and import into a fresh registry;
+// the resolution test then walks the re-serialized objects with its own
+// UUID scanner instead of reusing the production walk, so a new kind of
+// reference the walk does not know about shows up as a dangling UUID.
+// ==========================================================================
+
+class ClipboardPayloadClosureTest : public ClipboardPayloadTestBase
+{
+protected:
+  /** Object IDs of the populated project: what the selection roots are
+   * and everything that must come along in the payload.
+   *
+   * Registry references are owning: the keep-alive members hold one
+   * reference per created object so the population outlives this
+   * function's locals. */
+  struct Population
+  {
+    explicit Population (utils::IObjectRegistry &registry)
+        : plugin_keep_alive_ (registry), cv_keep_alive_ (registry),
+          param_keep_alive_ (registry), fas_keep_alive_ (registry)
+    {
+    }
+
+    std::vector<QUuid> roots_;
+    std::vector<QUuid> all_ids_;
+    QUuid              fas_id_;
+
+    std::vector<structure::tracks::TrackUuidReference> track_keep_alive_refs_;
+    std::vector<arrangement::ArrangerObjectUuidReference>
+                                           arranger_object_keep_alive_refs_;
+    plugins::PluginUuidReference           plugin_keep_alive_;
+    utils::TypedUuidReference<dsp::CVPort> cv_keep_alive_;
+    dsp::ProcessorParameterUuidReference   param_keep_alive_;
+    dsp::FileAudioSourceUuidReference      fas_keep_alive_;
+  };
+
+  template <typename T> auto add_track (Population &pop)
+  {
+    auto       ref = track_factory_->get_builder<T> ().build ();
+    const auto id = to_quuid (ref.id ());
+    pop.roots_.push_back (id);
+    pop.all_ids_.push_back (id);
+    if (const auto * lanes = ref.get ()->lanes ())
+      {
+        for (const auto &lane_ref : lanes->lanes ())
+          pop.all_ids_.push_back (to_quuid (lane_ref.get ()->get_uuid ()));
+      }
+    pop.track_keep_alive_refs_.push_back (ref);
+    return ref;
+  }
+
+  Population populate_every_object_type ()
+  {
+    Population pop (source_registry_);
+
+    // One of every track type
+    const auto audio_track = add_track<structure::tracks::AudioTrack> (pop);
+    const auto midi_track = add_track<structure::tracks::MidiTrack> (pop);
+    add_track<structure::tracks::InstrumentTrack> (pop);
+    add_track<structure::tracks::MasterTrack> (pop);
+    const auto chord_track = add_track<structure::tracks::ChordTrack> (pop);
+    add_track<structure::tracks::MarkerTrack> (pop);
+    add_track<structure::tracks::ModulatorTrack> (pop);
+    const auto audio_bus = add_track<structure::tracks::AudioBusTrack> (pop);
+    add_track<structure::tracks::MidiBusTrack> (pop);
+    add_track<structure::tracks::AudioGroupTrack> (pop);
+    add_track<structure::tracks::MidiGroupTrack> (pop);
+    add_track<structure::tracks::FolderTrack> (pop);
+
+    // MIDI content: clip with notes and a control event on the MIDI track
+    const auto midi_clip = utils::create_object<arrangement::MidiClip> (
+      source_registry_, *tempo_map_wrapper_, source_registry_);
+    const auto note = utils::create_object<arrangement::MidiNote> (
+      source_registry_, *tempo_map_wrapper_);
+    const auto cc_event = utils::create_object<arrangement::MidiControlEvent> (
+      source_registry_, *tempo_map_wrapper_);
+    midi_clip.get_object_as<arrangement::MidiClip> ()->arrangement::
+      ArrangerObjectOwner<arrangement::MidiNote>::add_object (note);
+    midi_clip.get_object_as<arrangement::MidiClip> ()->arrangement::
+      ArrangerObjectOwner<arrangement::MidiControlEvent>::add_object (cc_event);
+    midi_track.get_object_as<structure::tracks::MidiTrack> ()
+      ->lanes ()
+      ->at (0)
+      ->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::add_object (
+        midi_clip);
+
+    // Audio content: file audio source -> audio source object -> audio
+    // clip on the audio track
+    const auto fas = utils::create_object<dsp::FileAudioSource> (
+      source_registry_, utils::audio::AudioBuffer (2, 64),
+      dsp::FileAudioSource::BitDepth::BIT_DEPTH_16, units::sample_rate (44100),
+      units::bpm (120.0),
+      utils::Utf8String::from_utf8_encoded_string ("closure"));
+    const auto audio_source =
+      utils::create_object<arrangement::AudioSourceObject> (
+        source_registry_, *tempo_map_wrapper_, source_registry_, fas);
+    const auto audio_clip = utils::create_object<arrangement::AudioClip> (
+      source_registry_, *tempo_map_wrapper_, source_registry_);
+    audio_clip.get_object_as<arrangement::AudioClip> ()
+      ->arrangement::ArrangerObjectOwner<
+        arrangement::AudioSourceObject>::add_object (audio_source);
+    audio_track.get_object_as<structure::tracks::AudioTrack> ()
+      ->lanes ()
+      ->at (0)
+      ->arrangement::ArrangerObjectOwner<arrangement::AudioClip>::add_object (
+        audio_clip);
+    pop.fas_id_ = to_quuid (fas.id ());
+
+    // Automation on the audio track
+    const auto automation_clip =
+      utils::create_object<arrangement::AutomationClip> (
+        source_registry_, *tempo_map_wrapper_, source_registry_);
+    const auto automation_point = utils::create_object<
+      arrangement::AutomationPoint> (source_registry_, *tempo_map_wrapper_);
+    automation_clip.get_object_as<arrangement::AutomationClip> ()
+      ->arrangement::ArrangerObjectOwner<
+        arrangement::AutomationPoint>::add_object (automation_point);
+    audio_track.get_object_as<structure::tracks::AudioTrack> ()
+      ->automationTracklist ()
+      ->automation_track_at (0)
+      ->add_object (automation_clip);
+
+    // Chords on the chord track
+    const auto chord_clip = utils::create_object<arrangement::ChordClip> (
+      source_registry_, *tempo_map_wrapper_, source_registry_);
+    const auto chord_object = utils::create_object<arrangement::ChordObject> (
+      source_registry_, *tempo_map_wrapper_);
+    chord_clip.get_object_as<arrangement::ChordClip> ()->arrangement::
+      ArrangerObjectOwner<arrangement::ChordObject>::add_object (chord_object);
+    chord_track.get_object_as<structure::tracks::ChordTrack> ()->arrangement::
+      ArrangerObjectOwner<arrangement::ChordClip>::add_object (chord_clip);
+
+    // A plugin on the audio bus channel
+    auto plugin_ref = utils::create_object<plugins::FaustPlugin> (
+      source_registry_, source_registry_);
+    auto descr = std::make_unique<plugins::PluginDescriptor> ();
+    descr->name_ = u8"Closure Test Plugin";
+    descr->protocol_ = plugins::Protocol::ProtocolType::Internal;
+    auto config = std::make_unique<plugins::PluginConfiguration> ();
+    config->descr_ = std::move (descr);
+    plugin_ref.get ()->set_configuration (*config);
+    audio_bus.get_object_as<structure::tracks::AudioBusTrack> ()
+      ->channel ()
+      ->inserts ()
+      ->insert_plugin (plugin_ref);
+
+    // Objects not owned by a track are their own roots
+    const auto marker = utils::create_object<arrangement::Marker> (
+      source_registry_, *tempo_map_wrapper_,
+      arrangement::Marker::MarkerType::Custom);
+    const auto tempo_object = utils::create_object<arrangement::TempoObject> (
+      source_registry_, *tempo_map_wrapper_);
+    const auto time_signature_object = utils::create_object<
+      arrangement::TimeSignatureObject> (source_registry_, *tempo_map_wrapper_);
+    const auto scale_object = utils::create_object<arrangement::ScaleObject> (
+      source_registry_, *tempo_map_wrapper_);
+
+    // A parameter modulated by a copied CV port: the modulation source
+    // key is a boundary reference, and here it points into the payload
+    const auto cv_port = utils::create_object<dsp::CVPort> (
+      source_registry_, u8"closure-mod", dsp::PortFlow::Output);
+    dsp::ProcessorParameterUuidReference param_ref{ source_registry_ };
+    {
+      auto param = std::make_unique<dsp::ProcessorParameter> (
+        source_registry_, dsp::ProcessorParameter::UniqueId{},
+        dsp::ParameterRange{}, utils::Utf8String{});
+      source_registry_.register_object (*param);
+      param_ref = dsp::ProcessorParameterUuidReference (
+        param->get_uuid (), source_registry_);
+      param.release ();
+
+      nlohmann::json param_json = *param_ref.get ();
+      param_json[dsp::ProcessorParameter::kModulationSourcePortIdKey] = cv_port;
+      param_json.get_to (*param_ref.get ());
+    }
+
+    const auto trackless_ids = {
+      to_quuid (midi_clip.id ()),       to_quuid (note.id ()),
+      to_quuid (cc_event.id ()),        to_quuid (fas.id ()),
+      to_quuid (audio_source.id ()),    to_quuid (audio_clip.id ()),
+      to_quuid (automation_clip.id ()), to_quuid (automation_point.id ()),
+      to_quuid (chord_clip.id ()),      to_quuid (chord_object.id ()),
+      to_quuid (plugin_ref.id ()),      to_quuid (marker.id ()),
+      to_quuid (tempo_object.id ()),    to_quuid (time_signature_object.id ()),
+      to_quuid (scale_object.id ()),    to_quuid (cv_port.id ()),
+      to_quuid (param_ref.id ()),
+    };
+    pop.all_ids_.insert (pop.all_ids_.end (), trackless_ids);
+    // TypedUuidReference<T> constructs from any TypedUuidReference<U> with
+    // U derived from T, so each push converts to the keep-alive element type
+    pop.arranger_object_keep_alive_refs_.push_back (midi_clip);
+    pop.arranger_object_keep_alive_refs_.push_back (note);
+    pop.arranger_object_keep_alive_refs_.push_back (cc_event);
+    pop.arranger_object_keep_alive_refs_.push_back (audio_source);
+    pop.arranger_object_keep_alive_refs_.push_back (audio_clip);
+    pop.arranger_object_keep_alive_refs_.push_back (automation_clip);
+    pop.arranger_object_keep_alive_refs_.push_back (automation_point);
+    pop.arranger_object_keep_alive_refs_.push_back (chord_clip);
+    pop.arranger_object_keep_alive_refs_.push_back (chord_object);
+    pop.arranger_object_keep_alive_refs_.push_back (marker);
+    pop.arranger_object_keep_alive_refs_.push_back (tempo_object);
+    pop.arranger_object_keep_alive_refs_.push_back (time_signature_object);
+    pop.arranger_object_keep_alive_refs_.push_back (scale_object);
+    pop.plugin_keep_alive_ = plugin_ref;
+    pop.cv_keep_alive_ = cv_port;
+    pop.param_keep_alive_ = param_ref;
+    pop.fas_keep_alive_ = fas;
+    pop.roots_.insert (
+      pop.roots_.end (),
+      { to_quuid (marker.id ()), to_quuid (tempo_object.id ()),
+        to_quuid (time_signature_object.id ()), to_quuid (scale_object.id ()),
+        to_quuid (cv_port.id ()), to_quuid (param_ref.id ()) });
+    return pop;
+  }
+
+  static std::size_t payload_entry_count (const ClipboardPayload &payload)
+  {
+    std::size_t count = 0;
+    for (const auto &[_, bucket] : payload.registry_json ().items ())
+      count += bucket.size ();
+    return count;
+  }
+
+  /** Keys whose values may point outside the copied subgraph by design
+   * (severed or remapped at paste time). */
+  static constexpr std::array<std::string_view, 2> kBoundaryKeys{
+    dsp::ProcessorParameter::kModulationSourcePortIdKey,
+    structure::tracks::ChannelSend::kDestinationPortKey,
+  };
+
+  /** Every UUID-shaped string in @p j must resolve in @p registry,
+   * except under boundary keys. */
+  static void expect_uuid_strings_resolve (
+    const nlohmann::json  &j,
+    const ProjectRegistry &registry,
+    const std::string     &path)
+  {
+    if (j.is_string ())
+      {
+        const auto id =
+          QUuid::fromString (QString::fromStdString (j.get<std::string> ()));
+        if (!id.isNull ())
+          {
+            EXPECT_TRUE (registry.contains (id))
+              << path << " references unregistered "
+              << id.toString (QUuid::WithoutBraces).toStdString ();
+          }
+        return;
+      }
+    if (j.is_object ())
+      {
+        for (const auto &[key, value] : j.items ())
+          {
+            if (
+              std::ranges::find (kBoundaryKeys, std::string_view{ key })
+              != kBoundaryKeys.end ())
+              continue;
+            expect_uuid_strings_resolve (value, registry, path + "/" + key);
+          }
+        return;
+      }
+    if (j.is_array ())
+      {
+        for (std::size_t i = 0; i < j.size (); ++i)
+          expect_uuid_strings_resolve (
+            j.at (i), registry, path + "/" + std::to_string (i));
+      }
+  }
+};
+
+// A track payload carries lanes: the track's lane references and the lane
+// entries must resolve within the payload, so the text form decodes
+TEST_F (ClipboardPayloadClosureTest, TrackPayloadWithLanesDecodes)
+{
+  auto track =
+    track_factory_->get_builder<structure::tracks::AudioTrack> ().build ();
+  const auto payload = ClipboardPayload::create (
+    source_registry_, ClipboardPayload::Type::Tracks,
+    { to_quuid (track.id ()) }, QStringLiteral ("x"));
+  const auto decoded = ClipboardPayload::decode_from_clipboard_text (
+    payload.encode_to_clipboard_text ());
+  ASSERT_TRUE (decoded.has_value ());
+  EXPECT_TRUE (json_contains_uuid (
+    decoded->registry_json (),
+    to_quuid (track.get ()->lanes ()->at (0)->get_uuid ())));
+}
+
+TEST_F (ClipboardPayloadClosureTest, CreateCollectsClosureOfEveryObjectType)
+{
+  const auto pop = populate_every_object_type ();
+
+  auto payload = ClipboardPayload::create (
+    source_registry_, ClipboardPayload::Type::Tracks, pop.roots_,
+    QStringLiteral ("closure-source"));
+
+  for (const auto &id : pop.all_ids_)
+    EXPECT_TRUE (json_contains_uuid (payload.registry_json (), id))
+      << "missing from payload: "
+      << id.toString (QUuid::WithoutBraces).toStdString ();
+  EXPECT_GE (payload_entry_count (payload), pop.all_ids_.size ());
+  EXPECT_TRUE (payload.references_resolve_internally ());
+  const auto entry_count = payload_entry_count (payload);
+
+  // UUID regeneration keeps the closure shape: same entry count, the
+  // shared file audio source keeps its identity and every other object
+  // gets a fresh UUID
+  auto regenerated =
+    ClipboardPayload::with_regenerated_uuids (std::move (payload));
+  EXPECT_EQ (payload_entry_count (regenerated), entry_count);
+  EXPECT_TRUE (json_contains_uuid (regenerated.registry_json (), pop.fas_id_));
+  for (const auto &id : pop.all_ids_)
+    if (id != pop.fas_id_)
+      EXPECT_FALSE (json_contains_uuid (regenerated.registry_json (), id))
+        << "stale UUID after regeneration: "
+        << id.toString (QUuid::WithoutBraces).toStdString ();
+}
+
+// Importing goes through the same pipeline as pasting: external references
+// are filtered against the target registry before import_into() sees them
+TEST_F (ClipboardPayloadClosureTest, ImportIntoFreshRegistryResolvesAllReferences)
+{
+  const auto pop = populate_every_object_type ();
+
+  auto payload = ClipboardPayload::create (
+    source_registry_, ClipboardPayload::Type::Tracks, pop.roots_,
+    QStringLiteral ("closure-source"));
+  auto regenerated =
+    ClipboardPayload::with_regenerated_uuids (std::move (payload));
+
+  const auto  filter = regenerated.filtered_for_target (target_registry_);
+  const auto &filtered = filter.payload;
+  ASSERT_TRUE (filtered.has_value ());
+
+  const auto imported = filtered->import_into (target_registry_);
+  EXPECT_EQ (imported.size (), payload_entry_count (*filtered));
+
+  for (const auto &id : imported)
+    {
+      nlohmann::json object_json;
+      const auto     category =
+        target_registry_.serialize_object_by_uuid (id, object_json);
+      ASSERT_TRUE (category.has_value ())
+        << "imported id not registered: "
+        << id.toString (QUuid::WithoutBraces).toStdString ();
+      expect_uuid_strings_resolve (
+        object_json, target_registry_,
+        id.toString (QUuid::WithoutBraces).toStdString ());
+    }
 }
 
 } // namespace zrythm::structure::project

@@ -43,6 +43,11 @@ ObjectRegistry::register_object_impl (utils::UuidIdentifiableBase &obj)
 void
 ObjectRegistry::acquire_reference_impl (const QUuid &id)
 {
+  if (!impl_->objects_by_id_.contains (id))
+    {
+      throw std::runtime_error (
+        fmt::format ("acquire_reference: unknown UUID {}", id.toString ()));
+    }
   impl_->ref_counts_[id]++;
 }
 

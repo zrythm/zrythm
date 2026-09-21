@@ -34,9 +34,8 @@ protected:
 
   void TearDown () override { lane_list_.reset (); }
 
-  std::unique_ptr<utils::ObjectRegistry> registry_;
-  bool                                   soloed_lanes_exist_ = false;
-  std::unique_ptr<TrackLaneList>         lane_list_;
+  std::unique_ptr<utils::ObjectRegistry>                registry_;
+  std::unique_ptr<TrackLaneList>                        lane_list_;
   std::unique_ptr<test_helpers::ScopedQCoreApplication> scoped_qapplication_;
 };
 
@@ -64,10 +63,11 @@ TEST_F (TrackLaneListTest, AddLanes)
   EXPECT_EQ (lane_list_->size (), 3);
   EXPECT_EQ (lane3->name (), QString ("Lane 3"));
 
-  // Test lane ownership
-  EXPECT_EQ (lane1->parent (), lane_list_.get ());
-  EXPECT_EQ (lane2->parent (), lane_list_.get ());
-  EXPECT_EQ (lane3->parent (), lane_list_.get ());
+  // Lanes are registry-owned (QObject-parented to the registry; the list
+  // only holds references)
+  EXPECT_EQ (lane1->parent (), registry_.get ());
+  EXPECT_EQ (lane2->parent (), registry_.get ());
+  EXPECT_EQ (lane3->parent (), registry_.get ());
 }
 
 TEST_F (TrackLaneListTest, InsertLanes)
@@ -292,16 +292,20 @@ TEST_F (TrackLaneListTest, LargeNumberOfLanes)
 
 TEST_F (TrackLaneListTest, LaneOwnership)
 {
-  // Test that lanes are properly parented to the list
+  // Lanes are registry-owned (QObject-parented to the registry; the list
+  // only holds references)
   auto * lane1 = lane_list_->addLane ();
   auto * lane2 = lane_list_->addLane ();
 
-  EXPECT_EQ (lane1->parent (), lane_list_.get ());
-  EXPECT_EQ (lane2->parent (), lane_list_.get ());
+  EXPECT_EQ (lane1->parent (), registry_.get ());
+  EXPECT_EQ (lane2->parent (), registry_.get ());
 
-  // Test that removed lanes are properly deleted
+  // Removing a lane drops its reference: an unreferenced lane is deleted
+  // from the registry
+  const auto removed_id = lane1->raw_uuid ();
   lane_list_->removeLane (0);
   EXPECT_EQ (lane_list_->size (), 1);
+  EXPECT_FALSE (registry_->contains (removed_id));
 }
 
 TEST_F (TrackLaneListTest, Iteration)
@@ -614,6 +618,18 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
 
   // Should get signal from remaining lane only
   EXPECT_EQ (recacheSpy.count (), 1);
+}
+
+TEST_F (TrackLaneListTest, DeserializationRejectsDuplicateLaneIds)
+{
+  lane_list_->addLane ();
+  nlohmann::json j = *lane_list_;
+  auto          &lane_ids = j.at ("laneIds");
+  lane_ids.push_back (lane_ids.at (0));
+
+  TrackLaneList deserialized (*registry_, nullptr);
+  EXPECT_THROW (from_json (j, deserialized), ZrythmException);
+  EXPECT_EQ (deserialized.size (), 0);
 }
 
 TEST_F (TrackLaneListTest, DeserializedLanesPropagateContentChanged)

@@ -120,6 +120,7 @@
         "parameters",
         "plugins",
         "tracks",
+        "lanes",
         "arrangerObjects",
         "fileAudioSources"
       ],
@@ -149,6 +150,13 @@
           "type": "array",
           "items": {
             "$ref": "common.schema.json#/definitions/knownTrack"
+          },
+          "maxItems": 100000
+        },
+        "lanes": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/trackLane"
           },
           "maxItems": 100000
         },

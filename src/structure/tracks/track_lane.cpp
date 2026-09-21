@@ -7,11 +7,24 @@
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/clip.h"
 #include "structure/tracks/track_lane.h"
+#include "structure/tracks/track_lane_list.h"
 
 #include <nlohmann/json.hpp>
 
 namespace zrythm::structure::tracks
 {
+
+void
+TrackLane::set_owner_list (TrackLaneList * list)
+{
+  owner_list_ = list;
+}
+
+TrackLaneList *
+TrackLane::owner_list () const
+{
+  return owner_list_;
+}
 
 TrackLane::TrackLane (TrackLaneDependencies dependencies, QObject * parent)
     : utils::UuidIdentifiableObject<TrackLane> (parent),
@@ -19,7 +32,6 @@ TrackLane::TrackLane (TrackLaneDependencies dependencies, QObject * parent)
         arrangement::MidiClip> (dependencies.registry_, *this),
       arrangement::ArrangerObjectOwner<
         arrangement::AudioClip> (dependencies.registry_, *this),
-      soloed_lanes_exist_func_ (std::move (dependencies.soloed_lanes_exist_func_)),
       timebase_provider_ (dependencies.timebase_provider_)
 {
   auto wire_model = [this] (arrangement::ArrangerObjectListModel * model) {
@@ -46,6 +58,20 @@ void
 TrackLane::generate_name (size_t index)
 {
   setName (format_qstr (QObject::tr (default_format_str), index + 1));
+}
+
+bool
+TrackLane::effectivelyMuted () const
+{
+  if (muted ())
+    return true;
+
+  // a lane is muted while sibling lanes are soloed and it is not
+  const auto * list = owner_list ();
+  if (list != nullptr && list->any_lane_soloed () && !soloed ())
+    return true;
+
+  return false;
 }
 
 void

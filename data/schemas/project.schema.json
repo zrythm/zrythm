@@ -418,6 +418,7 @@
             "parameters",
             "plugins",
             "tracks",
+            "lanes",
             "arrangerObjects",
             "fileAudioSources"
           ],
@@ -448,6 +449,13 @@
               "description": "All tracks with full data",
               "items": {
                 "$ref": "common.schema.json#/definitions/knownTrack"
+              }
+            },
+            "lanes": {
+              "type": "array",
+              "description": "All track lanes (referenced by tracks' laneIds)",
+              "items": {
+                "$ref": "common.schema.json#/definitions/trackLane"
               }
             },
             "arrangerObjects": {

@@ -39,6 +39,7 @@
       "items": {
         "$ref": "#/definitions/uuid"
       },
+      "maxItems": 100000,
       "description": "Array of UUID strings"
     },
     "version": {
@@ -778,44 +779,9 @@
             "channel": {
               "$ref": "#/definitions/channel"
             },
-            "lanes": {
-              "type": "array",
-              "description": "Track lanes",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "$ref": "#/definitions/uuid"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "height": {
-                    "type": "number"
-                  },
-                  "mute": {
-                    "type": "boolean",
-                    "default": false
-                  },
-                  "solo": {
-                    "type": "boolean",
-                    "default": false
-                  },
-                  "midiChannel": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 16,
-                    "default": 0
-                  },
-                  "objects": {
-                    "type": "array",
-                    "description": "Arranger objects contained in this lane",
-                    "items": {
-                      "$ref": "#/definitions/uuid"
-                    }
-                  }
-                }
-              }
+            "laneIds": {
+              "$ref": "#/definitions/uuidArray",
+              "description": "Ordered UUID references to this track's lanes in registry.lanes"
             },
             "lanesVisible": {
               "type": "boolean",
@@ -1632,6 +1598,51 @@
           }
         }
       }
+    },
+    "trackLane": {
+      "type": "object",
+      "description": "A track lane (registry.lanes entry): holds MIDI and/or audio clips",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "height": {
+          "type": "number"
+        },
+        "mute": {
+          "type": "boolean",
+          "default": false
+        },
+        "solo": {
+          "type": "boolean",
+          "default": false
+        },
+        "midiChannel": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16,
+          "default": 0
+        },
+        "midiClips": {
+          "$ref": "#/definitions/uuidArray",
+          "description": "UUID references to MidiClip objects in registry.arrangerObjects"
+        },
+        "audioClips": {
+          "$ref": "#/definitions/uuidArray",
+          "description": "UUID references to AudioClip objects in registry.arrangerObjects"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "height",
+        "mute",
+        "solo",
+        "midiChannel"
+      ]
     }
   }
 }

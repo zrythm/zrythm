@@ -939,9 +939,8 @@ ArrangerObjectSelectionOperator::copy_objects (
           auto * lane = dynamic_cast<structure::tracks::TrackLane *> (owner);
           if (lane == nullptr)
             return;
-          const auto * lane_list = qobject_cast<
-            const structure::tracks::TrackLaneList *> (lane->parent ());
-          const auto lane_idx =
+          const auto * lane_list = lane->owner_list ();
+          const auto   lane_idx =
             lane_list != nullptr ? lane_list->indexOfLane (lane) : std::nullopt;
           if (lane_idx.has_value ())
             {

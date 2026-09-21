@@ -17,6 +17,7 @@ class PluginFactory;
 namespace zrythm::structure::tracks
 {
 class TrackFactory;
+class TrackLane;
 }
 namespace zrythm::structure::arrangement
 {
@@ -38,6 +39,7 @@ public:
   static constexpr std::string_view kParametersKey = "parameters";
   static constexpr std::string_view kPluginsKey = "plugins";
   static constexpr std::string_view kTracksKey = "tracks";
+  static constexpr std::string_view kLanesKey = "lanes";
   static constexpr std::string_view kArrangerObjectsKey = "arrangerObjects";
   static constexpr std::string_view kFileAudioSourcesKey = "fileAudioSources";
 
@@ -57,6 +59,7 @@ public:
     Param,
     Plugin,
     Track,
+    Lane,
     ArrangerObject,
     FileAudioSource,
   };
@@ -69,6 +72,7 @@ public:
     std::pair{ ObjectCategory::Param,           kParametersKey       },
     std::pair{ ObjectCategory::Plugin,          kPluginsKey          },
     std::pair{ ObjectCategory::Track,           kTracksKey           },
+    std::pair{ ObjectCategory::Lane,            kLanesKey            },
     std::pair{ ObjectCategory::ArrangerObject,  kArrangerObjectsKey  },
     std::pair{ ObjectCategory::FileAudioSource, kFileAudioSourcesKey },
   };

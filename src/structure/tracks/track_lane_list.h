@@ -82,17 +82,13 @@ public:
 
   TrackLane * at (size_t idx) const { return lanes_.at (idx).get (); }
 
-  /** Removes last lane. */
-  utils::QObjectUniquePtr<TrackLane> pop_back ();
-
   void clear ();
 
   auto &lanes () const { return lanes_; }
 
   auto lanes_view () const
   {
-    return lanes_
-           | std::views::transform (&utils::QObjectUniquePtr<TrackLane>::get);
+    return lanes_ | std::views::transform (&TrackLaneUuidReference::get);
   }
 
   /**
@@ -106,6 +102,14 @@ public:
     if (it == view.end ())
       return std::nullopt;
     return static_cast<size_t> (std::ranges::distance (view.begin (), it));
+  }
+
+  /**
+   * @brief Returns whether any lane in the list is soloed.
+   */
+  [[nodiscard]] bool any_lane_soloed () const
+  {
+    return std::ranges::any_of (lanes_view (), &TrackLane::soloed);
   }
 
   /**
@@ -132,18 +136,26 @@ public:
   void remove_empty_last_lanes ();
 
 private:
-  static constexpr auto             kLanesKey = "lanes"sv;
+  static constexpr auto             kLaneIdsKey = "laneIds"sv;
   static constexpr std::string_view kLanesVisibleKey = "lanesVisible";
   friend void to_json (nlohmann::json &j, const TrackLaneList &p);
   friend void from_json (const nlohmann::json &j, TrackLaneList &p);
 
   void erase (size_t pos);
 
+  /**
+   * @brief Removes @p count lanes starting at @p first_row.
+   *
+   * Clears the removed lanes' owner-list pointers, drops their
+   * references and updates the model rows.
+   */
+  void remove_lanes (size_t first_row, size_t count);
+
   void update_default_lane_names ();
 
 private:
-  TrackLane::TrackLaneDependencies                dependencies_;
-  std::vector<utils::QObjectUniquePtr<TrackLane>> lanes_;
+  TrackLane::TrackLaneDependencies    dependencies_;
+  std::vector<TrackLaneUuidReference> lanes_;
 
   /** Flag to set lanes visible or not. */
   bool lanes_visible_ = false;

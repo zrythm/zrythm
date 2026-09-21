@@ -158,26 +158,6 @@ TEST_F (UuidReferenceTest, GetOrThrowReturnsObject)
   EXPECT_EQ (ref.get_or_throw (), &obj_);
 }
 
-TEST_F (UuidReferenceTest, SetIdAcquiresReference)
-{
-  EXPECT_CALL (mock_registry_, acquire_reference_impl (id_)).Times (1);
-  EXPECT_CALL (mock_registry_, release_reference_impl (id_)).Times (1);
-
-  UuidReference ref (mock_registry_);
-  EXPECT_FALSE (ref.has_value ());
-  ref.set_id (id_);
-  EXPECT_TRUE (ref.has_value ());
-}
-
-TEST_F (UuidReferenceTest, SetIdThrowsIfAlreadySet)
-{
-  EXPECT_CALL (mock_registry_, acquire_reference_impl (id_)).Times (1);
-  EXPECT_CALL (mock_registry_, release_reference_impl (id_)).Times (1);
-
-  UuidReference ref (id_, mock_registry_);
-  EXPECT_THROW (ref.set_id (id_), std::runtime_error);
-}
-
 TEST_F (UuidReferenceTest, EqualityBasedOnUuid)
 {
   EXPECT_CALL (mock_registry_, acquire_reference_impl (testing::_)).Times (2);
@@ -433,19 +413,6 @@ TEST_F (TypedUuidReferenceTest, SerializationRoundTrip)
   EXPECT_TRUE (ref2.has_value ());
   EXPECT_EQ (ref2.id (), uuid);
   EXPECT_EQ (registry_.ref_count (id), 2);
-}
-
-TEST_F (TypedUuidReferenceTest, SetIdForDeferredInit)
-{
-  auto   uuid = TestUuid{ QUuid::createUuid () };
-  auto * obj = new TestObject (uuid, "deferred");
-  registry_.register_object (*obj);
-
-  TypedUuidReference<TestObject> ref (registry_);
-  EXPECT_FALSE (ref.has_value ());
-  ref.set_id (uuid);
-  EXPECT_TRUE (ref.has_value ());
-  EXPECT_EQ (ref.get ()->name (), "deferred");
 }
 
 TEST_F (TypedUuidReferenceTest, GetRegistryReturnsReference)
