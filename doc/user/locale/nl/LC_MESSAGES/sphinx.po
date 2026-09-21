@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-16 08:25+0000\n"
-"PO-Revision-Date: 2026-05-14 11:45+0000\n"
-"Last-Translator: cheese <deanlemans5646@gmail.com>\n"
+"PO-Revision-Date: 2026-08-10 11:45+0000\n"
+"Last-Translator: Otto Beer Van der Auwera <ottobeer.vda@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/zrythm/user-manual-"
 "sphinx/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.5.dev0\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../_templates/page.html:61
@@ -36,7 +36,7 @@ msgstr "Home"
 #: ../../_templates/page.html:88
 #, python-format
 msgid "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
-msgstr "Auteursrecht"
+msgstr "<a href=\"%(path)s\">Auteursrecht</a>&#169; %(copyright)s."
 
 #: ../../_templates/page.html:92
 #, python-format
@@ -59,7 +59,7 @@ msgstr ""
 
 #: ../../_templates/page.html:116
 msgid "Show Source"
-msgstr "Toon Source"
+msgstr "Toon Bron"
 
 #: ../../_templates/page.html:137
 msgid "Contents"
