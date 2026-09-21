@@ -169,7 +169,6 @@ configure:gnu/linux:
     - >-
       cmake --preset default
       -DZRYTHM_USER_MANUAL=OFF
-      -DZRYTHM_WITH_LIBDW=OFF
       -DZRYTHM_UNITY_BUILD=ON
       $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
   parallel:

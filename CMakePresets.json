@@ -21,7 +21,6 @@
         "ZRYTHM_QML_TESTS": "ON",
         "ZRYTHM_STRICT": "ON",
         "ZRYTHM_STRICT_SPHINX_OPTS": "ON",
-        "ZRYTHM_WITH_LIBDW": "ON",
         "ZRYTHM_VERIFY_INTERFACE_HEADER_SETS": "ON",
         "ZRYTHM_BENCHMARKS": "ON",
         "ZRYTHM_TRACY": "OFF",
