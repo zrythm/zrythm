@@ -75,12 +75,12 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="642"/>
         <source>Musical</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzikaal</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="648"/>
         <source>Absolute</source>
-        <translation type="unfinished"></translation>
+        <translation>Absoluut</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="927"/>

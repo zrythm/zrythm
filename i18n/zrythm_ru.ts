@@ -198,7 +198,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="45"/>
         <source>No clip selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Клип не выбран</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="86"/>
@@ -229,7 +229,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="346"/>
         <source>Arrangement</source>
-        <translation type="unfinished"></translation>
+        <translation>аранжировка</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="351"/>
