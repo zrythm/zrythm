@@ -625,9 +625,6 @@ Item {
         height: root.enableYScroll ? 600 : flickable.height
         width: root.ruler.contentWidth
 
-        onActiveFocusChanged: {
-          console.debug("active focus", activeFocus, root);
-        }
         onArrangerIsActiveChanged: {
           appWindow.activeArranger = arrangerIsActive ? root : null;
         }
@@ -748,7 +745,6 @@ Item {
               }
             }
             onDropped: drop => {
-              console.debug("Drop on arranger at coordinates", drop.x, drop.y);
               root.canvasDrop(drop);
             }
             onPositionChanged:
@@ -926,7 +922,6 @@ Item {
             CursorManager.unsetCursor();
           }
           onDoubleClicked: mouse => {
-            console.debug("doubleClicked", action);
             if (mouse.button === Qt.LeftButton) {
               if (root.tool.effectiveToolValue === ArrangerTool.Audition) {
                 // Audition tool: every click auditions (press starts
@@ -1122,7 +1117,6 @@ Item {
           onPressed: mouse => {
             startCoordinates = Qt.point(mouse.x, mouse.y);
             currentCoordinates = startCoordinates;
-            console.debug("press inside arranger", startCoordinates, "start ticks:", currentTimelineTicks);
             arrangerContent.forceActiveFocus();
             if (action === Arranger.None) {
               if (mouse.button === Qt.MiddleButton) {
@@ -1310,9 +1304,7 @@ Item {
                   root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, direction, currentResizeDeltaTicks);
                 // Fades resize: already handled by direct manipulation
               }
-              console.debug("released after action");
             } else {
-              console.debug("released without action");
               if (root.hoveredObject === null) {
                 root.arrangerSelectionModel.clear();
               }
