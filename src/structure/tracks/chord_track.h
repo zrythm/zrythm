@@ -73,6 +73,11 @@ public:
     const zrythm::dsp::ChordDescriptor * descriptor,
     int                                  duration_ms = 400);
 
+  /**
+   * @brief Returns whether a timed preview is currently running.
+   */
+  Q_INVOKABLE bool isPreviewing () const { return preview_timer_->isActive (); }
+
   // ========================================================================
 
   std::optional<dsp::ChordDescriptor::ChordPitches>
