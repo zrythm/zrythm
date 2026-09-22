@@ -619,6 +619,14 @@ clear_plugin_context_if_current (Vst::IHostApplication * host_app)
  * (re)creation on load); the audio thread holds one realtime ScopedAccess
  * per process block.
  */
+/** A Zrythm parameter's VST3 identity, for plugin-reported changes. */
+struct Vst3ParamAdapter
+{
+  Vst::ParamID              id;
+  dsp::ProcessorParameter * zrythm_param = nullptr;
+  size_t                    param_index = 0;
+};
+
 struct Vst3RtParamMapping
 {
   /**
@@ -638,6 +646,11 @@ struct Vst3RtParamMapping
   Vst::UnitID                 program_change_unit_id_ = Vst::kRootUnitId;
 
   std::unordered_map<dsp::ProcessorParameter *, Vst::ParamID> zrythm_to_vst3_;
+
+  /** Reverse of zrythm_to_vst3_ (VST3 param id -> Zrythm parameter and
+   * param_sync_ index), for applying plugin-reported changes at process
+   * time. */
+  std::unordered_map<Vst::ParamID, Vst3ParamAdapter> vst3_to_zrythm_;
 };
 
 static void
@@ -658,13 +671,6 @@ public:
 private:
   Vst3Plugin             &owner_;
   PluginHostWindowFactory host_window_factory_;
-
-  struct Vst3ParamAdapter
-  {
-    Vst::ParamID              id;
-    dsp::ProcessorParameter * zrythm_param = nullptr;
-    size_t                    param_index = 0;
-  };
 
   VST3::Hosting::Module::Ptr            module_;
   std::unique_ptr<Vst::PlugProvider>    plug_provider_;
@@ -2249,8 +2255,7 @@ Vst3Plugin::create_parameters_from_vst3_controller ()
         }
 
       pimpl_->vst3_params_.emplace (
-        info.id,
-        Vst3PluginImpl::Vst3ParamAdapter{ info.id, zrythm_param, param_index });
+        info.id, Vst3ParamAdapter{ info.id, zrythm_param, param_index });
       new_mapping.emplace_back (zrythm_param, info.id);
     }
 
@@ -2260,6 +2265,9 @@ Vst3Plugin::create_parameters_from_vst3_controller ()
     rt_mapping->zrythm_to_vst3_.clear ();
     for (const auto &[zrythm_param, vst3_id] : new_mapping)
       rt_mapping->zrythm_to_vst3_.emplace (zrythm_param, vst3_id);
+    rt_mapping->vst3_to_zrythm_.clear ();
+    for (const auto &[param_id, adapter] : pimpl_->vst3_params_)
+      rt_mapping->vst3_to_zrythm_.emplace (param_id, adapter);
   }
 
   refresh_program_change_param_state ();
@@ -2944,8 +2952,7 @@ Vst3Plugin::process_impl (
   impl.process_data_.processMode = Vst::ProcessModes::kRealtime;
   impl.process_data_.inputParameterChanges = &impl.input_param_changes_;
   // Output queues are provided per the IParameterChanges contract; their
-  // contents (plugin-reported parameter/latency outputs) are not consumed
-  // yet
+  // contents are applied to the host parameter model after processing
   impl.process_data_.outputParameterChanges = &impl.output_param_changes_;
   impl.process_data_.inputEvents = &impl.input_events_;
   impl.process_data_.outputEvents = &impl.output_events_;
@@ -2985,6 +2992,36 @@ Vst3Plugin::process_impl (
 #endif
     impl.processor_->process (impl.process_data_);
   }
+
+  // Apply parameter changes the plugin reported during processing. Values
+  // arrive normalized and the last point per parameter wins (block-rate
+  // automation). The pending + feedback-guard path matches the performEdit
+  // handler, so applied values are not echoed back to the plugin on a
+  // later block
+  const auto report_count = impl.output_param_changes_.getParameterCount ();
+  for (const auto i : std::views::iota (0, report_count))
+    {
+      auto * queue = impl.output_param_changes_.getParameterData (i);
+      if (queue == nullptr)
+        continue;
+      const auto point_count = queue->getPointCount ();
+      if (point_count <= 0)
+        continue;
+      const auto it =
+        rt_mapping->vst3_to_zrythm_.find (queue->getParameterId ());
+      if (it == rt_mapping->vst3_to_zrythm_.end ())
+        continue;
+      const auto &adapter = it->second;
+      if (adapter.param_index >= param_sync_.entries.size ())
+        continue;
+      int32           sample_offset = 0;
+      Vst::ParamValue value = 0.;
+      if (queue->getPoint (point_count - 1, sample_offset, value) != kResultTrue)
+        continue;
+      const auto normalized = static_cast<float> (value);
+      set_param_pending_from_plugin (adapter.param_index, normalized);
+      param_sync_.entries[adapter.param_index].last_from_plugin = normalized;
+    }
 
   // Drain output events into the MIDI output ports (note on/off only),
   // routed by the event's bus index

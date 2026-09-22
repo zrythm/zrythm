@@ -809,6 +809,52 @@ TEST_F (Vst3PluginTest, HostParamChangesReachEditController)
   ASSERT_TRUE (QTest::qWaitFor ([&] { return read_edit_count () >= 1; }));
 }
 
+// A plugin that changes a parameter from within process() reports it
+// through the output parameter queue; the host must apply it to the
+// parameter model (pending value + flush) without feeding it back to the
+// plugin on the next block. The fixture reports a fixed normalized Level
+// value on every block while its "Auto Report" toggle is on
+TEST_F (Vst3PluginTest, ProcessingTimeParamChangesReachHost)
+{
+  // Must stay in sync with kReportedLevel in test_gain_vst3.cpp
+  constexpr float reported_level = 0.25f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+
+  // Baseline: host-set values stay as they are while nothing is reported
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), 0.5f, 1e-6f);
+
+  // Arming the toggle reaches the plugin through the normal input path;
+  // from the next block on, the reported value becomes the base value
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+
+  // The applied value must not bounce: the feedback guard suppresses the
+  // re-reported value from becoming a host-initiated change. The fixture
+  // counts Level points received through the input queue; a regressed
+  // guard would echo the applied value back on the next processed block
+  // and grow the count
+  const auto read_input_count = [this] () -> int {
+    const auto state = read_controller_state_json (*plugin_);
+    return state.value ("levelInputCount", 0);
+  };
+  const auto count_after_apply = read_input_count ();
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+  EXPECT_EQ (read_input_count (), count_after_apply);
+}
+
 // A plugin that changes its MIDI-CC mapping at runtime (MIDI learn) reports
 // it via restartComponent(kMidiCCAssignmentChanged); the host must rebuild
 // its CC -> ParamID translation table or later CCs keep using the stale
