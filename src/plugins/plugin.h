@@ -842,13 +842,31 @@ protected:
        */
       std::atomic<float> pending_value{ -1.f };
 
+      /**
+       * Whether the plugin reported an open gesture for this parameter.
+       * Set on the thread that drains the plugin's output events; value
+       * reports inside an open gesture are applied as user edits.
+       */
+      std::atomic<bool> in_user_gesture{ false };
+
+      /**
+       * Whether the pending value, when applied at flush, is a user edit
+       * (it was reported inside an open plugin gesture). Set together
+       * with the pending value; consumed by the flush.
+       */
+      std::atomic<bool> pending_is_user_edit{ false };
+
       Entry () = default;
       Entry (const Entry &) = delete;
       Entry &operator= (const Entry &) = delete;
       Entry (Entry &&other) noexcept
           : last_from_plugin (
               other.last_from_plugin.load (std::memory_order_relaxed)),
-            pending_value (other.pending_value.load (std::memory_order_relaxed))
+            pending_value (other.pending_value.load (std::memory_order_relaxed)),
+            in_user_gesture (
+              other.in_user_gesture.load (std::memory_order_relaxed)),
+            pending_is_user_edit (
+              other.pending_is_user_edit.load (std::memory_order_relaxed))
       {
       }
       Entry &operator= (Entry &&other) noexcept
@@ -860,6 +878,12 @@ protected:
               std::memory_order_relaxed);
             pending_value.store (
               other.pending_value.load (std::memory_order_relaxed),
+              std::memory_order_relaxed);
+            in_user_gesture.store (
+              other.in_user_gesture.load (std::memory_order_relaxed),
+              std::memory_order_relaxed);
+            pending_is_user_edit.store (
+              other.pending_is_user_edit.load (std::memory_order_relaxed),
               std::memory_order_relaxed);
           }
         return *this;

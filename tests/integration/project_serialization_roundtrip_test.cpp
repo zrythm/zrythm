@@ -688,8 +688,8 @@ TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithClapPlugin)
     plugins::PluginDescriptor::from_juce_description (*juce_desc);
   ASSERT_NE (descriptor, nullptr);
 
-  // 2 built-in (bypass + gain) + 1 plugin param (Gain)
-  save_load_save_roundtrip_with_plugin (*descriptor, 3);
+  // 2 built-in (bypass + gain) + 2 plugin params (Level, Report Mode)
+  save_load_save_roundtrip_with_plugin (*descriptor, 4);
 }
 
 /**

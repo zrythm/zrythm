@@ -839,11 +839,10 @@ TEST_F (Vst3PluginTest, ProcessingTimeParamChangesReachHost)
   plugin_->flush_plugin_values ();
   EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
 
-  // The applied value must not bounce: the feedback guard suppresses the
-  // re-reported value from becoming a host-initiated change. The fixture
-  // counts Level points received through the input queue; a regressed
-  // guard would echo the applied value back on the next processed block
-  // and grow the count
+  // The host must not send the applied value back to the plugin as a
+  // host-initiated change. The fixture counts Level points received
+  // through the input queue; while the feedback guard holds, that count
+  // stays constant after the value is applied
   const auto read_input_count = [this] () -> int {
     const auto state = read_controller_state_json (*plugin_);
     return state.value ("levelInputCount", 0);

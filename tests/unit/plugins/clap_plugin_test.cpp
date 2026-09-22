@@ -17,6 +17,7 @@
 #include "utils/views.h"
 
 #include <QCoreApplication>
+#include <QSignalSpy>
 #include <QTest>
 
 #include "helpers/mock_plugin_host_window.h"
@@ -619,6 +620,161 @@ TEST_F (ClapPluginTest, LatencyReportedDuringActivateIsHandled)
   // The fixture reports its latency from within activate()
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Latency"));
   EXPECT_EQ (plugin_->get_single_playback_latency (), units::samples (256u));
+}
+
+// Parameter reports wrapped in plugin gestures are user edits: the value
+// applies through the user-edit path (preset dirty, user-edit listeners)
+// and gesture begin/end reach the parameter, without echoing the applied
+// value back to the plugin
+TEST_F (ClapPluginTest, ProcessingTimeUserGestureEditsAreAttributed)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("Report Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  // Must stay in sync with kReportedLevel in test_gain_clap.cpp
+  constexpr float reported_level = 0.25f;
+
+  QSignalSpy edited_spy (
+    level_param, &dsp::ProcessorParameter::baseValueEditedByUser);
+  QSignalSpy gesture_started_spy (
+    level_param, &dsp::ProcessorParameter::userGestureStarted);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Baseline: with reporting off, plugin value sync is not a user edit
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), 0.5f, 1e-6f);
+  EXPECT_EQ (edited_spy.count (), 0);
+  EXPECT_EQ (gesture_started_spy.count (), 0);
+  EXPECT_EQ (gesture_finished_spy.count (), 0);
+
+  // Gesture mode: each processed block reports gesture begin, a Level
+  // change to 0.25, and gesture end
+  mode_param->setBaseValue (0.5f);
+  process_blocks (2);
+  pump_main_thread ();
+  plugin_->flush_plugin_values ();
+
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+  EXPECT_GE (edited_spy.count (), 1);
+  EXPECT_GE (gesture_started_spy.count (), 1);
+  EXPECT_GE (gesture_finished_spy.count (), 1);
+
+  // The host must not send the applied value back to the plugin as a
+  // host-initiated change. The fixture counts Level events received
+  // through the input event list; while the feedback guard holds, that
+  // count stays constant after the value is applied
+  const auto read_input_count = [this] {
+    return static_cast<int> (
+      read_plugin_state_json (*plugin_).value ("levelInputCount", 0.0));
+  };
+  const auto count_after_apply = read_input_count ();
+  process_blocks (2);
+  pump_main_thread ();
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+  EXPECT_EQ (read_input_count (), count_after_apply);
+}
+
+// A plain (non-gesture) report pending when a gesture-wrapped report
+// applies must not overwrite the applied user edit at the next flush
+TEST_F (ClapPluginTest, StalePendingValueDoesNotRevertGestureEdit)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("Report Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  // Must stay in sync with kReportedLevel in test_gain_clap.cpp; the
+  // plain report uses a different value (kPlainReportedLevel) so a revert
+  // is observable
+  constexpr float gesture_reported_level = 0.25f;
+
+  // Plain mode: a plain report parks a pending value that is not
+  // flushed
+  mode_param->setBaseValue (0.25f);
+  process_blocks (1);
+
+  // Gesture mode: the gesture-wrapped report parks a user-edit pending
+  // value, then the flush applies it
+  mode_param->setBaseValue (0.5f);
+  process_blocks (2);
+  pump_main_thread ();
+  plugin_->flush_plugin_values ();
+
+  EXPECT_NEAR (level_param->baseValue (), gesture_reported_level, 1e-6f);
+}
+
+// Gesture-wrapped reports coalesce into the pending slot: only the
+// latest value applies at each flush, with a single user-edit emission,
+// regardless of how many reports arrived in between
+TEST_F (ClapPluginTest, GestureReportsCoalesceIntoOneUserEditPerFlush)
+{
+  // Must stay in sync with kReportedLevel in test_gain_clap.cpp (the
+  // sweep mode alternates between that and kReportedLevel + 0.05)
+  constexpr float sweep_low_level = 0.25f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("Report Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy edited_spy (
+    level_param, &dsp::ProcessorParameter::baseValueEditedByUser);
+
+  // Sweep mode: each processed block reports gesture begin, a Level
+  // change alternating between 0.25 and 0.3, and gesture end
+  level_param->setBaseValue (0.5f);
+  mode_param->setBaseValue (1.0f);
+  process_blocks (3);
+  pump_main_thread ();
+  plugin_->flush_plugin_values ();
+
+  // The three reports coalesce into the last one; a per-report user
+  // edit would emit one user-edit signal per value change
+  EXPECT_NEAR (level_param->baseValue (), sweep_low_level, 1e-6f);
+  EXPECT_EQ (edited_spy.count (), 1);
+}
+
+// A gesture left open when the plugin is deactivated is closed so the
+// parameter does not stay in user-gesture mode (automation suppressed)
+TEST_F (ClapPluginTest, OpenGestureIsClosedOnReleaseResources)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("Report Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy gesture_started_spy (
+    level_param, &dsp::ProcessorParameter::userGestureStarted);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Open-gesture mode reports one gesture begin and no gesture end
+  mode_param->setBaseValue (0.75f);
+  process_blocks (2);
+  pump_main_thread ();
+
+  EXPECT_EQ (gesture_started_spy.count (), 1);
+  EXPECT_EQ (gesture_finished_spy.count (), 0);
+
+  // Releasing resources deactivates the plugin and must close the open
+  // gesture; the deferred end lands on the next dispatcher pump
+  plugin_->release_resources ();
+  pump_main_thread ();
+  EXPECT_EQ (gesture_finished_spy.count (), 1);
 }
 
 // Ports carry the plugin's stable audio port ids, and the first enumerated

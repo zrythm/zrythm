@@ -1274,6 +1274,27 @@ ClapPlugin::release_resources_impl ()
 {
   assert (is_main_thread);
 
+  // Close open user gestures regardless of the activation state: a
+  // main-thread param flush while inactive can also carry gesture
+  // events, so the sweep must not sit behind the active-only section.
+  // Releasing resources is the definitive end of any plugin-reported
+  // gesture
+  const auto params = get_parameters ();
+  const auto count = std::min (params.size (), param_sync_.entries.size ());
+  for (const auto i : std::views::iota (size_t{ 0 }, count))
+    {
+      auto &entry = param_sync_.entries[i];
+      if (!entry.in_user_gesture.exchange (false, std::memory_order_relaxed))
+        continue;
+      auto * param = params[i].get ();
+      if (param != nullptr && !post_main_thread_action_deferred ([param] {
+            param->endUserGesture ();
+          }))
+        {
+          z_warning ("CLAP: failed to close open user gesture on release");
+        }
+    }
+
   if (!pimpl_->is_plugin_active ())
     return;
 
@@ -1998,7 +2019,18 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               reinterpret_cast<const clap_event_param_value *> (h); // NOLINT
             auto it = maps.by_id_.find (ev->param_id);
             if (it == maps.by_id_.end ())
-              break;
+              {
+                // Reports can arrive before the param maps are built
+                // (e.g. values emitted during state restore at project
+                // load); once the maps exist, an unmapped id means the
+                // plugin reports a parameter that was never adopted
+                if (!maps.by_id_.empty ())
+                  {
+                    note_invalid_output_event_drop (
+                      "param value for unknown param"sv);
+                  }
+                break;
+              }
 
             const auto &adapter = it->second;
             auto *      zrythm_param = adapter.zrythm_param;
@@ -2026,8 +2058,81 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               range.convertTo0To1 (static_cast<float> (ev->value));
 
             auto &entry = owner_.param_sync_.entries[param_index];
+            // Value reports inside an open gesture are user edits: the
+            // value coalesces into the pending slot and applies through
+            // the user-edit path at the next flush. Per-report deferred
+            // actions would flood the shared main-thread dispatcher at
+            // drag event rates
+            entry.pending_is_user_edit.store (
+              entry.in_user_gesture.load (std::memory_order_relaxed),
+              std::memory_order_release);
             owner_.set_param_pending_from_plugin (param_index, normalized);
             entry.last_from_plugin = normalized;
+            break;
+          }
+        case CLAP_EVENT_PARAM_GESTURE_BEGIN:
+        case CLAP_EVENT_PARAM_GESTURE_END:
+          {
+            const auto * ev =
+              reinterpret_cast<const clap_event_param_gesture *> (h); // NOLINT
+            auto it = maps.by_id_.find (ev->param_id);
+            if (it == maps.by_id_.end ())
+              {
+                // Same tolerance as param value events: gesture events
+                // can arrive before the param maps are built
+                if (!maps.by_id_.empty ())
+                  {
+                    note_invalid_output_event_drop (
+                      "gesture for unknown param"sv);
+                  }
+                break;
+              }
+
+            const auto &adapter = it->second;
+            auto *      zrythm_param = adapter.zrythm_param;
+            if (zrythm_param == nullptr)
+              break;
+
+            const size_t param_index = adapter.param_index;
+            if (param_index >= owner_.param_sync_.entries.size ())
+              {
+                // Gesture events can arrive before param_sync_ is
+                // prepared (e.g. while the plugin emits parameter
+                // changes during state restore at project load), like
+                // param value events; those are safe to drop
+                if (!owner_.param_sync_.entries.empty ())
+                  {
+                    note_invalid_output_event_drop (
+                      "gesture param index out of range"sv);
+                  }
+                break;
+              }
+
+            auto      &entry = owner_.param_sync_.entries[param_index];
+            const bool begin = h->type == CLAP_EVENT_PARAM_GESTURE_BEGIN;
+            if (begin == entry.in_user_gesture.load (std::memory_order_relaxed))
+              {
+                // BEGIN while a gesture is already open, or END without
+                // a preceding BEGIN
+                note_invalid_output_event_drop ("unbalanced gesture event"sv);
+                break;
+              }
+            entry.in_user_gesture.store (begin, std::memory_order_relaxed);
+            if (
+              !owner_.post_main_thread_action_deferred (
+                [param = zrythm_param, begin] {
+                  if (begin)
+                    param->beginUserGesture ();
+                  else
+                    param->endUserGesture ();
+                }))
+              {
+                // The main-thread gesture state would diverge from the
+                // flag; revert the flag so later events stay consistent
+                entry.in_user_gesture.store (!begin, std::memory_order_relaxed);
+                note_invalid_output_event_drop (
+                  "gesture notification dropped (dispatcher queue full)"sv);
+              }
             break;
           }
         case CLAP_EVENT_NOTE_ON:

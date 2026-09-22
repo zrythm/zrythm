@@ -19,6 +19,26 @@ class TestGainClap final : public ClapFixturePluginBase
 {
 public:
   static constexpr clap_id kLevelParamId = 0;
+  static constexpr clap_id kReportModeParamId = 1;
+  /** Level value reported from process() in gesture mode. */
+  static constexpr double kReportedLevel = 0.25;
+  /** Level value reported from process() in plain mode. */
+  static constexpr double kPlainReportedLevel = 0.4;
+
+  /** Values of the Report Mode parameter. */
+  enum class ReportMode : int
+  {
+    Off = 0,
+    /** Report a bare Level value every block. */
+    Plain = 1,
+    /** Report a gesture-wrapped Level change every block. */
+    Gesture = 2,
+    /** Report a single gesture begin and no end. */
+    OpenGesture = 3,
+    /** Report a gesture-wrapped Level change that alternates between
+     * two values every block. */
+    Sweep = 4,
+  };
 
   explicit TestGainClap (const clap_host * host)
       : ClapFixturePluginBase (descriptor (), host)
@@ -66,28 +86,49 @@ public:
 
   // params
   bool     implementsParams () const noexcept override { return true; }
-  uint32_t paramsCount () const noexcept override { return 1; }
+  uint32_t paramsCount () const noexcept override { return 2; }
   bool
   paramsInfo (uint32_t paramIndex, clap_param_info * info) const noexcept override
   {
-    if (paramIndex != 0)
-      return false;
-    info->id = kLevelParamId;
-    info->flags = CLAP_PARAM_IS_AUTOMATABLE;
-    info->cookie = nullptr;
-    std::snprintf (info->name, sizeof (info->name), "%s", "Level");
-    info->module[0] = '\0';
-    info->min_value = 0.0;
-    info->max_value = 1.0;
-    info->default_value = 1.0;
-    return true;
+    if (paramIndex == 0)
+      {
+        info->id = kLevelParamId;
+        info->flags = CLAP_PARAM_IS_AUTOMATABLE;
+        info->cookie = nullptr;
+        std::snprintf (info->name, sizeof (info->name), "%s", "Level");
+        info->module[0] = '\0';
+        info->min_value = 0.0;
+        info->max_value = 1.0;
+        info->default_value = 1.0;
+        return true;
+      }
+    if (paramIndex == 1)
+      {
+        info->id = kReportModeParamId;
+        info->flags = CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED;
+        info->cookie = nullptr;
+        std::snprintf (info->name, sizeof (info->name), "%s", "Report Mode");
+        info->module[0] = '\0';
+        info->min_value = 0.0;
+        info->max_value = 4.0;
+        info->default_value = 0.0;
+        return true;
+      }
+    return false;
   }
   bool paramsValue (clap_id paramId, double * value) noexcept override
   {
-    if (paramId != kLevelParamId)
-      return false;
-    *value = gain_.load ();
-    return true;
+    if (paramId == kLevelParamId)
+      {
+        *value = gain_.load ();
+        return true;
+      }
+    if (paramId == kReportModeParamId)
+      {
+        *value = static_cast<double> (report_mode_.load ());
+        return true;
+      }
+    return false;
   }
   bool paramsValueToText (
     clap_id  paramId,
@@ -126,7 +167,9 @@ public:
   bool stateSave (const clap_ostream * stream) noexcept override
   {
     const nlohmann::json j{
-      { "gain", gain_.load () }
+      { "gain",            gain_.load ()              },
+      { "reportMode",      report_mode_.load ()       },
+      { "levelInputCount", level_input_count_.load () },
     };
     const auto json_text = j.dump ();
     const auto text_size = json_text.size ();
@@ -148,6 +191,11 @@ public:
     if (j.is_discarded () || !j.contains ("gain"))
       return false;
     gain_.store (std::clamp (j["gain"].get<double> (), 0.0, 1.0));
+    const auto mode =
+      static_cast<int> (std::clamp (j.value ("reportMode", 0.0), 0.0, 4.0));
+    report_mode_.store (mode);
+    open_begin_pending_.store (
+      mode == static_cast<int> (ReportMode::OpenGesture));
     return true;
   }
 
@@ -164,10 +212,83 @@ public:
           process->audio_inputs[0].data32[ch],
           process->audio_outputs[0].data32[ch], num_frames, gain_.load ());
       }
+
+    // Report from inside processing according to Report Mode
+    if (process->out_events != nullptr)
+      {
+        switch (static_cast<ReportMode> (report_mode_.load ()))
+          {
+          case ReportMode::Plain:
+            push_param_value (
+              process->out_events, num_frames - 1, kPlainReportedLevel);
+            break;
+          case ReportMode::Gesture:
+            push_gesture (
+              process->out_events, num_frames - 1,
+              CLAP_EVENT_PARAM_GESTURE_BEGIN);
+            push_param_value (
+              process->out_events, num_frames - 1, kReportedLevel);
+            push_gesture (
+              process->out_events, num_frames - 1, CLAP_EVENT_PARAM_GESTURE_END);
+            break;
+          case ReportMode::OpenGesture:
+            // The begin is emitted once per entry into this mode
+            if (open_begin_pending_.exchange (false))
+              {
+                push_gesture (
+                  process->out_events, num_frames - 1,
+                  CLAP_EVENT_PARAM_GESTURE_BEGIN);
+              }
+            break;
+          case ReportMode::Sweep:
+            push_gesture (
+              process->out_events, num_frames - 1,
+              CLAP_EVENT_PARAM_GESTURE_BEGIN);
+            push_param_value (
+              process->out_events, num_frames - 1,
+              sweep_step_.fetch_add (1) % 2 == 0
+                ? kReportedLevel
+                : kReportedLevel + 0.05);
+            push_gesture (
+              process->out_events, num_frames - 1, CLAP_EVENT_PARAM_GESTURE_END);
+            break;
+          case ReportMode::Off:
+            break;
+          }
+      }
     return CLAP_PROCESS_CONTINUE;
   }
 
 private:
+  static bool push_param_value (
+    const clap_output_events * out,
+    uint32_t                   time,
+    double                     value) noexcept
+  {
+    clap_event_param_value ev{};
+    ev.header.size = sizeof (ev);
+    ev.header.time = time;
+    ev.header.type = CLAP_EVENT_PARAM_VALUE;
+    ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+    ev.header.flags = 0;
+    ev.param_id = kLevelParamId;
+    ev.value = value;
+    return out->try_push (out, &ev.header);
+  }
+
+  static bool
+  push_gesture (const clap_output_events * out, uint32_t time, uint16_t type) noexcept
+  {
+    clap_event_param_gesture ev{};
+    ev.header.size = sizeof (ev);
+    ev.header.time = time;
+    ev.header.type = type;
+    ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+    ev.header.flags = 0;
+    ev.param_id = kLevelParamId;
+    return out->try_push (out, &ev.header);
+  }
+
   void apply_events (const clap_input_events * in) noexcept
   {
     const auto num_events = in->size (in);
@@ -181,12 +302,31 @@ private:
             const auto * ev =
               reinterpret_cast<const clap_event_param_value *> (header);
             if (ev->param_id == kLevelParamId)
-              gain_.store (std::clamp (ev->value, 0.0, 1.0));
+              {
+                gain_.store (std::clamp (ev->value, 0.0, 1.0));
+                // Counted and exposed in the state chunk so hosts can
+                // verify that applied plugin reports are not echoed back
+                // as host-initiated changes
+                level_input_count_.fetch_add (1.0);
+              }
+            else if (ev->param_id == kReportModeParamId)
+              {
+                const auto mode =
+                  static_cast<int> (std::clamp (ev->value, 0.0, 4.0));
+                report_mode_.store (mode);
+                open_begin_pending_.store (
+                  mode == static_cast<int> (ReportMode::OpenGesture));
+              }
           }
       }
   }
 
   std::atomic<double> gain_{ 1.0 };
+  std::atomic<double> level_input_count_{ 0.0 };
+  std::atomic<int>    report_mode_{ 0 };
+  /** Alternates the reported value in Sweep mode. */
+  std::atomic<int>  sweep_step_{ 0 };
+  std::atomic<bool> open_begin_pending_{ false };
 };
 
 } // namespace zrythm_test_plugins

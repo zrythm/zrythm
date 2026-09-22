@@ -367,9 +367,12 @@ Plugin::custom_process_block (
 void
 Plugin::custom_release_resources ()
 {
+  // release_resources_impl reads param_sync_ (e.g. CLAP closes open
+  // user gestures found in the entries), so it must run before the
+  // entries are cleared
+  release_resources_impl ();
   param_sync_.entries.clear ();
   load_measurer_->reset ();
-  release_resources_impl ();
 }
 
 void
@@ -509,7 +512,15 @@ Plugin::flush_plugin_values ()
         {
           const auto &param_ref = get_parameters ()[i];
           auto *      param = param_ref.get ();
-          param->setBaseValue (val);
+          // A value reported inside an open plugin gesture is a user
+          // edit: apply it through the user-edit path (user-edit
+          // listeners) instead of the plain value sync
+          if (
+            entry.pending_is_user_edit.exchange (
+              false, std::memory_order_acq_rel))
+            param->setBaseValueByUser (val);
+          else
+            param->setBaseValue (val);
         }
     }
 }
