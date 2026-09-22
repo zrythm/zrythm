@@ -42,6 +42,7 @@ set(vst3_fixture_extra_sources
 )
 
 set(vst3_fixtures
+  test_dual_vst3
   test_gain_vst3
   test_gui_vst3
   test_latency_vst3
@@ -91,6 +92,12 @@ smtg_add_vst3plugin(test_restart_vst3
 smtg_add_vst3plugin(test_gui_vst3
   PACKAGE_NAME "Test GUI"
   SOURCES_LIST test_gui_vst3.cpp ${vst3_fixture_extra_sources}
+)
+# Dual-component fixture: separate processor and edit controller
+# classes (JUCE 8 architecture). No single-component base needed
+smtg_add_vst3plugin(test_dual_vst3
+  PACKAGE_NAME "Test Dual Gain"
+  SOURCES_LIST test_dual_vst3.cpp
 )
 
 foreach(vst3_fixture ${vst3_fixtures})

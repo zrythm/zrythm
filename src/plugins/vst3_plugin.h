@@ -244,6 +244,33 @@ private:
     uint32_t param_id,
     double   normalized_value) noexcept [[clang::nonblocking]];
 
+  /**
+   * @brief Notifies a separate edit controller of a processor-reported
+   * parameter value (bare setParamNormalized, without the host-editing
+   * wrapper used for host-initiated edits).
+   *
+   * Separate controllers keep their own state: without this notification
+   * they diverge from the processor and their UI shows stale values.
+   * Deferred to the main thread like notify_controller_param_value().
+   */
+  void notify_controller_reported_value (
+    uint32_t param_id,
+    double   normalized_value) noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Forwards processor-reported values to a separate edit
+   * controller.
+   *
+   * Values that applied as user edits originated from the controller
+   * itself (its own performEdit reports), so they are not sent back.
+   * Single-component plugins share state between processor and
+   * controller and are not notified.
+   */
+  void on_plugin_reported_value_applied (
+    dsp::ProcessorParameter &param,
+    float                    normalized,
+    bool                     as_user_edit) override;
+
   static constexpr auto kStateKey = "state"sv;
   friend void           to_json (nlohmann::json &j, const Vst3Plugin &p);
   friend void           from_json (const nlohmann::json &j, Vst3Plugin &p);

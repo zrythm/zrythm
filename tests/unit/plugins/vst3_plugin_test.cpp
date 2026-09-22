@@ -965,6 +965,142 @@ TEST_F (Vst3PluginTest, StalePendingValueDoesNotRevertUiEdit)
   EXPECT_NE (level_param->baseValue (), reported_level);
 }
 
+// Processor-reported values must reach the edit controller of a
+// dual-component plugin: the controller keeps its own state and its UI
+// shows stale values without the notification. The dual fixture counts
+// controller-side setParamNormalized calls for Level in its structured
+// state
+TEST_F (Vst3PluginTest, ProcessingTimeParamChangesReachDualEditController)
+{
+  // Must stay in sync with kReportedLevel in test_dual_vst3.cpp
+  constexpr float reported_level = 0.25f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Dual Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+
+  const auto read_sync_count = [this] () -> int {
+    return read_controller_state_json (*plugin_).value (
+      "controllerSyncCount", 0);
+  };
+  const auto read_last_synced = [this] () -> double {
+    return read_controller_state_json (*plugin_).value (
+      "controllerLastSyncedLevel", -1.0);
+  };
+
+  // A host-initiated edit reaches the controller through the wrapped
+  // notify; wait for it to land so later count deltas are attributable
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return read_sync_count () >= 1; }));
+  const auto baseline_sync_count = read_sync_count ();
+
+  // Arming the toggle reaches the processor through the normal input
+  // path; from the next block on, the plugin reports a Level change
+  // from inside processing
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+
+  // The flushed value also reaches the separate controller
+  EXPECT_TRUE (QTest::qWaitFor ([&] {
+    return read_sync_count () >= baseline_sync_count + 1;
+  }));
+  EXPECT_NEAR (read_last_synced (), reported_level, 1e-6);
+}
+
+// The controller sync of processor-reported values is a plain
+// setParamNormalized without the begin/endEditFromHost wrapper (that
+// wrapper marks host-initiated edits). The fixture counts
+// beginEditFromHost calls in its structured state
+TEST_F (Vst3PluginTest, ProcessingTimeSyncIsBareOnDualController)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Dual Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+
+  const auto read_sync_count = [this] () -> int {
+    return read_controller_state_json (*plugin_).value (
+      "controllerSyncCount", 0);
+  };
+  const auto read_wrap_count = [this] () -> int {
+    return read_controller_state_json (*plugin_).value ("hostEditWrapCount", 0);
+  };
+
+  // Wait for the wrapped notify of the host-initiated edit to land so
+  // later deltas are attributable
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return read_wrap_count () >= 1; }));
+  const auto baseline_wrap_count = read_wrap_count ();
+  const auto baseline_sync_count = read_sync_count ();
+
+  // Processor-reported syncs grow the sync count without touching the
+  // host-edit wrap count
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_TRUE (QTest::qWaitFor ([&] {
+    return read_sync_count () >= baseline_sync_count + 1;
+  }));
+  EXPECT_EQ (read_wrap_count (), baseline_wrap_count);
+
+  // A host-initiated edit after the syncs still uses the wrapper
+  level_param->setBaseValue (0.7f);
+  process_blocks (1);
+  EXPECT_TRUE (QTest::qWaitFor ([&] {
+    return read_wrap_count () >= baseline_wrap_count + 1;
+  }));
+}
+
+// Single-component plugins share state between processor and
+// controller: processor-reported values must not produce controller
+// setParamNormalized notifications for them. The single-component
+// fixture counts controller-side setParamNormalized calls for Level in
+// its structured state
+TEST_F (Vst3PluginTest, ProcessingTimeReportsDoNotNotifySingleComponent)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+
+  const auto read_edit_count = [this] () -> int {
+    return read_controller_state_json (*plugin_).value (
+      "controllerEditCount", 0);
+  };
+
+  // Baseline: the wrapped notify of a host-initiated edit landed
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return read_edit_count () >= 1; }));
+  const auto baseline_edit_count = read_edit_count ();
+
+  // Reported values apply to the host parameter model while the
+  // controller count stays at the baseline: the sync after the flush
+  // must land before the next host-initiated edit is counted, so the
+  // final count pins the total
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), 0.25f, 1e-6f);
+
+  level_param->setBaseValue (0.6f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return read_edit_count () == baseline_edit_count + 1;
+  }));
+}
+
 // A plugin that reports beginEdit without a matching endEdit leaves its
 // parameter with an open user gesture (automation suppressed
 // indefinitely); releasing resources is the definitive end of the

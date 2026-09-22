@@ -51,6 +51,12 @@ Vst3PluginFormat::findAllTypesForFile (
   const auto  factory_vendor = factory.info ().vendor ();
   for (const auto &class_info : factory.classInfos ())
     {
+      // A factory also lists non-plugin classes (e.g. the edit
+      // controller class of dual-component plugins); only audio module
+      // classes are plugins the host can instantiate
+      if (class_info.category () != kVstAudioEffectClass)
+        continue;
+
       auto desc = std::make_unique<juce::PluginDescription> ();
       desc->fileOrIdentifier = fileOrIdentifier;
       // Recorded at scan time so pluginNeedsRescanning() can detect

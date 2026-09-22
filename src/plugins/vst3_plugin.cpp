@@ -859,6 +859,13 @@ private:
   std::unordered_map<Vst::ParamID, Vst3ParamAdapter> vst3_params_;
 
   /**
+   * True when the edit controller is a separate object from the
+   * component (dual-component VST3). Only separate controllers keep
+   * their own copy of the parameter state and need explicit sync.
+   */
+  bool controller_is_separate_ = false;
+
+  /**
    * Realtime-published param routing state. farbot's destructor spins until
    * any realtime access is released, so the impl must outlive processing.
    */
@@ -1352,6 +1359,11 @@ Vst3Plugin::load_plugin (
   pimpl_->component_ = pimpl_->plug_provider_->getComponentPtr ();
   pimpl_->controller_ = pimpl_->plug_provider_->getControllerPtr ();
   pimpl_->processor_ = U::cast<Vst::IAudioProcessor> (pimpl_->component_);
+  // A component that implements IEditController shares its state with
+  // the controller; anything else is a dual-component plugin whose
+  // controller keeps separate state
+  pimpl_->controller_is_separate_ =
+    U::cast<Vst::IEditController> (pimpl_->component_) == nullptr;
   if (
     pimpl_->component_ == nullptr || pimpl_->controller_ == nullptr
     || pimpl_->processor_ == nullptr)
@@ -2522,6 +2534,51 @@ Vst3Plugin::notify_controller_param_value (
     {
       pimpl_->note_controller_notification_drop ();
     }
+}
+
+void
+Vst3Plugin::notify_controller_reported_value (
+  uint32_t param_id_u,
+  double   normalized_value) noexcept [[clang::nonblocking]]
+{
+  // Bare setParamNormalized without the host-editing wrapper: this is a
+  // state sync of a processor-reported value, not a host-initiated edit.
+  // Deferred like notify_controller_param_value().
+  const auto param_id = static_cast<Vst::ParamID> (param_id_u);
+  const auto value = normalized_value;
+  if (!post_main_thread_action_deferred ([this, param_id, value] {
+        if (pimpl_->controller_ == nullptr)
+          return;
+        pimpl_->controller_->setParamNormalized (param_id, value);
+      }))
+    {
+      pimpl_->note_controller_notification_drop ();
+    }
+}
+
+void
+Vst3Plugin::on_plugin_reported_value_applied (
+  dsp::ProcessorParameter &param,
+  float                    normalized,
+  bool                     as_user_edit)
+{
+  if (!pimpl_->controller_is_separate_ || as_user_edit)
+    return;
+
+  const auto it =
+    std::ranges::find_if (pimpl_->vst3_params_, [&param] (const auto &entry) {
+      return entry.second.zrythm_param == &param;
+    });
+  if (it == pimpl_->vst3_params_.end ())
+    {
+      z_warning (
+        "VST3 plugin '{}': applied report for a parameter without a VST3 "
+        "mapping",
+        get_node_name ());
+      return;
+    }
+  notify_controller_reported_value (
+    static_cast<uint32_t> (it->first), static_cast<double> (normalized));
 }
 
 void

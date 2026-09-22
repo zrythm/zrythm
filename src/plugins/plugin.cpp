@@ -515,12 +515,13 @@ Plugin::flush_plugin_values ()
           // A value reported inside an open plugin gesture is a user
           // edit: apply it through the user-edit path (user-edit
           // listeners) instead of the plain value sync
-          if (
-            entry.pending_is_user_edit.exchange (
-              false, std::memory_order_acq_rel))
+          const auto as_user_edit = entry.pending_is_user_edit.exchange (
+            false, std::memory_order_acq_rel);
+          if (as_user_edit)
             param->setBaseValueByUser (val);
           else
             param->setBaseValue (val);
+          on_plugin_reported_value_applied (*param, val, as_user_edit);
         }
     }
 }

@@ -498,6 +498,29 @@ public:
 
 protected:
   /**
+   * @brief Hook called on the main thread for each plugin-reported value
+   * applied by flush_plugin_values().
+   *
+   * Lets format implementations forward the applied value to parts of the
+   * plugin that live outside the host parameter model (e.g. a separate
+   * VST3 edit controller). @p as_user_edit is true when the value was
+   * applied through the user-edit path (a gesture the plugin itself
+   * reported).
+   *
+   * Default: no-op.
+   *
+   * @param param The Zrythm parameter the value was applied to.
+   * @param normalized The applied normalized value.
+   * @param as_user_edit Whether the value applied as a user edit.
+   */
+  virtual void on_plugin_reported_value_applied (
+    dsp::ProcessorParameter &param,
+    float                    normalized,
+    bool                     as_user_edit)
+  {
+  }
+
+  /**
    * @brief Stores a plugin-reported value to be applied to the Zrythm
    * param on the next main thread flush.
    *
