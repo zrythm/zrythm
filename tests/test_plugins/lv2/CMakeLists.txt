@@ -81,7 +81,7 @@ endfunction()
 
 add_lv2_fixture(eg_amp_lv2 eg-amp.lv2 amp
   TTL_FILES amp.ttl amp-ui.ttl amp-float-window.ttl presets.ttl
-  SOURCES eg-amp.lv2/amp.c)
+  SOURCES eg-amp.lv2/amp.cpp)
 # stub X11UI for the eg-amp plugin (live UI session tests); not a plugin,
 # so it is not part of the fixture plugin target list, but it must still
 # build with the tests: the UI session tests dlopen it

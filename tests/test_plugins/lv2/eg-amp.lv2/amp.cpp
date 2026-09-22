@@ -1,21 +1,22 @@
 // SPDX-FileCopyrightText: 2006-2016 David Robillard <d@drobilla.net>
 // SPDX-FileCopyrightText: 2006 Steve Harris <steve@plugin.org.uk>
 // SPDX-License-Identifier: ISC
+// Ported from the upstream C source to C++.
 
-/** Include standard C headers */
-#include <math.h>
-#include <stdatomic.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <threads.h>
+/** Include standard C++ headers */
+#include <atomic>
+#include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <thread>
 
 /** Sleeps for the given number of microseconds. */
 static void
 sleep_us (long us)
 {
-  struct timespec ts = { us / 1000000, (us % 1000000) * 1000 };
-  thrd_sleep (&ts, NULL);
+  std::this_thread::sleep_for (std::chrono::microseconds (us));
 }
 
 /**
@@ -46,8 +47,9 @@ sleep_us (long us)
 
 /* Atom events delivered to the message port, observable by tests
    through dlopen() */
-static atomic_int g_message_events = 0;
+static std::atomic<int> g_message_events{ 0 };
 
+LV2_SYMBOL_EXPORT
 int
 amp_message_event_count (void)
 {
@@ -56,52 +58,58 @@ amp_message_event_count (void)
 
 /* Worker responses delivered back to the plugin, observable by tests
    through dlopen() */
-static atomic_int   g_worker_responses = 0;
-static _Atomic float g_worker_last_response = 0.0f;
-static _Atomic float g_last_freewheel = 0.0f;
+static std::atomic<int>   g_worker_responses{ 0 };
+static std::atomic<float> g_worker_last_response{ 0.0f };
+static std::atomic<float> g_last_freewheel{ 0.0f };
 /* Overlapping work() call detector and the probe value whose job
    holds work() open, observable by tests through dlopen() */
-static atomic_int g_work_in_progress;
-static atomic_int g_concurrent_work;
-static const float kSlowJobProbe = 6.0f;
+static std::atomic<int> g_work_in_progress{ 0 };
+static std::atomic<int> g_concurrent_work{ 0 };
+static const float      kSlowJobProbe = 6.0f;
 /* When set, set_state also schedules through the cached feature, for
    tests that verify work() serialization */
-static atomic_int g_mixed_restore;
+static std::atomic<int> g_mixed_restore{ 0 };
 
 /* end_run() calls on the float-window twin, observable by tests
    through dlopen() */
-static atomic_int g_float_window_end_runs = 0;
+static std::atomic<int> g_float_window_end_runs{ 0 };
 
+LV2_SYMBOL_EXPORT
 int
 amp_worker_response_count (void)
 {
   return g_worker_responses;
 }
 
+LV2_SYMBOL_EXPORT
 float
 amp_worker_last_response (void)
 {
   return g_worker_last_response;
 }
 
+LV2_SYMBOL_EXPORT
 float
 amp_last_freewheel (void)
 {
   return g_last_freewheel;
 }
 
+LV2_SYMBOL_EXPORT
 int
 amp_concurrent_work (void)
 {
-  return atomic_load (&g_concurrent_work);
+  return g_concurrent_work.load ();
 }
 
+LV2_SYMBOL_EXPORT
 void
 amp_set_mixed_restore (int enabled)
 {
-  atomic_store (&g_mixed_restore, enabled);
+  g_mixed_restore.store (enabled);
 }
 
+LV2_SYMBOL_EXPORT
 int
 amp_float_window_end_run_count (void)
 {
@@ -160,6 +168,10 @@ instantiate (
   const char *                bundle_path,
   const LV2_Feature * const * features)
 {
+  (void) descriptor;
+  (void) rate;
+  (void) bundle_path;
+
   Amp * amp = (Amp *) calloc (1, sizeof (Amp));
 
   for (const LV2_Feature * const * f = features; *f != NULL; ++f)
@@ -302,6 +314,7 @@ run (LV2_Handle instance, uint32_t n_samples)
 static void
 deactivate (LV2_Handle instance)
 {
+  (void) instance;
 }
 
 /**
@@ -342,9 +355,9 @@ work (
 
   // Detects overlapping work() calls, observable by tests through
   // dlopen()
-  if (atomic_fetch_add (&g_work_in_progress, 1) != 0)
+  if (g_work_in_progress.fetch_add (1) != 0)
     {
-      atomic_store (&g_concurrent_work, 1);
+      g_concurrent_work.store (1);
     }
 
   const float probe = * (const float *) data;
@@ -358,7 +371,7 @@ work (
   const float doubled = probe * 2.0f;
   respond (handle, sizeof (float), &doubled);
 
-  atomic_fetch_sub (&g_work_in_progress, 1);
+  g_work_in_progress.fetch_sub (1);
   return LV2_WORKER_SUCCESS;
 }
 
@@ -430,7 +443,7 @@ set_state (LV2_Handle                   instance,
   (void) flags;
   Amp * amp = (Amp *) instance;
 
-  if (atomic_load (&g_mixed_restore) && amp->schedule != NULL)
+  if (g_mixed_restore.load () && amp->schedule != NULL)
     {
       const float slow_probe = kSlowJobProbe;
       amp->schedule->schedule_work (
@@ -440,7 +453,7 @@ set_state (LV2_Handle                   instance,
       // inline job below overlaps it deterministically
       for (int i = 0; i < 2000; ++i)
         {
-          if (atomic_load (&g_work_in_progress) != 0)
+          if (g_work_in_progress.load () != 0)
             break;
           sleep_us (1000);
         }
