@@ -1566,17 +1566,20 @@
       ]
     },
     "clipSlot": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "description": "A clip slot in the clip launcher (null when empty, object with clipId when a clip is assigned)",
+      "type": "object",
+      "description": "A clip slot (registry.clipSlots entry): holds at most one clip",
       "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
         "clipId": {
           "$ref": "#/definitions/uuid",
           "description": "UUID reference to a clip in registry.arrangerObjects (MidiClip, AudioClip, etc.)"
         }
-      }
+      },
+      "required": [
+        "id"
+      ]
     },
     "scene": {
       "type": "object",
@@ -1590,12 +1593,9 @@
           "$ref": "#/definitions/color",
           "description": "Scene color"
         },
-        "clipSlots": {
-          "type": "array",
-          "description": "Clip slots for this scene, one per track (order matches tracklist order)",
-          "items": {
-            "$ref": "#/definitions/clipSlot"
-          }
+        "clipSlotIds": {
+          "$ref": "#/definitions/uuidArray",
+          "description": "UUID references to clip slots in registry.clipSlots, one per track (order matches tracklist order)"
         }
       }
     },

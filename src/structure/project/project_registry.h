@@ -41,6 +41,7 @@ public:
   static constexpr std::string_view kPluginsKey = "plugins";
   static constexpr std::string_view kTracksKey = "tracks";
   static constexpr std::string_view kLanesKey = "lanes";
+  static constexpr std::string_view kClipSlotsKey = "clipSlots";
   static constexpr std::string_view kArrangerObjectsKey = "arrangerObjects";
   static constexpr std::string_view kFileAudioSourcesKey = "fileAudioSources";
 
@@ -66,6 +67,7 @@ public:
     Plugin,
     Track,
     Lane,
+    ClipSlot,
     ArrangerObject,
     FileAudioSource,
     TempoObjectManager,
@@ -82,6 +84,7 @@ public:
     std::pair{ ObjectCategory::Plugin,          kPluginsKey          },
     std::pair{ ObjectCategory::Track,           kTracksKey           },
     std::pair{ ObjectCategory::Lane,            kLanesKey            },
+    std::pair{ ObjectCategory::ClipSlot,        kClipSlotsKey        },
     std::pair{ ObjectCategory::ArrangerObject,  kArrangerObjectsKey  },
     std::pair{ ObjectCategory::FileAudioSource, kFileAudioSourcesKey },
   };

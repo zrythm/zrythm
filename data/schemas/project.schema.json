@@ -419,6 +419,7 @@
             "plugins",
             "tracks",
             "lanes",
+            "clipSlots",
             "arrangerObjects",
             "fileAudioSources"
           ],
@@ -456,6 +457,13 @@
               "description": "All track lanes (referenced by tracks' laneIds)",
               "items": {
                 "$ref": "common.schema.json#/definitions/trackLane"
+              }
+            },
+            "clipSlots": {
+              "type": "array",
+              "description": "All clip slots (referenced by scenes' clipSlotIds)",
+              "items": {
+                "$ref": "common.schema.json#/definitions/clipSlot"
               }
             },
             "arrangerObjects": {

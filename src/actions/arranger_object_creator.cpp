@@ -54,8 +54,10 @@ ArrangerObjectCreator::add_object_to_clip_slot (
           obj->name ()->setName (
             track.generate_name_for_clip (*obj).to_qstring ());
 
-          undo_stack_.push (
-            new commands::AddClipToClipSlotCommand (slot, obj_ref));
+          undo_stack_.push (new commands::AddClipToClipSlotCommand (
+            structure::scenes::ClipSlotUuidReference (
+              slot.get_uuid (), arranger_object_factory_.registry ()),
+            obj_ref));
         }
     },
     utils::convert_to_variant_qobj<

@@ -121,6 +121,7 @@
         "plugins",
         "tracks",
         "lanes",
+        "clipSlots",
         "arrangerObjects",
         "fileAudioSources"
       ],
@@ -157,6 +158,13 @@
           "type": "array",
           "items": {
             "$ref": "common.schema.json#/definitions/trackLane"
+          },
+          "maxItems": 100000
+        },
+        "clipSlots": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/clipSlot"
           },
           "maxItems": 100000
         },

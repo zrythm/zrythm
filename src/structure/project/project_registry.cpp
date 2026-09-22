@@ -13,6 +13,7 @@
 #include "structure/arrangement/arranger_object_fwd.h"
 #include "structure/arrangement/tempo_object_manager.h"
 #include "structure/project/project_registry.h"
+#include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane.h"
@@ -42,6 +43,8 @@ struct ProjectRegistry::Impl
       std::visit ([] (auto * p) { delete p; }, var);
     for (auto &[id, ptr] : lanes_)
       delete ptr;
+    for (auto &[id, ptr] : clip_slots_)
+      delete ptr;
     for (auto &[id, var] : arranger_objects_)
       std::visit ([] (auto * p) { delete p; }, var);
     for (auto &[id, ptr] : file_audio_sources_)
@@ -57,6 +60,8 @@ struct ProjectRegistry::Impl
     tracks_;
   boost::unordered::unordered_flat_map<QUuid, structure::tracks::TrackLane *>
     lanes_;
+  boost::unordered::unordered_flat_map<QUuid, structure::scenes::ClipSlot *>
+    clip_slots_;
   boost::unordered::
     unordered_flat_map<QUuid, structure::arrangement::ArrangerObjectPtrVariant>
       arranger_objects_;
@@ -145,6 +150,14 @@ ProjectRegistry::register_object_impl (utils::UuidIdentifiableBase &base)
     {
       impl_->lanes_.emplace (uuid, lane);
       impl_->uuid_to_category_.emplace (uuid, Impl::Category::Lane);
+      qobj->setParent (this);
+      return;
+    }
+
+  if (auto * clip_slot = qobject_cast<structure::scenes::ClipSlot *> (qobj))
+    {
+      impl_->clip_slots_.emplace (uuid, clip_slot);
+      impl_->uuid_to_category_.emplace (uuid, Impl::Category::ClipSlot);
       qobj->setParent (this);
       return;
     }
@@ -248,6 +261,11 @@ ProjectRegistry::find_by_raw_uuid_impl (const QUuid &id) const
         auto it = impl_->lanes_.find (id);
         return it != impl_->lanes_.end () ? it->second : nullptr;
       }
+    case Impl::Category::ClipSlot:
+      {
+        auto it = impl_->clip_slots_.find (id);
+        return it != impl_->clip_slots_.end () ? it->second : nullptr;
+      }
     case Impl::Category::ArrangerObject:
       {
         auto it = impl_->arranger_objects_.find (id);
@@ -320,6 +338,12 @@ ProjectRegistry::for_each_matching_impl (
   if (meta_type.inherits (&structure::tracks::TrackLane::staticMetaObject))
     {
       for (const auto &[uuid, ptr] : impl_->lanes_)
+        visit_if_matching (*ptr);
+      return;
+    }
+  if (meta_type.inherits (&structure::scenes::ClipSlot::staticMetaObject))
+    {
+      for (const auto &[uuid, ptr] : impl_->clip_slots_)
         visit_if_matching (*ptr);
       return;
     }
@@ -458,6 +482,16 @@ ProjectRegistry::delete_object_by_id (const QUuid &id)
           }
         break;
       }
+    case Impl::Category::ClipSlot:
+      {
+        auto it = impl_->clip_slots_.find (id);
+        if (it != impl_->clip_slots_.end ())
+          {
+            raw = it->second;
+            impl_->clip_slots_.erase (it);
+          }
+        break;
+      }
     case Impl::Category::ArrangerObject:
       {
         auto it = impl_->arranger_objects_.find (id);
@@ -525,6 +559,9 @@ ProjectRegistry::serialize_object_by_uuid (
     case ObjectCategory::Lane:
       j_out = *impl_->lanes_.at (id);
       break;
+    case ObjectCategory::ClipSlot:
+      j_out = *impl_->clip_slots_.at (id);
+      break;
     case ObjectCategory::ArrangerObject:
       j_out = impl_->arranger_objects_.at (id);
       break;
@@ -572,6 +609,8 @@ to_json (nlohmann::json &j, const ProjectRegistry &registry)
   j[ProjectRegistry::kTracksKey] =
     serialize_bucket_variant (registry.impl_->tracks_);
   j[ProjectRegistry::kLanesKey] = serialize_bucket_ptr (registry.impl_->lanes_);
+  j[ProjectRegistry::kClipSlotsKey] =
+    serialize_bucket_ptr (registry.impl_->clip_slots_);
   j[ProjectRegistry::kArrangerObjectsKey] =
     serialize_bucket_variant (registry.impl_->arranger_objects_);
   j[ProjectRegistry::kFileAudioSourcesKey] =
@@ -646,6 +685,16 @@ struct TrackLaneBuilder
     // it attaches it
     return std::make_unique<T> (
       structure::tracks::TrackLane::TrackLaneDependencies{ registry, nullptr });
+  }
+};
+
+struct ClipSlotBuilder
+{
+  ProjectRegistry                         &registry;
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    static_assert (std::is_same_v<T, structure::scenes::ClipSlot>);
+    return std::make_unique<T> (registry, nullptr);
   }
 };
 
@@ -808,6 +857,8 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
     deferred_tracks;
   std::vector<std::pair<structure::tracks::TrackLane *, nlohmann::json>>
     deferred_lanes;
+  std::vector<std::pair<structure::scenes::ClipSlot *, nlohmann::json>>
+    deferred_clip_slots;
 
   // --- Phase 1: Create and register ALL objects from ALL buckets ---
   // All objects are created, assigned their UUIDs from JSON, and registered.
@@ -873,6 +924,14 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
         deferred_lanes);
     }
 
+  if (j.contains (ProjectRegistry::kClipSlotsKey))
+    {
+      deferred_clip_slots.reserve (j[ProjectRegistry::kClipSlotsKey].size ());
+      create_and_register_ptr_all<structure::scenes::ClipSlot> (
+        registry, j[ProjectRegistry::kClipSlotsKey],
+        ClipSlotBuilder{ registry }, deferred_clip_slots);
+    }
+
   // --- Phase 2: Deserialize data into ALL objects from ALL buckets ---
   // Same order as Phase 1: ports → params → plugins → file audio sources →
   // arranger objects → tracks → lanes. Within each bucket, JSON array order
@@ -889,6 +948,7 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
     deferred_arranger_objects);
   deserialize_all<structure::tracks::TrackPtrVariant> (deferred_tracks);
   deserialize_ptr_all<structure::tracks::TrackLane> (deferred_lanes);
+  deserialize_ptr_all<structure::scenes::ClipSlot> (deferred_clip_slots);
 }
 
 } // namespace zrythm::structure::project
