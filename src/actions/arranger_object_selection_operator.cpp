@@ -5,6 +5,7 @@
 
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/add_arranger_object_command.h"
+#include "commands/arranger_object_owner_ref.h"
 #include "commands/change_timebase_override_command.h"
 #include "commands/change_uuid_identifiable_object_property_command.h"
 #include "commands/move_arranger_objects_command.h"
@@ -394,20 +395,15 @@ ArrangerObjectSelectionOperator::all_objects_copyable (
   });
 }
 
-bool
-ArrangerObjectSelectionOperator::delete_objects (
+std::expected<std::vector<std::unique_ptr<QUndoCommand>>, QString>
+ArrangerObjectSelectionOperator::remove_commands_for (
   const SelectedObjectsVector &objects,
   OwnerResolver               &resolver)
 {
-  if (!all_objects_deletable (objects))
-    {
-      z_warning ("Some selected objects cannot be deleted");
-      return false;
-    }
-
   // Resolve all owners first: either all objects are deleted or none
   struct DeleteTarget
   {
+    structure::arrangement::ArrangerObjectPtrVariant    obj_var;
     structure::arrangement::ArrangerObjectUuidReference obj_ref;
     ArrangerObjectOwnerPtrVariant                       owner_var;
   };
@@ -423,22 +419,65 @@ ArrangerObjectSelectionOperator::delete_objects (
           [] (const auto &owner) { return owner == nullptr; }, owner_var))
         {
           z_warning ("No owner found for object {}", obj_ref.id ());
-          return false;
+          return std::unexpected (
+            QObject::tr ("An object's owner could not be found"));
         }
-      targets.push_back ({ obj_ref, owner_var });
+      targets.push_back ({ std::move (obj_var), obj_ref, owner_var });
     }
 
   if (targets.empty ())
-    return false;
+    return std::unexpected (QObject::tr ("No objects to delete"));
 
-  for (auto &target : targets)
+  // Construct all commands: a construction failure (owner validation)
+  // refuses the whole batch
+  try
     {
-      std::visit (
-        [&] (auto &owner) {
-          undo_stack_.push (
-            new commands::RemoveArrangerObjectCommand (*owner, target.obj_ref));
-        },
-        target.owner_var);
+      std::vector<std::unique_ptr<QUndoCommand>> remove_commands;
+      remove_commands.reserve (targets.size ());
+      for (auto &target : targets)
+        {
+          std::visit (
+            [&] (auto * obj) {
+              using ObjectT = utils::base_type<decltype (obj)>;
+              remove_commands.emplace_back (
+                new commands::RemoveArrangerObjectCommand<ObjectT> (
+                  commands::to_owner_ref (target.owner_var, project_registry_),
+                  target.obj_ref));
+            },
+            target.obj_var);
+        }
+      return remove_commands;
+    }
+  catch (const std::exception &e)
+    {
+      // Construction failures are invariant violations (owner/object
+      // mismatches): logged as errors, refused as a whole batch
+      z_error ("Failed to construct delete commands: {}", e.what ());
+      return std::unexpected (QObject::tr ("The objects could not be deleted"));
+    }
+}
+
+bool
+ArrangerObjectSelectionOperator::delete_objects (
+  const SelectedObjectsVector &objects,
+  OwnerResolver               &resolver)
+{
+  if (!all_objects_deletable (objects))
+    {
+      z_warning ("Some selected objects cannot be deleted");
+      return false;
+    }
+
+  auto remove_commands = remove_commands_for (objects, resolver);
+  if (!remove_commands.has_value ())
+    {
+      refuse_operation (remove_commands.error ());
+      return false;
+    }
+
+  for (auto &command : *remove_commands)
+    {
+      undo_stack_.push (command.release ());
     }
 
   return true;
@@ -469,26 +508,43 @@ ArrangerObjectSelectionOperator::deleteObject (
     }
 
   auto owner_var = object_owner_provider_ (obj_var);
-  return std::visit (
-    [&] (auto &owner) {
-      if (owner == nullptr)
-        {
-          z_warning ("No owner found for object {}", object->get_uuid ());
-          return false;
-        }
-      const auto &children = owner->get_children_vector ();
-      const auto  it = std::ranges::find (
-        children, object->get_uuid (),
-        &structure::arrangement::ArrangerObjectUuidReference::id);
-      if (it == children.end ())
-        {
-          z_warning ("Object {} not found in its owner", object->get_uuid ());
-          return false;
-        }
-      undo_stack_.push (new commands::RemoveArrangerObjectCommand (*owner, *it));
-      return true;
-    },
-    owner_var);
+  try
+    {
+      return std::visit (
+        [&] (auto &owner) {
+          if (owner == nullptr)
+            {
+              z_warning ("No owner found for object {}", object->get_uuid ());
+              return false;
+            }
+          const auto &children = owner->get_children_vector ();
+          const auto  it = std::ranges::find (
+            children, object->get_uuid (),
+            &structure::arrangement::ArrangerObjectUuidReference::id);
+          if (it == children.end ())
+            {
+              z_warning (
+                "Object {} not found in its owner", object->get_uuid ());
+              return false;
+            }
+          std::visit (
+            [&] (auto * obj) {
+              using ObjectT = utils::base_type<decltype (obj)>;
+              undo_stack_.push (
+                new commands::RemoveArrangerObjectCommand<ObjectT> (
+                  commands::to_owner_ref (owner_var, project_registry_), *it));
+            },
+            obj_var);
+          return true;
+        },
+        owner_var);
+    }
+  catch (const std::exception &e)
+    {
+      z_error ("Failed to construct delete command: {}", e.what ());
+      refuse_operation (QObject::tr ("The object could not be deleted"));
+      return false;
+    }
 }
 
 bool
@@ -659,88 +715,111 @@ ArrangerObjectSelectionOperator::cut_objects (
       return false;
     }
 
-  undo::UndoStack::ScopedMacro macro (
-    undo_stack_, QObject::tr ("Cut %1 Objects").arg (targets.size ()));
-  for (const auto &target : targets)
+  // Construct all commands before opening the macro: a construction
+  // failure (owner validation) leaves the stack untouched
+  try
     {
-      std::visit (
-        [&] (const auto &obj) {
-          using ObjectT = utils::base_type<decltype (obj)>;
+      std::vector<std::unique_ptr<QUndoCommand>> cut_commands;
+      cut_commands.reserve (targets.size () * 2);
+      for (const auto &target : targets)
+        {
+          std::visit (
+            [&] (const auto &obj) {
+              using ObjectT = utils::base_type<decltype (obj)>;
 
-          std::optional<structure::arrangement::ArrangerObjectUuidReference>
-            new_obj_ref_opt;
-          if constexpr (structure::arrangement::BoundedObject<ObjectT>)
-            {
-              const auto tl_end =
-                structure::arrangement::timeline_end_ticks (*obj);
-
-              // Right half: clone and configure BEFORE resizing the original
-              // (the resize may change the original's loop range via
-              // bounds-tracking)
-              auto new_obj_ref =
-                object_factory_.clone_new_object_identity (*obj);
-              auto * new_obj = new_obj_ref.template get_object_as<ObjectT> ();
-              configure_cut_right_half (*obj, *new_obj, cut_pos, tl_end);
-
-              // Left half: resize the original to end at the cut position.
-              // For clips the delta is in timeline ticks; for objects inside
-              // a clip (e.g. notes, edited in the clip's unwound content
-              // space) it is in content ticks, ending the original at the
-              // unwound content position under the cut.
-              double resize_delta = (cut_pos - tl_end).asDouble ();
-              if constexpr (!structure::arrangement::ClipObject<ObjectT>)
+              std::optional<structure::arrangement::ArrangerObjectUuidReference>
+                new_obj_ref_opt;
+              if constexpr (structure::arrangement::BoundedObject<ObjectT>)
                 {
-                  const auto * parent_clip = qobject_cast<
-                    const structure::arrangement::Clip *> (obj->parentObject ());
-                  const auto content_at_cut =
-                    parent_clip->contentWarp ()->timelineToContent (cut_pos);
-                  resize_delta =
-                    (content_at_cut
-                     - (obj->position ()->asTick () + obj->length ()->asTick ()))
-                      .asDouble ();
-                }
-              undo_stack_.push (new commands::ResizeArrangerObjectsCommand (
-                { target.obj_ref }, commands::ResizeType::Bounds,
-                commands::ResizeDirection::FromEnd, resize_delta));
+                  const auto tl_end =
+                    structure::arrangement::timeline_end_ticks (*obj);
 
-              new_obj_ref_opt = std::move (new_obj_ref);
-            }
-          else if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::ChordObject>)
-            {
-              // Chords are unbounded and play until the next chord: the
-              // clone starting at the cut automatically ends the original's
-              // effective span, so no resize is needed. Like other editor
-              // content, the clone is placed at the unwound content position
-              // under the cut.
-              const auto * clip = qobject_cast<
-                const structure::arrangement::Clip *> (obj->parentObject ());
-              if (clip != nullptr)
-                {
+                  // Right half: clone and configure BEFORE resizing the
+                  // original (the resize may change the original's loop range
+                  // via bounds-tracking)
                   auto new_obj_ref =
                     object_factory_.clone_new_object_identity (*obj);
                   auto * new_obj =
                     new_obj_ref.template get_object_as<ObjectT> ();
-                  new_obj->position ()->setTicks (
-                    clip->contentWarp ()->timelineToContent (cut_pos).asDouble ());
+                  configure_cut_right_half (*obj, *new_obj, cut_pos, tl_end);
+
+                  // Left half: resize the original to end at the cut position.
+                  // For clips the delta is in timeline ticks; for objects
+                  // inside a clip (e.g. notes, edited in the clip's unwound
+                  // content space) it is in content ticks, ending the original
+                  // at the unwound content position under the cut.
+                  double resize_delta = (cut_pos - tl_end).asDouble ();
+                  if constexpr (!structure::arrangement::ClipObject<ObjectT>)
+                    {
+                      const auto * parent_clip =
+                        qobject_cast<const structure::arrangement::Clip *> (
+                          obj->parentObject ());
+                      const auto content_at_cut =
+                        parent_clip->contentWarp ()->timelineToContent (cut_pos);
+                      resize_delta =
+                        (content_at_cut
+                         - (obj->position ()->asTick () + obj->length ()->asTick ()))
+                          .asDouble ();
+                    }
+                  cut_commands.emplace_back (
+                    new commands::ResizeArrangerObjectsCommand (
+                      { target.obj_ref }, commands::ResizeType::Bounds,
+                      commands::ResizeDirection::FromEnd, resize_delta));
+
                   new_obj_ref_opt = std::move (new_obj_ref);
                 }
-            }
-          if (!new_obj_ref_opt.has_value ())
-            return;
+              else if constexpr (
+                std::is_same_v<ObjectT, structure::arrangement::ChordObject>)
+                {
+                  // Chords are unbounded and play until the next chord: the
+                  // clone starting at the cut automatically ends the original's
+                  // effective span, so no resize is needed. Like other editor
+                  // content, the clone is placed at the unwound content
+                  // position under the cut.
+                  const auto * clip = qobject_cast<
+                    const structure::arrangement::Clip *> (obj->parentObject ());
+                  if (clip != nullptr)
+                    {
+                      auto new_obj_ref =
+                        object_factory_.clone_new_object_identity (*obj);
+                      auto * new_obj =
+                        new_obj_ref.template get_object_as<ObjectT> ();
+                      new_obj->position ()->setTicks (
+                        clip->contentWarp ()
+                          ->timelineToContent (cut_pos)
+                          .asDouble ());
+                      new_obj_ref_opt = std::move (new_obj_ref);
+                    }
+                }
+              if (!new_obj_ref_opt.has_value ())
+                return;
 
-          // Add the right half to the same owner.
-          std::visit (
-            [&] (auto &owner) {
-              undo_stack_.push (new commands::AddArrangerObjectCommand (
-                *owner, *new_obj_ref_opt));
+              // Add the right half to the same owner.
+              cut_commands.emplace_back (
+                new commands::AddArrangerObjectCommand<ObjectT> (
+                  commands::to_owner_ref (target.owner_var, project_registry_),
+                  *new_obj_ref_opt));
             },
-            target.owner_var);
-        },
-        target.obj_var);
-    }
+            target.obj_var);
+        }
 
-  return true;
+      undo::UndoStack::ScopedMacro macro (
+        undo_stack_, QObject::tr ("Cut %1 Objects").arg (targets.size ()));
+      for (auto &command : cut_commands)
+        {
+          undo_stack_.push (command.release ());
+        }
+
+      return true;
+    }
+  catch (const std::exception &e)
+    {
+      // Construction failures are invariant violations (owner/object
+      // mismatches): logged as errors and refused whole
+      z_error ("Failed to construct cut commands: {}", e.what ());
+      refuse_operation (QObject::tr ("The objects could not be cut"));
+      return false;
+    }
 }
 
 bool
@@ -772,20 +851,38 @@ ArrangerObjectSelectionOperator::cloneObjects (
       return false;
     }
 
-  // Create and push command
+  // Construct all commands before opening the macro: a construction
+  // failure (owner validation) leaves the stack untouched
+  std::vector<CloneAndAttachResult> clones;
+  try
+    {
+      clones.reserve (selected_objects.size ());
+      for (const auto &obj_ref : selected_objects)
+        {
+          auto obj_var = utils::convert_to_variant_qobj<
+            structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+          if (auto clone = clone_and_attach (obj_var); clone.has_value ())
+            clones.push_back (std::move (*clone));
+        }
+    }
+  catch (const std::exception &e)
+    {
+      z_error ("Failed to construct clone commands: {}", e.what ());
+      refuse_operation (QObject::tr ("The objects could not be cloned"));
+      return false;
+    }
+
   undo::UndoStack::ScopedMacro macro (
     undo_stack_, QObject::tr ("Copy %1 Objects").arg (selected_objects.size ()));
-  for (const auto &obj_ref : selected_objects)
+  for (auto &clone : clones)
     {
-      auto obj_var = utils::convert_to_variant_qobj<
-        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
-      clone_and_attach (obj_var);
+      undo_stack_.push (clone.command.release ());
     }
 
   return true;
 }
 
-std::optional<QUuid>
+std::optional<ArrangerObjectSelectionOperator::CloneAndAttachResult>
 ArrangerObjectSelectionOperator::clone_and_attach (
   structure::arrangement::ArrangerObjectPtrVariant                      obj_var,
   const std::function<void (structure::arrangement::ArrangerObject &)> &mutate)
@@ -799,30 +896,33 @@ ArrangerObjectSelectionOperator::clone_and_attach (
   if (mutate)
     mutate (*new_obj_ref.get ());
 
-  auto       owner_var = object_owner_provider_ (obj_var);
-  const bool attached = std::visit (
-    [&] (auto &owner) {
+  auto owner_var = object_owner_provider_ (obj_var);
+  return std::visit (
+    [&] (auto &owner) -> std::optional<CloneAndAttachResult> {
       if (owner == nullptr)
         {
           z_warning (
             "No owner found for object {}",
             std::visit (
               [] (const auto * obj) { return obj->get_uuid (); }, obj_var));
-          return false;
+          // The clone stays unowned: it is destroyed automatically once
+          // its last reference (new_obj_ref here) goes away
+          return std::nullopt;
         }
-      undo_stack_.push (
-        new commands::AddArrangerObjectCommand (*owner, new_obj_ref));
-      return true;
+      return std::visit (
+        [&] (auto * obj) -> CloneAndAttachResult {
+          using ObjectT = utils::base_type<decltype (obj)>;
+          return CloneAndAttachResult{
+            std::unique_ptr<
+              QUndoCommand> (new commands::AddArrangerObjectCommand<ObjectT> (
+              commands::to_owner_ref (owner_var, project_registry_),
+              new_obj_ref)),
+            type_safe::get (new_obj_ref.id ())
+          };
+        },
+        obj_var);
     },
     owner_var);
-  if (!attached)
-    {
-      // The clone stays unowned: it is destroyed automatically once its
-      // last reference (new_obj_ref here, if no command was pushed) goes
-      // away
-      return std::nullopt;
-    }
-  return type_safe::get (new_obj_ref.id ());
 }
 
 bool
@@ -1009,12 +1109,26 @@ ArrangerObjectSelectionOperator::cutObjects (
 
   // Delete exactly the objects that were copied
   const auto copyable = copyable_objects (selected_objects);
+
+  // Construct the delete commands before copying: a construction failure
+  // refuses the cut before the clipboard is overwritten
+  auto remove_commands = remove_commands_for (copyable, resolver);
+  if (!remove_commands.has_value ())
+    {
+      refuse_operation (remove_commands.error ());
+      return false;
+    }
+
   if (!copy_objects (copyable, resolver))
     return false;
 
   undo::UndoStack::ScopedMacro macro (
     undo_stack_, QObject::tr ("Cut %1 Objects").arg (copyable.size ()));
-  return delete_objects (copyable, resolver);
+  for (auto &command : *remove_commands)
+    {
+      undo_stack_.push (command.release ());
+    }
+  return true;
 }
 
 void
@@ -1117,24 +1231,43 @@ ArrangerObjectSelectionOperator::duplicateObjects (
       return {};
     }
 
+  // Construct all commands before opening the macro: a construction
+  // failure (owner validation) leaves the stack untouched
+  std::vector<CloneAndAttachResult> clones;
+  try
+    {
+      clones.reserve (selected_objects.size ());
+      for (const auto &obj_ref : selected_objects)
+        {
+          auto obj_var = utils::convert_to_variant_qobj<
+            structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+          if (
+            auto clone = clone_and_attach (
+              obj_var,
+              [shift] (structure::arrangement::ArrangerObject &cloned) {
+                cloned.position ()->addTicks (shift->in (units::ticks));
+              });
+            clone.has_value ())
+            {
+              clones.push_back (std::move (*clone));
+            }
+        }
+    }
+  catch (const std::exception &e)
+    {
+      z_error ("Failed to construct duplicate commands: {}", e.what ());
+      refuse_operation (QObject::tr ("The objects could not be duplicated"));
+      return {};
+    }
+
   QVariantList                 new_ids;
   undo::UndoStack::ScopedMacro macro (
     undo_stack_,
     QObject::tr ("Duplicate %1 Objects").arg (selected_objects.size ()));
-  for (const auto &obj_ref : selected_objects)
+  for (auto &clone : clones)
     {
-      auto obj_var = utils::convert_to_variant_qobj<
-        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
-      if (
-        const auto new_id = clone_and_attach (
-          obj_var,
-          [shift] (structure::arrangement::ArrangerObject &clone) {
-            clone.position ()->addTicks (shift->in (units::ticks));
-          });
-        new_id.has_value ())
-        {
-          new_ids.push_back (new_id->toString (QUuid::WithoutBraces));
-        }
+      undo_stack_.push (clone.command.release ());
+      new_ids.push_back (clone.new_id.toString (QUuid::WithoutBraces));
     }
 
   return new_ids;
@@ -1264,6 +1397,21 @@ ArrangerObjectSelectionOperator::pasteObjectsOnTimeline (
   structure::arrangement::TempoObjectManager * tempoObjectManager,
   double                                       playheadTicks)
 {
+  // Owners resolve through the project registry: an unregistered owner
+  // would fail during command construction, after the paste's imports
+  const auto owner_registered =
+    [this] (const utils::UuidIdentifiableBase * owner) {
+      return owner == nullptr || project_registry_.contains (owner->raw_uuid ());
+    };
+  if (
+    !owner_registered (targetTrack) || !owner_registered (markerTrack)
+    || !owner_registered (chordTrack) || !owner_registered (tempoObjectManager))
+    {
+      z_warning (
+        "Paste target owners must be registered in the project registry");
+      return {};
+    }
+
   const auto paste_target = prepare_paste (units::ticks (playheadTicks));
   if (!paste_target.has_value ())
     return {};
@@ -1380,17 +1528,51 @@ ArrangerObjectSelectionOperator::attach_paste_targets (
   paste.payload.discard_imports_except (
     project_registry_, paste.imported_ids, pasted_root_ids);
 
+  // Construct all commands before the macro opens: a construction
+  // failure (owner validation) leaves the stack untouched
+  std::vector<std::unique_ptr<QUndoCommand>> add_commands;
+  try
+    {
+      add_commands.reserve (targets.size ());
+      for (auto &target : targets)
+        {
+          std::visit (
+            [&] (auto * obj) {
+              using ObjectT = utils::base_type<decltype (obj)>;
+              add_commands.emplace_back (
+                new commands::AddArrangerObjectCommand<ObjectT> (
+                  commands::to_owner_ref (target.owner_var, project_registry_),
+                  target.root_ref));
+            },
+            utils::convert_to_variant_qobj<
+              structure::arrangement::ArrangerObjectPtrVariant> (
+              target.root_ref.get ()));
+        }
+    }
+  catch (const std::exception &e)
+    {
+      z_error ("Failed to construct paste commands: {}", e.what ());
+      // Drop every reference that holds an import alive: the built
+      // commands and the collected targets both hold root references,
+      // and the discard below can only sweep unreferenced imports
+      add_commands.clear ();
+      targets.clear ();
+      paste.payload.cleanup_failed_import (
+        project_registry_, paste.imported_ids);
+      refuse_operation (
+        QObject::tr ("The clipboard objects could not be pasted here"));
+      return {};
+    }
+
   QVariantList                 new_ids;
   undo::UndoStack::ScopedMacro macro (
     undo_stack_, QObject::tr ("Paste %1 Objects").arg (targets.size ()));
-  for (auto &target : targets)
+  for (auto &command : add_commands)
     {
-      std::visit (
-        [&] (auto &owner) {
-          undo_stack_.push (
-            new commands::AddArrangerObjectCommand (*owner, target.root_ref));
-        },
-        target.owner_var);
+      undo_stack_.push (command.release ());
+    }
+  for (const auto &target : targets)
+    {
       new_ids.push_back (
         type_safe::get (target.root_ref.id ()).toString (QUuid::WithoutBraces));
     }

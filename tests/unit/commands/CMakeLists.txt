@@ -6,6 +6,7 @@ add_executable(zrythm_commands_unit_tests
   add_plugin_command_test.cpp
   add_clip_to_clip_slot_command_test.cpp
   add_track_command_test.cpp
+  arranger_object_owner_ref_test.cpp
   delete_tracks_command_test.cpp
   change_qobject_property_command_test.cpp
   change_uuid_identifiable_object_property_command_test.cpp

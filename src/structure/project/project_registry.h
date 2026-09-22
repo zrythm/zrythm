@@ -22,6 +22,7 @@ class TrackLane;
 namespace zrythm::structure::arrangement
 {
 class ArrangerObjectFactory;
+class TempoObjectManager;
 }
 
 namespace zrythm::structure::project
@@ -52,6 +53,11 @@ public:
 
   /**
    * @brief Category of a registered object (which bucket it lives in).
+   *
+   * The TempoObjectManager category is identity-only: the manager is a
+   * project-lifetime singleton with no bucket of its own — it is
+   * serialized in place by Project and never appears in clipboard
+   * payloads.
    */
   enum class ObjectCategory : std::uint8_t
   {
@@ -62,11 +68,14 @@ public:
     Lane,
     ArrangerObject,
     FileAudioSource,
+    TempoObjectManager,
   };
 
-  /** Bucket key for each object category: the single source of truth for
-   * the category ↔ bucket mapping (also used by clipboard payloads, which
-   * mirror the registry's JSON format). */
+  /** Bucket key for each object category that appears in the registry's
+   * JSON representation: the single source of truth for the category ↔
+   * bucket mapping (also used by clipboard payloads, which mirror the
+   * registry's JSON format). Categories without a bucket key are never
+   * serialized as bucket entries. */
   static constexpr std::array kCategoryBucketKeys = {
     std::pair{ ObjectCategory::Port,            kPortsKey            },
     std::pair{ ObjectCategory::Param,           kParametersKey       },
@@ -76,6 +85,12 @@ public:
     std::pair{ ObjectCategory::ArrangerObject,  kArrangerObjectsKey  },
     std::pair{ ObjectCategory::FileAudioSource, kFileAudioSourcesKey },
   };
+  static_assert (
+    !std::ranges::contains (
+      kCategoryBucketKeys,
+      ObjectCategory::TempoObjectManager,
+      [] (const auto &pair) { return pair.first; }),
+    "the identity-only TempoObjectManager category must not have a bucket key");
 
   ProjectRegistry (QObject * parent = nullptr);
   ~ProjectRegistry () override;

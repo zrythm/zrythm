@@ -147,9 +147,10 @@ Project::Project (
       track_factory_ (std::make_unique<structure::tracks::TrackFactory> ([this] () {
         return get_final_track_dependencies ();
       })),
-      tempo_object_manager_ (
-        utils::make_qobject_unique<
-          structure::arrangement::TempoObjectManager> (project_registry_, this)),
+      tempo_object_manager_ref_ (
+        utils::create_object<structure::arrangement::TempoObjectManager> (
+          project_registry_,
+          project_registry_)),
       monitor_fader_ (monitor_fader), metronome_ (metronome),
       port_observation_manager_ (
         utils::make_qobject_unique<
@@ -251,17 +252,18 @@ Project::Project (
   // Sync changes from tempo-related arranger objects to the tempo map. The
   // sync logic lives on TempoObjectManager (the tempo authority); Project only
   // wires the signal and asserts the engine is stopped.
+  auto *     tempo_object_manager = tempo_object_manager_ref_.get ();
   const auto rebuild_tempo_map = [this] () {
     // This must never be called while the engine is running
     assert (!audio_engine_->running ());
-    tempo_object_manager_->sync_to_tempo_map (*tempo_map_wrapper_);
+    tempo_object_manager_ref_.get ()->sync_to_tempo_map (*tempo_map_wrapper_);
   };
   QObject::connect (
-    tempo_object_manager_->tempoObjects (),
+    tempo_object_manager->tempoObjects (),
     &structure::arrangement::ArrangerObjectListModel::contentChanged,
     tempo_map_wrapper_.get (), rebuild_tempo_map);
   QObject::connect (
-    tempo_object_manager_->timeSignatureObjects (),
+    tempo_object_manager->timeSignatureObjects (),
     &structure::arrangement::ArrangerObjectListModel::contentChanged,
     tempo_map_wrapper_.get (), rebuild_tempo_map);
 }
@@ -501,7 +503,7 @@ Project::getTempoMap () const
 structure::arrangement::TempoObjectManager *
 Project::tempoObjectManager () const
 {
-  return tempo_object_manager_.get ();
+  return tempo_object_manager_ref_.get ();
 }
 
 void
@@ -515,7 +517,7 @@ to_json (nlohmann::json &j, const Project &project)
   // j[Project::kClipLinkGroupManagerKey] =
   // project.clip_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
-  j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
+  j[Project::kTempoObjectManagerKey] = *project.tempo_object_manager_ref_.get ();
   j[Project::kClipLauncherKey] = project.clip_launcher_;
 
   j[Project::kRegistryKey] = project.project_registry_;
@@ -568,7 +570,7 @@ from_json (const nlohmann::json &j, Project &project)
   if (j.contains (Project::kTempoObjectManagerKey))
     {
       j.at (Project::kTempoObjectManagerKey)
-        .get_to (*project.tempo_object_manager_);
+        .get_to (*project.tempo_object_manager_ref_.get ());
     }
   if (j.contains (Project::kClipLauncherKey))
     {

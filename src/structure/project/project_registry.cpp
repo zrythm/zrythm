@@ -11,6 +11,7 @@
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/arranger_object_fwd.h"
+#include "structure/arrangement/tempo_object_manager.h"
 #include "structure/project/project_registry.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_fwd.h"
@@ -45,6 +46,8 @@ struct ProjectRegistry::Impl
       std::visit ([] (auto * p) { delete p; }, var);
     for (auto &[id, ptr] : file_audio_sources_)
       delete ptr;
+    for (auto &[id, ptr] : tempo_object_managers_)
+      delete ptr;
   }
 
   boost::unordered::unordered_flat_map<QUuid, dsp::PortPtrVariant> ports_;
@@ -59,6 +62,10 @@ struct ProjectRegistry::Impl
       arranger_objects_;
   boost::unordered::unordered_flat_map<QUuid, dsp::FileAudioSource *>
     file_audio_sources_;
+
+  boost::unordered::
+    unordered_flat_map<QUuid, structure::arrangement::TempoObjectManager *>
+      tempo_object_managers_;
 
   boost::unordered::unordered_flat_map<QUuid, Category> uuid_to_category_;
   boost::unordered::unordered_flat_map<QUuid, int>      ref_counts_;
@@ -160,6 +167,17 @@ ProjectRegistry::register_object_impl (utils::UuidIdentifiableBase &base)
       return;
     }
 
+  if (
+    auto * tom =
+      qobject_cast<structure::arrangement::TempoObjectManager *> (qobj))
+    {
+      impl_->tempo_object_managers_.emplace (uuid, tom);
+      impl_->uuid_to_category_.emplace (
+        uuid, Impl::Category::TempoObjectManager);
+      qobj->setParent (this);
+      return;
+    }
+
   throw std::runtime_error (
     fmt::format ("Unknown object type in ProjectRegistry: {}", uuid.toString ()));
 }
@@ -242,6 +260,11 @@ ProjectRegistry::find_by_raw_uuid_impl (const QUuid &id) const
         auto it = impl_->file_audio_sources_.find (id);
         return it != impl_->file_audio_sources_.end () ? it->second : nullptr;
       }
+    case Impl::Category::TempoObjectManager:
+      {
+        auto it = impl_->tempo_object_managers_.find (id);
+        return it != impl_->tempo_object_managers_.end () ? it->second : nullptr;
+      }
     }
   return nullptr;
 }
@@ -269,6 +292,14 @@ ProjectRegistry::for_each_matching_impl (
   if (meta_type.inherits (&dsp::FileAudioSource::staticMetaObject))
     {
       for (const auto &[uuid, ptr] : impl_->file_audio_sources_)
+        visit_if_matching (*ptr);
+      return;
+    }
+  if (
+    meta_type.inherits (
+      &structure::arrangement::TempoObjectManager::staticMetaObject))
+    {
+      for (const auto &[uuid, ptr] : impl_->tempo_object_managers_)
         visit_if_matching (*ptr);
       return;
     }
@@ -447,6 +478,16 @@ ProjectRegistry::delete_object_by_id (const QUuid &id)
           }
         break;
       }
+    case Impl::Category::TempoObjectManager:
+      {
+        auto it = impl_->tempo_object_managers_.find (id);
+        if (it != impl_->tempo_object_managers_.end ())
+          {
+            raw = it->second;
+            impl_->tempo_object_managers_.erase (it);
+          }
+        break;
+      }
     }
 
   impl_->uuid_to_category_.erase (id);
@@ -489,6 +530,9 @@ ProjectRegistry::serialize_object_by_uuid (
       break;
     case ObjectCategory::FileAudioSource:
       j_out = *impl_->file_audio_sources_.at (id);
+      break;
+    case ObjectCategory::TempoObjectManager:
+      j_out = *impl_->tempo_object_managers_.at (id);
       break;
     }
   return cat_it->second;

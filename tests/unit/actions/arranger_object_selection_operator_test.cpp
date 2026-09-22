@@ -279,6 +279,14 @@ protected:
       [this] () { return current_project_id_; }, mock_enumerator);
   }
 
+  // Number of arranger objects currently registered
+  size_t count_arranger_objects () const
+  {
+    return nlohmann::json (registry_)
+      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
+      .size ();
+  }
+
   // Selects the row of the given object in the list model.
   void select_object (
     const structure::arrangement::ArrangerObjectUuidReference &ref,
@@ -3289,14 +3297,15 @@ TEST_F (
     track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
   auto * marker_track =
     marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ();
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
 
   selection_model_->clear ();
   select_object (marker_ref); // position 0
   ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
 
   const auto pasted = operator_->pasteObjectsOnTimeline (
-    nullptr, marker_track, nullptr, &tempo_mgr, 5000.0);
+    nullptr, marker_track, nullptr, tempo_mgr_ref.get (), 5000.0);
   ASSERT_EQ (pasted.size (), 1u);
 
   // The pasted marker is at the playhead; the track's own markers are not
@@ -3347,23 +3356,20 @@ TEST_F (
   ArrangerObjectSelectionOperatorTest,
   PasteObjectsOnTimelineRefusesOffBarTimeSignature)
 {
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
 
   time_signature_ref.get ()->position ()->setTicks (0.0);
   selection_model_->clear ();
   select_object (time_signature_ref);
   ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
 
-  const auto count_arranger_objects = [&] () {
-    return nlohmann::json (registry_)
-      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
-      .size ();
-  };
   const auto before = count_arranger_objects ();
 
   EXPECT_TRUE (
     operator_
-      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, 100.0)
+      ->pasteObjectsOnTimeline (
+        nullptr, nullptr, nullptr, tempo_mgr_ref.get (), 100.0)
       .isEmpty ());
   EXPECT_EQ (undo_stack_->count (), 0);
   // The refusal must leave nothing imported behind
@@ -3371,7 +3377,40 @@ TEST_F (
 
   // at a bar boundary (4/4 at PPQN 960: 3840 ticks) the same paste succeeds
   const auto pasted = operator_->pasteObjectsOnTimeline (
-    nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks);
+    nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks);
+  EXPECT_EQ (pasted.size (), 1u);
+}
+
+// An owner that is not registered in the project registry is refused at
+// entry, before any payload content is imported
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineRefusesUnregisteredOwner)
+{
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
+  structure::arrangement::TempoObjectManager unregistered_mgr{
+    registry_, nullptr
+  };
+
+  time_signature_ref.get ()->position ()->setTicks (0.0);
+  selection_model_->clear ();
+  select_object (time_signature_ref);
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  const auto before = count_arranger_objects ();
+
+  EXPECT_TRUE (
+    operator_
+      ->pasteObjectsOnTimeline (
+        nullptr, nullptr, nullptr, &unregistered_mgr, 100.0)
+      .isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (count_arranger_objects (), before);
+
+  // The registered manager pastes the same clipboard content
+  const auto pasted = operator_->pasteObjectsOnTimeline (
+    nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks);
   EXPECT_EQ (pasted.size (), 1u);
 }
 
@@ -3379,7 +3418,8 @@ TEST_F (
   ArrangerObjectSelectionOperatorTest,
   PasteObjectsOnTimelineRefusesLandingBeforeStart)
 {
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
 
   // A lying anchor far past the paste position shifts the root before
   // the start of the timeline; the paste must refuse and import nothing
@@ -3392,16 +3432,12 @@ TEST_F (
     1000000.0;
   clipboard_.setPayload (j.get<structure::project::ClipboardPayload> ());
 
-  const auto count_arranger_objects = [&] () {
-    return nlohmann::json (registry_)
-      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
-      .size ();
-  };
   const auto before = count_arranger_objects ();
 
   EXPECT_TRUE (
     operator_
-      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      ->pasteObjectsOnTimeline (
+        nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks)
       .isEmpty ());
   EXPECT_EQ (undo_stack_->count (), 0);
   EXPECT_EQ (count_arranger_objects (), before);
@@ -3411,12 +3447,14 @@ TEST_F (
   ArrangerObjectSelectionOperatorTest,
   PasteObjectsOnTimelineWithEmptyClipboardIsNoOp)
 {
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
 
   EXPECT_FALSE (clipboard_.payload ().has_value ());
   EXPECT_TRUE (
     operator_
-      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      ->pasteObjectsOnTimeline (
+        nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks)
       .isEmpty ());
   EXPECT_EQ (undo_stack_->count (), 0);
 }
@@ -3425,7 +3463,8 @@ TEST_F (
   ArrangerObjectSelectionOperatorTest,
   PasteObjectsOnTimelineRefusesTracksPayload)
 {
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
 
   clipboard_.setPayload (
     structure::project::ClipboardPayload::create (
@@ -3434,7 +3473,8 @@ TEST_F (
 
   EXPECT_TRUE (
     operator_
-      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      ->pasteObjectsOnTimeline (
+        nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks)
       .isEmpty ());
   EXPECT_EQ (undo_stack_->count (), 0);
 }
@@ -3443,7 +3483,8 @@ TEST_F (
   ArrangerObjectSelectionOperatorTest,
   PasteObjectsOnTimelineRefusesPluginsPayload)
 {
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
 
   clipboard_.setPayload (
     structure::project::ClipboardPayload::create (
@@ -3452,7 +3493,8 @@ TEST_F (
 
   EXPECT_TRUE (
     operator_
-      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      ->pasteObjectsOnTimeline (
+        nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks)
       .isEmpty ());
   EXPECT_EQ (undo_stack_->count (), 0);
 }
@@ -3461,7 +3503,8 @@ TEST_F (
   ArrangerObjectSelectionOperatorTest,
   PasteObjectsOnTimelineRefusesPayloadCarryingTracks)
 {
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
 
   // An arranger-objects payload carrying a track entry: tracks cannot be
   // attached by an arranger paste and would stay unowned, so the paste
@@ -3481,7 +3524,8 @@ TEST_F (
 
   EXPECT_TRUE (
     operator_
-      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      ->pasteObjectsOnTimeline (
+        nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks)
       .isEmpty ());
   EXPECT_EQ (undo_stack_->count (), 0);
   // The carried track stays untouched in the source registry
@@ -3492,14 +3536,10 @@ TEST_F (
   ArrangerObjectSelectionOperatorTest,
   PasteObjectsOnTimelineDiscardsObjectsNoRootNeeds)
 {
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
   time_signature_ref.get ()->position ()->setTicks (0.0);
 
-  const auto count_arranger_objects = [&] () {
-    return nlohmann::json (registry_)
-      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
-      .size ();
-  };
   const auto before = count_arranger_objects ();
 
   // The payload smuggles in a surplus marker no root needs: the paste
@@ -3516,7 +3556,7 @@ TEST_F (
   clipboard_.setPayload (j.get<structure::project::ClipboardPayload> ());
 
   const auto pasted = operator_->pasteObjectsOnTimeline (
-    nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks);
+    nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks);
   ASSERT_EQ (pasted.size (), 1u);
   EXPECT_EQ (undo_stack_->count (), 1);
   EXPECT_EQ (count_arranger_objects (), before + 1);
@@ -3526,7 +3566,8 @@ TEST_F (
   ArrangerObjectSelectionOperatorTest,
   PasteObjectsOnTimelineTwiceProducesIndependentObjects)
 {
-  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  const auto tempo_mgr_ref = utils::create_object<
+    structure::arrangement::TempoObjectManager> (registry_, registry_);
 
   time_signature_ref.get ()->position ()->setTicks (0.0);
   selection_model_->clear ();
@@ -3534,13 +3575,13 @@ TEST_F (
   ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
 
   const auto first = operator_->pasteObjectsOnTimeline (
-    nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks);
+    nullptr, nullptr, nullptr, tempo_mgr_ref.get (), kBarTicks);
   ASSERT_EQ (first.size (), 1u);
 
   // the same clipboard pastes again: the payload is re-prepared with
   // fresh identities, so the results are independent objects
   const auto second = operator_->pasteObjectsOnTimeline (
-    nullptr, nullptr, nullptr, &tempo_mgr, 7680.0);
+    nullptr, nullptr, nullptr, tempo_mgr_ref.get (), 7680.0);
   ASSERT_EQ (second.size (), 1u);
 
   EXPECT_NE (first.front (), second.front ());
@@ -3781,11 +3822,6 @@ TEST_F (
     4000.0;
   clipboard_.setPayload (j.get<structure::project::ClipboardPayload> ());
 
-  const auto count_arranger_objects = [&] () {
-    return nlohmann::json (registry_)
-      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
-      .size ();
-  };
   const auto before = count_arranger_objects ();
 
   EXPECT_TRUE (operator_->pasteObjectsIntoClip (midi_clip, 0.0).isEmpty ());

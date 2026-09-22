@@ -339,8 +339,16 @@ public:
   std::unique_ptr<structure::tracks::TrackFactory> track_factory_;
 
 private:
-  utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
-    tempo_object_manager_;
+  /**
+   * @brief Keep-alive reference to the project's tempo object manager.
+   *
+   * The manager is registered in the project registry (which owns it)
+   * under an identity-only category; undo commands reference it through
+   * the registry. Declared after project_registry_ so the reference is
+   * released before the registry is destroyed.
+   */
+  structure::arrangement::TempoObjectManagerUuidReference
+    tempo_object_manager_ref_;
 
   dsp::Fader     &monitor_fader_;
   dsp::Metronome &metronome_;

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cassert>
+#include <stdexcept>
 
 #include "utils/format_qt.h"
 
@@ -12,14 +13,14 @@
 
 namespace zrythm::actions
 {
-void
+bool
 ArrangerObjectCreator::add_laned_object (
   structure::tracks::Track                           &track,
   structure::tracks::TrackLane                       &lane,
   structure::arrangement::ArrangerObjectUuidReference obj_ref)
 {
-  std::visit (
-    [&] (auto &&obj) {
+  return std::visit (
+    [&] (auto &&obj) -> bool {
       using ObjectT = utils::base_type<decltype (obj)>;
       if constexpr (
         std::is_same_v<ObjectT, structure::arrangement::MidiClip>
@@ -28,9 +29,10 @@ ArrangerObjectCreator::add_laned_object (
           obj->name ()->setName (
             track.generate_name_for_clip (*obj).to_qstring ());
 
-          undo_stack_.push (
-            new commands::AddArrangerObjectCommand<ObjectT> (lane, obj_ref));
+          return push_add_command<ObjectT> (lane, obj_ref);
         }
+      else
+        return false;
     },
     utils::convert_to_variant_qobj<
       structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
@@ -73,9 +75,9 @@ ArrangerObjectCreator::addMarker (
       .with_name (name)
       .with_marker_type (markerType)
       .build_in_registry ();
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<structure::arrangement::Marker> (
-      *markerTrack, marker_ref));
+  if (
+    !push_add_command<structure::arrangement::Marker> (*markerTrack, marker_ref))
+    return nullptr;
   return marker_ref.get_object_as<structure::arrangement::Marker> ();
 }
 
@@ -90,9 +92,9 @@ ArrangerObjectCreator::addTempoObject (
     arranger_object_factory_.get_builder<structure::arrangement::TempoObject> ()
       .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<structure::arrangement::TempoObject> (
-      *tempoObjectManager, tempo_object_ref));
+  if (!push_add_command<structure::arrangement::TempoObject> (
+        *tempoObjectManager, tempo_object_ref))
+    return nullptr;
   return tempo_object_ref.get_object_as<structure::arrangement::TempoObject> ();
 }
 
@@ -108,10 +110,9 @@ ArrangerObjectCreator::addTimeSignatureObject (
       .get_builder<structure::arrangement::TimeSignatureObject> ()
       .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<
-      structure::arrangement::TimeSignatureObject> (
-      *tempoObjectManager, time_signature_object_ref));
+  if (!push_add_command<structure::arrangement::TimeSignatureObject> (
+        *tempoObjectManager, time_signature_object_ref))
+    return nullptr;
   return time_signature_object_ref
     .get_object_as<structure::arrangement::TimeSignatureObject> ();
 }
@@ -126,7 +127,8 @@ ArrangerObjectCreator::addEmptyMidiClip (
     arranger_object_factory_.get_builder<structure::arrangement::MidiClip> ()
       .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
-  add_laned_object (*track, *lane, mr_ref);
+  if (!add_laned_object (*track, *lane, mr_ref))
+    return nullptr;
   return mr_ref.get_object_as<structure::arrangement::MidiClip> ();
 }
 
@@ -141,9 +143,8 @@ ArrangerObjectCreator::addEmptyChordClip (
       .build_in_registry ();
   auto * chord_clip = cr_ref.get_object_as<structure::arrangement::ChordClip> ();
   chord_clip->name ()->setName (track->generate_name_for_clip (*chord_clip));
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<structure::arrangement::ChordClip> (
-      *track, cr_ref));
+  if (!push_add_command<structure::arrangement::ChordClip> (*track, cr_ref))
+    return nullptr;
   return chord_clip;
 }
 
@@ -160,9 +161,20 @@ ArrangerObjectCreator::addEmptyAutomationClip (
       .build_in_registry ();
   auto * ar = ar_ref.get_object_as<structure::arrangement::AutomationClip> ();
   ar->name ()->setName (track->generate_name_for_clip (*ar, automationTrack));
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<
-      structure::arrangement::AutomationClip> (*automationTrack, ar_ref));
+  // AutomationTracks are not registry objects yet, so this site builds
+  // the raw-pointer handle directly
+  try
+    {
+      undo_stack_.push (
+        new commands::AddArrangerObjectCommand<
+          structure::arrangement::AutomationClip> (
+          commands::make_owner_ref (*automationTrack), ar_ref));
+    }
+  catch (const std::exception &e)
+    {
+      z_error ("Failed to attach automation clip: {}", e.what ());
+      return nullptr;
+    }
   return ar;
 }
 
@@ -272,9 +284,8 @@ ArrangerObjectCreator::addChordObjectFromFields (
     rootNote, chordType, chordAccent, inversion,
     hasBass ? std::make_optional (bassNote) : std::nullopt);
   auto obj_ref = builder.build_in_registry ();
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<structure::arrangement::ChordObject> (
-      *clip, obj_ref));
+  if (!push_add_command<structure::arrangement::ChordObject> (*clip, obj_ref))
+    return nullptr;
   return obj_ref.get_object_as<structure::arrangement::ChordObject> ();
 }
 
@@ -361,7 +372,8 @@ ArrangerObjectCreator::add_audio_clip_with_clip (
 {
   auto obj_ref = arranger_object_factory_.create_audio_clip_with_clip (
     std::move (clip_id), start_ticks);
-  add_laned_object (track, lane, obj_ref);
+  if (!add_laned_object (track, lane, obj_ref))
+    throw std::runtime_error ("failed to attach recorded clip to its lane");
   return obj_ref.get_object_as<structure::arrangement::AudioClip> ();
 }
 
@@ -389,9 +401,9 @@ ArrangerObjectCreator::add_scale_object (
       .with_start_ticks (start_ticks)
       .with_scale (std::move (scale))
       .build_in_registry ();
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<structure::arrangement::ScaleObject> (
-      chord_track, obj_ref));
+  if (
+    !push_add_command<structure::arrangement::ScaleObject> (chord_track, obj_ref))
+    return nullptr;
   return obj_ref.get_object_as<structure::arrangement::ScaleObject> ();
 }
 
@@ -406,7 +418,8 @@ ArrangerObjectCreator::add_audio_clip_for_recording (
   auto clip_ref = arranger_object_factory_.create_audio_clip_from_audio_buffer (
     initial_frames, utils::audio::BitDepth::BIT_DEPTH_32, clip_name,
     start_ticks);
-  add_laned_object (track, lane, clip_ref);
+  if (!add_laned_object (track, lane, clip_ref))
+    throw std::runtime_error ("failed to attach recorded clip to its lane");
   return clip_ref;
 }
 
@@ -420,7 +433,8 @@ ArrangerObjectCreator::add_midi_clip_for_recording (
     arranger_object_factory_.get_builder<structure::arrangement::MidiClip> ()
       .with_start_ticks (start_ticks)
       .build_in_registry ();
-  add_laned_object (track, lane, clip_ref);
+  if (!add_laned_object (track, lane, clip_ref))
+    throw std::runtime_error ("failed to attach recorded clip to its lane");
   return clip_ref;
 }
 
@@ -437,9 +451,9 @@ ArrangerObjectCreator::add_chord_clip_for_recording (
     clip_ref.get_object_as<structure::arrangement::ChordClip> ();
   chord_clip->name ()->setName (
     chord_track.generate_name_for_clip (*chord_clip));
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<structure::arrangement::ChordClip> (
-      chord_track, clip_ref));
+  if (
+    !push_add_command<structure::arrangement::ChordClip> (chord_track, clip_ref))
+    throw std::runtime_error ("failed to attach recorded clip");
   return clip_ref;
 }
 
@@ -462,9 +476,9 @@ ArrangerObjectCreator::add_midi_control_event (
   ev->setChannel (channel);
   ev->setController (controller);
   ev->setValue (value);
-  undo_stack_.push (
-    new commands::AddArrangerObjectCommand<
-      structure::arrangement::MidiControlEvent> (clip, obj_ref));
+  if (
+    !push_add_command<structure::arrangement::MidiControlEvent> (clip, obj_ref))
+    throw std::runtime_error ("failed to attach MIDI control event");
   return ev;
 }
 
@@ -477,7 +491,8 @@ ArrangerObjectCreator::addAudioClipFromFile (
 {
   auto ar_ref = arranger_object_factory_.create_audio_clip_from_file (
     absPath, units::ticks (startTicks));
-  add_laned_object (*track, *lane, ar_ref);
+  if (!add_laned_object (*track, *lane, ar_ref))
+    return nullptr;
   return ar_ref.get_object_as<structure::arrangement::AudioClip> ();
 }
 

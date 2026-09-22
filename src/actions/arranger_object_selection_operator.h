@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include <expected>
 #include <functional>
+#include <memory>
 #include <unordered_map>
 
 #include "commands/change_qobject_property_command.h"
@@ -11,11 +13,11 @@
 #include "controllers/clipboard.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/arranger_object_fwd.h"
+#include "structure/arrangement/arranger_object_owner_variant.h"
 #include "structure/arrangement/tempo_object_manager.h"
 #include "structure/tracks/track_fwd.h"
 #include "undo/undo_stack.h"
 #include "utils/units.h"
-#include "utils/variant_helpers.h"
 
 #include <QItemSelectionModel>
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -33,9 +35,7 @@ public:
   using SelectedObjectsVector =
     std::vector<structure::arrangement::ArrangerObjectUuidReference>;
   using ArrangerObjectOwnerPtrVariant =
-    utils::to_pointer_variant<utils::wrap_variant_t<
-      structure::arrangement::ArrangerObjectVariant,
-      structure::arrangement::ArrangerObjectOwner>>;
+    structure::arrangement::ArrangerObjectOwnerPtrVariant;
   using ObjectOwnerProvider = std::function<ArrangerObjectOwnerPtrVariant (
     structure::arrangement::ArrangerObjectPtrVariant)>;
 
@@ -224,6 +224,10 @@ public:
    * each pasted root is attached with one undoable command inside a
    * single undo macro.
    *
+   * @pre Every passed owner must be registered in the project registry:
+   * pastes resolve their targets' owners through it. An owner failing
+   * this is refused before any payload content is imported.
+   *
    * @return The pasted objects' UUIDs (for selection), or an empty list on
    * failure.
    */
@@ -395,6 +399,20 @@ private:
   };
 
   /**
+   * @brief Constructs one remove command per object in @p objects.
+   *
+   * All owners are resolved first and all commands are constructed before
+   * any is returned: an unresolvable owner or a construction failure
+   * (owner validation) refuses the whole batch.
+   *
+   * @return The commands to push, or a user-facing refusal reason.
+   */
+  [[nodiscard]] std::expected<std::vector<std::unique_ptr<QUndoCommand>>, QString>
+  remove_commands_for (
+    const SelectedObjectsVector &objects,
+    OwnerResolver               &resolver);
+
+  /**
    * @brief Owner-resolving overloads used inside one operation: @p resolver
    * is shared across the operation's phases.
    */
@@ -477,16 +495,27 @@ private:
     const PasteOwnerResolver &resolve_owner);
 
   /**
+   * @brief Result of cloning an arranger object for attachment: the
+   * constructed add command (not yet pushed) and the clone's UUID.
+   */
+  struct CloneAndAttachResult
+  {
+    std::unique_ptr<QUndoCommand> command;
+    QUuid                         new_id;
+  };
+
+  /**
    * @brief Clones @p obj_var with a fresh identity, applies @p mutate and
-   * pushes an add command for the clone on its owner.
+   * constructs an add command attaching the clone to its owner.
    *
    * If the object has no owner, the warning is logged, no command is
-   * pushed and the clone is destroyed automatically once its last
+   * constructed and the clone is destroyed automatically once its last
    * reference goes away.
    *
-   * @return The clone's UUID, or std::nullopt if it could not be attached.
+   * @return The command and the clone's UUID, or std::nullopt if it could
+   * not be attached.
    */
-  std::optional<QUuid> clone_and_attach (
+  std::optional<CloneAndAttachResult> clone_and_attach (
     structure::arrangement::ArrangerObjectPtrVariant obj_var,
     const std::function<void (structure::arrangement::ArrangerObject &)>
       &mutate = {});
