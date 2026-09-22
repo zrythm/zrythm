@@ -65,8 +65,8 @@ private:
   QColor                          curve_color_;
   float                           canvas_width_ = 0.0f;
   float                           canvas_height_ = 0.0f;
-  qreal                           reference_width_ = 0;
-  qreal                           reference_x_ = 0;
+  double                          reference_width_ = 0;
+  double                          reference_x_ = 0;
   bool                            draw_points_ = false;
   /// When false, render the original source sequence only (no loop unwrapping,
   /// no clip-start offset) — used by the automation editor.
@@ -75,7 +75,7 @@ private:
   /// The renderer highlights the single emitted segment containing this X
   /// (looped copies are skipped because the hit-test only succeeds on the
   /// real, draggable segment).
-  qreal hovered_x_ = -1.0;
+  double hovered_x_ = -1.0;
 };
 
 } // namespace zrythm::gui::qquick

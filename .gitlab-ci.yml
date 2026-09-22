@@ -294,7 +294,7 @@ check:reuse:
   script:
     - reuse lint
 
-check:dependency-inventory:
+check:tools:
   extends: .gnu-linux-template
   stage: check
   needs: []
@@ -331,14 +331,7 @@ check:qmllint:
             HOST_PROFILE: gcc_debug
   script:
     - (cmake --build conanbuild/Debug --config Debug --target all_qmllint 2>&1 || true) | tee qmllint_output.txt
-    - |
-      WARNING_COUNT=$(grep 'Warning: ' qmllint_output.txt | grep "${CI_PROJECT_DIR}/src/gui/qml/" | grep -v 'ZrythmStyle' | grep -v 'not found on type "QObject"' | grep -v 'not found on type "QQuickItem"' | grep -v 'Type "QColor" of property "color" not found' | wc -l)
-      echo "QML lint warning count (filtered): ${WARNING_COUNT}"
-      if [ "${WARNING_COUNT}" -gt 31 ]; then
-        echo "Error: QML lint warning count (${WARNING_COUNT}) exceeds threshold (31)"
-        # exit 1 # temporarily disabled
-      fi
-      echo "QML lint check passed"
+    - python3 tools/check_qmllint.py qmllint_output.txt
 
 check:clang-tidy:
   rules:
@@ -495,7 +488,7 @@ build:gnu/linux:
     - job: check:exif
     - job: check:reuse
     - job: check:clang-format
-    - job: check:dependency-inventory
+    - job: check:tools
   timeout: 2h # a lot of tools are run here
   script:
     - cmake --build conanbuild/${BUILD_TYPE} --config ${BUILD_TYPE} --parallel --target all all_verify_interface_header_sets

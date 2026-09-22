@@ -38,8 +38,8 @@ private:
   QColor                dimmed_color_;
   float                 canvas_width_ = 0.0f;
   float                 canvas_height_ = 0.0f;
-  qreal                 reference_width_ = 0;
-  qreal                 reference_x_ = 0;
+  double                reference_width_ = 0;
+  double                reference_x_ = 0;
 };
 
 } // namespace zrythm::gui::qquick

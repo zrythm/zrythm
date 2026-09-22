@@ -92,7 +92,7 @@ TempoCurveCanvasItem::baseBpm () const
 }
 
 void
-TempoCurveCanvasItem::setPxPerTick (qreal px)
+TempoCurveCanvasItem::setPxPerTick (double px)
 {
   if (qFuzzyCompare (px_per_tick_, px))
     return;
@@ -102,7 +102,7 @@ TempoCurveCanvasItem::setPxPerTick (qreal px)
 }
 
 void
-TempoCurveCanvasItem::setScrollX (qreal x)
+TempoCurveCanvasItem::setScrollX (double x)
 {
   if (qFuzzyCompare (scroll_x_, x))
     return;
@@ -112,7 +112,7 @@ TempoCurveCanvasItem::setScrollX (qreal x)
 }
 
 void
-TempoCurveCanvasItem::setScrollXPlusWidth (qreal w)
+TempoCurveCanvasItem::setScrollXPlusWidth (double w)
 {
   if (qFuzzyCompare (scroll_x_plus_width_, w))
     return;
@@ -152,7 +152,7 @@ TempoCurveCanvasItem::setDragActive (bool active)
 }
 
 void
-TempoCurveCanvasItem::setDragDeltaPx (qreal px)
+TempoCurveCanvasItem::setDragDeltaPx (double px)
 {
   if (qFuzzyCompare (drag_delta_px_, px))
     return;

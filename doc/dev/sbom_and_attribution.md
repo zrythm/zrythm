@@ -79,7 +79,7 @@ automatically with a `via` pointer to the nearest direct require (e.g.
 
 ## CI
 
-`check:dependency-inventory` (check stage) runs the python tool tests and the
+`check:tools` (check stage) runs the python tool tests and the
 drift checker, and gates the GNU/Linux build job. The dedicated
 `sbom:gnu/linux` job generates the Release `sbom.cdx.json` from the
 configure-time Conan fragment and publishes it as a pipeline artifact,

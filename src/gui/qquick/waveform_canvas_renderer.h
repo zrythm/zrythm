@@ -43,8 +43,8 @@ struct WaveformPeak
 std::vector<int64_t>
 compute_frame_mapping (
   int                             canvas_width,
-  qreal                           reference_width,
-  qreal                           reference_x,
+  double                          reference_width,
+  double                          reference_x,
   std::function<int64_t (double)> content_fraction_to_frame);
 
 /// Convenience for the common case: linear mapping where each content
@@ -53,8 +53,8 @@ compute_frame_mapping (
 std::vector<int64_t>
 compute_linear_frame_mapping (
   int     canvas_width,
-  qreal   reference_width,
-  qreal   reference_x,
+  double  reference_width,
+  double  reference_x,
   int64_t total_frames);
 
 /// Maps per-pixel content fractions to buffer frames using the tempo map's
@@ -70,8 +70,8 @@ compute_linear_frame_mapping (
 std::vector<int64_t>
 compute_timeline_frame_mapping (
   int                  canvas_width,
-  qreal                reference_width,
-  qreal                reference_x,
+  double               reference_width,
+  double               reference_x,
   const dsp::TempoMap &tempo_map,
   dsp::TimelineTick    clip_start_tick,
   double               timeline_tick_duration);
@@ -126,8 +126,8 @@ private:
   float  canvas_height_ = 0.0f;
 
   // Content density decoupling (from ClipCanvasItemBase)
-  qreal reference_width_ = 0;
-  qreal reference_x_ = 0;
+  double reference_width_ = 0;
+  double reference_x_ = 0;
 
   // Loop wrapping (from AudioClipWaveformCanvasItem)
   bool    has_loop_ = false;
@@ -148,8 +148,8 @@ private:
   uint64_t prev_generation_ = 0;
   float    prev_width_ = 0.0f;
   float    prev_height_ = 0.0f;
-  qreal    prev_reference_width_ = 0;
-  qreal    prev_reference_x_ = 0;
+  double   prev_reference_width_ = 0;
+  double   prev_reference_x_ = 0;
 };
 
 } // namespace zrythm::gui::qquick

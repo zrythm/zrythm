@@ -34,27 +34,27 @@ class RulerGridCanvasItem : public QCanvasPainterItem
     dsp::TempoMapWrapper * tempoMap READ tempoMap WRITE setTempoMap NOTIFY
       tempoMapChanged)
   Q_PROPERTY (
-    qreal pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
-  Q_PROPERTY (qreal scrollX READ scrollX WRITE setScrollX NOTIFY scrollXChanged)
+    double pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
+  Q_PROPERTY (double scrollX READ scrollX WRITE setScrollX NOTIFY scrollXChanged)
   Q_PROPERTY (
-    qreal scrollXPlusWidth READ scrollXPlusWidth WRITE setScrollXPlusWidth
+    double scrollXPlusWidth READ scrollXPlusWidth WRITE setScrollXPlusWidth
       NOTIFY scrollXPlusWidthChanged)
   Q_PROPERTY (
     QColor textColor READ textColor WRITE setTextColor NOTIFY textColorChanged)
   Q_PROPERTY (
-    qreal barLineOpacity READ barLineOpacity WRITE setBarLineOpacity NOTIFY
+    double barLineOpacity READ barLineOpacity WRITE setBarLineOpacity NOTIFY
       barLineOpacityChanged)
   Q_PROPERTY (
-    qreal beatLineOpacity READ beatLineOpacity WRITE setBeatLineOpacity NOTIFY
+    double beatLineOpacity READ beatLineOpacity WRITE setBeatLineOpacity NOTIFY
       beatLineOpacityChanged)
   Q_PROPERTY (
-    qreal sixteenthLineOpacity READ sixteenthLineOpacity WRITE
+    double sixteenthLineOpacity READ sixteenthLineOpacity WRITE
       setSixteenthLineOpacity NOTIFY sixteenthLineOpacityChanged)
   Q_PROPERTY (
-    qreal detailMeasurePxThreshold READ detailMeasurePxThreshold WRITE
+    double detailMeasurePxThreshold READ detailMeasurePxThreshold WRITE
       setDetailMeasurePxThreshold NOTIFY detailMeasurePxThresholdChanged)
   Q_PROPERTY (
-    qreal detailMeasureLabelPxThreshold READ detailMeasureLabelPxThreshold WRITE
+    double detailMeasureLabelPxThreshold READ detailMeasureLabelPxThreshold WRITE
       setDetailMeasureLabelPxThreshold NOTIFY detailMeasureLabelPxThresholdChanged)
   Q_PROPERTY (
     QFont barLabelFont READ barLabelFont WRITE setBarLabelFont NOTIFY
@@ -73,30 +73,30 @@ public:
 
   dsp::TempoMapWrapper * tempoMap () const { return tempo_map_; }
   void                   setTempoMap (dsp::TempoMapWrapper * map);
-  qreal                  pxPerTick () const { return px_per_tick_; }
-  void                   setPxPerTick (qreal px);
-  qreal                  scrollX () const { return scroll_x_; }
-  void                   setScrollX (qreal x);
-  qreal  scrollXPlusWidth () const { return scroll_x_plus_width_; }
-  void   setScrollXPlusWidth (qreal w);
+  double                 pxPerTick () const { return px_per_tick_; }
+  void                   setPxPerTick (double px);
+  double                 scrollX () const { return scroll_x_; }
+  void                   setScrollX (double x);
+  double scrollXPlusWidth () const { return scroll_x_plus_width_; }
+  void   setScrollXPlusWidth (double w);
   QColor textColor () const { return text_color_; }
   void   setTextColor (const QColor &color);
-  qreal  barLineOpacity () const { return bar_line_opacity_; }
-  void   setBarLineOpacity (qreal opacity);
-  qreal  beatLineOpacity () const { return beat_line_opacity_; }
-  void   setBeatLineOpacity (qreal opacity);
-  qreal  sixteenthLineOpacity () const { return sixteenth_line_opacity_; }
-  void   setSixteenthLineOpacity (qreal opacity);
-  qreal  detailMeasurePxThreshold () const
+  double barLineOpacity () const { return bar_line_opacity_; }
+  void   setBarLineOpacity (double opacity);
+  double beatLineOpacity () const { return beat_line_opacity_; }
+  void   setBeatLineOpacity (double opacity);
+  double sixteenthLineOpacity () const { return sixteenth_line_opacity_; }
+  void   setSixteenthLineOpacity (double opacity);
+  double detailMeasurePxThreshold () const
   {
     return detail_measure_px_threshold_;
   }
-  void  setDetailMeasurePxThreshold (qreal threshold);
-  qreal detailMeasureLabelPxThreshold () const
+  void   setDetailMeasurePxThreshold (double threshold);
+  double detailMeasureLabelPxThreshold () const
   {
     return detail_measure_label_px_threshold_;
   }
-  void  setDetailMeasureLabelPxThreshold (qreal threshold);
+  void  setDetailMeasureLabelPxThreshold (double threshold);
   QFont barLabelFont () const { return bar_label_font_; }
   void  setBarLabelFont (const QFont &font);
   QFont beatLabelFont () const { return beat_label_font_; }
@@ -121,15 +121,15 @@ Q_SIGNALS:
 
 private:
   QPointer<dsp::TempoMapWrapper> tempo_map_;
-  qreal                          px_per_tick_ = 0.0;
-  qreal                          scroll_x_ = 0.0;
-  qreal                          scroll_x_plus_width_ = 0.0;
+  double                         px_per_tick_ = 0.0;
+  double                         scroll_x_ = 0.0;
+  double                         scroll_x_plus_width_ = 0.0;
   QColor                         text_color_ = Qt::black;
-  qreal                          bar_line_opacity_ = 0.8;
-  qreal                          beat_line_opacity_ = 0.6;
-  qreal                          sixteenth_line_opacity_ = 0.4;
-  qreal                          detail_measure_px_threshold_ = 32.0;
-  qreal                          detail_measure_label_px_threshold_ = 64.0;
+  double                         bar_line_opacity_ = 0.8;
+  double                         beat_line_opacity_ = 0.6;
+  double                         sixteenth_line_opacity_ = 0.4;
+  double                         detail_measure_px_threshold_ = 32.0;
+  double                         detail_measure_label_px_threshold_ = 64.0;
   QFont                          bar_label_font_;
   QFont                          beat_label_font_;
   QFont                          sixteenth_label_font_;

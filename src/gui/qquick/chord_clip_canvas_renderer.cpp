@@ -136,8 +136,8 @@ ChordClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
   if (clip_ticks <= dsp::ContentTick{})
     return;
 
-  const qreal  ref_width = canvas_item->effectiveReferenceWidth ();
-  const qreal  ref_x = canvas_item->referenceX ();
+  const double ref_width = canvas_item->effectiveReferenceWidth ();
+  const double ref_x = canvas_item->referenceX ();
   const double px_per_tick =
     static_cast<double> (ref_width) / clip_ticks.asDouble ();
 

@@ -127,7 +127,7 @@ AutomationClipCanvasItem::setDragActive (bool active)
 }
 
 void
-AutomationClipCanvasItem::setDragDeltaPx (qreal px)
+AutomationClipCanvasItem::setDragDeltaPx (double px)
 {
   if (qFuzzyCompare (drag_delta_px_, px))
     return;
@@ -141,7 +141,7 @@ AutomationClipCanvasItem::setDragDeltaPx (qreal px)
 }
 
 void
-AutomationClipCanvasItem::setDragDeltaY (qreal dy)
+AutomationClipCanvasItem::setDragDeltaY (double dy)
 {
   if (qFuzzyCompare (drag_delta_y_, dy))
     return;
@@ -172,7 +172,7 @@ AutomationClipCanvasItem::setApplyLoops (bool apply)
 }
 
 void
-AutomationClipCanvasItem::setHoveredX (qreal x)
+AutomationClipCanvasItem::setHoveredX (double x)
 {
   if (qFuzzyCompare (hovered_x_, x))
     return;
@@ -182,7 +182,8 @@ AutomationClipCanvasItem::setHoveredX (qreal x)
 }
 
 structure::arrangement::AutomationPoint *
-AutomationClipCanvasItem::segmentHitTest (qreal x, qreal y, qreal tolerance) const
+AutomationClipCanvasItem::segmentHitTest (double x, double y, double tolerance)
+  const
 {
   if (
     automation_clip_ == nullptr || width () <= 0
@@ -306,10 +307,10 @@ AutomationClipCanvasItem::computeEffectiveBounds () const
   return *cached_bounds_;
 }
 
-qreal
+double
 AutomationClipCanvasItem::contentWidth () const
 {
-  const qreal base = effectiveReferenceWidth ();
+  const double base = effectiveReferenceWidth ();
   if (automation_clip_ == nullptr || base <= 0)
     return base;
   const auto [eff_start, eff_end] = computeEffectiveBounds ();
@@ -320,10 +321,10 @@ AutomationClipCanvasItem::contentWidth () const
   if (clip_ticks_d <= 0.0)
     return base;
   const double px_per_tick = base / clip_ticks_d;
-  return qreal ((eff_end - eff_start) * px_per_tick);
+  return double ((eff_end - eff_start) * px_per_tick);
 }
 
-qreal
+double
 AutomationClipCanvasItem::contentLeftMargin () const
 {
   if (
@@ -336,7 +337,7 @@ AutomationClipCanvasItem::contentLeftMargin () const
     return 0.0;
   const double px_per_tick = effectiveReferenceWidth () / clip_ticks_d;
   // eff_start <= 0, so the left margin is positive.
-  return qreal (-eff_start * px_per_tick);
+  return double (-eff_start * px_per_tick);
 }
 
 } // namespace zrythm::gui::qquick

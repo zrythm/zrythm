@@ -944,6 +944,23 @@ if(ZRYTHM_TRACY)
   list(APPEND zrythm_link_libs Tracy::TracyClient)
 endif()
 
+# Qt ships the CanvasPainter C++ module without QML type info, which leaves
+# qmllint/qmlls unable to resolve the QML types that derive from
+# QCanvasPainterItem. Provide a supplemental module description under the
+# build dir and register that dir as an additional Qt package prefix so the
+# QML tooling picks it up as an import path.
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/qml/CanvasPainter")
+file(COPY
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/qml/typeinfo/CanvasPainter/qmldir"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/qml/typeinfo/CanvasPainter/plugins.qmltypes"
+  DESTINATION "${CMAKE_BINARY_DIR}/qml/CanvasPainter"
+)
+list(APPEND _qt_additional_packages_prefix_paths "${CMAKE_BINARY_DIR}")
+set(QT_ADDITIONAL_PACKAGES_PREFIX_PATH "${CMAKE_BINARY_DIR}")
+# Generate .qmlls.ini files next to the QML modules so the QML language
+# server can resolve the project's types from the build directory
+set(QT_QML_GENERATE_QMLLS_INI ON)
+
 find_package(Qt6 6.11
   COMPONENTS
     Core

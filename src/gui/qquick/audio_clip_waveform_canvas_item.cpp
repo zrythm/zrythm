@@ -146,9 +146,9 @@ AudioClipWaveformCanvasItem::handle_property_change ()
 
 std::vector<int64_t>
 AudioClipWaveformCanvasItem::computeTimelineFrameMapping (
-  int   canvas_width,
-  qreal reference_width,
-  qreal reference_x) const
+  int    canvas_width,
+  double reference_width,
+  double reference_x) const
 {
   if (audio_clip_ == nullptr)
     return {};

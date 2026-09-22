@@ -34,7 +34,7 @@ class FadeOverlayCanvasItem : public QCanvasPainterItem
     zrythm::structure::arrangement::AudioClip * audioClip READ audioClip WRITE
       setAudioClip NOTIFY audioClipChanged)
   Q_PROPERTY (
-    qreal pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
+    double pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
   Q_PROPERTY (
     FadeType fadeType READ fadeType WRITE setFadeType NOTIFY fadeTypeChanged)
   Q_PROPERTY (bool hovered READ hovered WRITE setHovered NOTIFY hoveredChanged)
@@ -59,8 +59,8 @@ public:
 
   structure::arrangement::AudioClip * audioClip () const { return audio_clip_; }
   void     setAudioClip (structure::arrangement::AudioClip * clip);
-  qreal    pxPerTick () const { return px_per_tick_; }
-  void     setPxPerTick (qreal px);
+  double   pxPerTick () const { return px_per_tick_; }
+  void     setPxPerTick (double px);
   FadeType fadeType () const { return fade_type_; }
   void     setFadeType (FadeType type);
   bool     hovered () const { return hovered_; }
@@ -80,7 +80,7 @@ Q_SIGNALS:
 
 private:
   QPointer<structure::arrangement::AudioClip> audio_clip_;
-  qreal                                       px_per_tick_ = 1.0;
+  double                                      px_per_tick_ = 1.0;
   FadeType                                    fade_type_ = FadeIn;
   bool                                        hovered_ = false;
   QColor                                      overlay_color_{ 51, 51, 51, 153 };

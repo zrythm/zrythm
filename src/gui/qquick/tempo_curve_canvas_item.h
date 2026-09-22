@@ -39,10 +39,10 @@ class TempoCurveCanvasItem : public QCanvasPainterItem
     zrythm::dsp::TempoMapWrapper * tempoMap READ tempoMap WRITE setTempoMap
       NOTIFY tempoMapChanged)
   Q_PROPERTY (
-    qreal pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
-  Q_PROPERTY (qreal scrollX READ scrollX WRITE setScrollX NOTIFY scrollXChanged)
+    double pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
+  Q_PROPERTY (double scrollX READ scrollX WRITE setScrollX NOTIFY scrollXChanged)
   Q_PROPERTY (
-    qreal scrollXPlusWidth READ scrollXPlusWidth WRITE setScrollXPlusWidth
+    double scrollXPlusWidth READ scrollXPlusWidth WRITE setScrollXPlusWidth
       NOTIFY scrollXPlusWidthChanged)
   Q_PROPERTY (
     QColor curveColor READ curveColor WRITE setCurveColor NOTIFY
@@ -53,7 +53,7 @@ class TempoCurveCanvasItem : public QCanvasPainterItem
   Q_PROPERTY (
     bool dragActive READ dragActive WRITE setDragActive NOTIFY dragActiveChanged)
   Q_PROPERTY (
-    qreal dragDeltaPx READ dragDeltaPx WRITE setDragDeltaPx NOTIFY
+    double dragDeltaPx READ dragDeltaPx WRITE setDragDeltaPx NOTIFY
       dragDeltaPxChanged)
 
 public:
@@ -71,20 +71,20 @@ public:
   void                   setTempoMap (dsp::TempoMapWrapper * wrapper);
   /// Base tempo at tick 0 from the bound tempo map (120 if unbound).
   double baseBpm () const;
-  qreal  pxPerTick () const { return px_per_tick_; }
-  void   setPxPerTick (qreal px);
-  qreal  scrollX () const { return scroll_x_; }
-  void   setScrollX (qreal x);
-  qreal  scrollXPlusWidth () const { return scroll_x_plus_width_; }
-  void   setScrollXPlusWidth (qreal w);
+  double pxPerTick () const { return px_per_tick_; }
+  void   setPxPerTick (double px);
+  double scrollX () const { return scroll_x_; }
+  void   setScrollX (double x);
+  double scrollXPlusWidth () const { return scroll_x_plus_width_; }
+  void   setScrollXPlusWidth (double w);
   QColor curveColor () const { return curve_color_; }
   void   setCurveColor (const QColor &color);
   QItemSelectionModel * selectionModel () const { return selection_model_; }
   void                  setSelectionModel (QItemSelectionModel * model);
   bool                  dragActive () const { return drag_active_; }
   void                  setDragActive (bool active);
-  qreal                 dragDeltaPx () const { return drag_delta_px_; }
-  void                  setDragDeltaPx (qreal px);
+  double                dragDeltaPx () const { return drag_delta_px_; }
+  void                  setDragDeltaPx (double px);
 
 Q_SIGNALS:
   void tempoObjectManagerChanged ();
@@ -100,13 +100,13 @@ Q_SIGNALS:
 private:
   QPointer<structure::arrangement::TempoObjectManager> manager_;
   QPointer<dsp::TempoMapWrapper>                       tempo_map_;
-  qreal                                                px_per_tick_ = 0.0;
-  qreal                                                scroll_x_ = 0.0;
-  qreal                         scroll_x_plus_width_ = 0.0;
+  double                                               px_per_tick_ = 0.0;
+  double                                               scroll_x_ = 0.0;
+  double                        scroll_x_plus_width_ = 0.0;
   QColor                        curve_color_ = "#009DFF";
   QPointer<QItemSelectionModel> selection_model_;
   bool                          drag_active_ = false;
-  qreal                         drag_delta_px_ = 0.0;
+  double                        drag_delta_px_ = 0.0;
 };
 
 } // namespace zrythm::gui::qquick

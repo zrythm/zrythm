@@ -77,9 +77,9 @@ public:
   /// synchronize() so the waveform visually aligns with what plays at each
   /// timeline position.
   std::vector<int64_t> computeTimelineFrameMapping (
-    int   canvas_width,
-    qreal reference_width,
-    qreal reference_x) const;
+    int    canvas_width,
+    double reference_width,
+    double reference_x) const;
 
 Q_SIGNALS:
   void audioClipChanged ();

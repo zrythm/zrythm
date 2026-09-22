@@ -37,19 +37,20 @@ class AutomationClipCanvasItem : public ClipCanvasItemBase
   Q_PROPERTY (
     bool dragActive READ dragActive WRITE setDragActive NOTIFY dragActiveChanged)
   Q_PROPERTY (
-    qreal dragDeltaPx READ dragDeltaPx WRITE setDragDeltaPx NOTIFY
+    double dragDeltaPx READ dragDeltaPx WRITE setDragDeltaPx NOTIFY
       dragDeltaPxChanged)
   Q_PROPERTY (
-    qreal dragDeltaY READ dragDeltaY WRITE setDragDeltaY NOTIFY dragDeltaYChanged)
+    double dragDeltaY READ dragDeltaY WRITE setDragDeltaY NOTIFY
+      dragDeltaYChanged)
   Q_PROPERTY (
     bool drawPoints READ drawPoints WRITE setDrawPoints NOTIFY drawPointsChanged)
   Q_PROPERTY (
     bool applyLoops READ applyLoops WRITE setApplyLoops NOTIFY applyLoopsChanged)
   Q_PROPERTY (
-    qreal hoveredX READ hoveredX WRITE setHoveredX NOTIFY hoveredXChanged)
-  Q_PROPERTY (qreal contentWidth READ contentWidth NOTIFY contentWidthChanged)
+    double hoveredX READ hoveredX WRITE setHoveredX NOTIFY hoveredXChanged)
+  Q_PROPERTY (double contentWidth READ contentWidth NOTIFY contentWidthChanged)
   Q_PROPERTY (
-    qreal contentLeftMargin READ contentLeftMargin NOTIFY
+    double contentLeftMargin READ contentLeftMargin NOTIFY
       contentLeftMarginChanged)
 public:
   explicit AutomationClipCanvasItem (QQuickItem * parent = nullptr);
@@ -68,12 +69,12 @@ public:
   QItemSelectionModel * selectionModel () const { return selection_model_; }
   void                  setSelectionModel (QItemSelectionModel * model);
 
-  bool  dragActive () const { return drag_active_; }
-  void  setDragActive (bool active);
-  qreal dragDeltaPx () const { return drag_delta_px_; }
-  void  setDragDeltaPx (qreal px);
-  qreal dragDeltaY () const { return drag_delta_y_; }
-  void  setDragDeltaY (qreal dy);
+  bool   dragActive () const { return drag_active_; }
+  void   setDragActive (bool active);
+  double dragDeltaPx () const { return drag_delta_px_; }
+  void   setDragDeltaPx (double px);
+  double dragDeltaY () const { return drag_delta_y_; }
+  void   setDragDeltaY (double dy);
 
   /// When true, small circles are drawn at each automation point. Default
   /// false — the curve alone is usually what's wanted.
@@ -92,19 +93,19 @@ public:
   /// or -1 when it is not. The renderer highlights the single emitted segment
   /// (the one actually under the cursor, so looped copies — which are not
   /// draggable — are never highlighted) containing this X.
-  qreal hoveredX () const { return hovered_x_; }
-  void  setHoveredX (qreal x);
+  double hoveredX () const { return hovered_x_; }
+  void   setHoveredX (double x);
 
   /// The total width needed for the curve canvas to show every point on both
   /// sides of the clip: spans from the leftmost (live, drag-included) point
   /// (or the clip start, whichever is earlier) to the rightmost point (or the
   /// clip end, whichever is later). QML binds the canvas item's width to this.
-  qreal contentWidth () const;
+  double contentWidth () const;
 
   /// How far left of the clip start (source 0) the canvas must extend, in
   /// pixels, so that points before the clip start remain visible. QML shifts
   /// the canvas x left by this and sets referenceX to its negation.
-  qreal contentLeftMargin () const;
+  double contentLeftMargin () const;
 
   /// Returns the set of UUIDs of currently selected (dragged) automation
   /// points. Shared between the item's bounds computation and the renderer's
@@ -121,7 +122,7 @@ public:
    * curve line (vertically), otherwise nullptr.
    */
   Q_INVOKABLE structure::arrangement::AutomationPoint *
-              segmentHitTest (qreal x, qreal y, qreal tolerance) const;
+              segmentHitTest (double x, double y, double tolerance) const;
 
 Q_SIGNALS:
   void automationClipChanged ();
@@ -153,12 +154,12 @@ private:
   QColor                                           curve_color_;
   QPointer<QItemSelectionModel>                    selection_model_;
   bool                                             drag_active_ = false;
-  qreal                                            drag_delta_px_ = 0.0;
-  qreal                                            drag_delta_y_ = 0.0;
+  double                                           drag_delta_px_ = 0.0;
+  double                                           drag_delta_y_ = 0.0;
   bool                                             draw_points_ = false;
   bool                                             apply_loops_ = true;
   /// -1 = not hovering a draggable segment.
-  qreal                                            hovered_x_ = -1.0;
+  double                                           hovered_x_ = -1.0;
   std::vector<QMetaObject::Connection>             clip_connections_;
   mutable std::optional<std::pair<double, double>> cached_bounds_;
 };
