@@ -12,6 +12,22 @@ namespace zrythm::gui
 {
 
 /**
+ * @brief Registers QConcatenateTablesProxyModel with the QML type system.
+ *
+ * Qt does not expose this class to QML itself. With QtCore's metatypes
+ * passed to the QML type registrar as foreign types, this foreign
+ * registration gives the class an entry with its real prototype chain,
+ * so UnifiedProxyModel (which derives it) resolves to
+ * QAbstractItemModel in QML tooling.
+ */
+struct QConcatenateTablesProxyModelForeign
+{
+  Q_GADGET
+  QML_FOREIGN (QConcatenateTablesProxyModel)
+  QML_ANONYMOUS
+};
+
+/**
  * @brief A unified model that concatenates multiple models.
  *
  * This class provides a single interface to access objects from multiple source

@@ -31,8 +31,8 @@ class RulerGridCanvasItem : public QCanvasPainterItem
   QML_NAMED_ELEMENT (RulerGridCanvas)
 
   Q_PROPERTY (
-    dsp::TempoMapWrapper * tempoMap READ tempoMap WRITE setTempoMap NOTIFY
-      tempoMapChanged)
+    zrythm::dsp::TempoMapWrapper * tempoMap READ tempoMap WRITE setTempoMap
+      NOTIFY tempoMapChanged)
   Q_PROPERTY (
     double pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
   Q_PROPERTY (double scrollX READ scrollX WRITE setScrollX NOTIFY scrollXChanged)
@@ -71,12 +71,12 @@ public:
 
   QCanvasPainterItemRenderer * createItemRenderer () const override;
 
-  dsp::TempoMapWrapper * tempoMap () const { return tempo_map_; }
-  void                   setTempoMap (dsp::TempoMapWrapper * map);
-  double                 pxPerTick () const { return px_per_tick_; }
-  void                   setPxPerTick (double px);
-  double                 scrollX () const { return scroll_x_; }
-  void                   setScrollX (double x);
+  zrythm::dsp::TempoMapWrapper * tempoMap () const { return tempo_map_; }
+  void   setTempoMap (zrythm::dsp::TempoMapWrapper * map);
+  double pxPerTick () const { return px_per_tick_; }
+  void   setPxPerTick (double px);
+  double scrollX () const { return scroll_x_; }
+  void   setScrollX (double x);
   double scrollXPlusWidth () const { return scroll_x_plus_width_; }
   void   setScrollXPlusWidth (double w);
   QColor textColor () const { return text_color_; }
@@ -120,19 +120,19 @@ Q_SIGNALS:
   void sixteenthLabelFontChanged ();
 
 private:
-  QPointer<dsp::TempoMapWrapper> tempo_map_;
-  double                         px_per_tick_ = 0.0;
-  double                         scroll_x_ = 0.0;
-  double                         scroll_x_plus_width_ = 0.0;
-  QColor                         text_color_ = Qt::black;
-  double                         bar_line_opacity_ = 0.8;
-  double                         beat_line_opacity_ = 0.6;
-  double                         sixteenth_line_opacity_ = 0.4;
-  double                         detail_measure_px_threshold_ = 32.0;
-  double                         detail_measure_label_px_threshold_ = 64.0;
-  QFont                          bar_label_font_;
-  QFont                          beat_label_font_;
-  QFont                          sixteenth_label_font_;
+  QPointer<zrythm::dsp::TempoMapWrapper> tempo_map_;
+  double                                 px_per_tick_ = 0.0;
+  double                                 scroll_x_ = 0.0;
+  double                                 scroll_x_plus_width_ = 0.0;
+  QColor                                 text_color_ = Qt::black;
+  double                                 bar_line_opacity_ = 0.8;
+  double                                 beat_line_opacity_ = 0.6;
+  double                                 sixteenth_line_opacity_ = 0.4;
+  double                                 detail_measure_px_threshold_ = 32.0;
+  double detail_measure_label_px_threshold_ = 64.0;
+  QFont  bar_label_font_;
+  QFont  beat_label_font_;
+  QFont  sixteenth_label_font_;
 };
 
 } // namespace zrythm::gui::qquick

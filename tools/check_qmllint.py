@@ -26,7 +26,7 @@ EXCLUDED_PATTERNS = (
 )
 
 DEFAULT_MAX_WARNINGS = 45
-DEFAULT_MAX_ERRORS = 16
+DEFAULT_MAX_ERRORS = 9
 
 
 def filter_findings(lines, path_prefix):
