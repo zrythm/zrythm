@@ -1399,8 +1399,17 @@ Vst3Plugin::load_plugin (
       if (param_index >= param_sync_.entries.size ())
         return;
       const auto normalized = static_cast<float> (value);
+      auto      &entry = param_sync_.entries[param_index];
+      // performEdit inside an open gesture is a user edit: the value
+      // coalesces into the pending slot and applies through the
+      // user-edit path at the next flush. Per-report deferred actions
+      // would flood the shared main-thread dispatcher at drag event
+      // rates
+      entry.pending_is_user_edit.store (
+        entry.in_user_gesture.load (std::memory_order_relaxed),
+        std::memory_order_release);
       set_param_pending_from_plugin (param_index, normalized);
-      param_sync_.entries[param_index].last_from_plugin = normalized;
+      entry.last_from_plugin = normalized;
     },
     [this] (int32 flags) {
       // restartComponent may arrive on the audio thread (kLatencyChanged
@@ -1576,31 +1585,75 @@ Vst3Plugin::load_plugin (
       post_main_thread_action_deferred (handler);
     },
     [this] (Vst::ParamID id, bool begin) {
-      if (!begin)
-        return;
-      // beginEdit may arrive on any thread; the handler touches
-      // main-thread state, so it is marshalled over
-      if (
-        !post_main_thread_action_deferred ([this, id] {
-          if (pimpl_->controller_ == nullptr)
-            return;
-          // A gesture from the plugin's own UI means the user is editing:
-          // the selected preset's state is being modified. The
-          // program-change param itself is excluded: it represents preset
-          // selection, which is re-synced separately via
-          // kParamValuesChanged. Note that plugins that emit per-parameter
-          // gestures while applying a program also mark the preset dirty:
-          // VST3 provides no transaction boundary that would let us
-          // attribute those edits to the program change. The comparison can
-          // also briefly lag a plugin-side program-param change until the
+      // Gesture events may arrive on any thread; everything below either
+      // posts to the main thread or touches atomics
+      const auto program_param_id =
+        pimpl_->program_change_param_id_any_thread_.load (
+          std::memory_order_relaxed);
+      const bool is_program_param =
+        program_param_id != Vst::kNoParamId && id == program_param_id;
+      const auto it = pimpl_->vst3_params_.find (id);
+      if (is_program_param || it == pimpl_->vst3_params_.end ())
+        {
+          // The program-change parameter is not a Zrythm parameter: a
+          // gesture on it only feeds the preset-dirty heuristic. Note
+          // that plugins that emit per-parameter gestures while applying
+          // a program also mark the preset dirty: VST3 provides no
+          // transaction boundary that would let us attribute those edits
+          // to the program change. The comparison can also briefly lag a
+          // plugin-side program-param change until the
           // kMidiCCAssignmentChanged handler refreshes the main-thread
           // copy; the consequence is heuristic-only (the dirty flag)
-          if (
-            id
-            != pimpl_->program_change_param_id_main_.value_or (Vst::kNoParamId))
-            set_preset_dirty (true);
-        }))
+          if (begin && is_program_param)
+            {
+              if (!post_main_thread_action_deferred ([this] {
+                    if (pimpl_->controller_ == nullptr)
+                      return;
+                    set_preset_dirty (true);
+                  }))
+                {
+                  pimpl_->note_gesture_drop ();
+                }
+            }
+          return;
+        }
+      const auto param_index = it->second.param_index;
+      if (param_index >= param_sync_.entries.size ())
         {
+          pimpl_->note_gesture_drop ();
+          return;
+        }
+      auto &entry = param_sync_.entries[param_index];
+      if (begin == entry.in_user_gesture.load (std::memory_order_relaxed))
+        {
+          // beginEdit while a gesture is already open, or endEdit
+          // without a preceding beginEdit
+          pimpl_->note_gesture_drop ();
+          return;
+        }
+      auto * param = get_parameters ()[param_index].get ();
+      if (param == nullptr)
+        {
+          pimpl_->note_gesture_drop ();
+          return;
+        }
+      entry.in_user_gesture.store (begin, std::memory_order_relaxed);
+      if (!post_main_thread_action_deferred ([this, param, begin] {
+            if (begin)
+              {
+                if (pimpl_->controller_ != nullptr)
+                  set_preset_dirty (true);
+                param->beginUserGesture ();
+              }
+            else
+              {
+                param->endUserGesture ();
+              }
+          }))
+        {
+          // The main-thread gesture state would diverge from the flag;
+          // revert the flag so later events stay consistent
+          entry.in_user_gesture.store (!begin, std::memory_order_relaxed);
           pimpl_->note_gesture_drop ();
         }
     },
@@ -2559,6 +2612,26 @@ Vst3Plugin::prepare_plugin_for_processing (
 void
 Vst3Plugin::release_resources_impl ()
 {
+  // Close open plugin-UI gestures regardless of the processing state: a
+  // gesture reported without endEdit would leave its parameter with an
+  // open user gesture (automation suppressed indefinitely). Releasing
+  // resources is the definitive end of any plugin-reported gesture
+  const auto params = get_parameters ();
+  const auto count = std::min (params.size (), param_sync_.entries.size ());
+  for (const auto i : std::views::iota (size_t{ 0 }, count))
+    {
+      auto &entry = param_sync_.entries[i];
+      if (!entry.in_user_gesture.exchange (false, std::memory_order_relaxed))
+        continue;
+      auto * param = params[i].get ();
+      if (param != nullptr && !post_main_thread_action_deferred ([param] {
+            param->endUserGesture ();
+          }))
+        {
+          z_warning ("VST3: failed to close open user gesture on release");
+        }
+    }
+
   if (!pimpl_->processing_active_)
     return;
 

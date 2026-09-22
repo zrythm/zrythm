@@ -15,6 +15,7 @@
 #include "utils/object_registry.h"
 #include "utils/views.h"
 
+#include <QSignalSpy>
 #include <QTest>
 
 #include "helpers/mock_plugin_host_window.h"
@@ -852,6 +853,149 @@ TEST_F (Vst3PluginTest, ProcessingTimeParamChangesReachHost)
   plugin_->flush_plugin_values ();
   EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
   EXPECT_EQ (read_input_count (), count_after_apply);
+}
+
+// Parameter edits reported by the plugin's own UI (beginEdit/performEdit/
+// endEdit on the component handler) are user edits: the value applies
+// through the user-edit path (user-edit listeners, gesture begin/end)
+// without echoing the applied value back to the plugin. The fixture
+// reports a full UI edit of Level when its "UI Edit Mode" param is set
+// to step 1
+TEST_F (Vst3PluginTest, PluginUiEditsAreAttributedAsUserEdits)
+{
+  // Must stay in sync with kUiEditedLevel in test_gain_vst3.cpp
+  constexpr float ui_edited_level = 0.75f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("UI Edit Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy edited_spy (
+    level_param, &dsp::ProcessorParameter::baseValueEditedByUser);
+  QSignalSpy gesture_started_spy (
+    level_param, &dsp::ProcessorParameter::userGestureStarted);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Baseline: host-set values stay as they are while no UI edit is
+  // reported
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), 0.5f, 1e-6f);
+  EXPECT_EQ (edited_spy.count (), 0);
+  EXPECT_EQ (gesture_started_spy.count (), 0);
+  EXPECT_EQ (gesture_finished_spy.count (), 0);
+
+  // Step 1: the fixture's edit controller reports beginEdit, a Level
+  // edit to 0.75, and endEdit; the value applies as a user edit at the
+  // next flush
+  mode_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return gesture_started_spy.count () >= 1 && gesture_finished_spy.count () >= 1;
+  }));
+  plugin_->flush_plugin_values ();
+
+  EXPECT_NEAR (level_param->baseValue (), ui_edited_level, 1e-6f);
+  EXPECT_GE (edited_spy.count (), 1);
+  EXPECT_GE (gesture_started_spy.count (), 1);
+  EXPECT_GE (gesture_finished_spy.count (), 1);
+
+  // The host must not send the applied value back to the plugin as a
+  // host-initiated change. The fixture counts Level points received
+  // through the input queue; while the feedback guard holds, that count
+  // stays constant after the value is applied
+  const auto read_input_count = [this] () -> int {
+    const auto state = read_controller_state_json (*plugin_);
+    return state.value ("levelInputCount", 0);
+  };
+  const auto count_after_apply = read_input_count ();
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), ui_edited_level, 1e-6f);
+  EXPECT_EQ (read_input_count (), count_after_apply);
+}
+
+// A plain (pending) report that predates a plugin-UI edit must not
+// overwrite the applied user edit at the next flush. The fixture's
+// "Auto Report" toggle arms the plain report and "UI Edit Mode" step 1
+// applies the user edit
+TEST_F (Vst3PluginTest, StalePendingValueDoesNotRevertUiEdit)
+{
+  // Must stay in sync with kReportedLevel/kUiEditedLevel in
+  // test_gain_vst3.cpp; the two values differ so a revert is observable
+  constexpr float reported_level = 0.25f;
+  constexpr float ui_edited_level = 0.75f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+  auto * mode_param = find_param_by_label ("UI Edit Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy edited_spy (
+    level_param, &dsp::ProcessorParameter::baseValueEditedByUser);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Arm the plain report, let it run for a block, then stop reporting
+  // before the flush that would apply it: the pending value survives
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  auto_report->setBaseValue (0.0f);
+  process_blocks (1);
+
+  // The UI edit parks a user-edit pending value that overwrites the
+  // stale one; the flush applies it as a user edit
+  mode_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return gesture_finished_spy.count () >= 1;
+  }));
+  plugin_->flush_plugin_values ();
+
+  EXPECT_NEAR (level_param->baseValue (), ui_edited_level, 1e-6f);
+  EXPECT_NE (level_param->baseValue (), reported_level);
+}
+
+// A plugin that reports beginEdit without a matching endEdit leaves its
+// parameter with an open user gesture (automation suppressed
+// indefinitely); releasing resources is the definitive end of the
+// gesture. The fixture's "UI Edit Mode" step 2 reports the gesture pair
+// without the end
+TEST_F (Vst3PluginTest, OpenUiGestureIsClosedOnRelease)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("UI Edit Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy gesture_started_spy (
+    level_param, &dsp::ProcessorParameter::userGestureStarted);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Step 2: beginEdit and performEdit without endEdit
+  mode_param->setBaseValue (1.0f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return gesture_started_spy.count () >= 1;
+  }));
+  EXPECT_EQ (gesture_finished_spy.count (), 0);
+
+  plugin_->release_resources ();
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return gesture_finished_spy.count () >= 1;
+  }));
 }
 
 // A plugin that changes its MIDI-CC mapping at runtime (MIDI learn) reports

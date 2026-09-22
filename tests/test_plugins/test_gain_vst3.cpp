@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <atomic>
+#include <cmath>
 #include <string>
 
 #include "base/source/fstreamer.h"
@@ -26,9 +27,13 @@ public:
   static constexpr ParamID kLevelParamId = 0;
   static constexpr ParamID kCcAssignParamId = 1;
   static constexpr ParamID kAutoReportParamId = 2;
+  static constexpr ParamID kUiEditModeParamId = 3;
   /** Fixed normalized Level value reported from process() while Auto
    * Report is on */
   static constexpr ParamValue kReportedLevel = 0.25;
+  /** Fixed normalized Level value reported through the component handler
+   * while UI Edit Mode is armed */
+  static constexpr ParamValue kUiEditedLevel = 0.75;
 
   DELEGATE_REFCOUNT (SingleComponentEffect)
 
@@ -54,6 +59,12 @@ public:
     parameters.addParameter (
       STR16 ("Auto Report"), STR16 (""), 1, 0.0, ParameterInfo::kCanAutomate,
       kAutoReportParamId);
+    // Stepped (0 = off, 1 = edit, 2 = open edit) trigger for parameter
+    // edits reported through the component handler from the edit
+    // controller, like a plugin's own UI knob
+    parameters.addParameter (
+      STR16 ("UI Edit Mode"), STR16 (""), 2, 0.0, ParameterInfo::kCanAutomate,
+      kUiEditModeParamId);
     return kResultOk;
   }
 
@@ -125,6 +136,17 @@ public:
     if (res == kResultOk && tag == kAutoReportParamId)
       {
         auto_report_.store (value > 0.5);
+      }
+    if (res == kResultOk && tag == kUiEditModeParamId)
+      {
+        const auto mode = static_cast<int> (std::lround (value * 2.0));
+        if (mode > 0 && componentHandler != nullptr)
+          {
+            componentHandler->beginEdit (kLevelParamId);
+            componentHandler->performEdit (kLevelParamId, kUiEditedLevel);
+            if (mode == 1)
+              componentHandler->endEdit (kLevelParamId);
+          }
       }
     return res;
   }

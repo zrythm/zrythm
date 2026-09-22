@@ -662,9 +662,9 @@ TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithVst3Plugin)
     plugins::PluginDescriptor::from_juce_description (*juce_desc);
   ASSERT_NE (descriptor, nullptr);
 
-  // 2 built-in (bypass + gain) + 3 plugin params (Level, CC Assign,
-  // Auto Report)
-  save_load_save_roundtrip_with_plugin (*descriptor, 5);
+  // 2 built-in (bypass + gain) + 4 plugin params (Level, CC Assign,
+  // Auto Report, UI Edit Mode)
+  save_load_save_roundtrip_with_plugin (*descriptor, 6);
 }
 
 /**
