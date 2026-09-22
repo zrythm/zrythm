@@ -53,34 +53,17 @@ Arranger {
       return null;
     }
 
+    root.selectObjectsByUuidStrings([obj.uuidString]);
+
     if (isMoveOnlyObject) {
       root.creationMacroOpen = true;
       root.currentAction = Arranger.CreatingMoving;
-      if (objectType === ArrangerObject.Marker) {
-        const markerTrack = track as MarkerTrack;
-        root.selectSingleObject(markerTrack.markers, markerTrack.markers.rowCount() - 1);
-      } else {
-        const chordTrack = track as ChordTrack;
-        root.selectSingleObject(chordTrack.scaleObjects, chordTrack.scaleObjects.rowCount() - 1);
-      }
       CursorManager.setClosedHandCursor();
       return obj;
     }
 
     // Clips
     root.currentAction = Arranger.CreatingResizingR;
-    const automationTrack = getAutomationTrackAtY(coordinates.y);
-    if (automationTrack) {
-      const clipOwner = automationTrack.clips;
-      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-    } else if (track.type === Track.Chord) {
-      const clipOwner = (track as ChordTrack).chordClips;
-      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-    } else {
-      const trackLane = getTrackLaneAtY(coordinates.y) as TrackLane;
-      const clipOwner = trackLane ? trackLane.midiClips : track.lanes.getFirstLane().midiClips;
-      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-    }
     CursorManager.setResizeEndCursor();
     return obj;
   }

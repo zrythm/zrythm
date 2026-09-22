@@ -26,6 +26,7 @@ namespace zrythm::utils
 class UuidIdentifiableBase : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY (QString uuidString READ uuidString CONSTANT)
 
 public:
   explicit UuidIdentifiableBase (QObject * parent = nullptr)
@@ -41,6 +42,11 @@ public:
   ~UuidIdentifiableBase () override = default;
 
   QUuid raw_uuid () const { return uuid_; }
+
+  /**
+   * @brief The UUID as a string without braces.
+   */
+  QString uuidString () const { return uuid_.toString (QUuid::WithoutBraces); }
 
   friend bool
   operator== (const UuidIdentifiableBase &lhs, const UuidIdentifiableBase &rhs)
