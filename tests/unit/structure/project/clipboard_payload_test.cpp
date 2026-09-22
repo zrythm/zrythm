@@ -1441,10 +1441,14 @@ TEST_F (ClipboardPayloadClosureTest, CreateCollectsClosureOfEveryObjectType)
   EXPECT_EQ (payload_entry_count (regenerated), entry_count);
   EXPECT_TRUE (json_contains_uuid (regenerated.registry_json (), pop.fas_id_));
   for (const auto &id : pop.all_ids_)
-    if (id != pop.fas_id_)
-      EXPECT_FALSE (json_contains_uuid (regenerated.registry_json (), id))
-        << "stale UUID after regeneration: "
-        << id.toString (QUuid::WithoutBraces).toStdString ();
+    {
+      if (id != pop.fas_id_)
+        {
+          EXPECT_FALSE (json_contains_uuid (regenerated.registry_json (), id))
+            << "stale UUID after regeneration: "
+            << id.toString (QUuid::WithoutBraces).toStdString ();
+        }
+    }
 }
 
 // Importing goes through the same pipeline as pasting: external references
