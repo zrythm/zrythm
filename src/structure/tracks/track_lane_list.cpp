@@ -142,8 +142,44 @@ TrackLaneList::insertLane (size_t index)
 }
 
 void
+TrackLaneList::reinsert_lane (size_t index, TrackLaneUuidReference lane_ref)
+{
+  if (index > size ())
+    throw std::out_of_range ("index out of range");
+  if (indexOfLane (lane_ref.get ()) != std::nullopt)
+    throw std::invalid_argument ("lane is already in the list");
+  if (lane_ref.get ()->owner_list () != nullptr)
+    throw std::invalid_argument ("lane is still attached to a list");
+
+  // the lane's owner pointer is set before the row insert so rowsInserted
+  // handlers observe an attached lane
+  lane_ref.get ()->set_owner_list (this);
+  lane_ref.get ()->rewire_dependencies (dependencies_);
+
+  beginInsertRows (
+    QModelIndex (), static_cast<int> (index), static_cast<int> (index));
+  lanes_.insert (
+    std::ranges::next (std::begin (lanes_), static_cast<int> (index)),
+    std::move (lane_ref));
+  endInsertRows ();
+
+  update_default_lane_names ();
+}
+
+void
 TrackLaneList::removeLane (size_t index)
 {
+  // A track keeps at least one lane
+  if (empty ())
+    {
+      z_warning ("No lanes to remove");
+      return;
+    }
+  if (size () <= 1)
+    {
+      z_warning ("Cannot remove the last lane of a track");
+      return;
+    }
   erase (index);
 }
 
@@ -191,16 +227,34 @@ TrackLaneList::create_missing_lanes (size_t index)
 }
 
 void
+TrackLaneList::ensure_trailing_empty_lane ()
+{
+  if (empty () || !at (size () - 1)->is_empty ())
+    {
+      addLane ();
+    }
+}
+
+void
+TrackLaneList::trim_trailing_empty_lanes ()
+{
+  // A single trailing empty lane is kept for new clips
+  while (
+    size () > 1 && at (size () - 1)->is_empty ()
+    && at (size () - 2)->is_empty ())
+    {
+      removeLane (size () - 1);
+    }
+}
+
+void
 TrackLaneList::remove_empty_last_lanes ()
 {
   if (size () < 2)
     return;
 
   const auto empty_pred = [] (const auto &lane) {
-    // Both lists: lanes use only one in practice, so checking just MIDI
-    // would erase audio lanes.
-    return lane.get ()->midiClips ()->rowCount () == 0
-           && lane.get ()->audioClips ()->rowCount () == 0;
+    return lane.get ()->is_empty ();
   };
   // Find the last non-matching element from the end
   auto last_non_matching =

@@ -6,6 +6,7 @@
 #include <expected>
 #include <functional>
 #include <memory>
+#include <set>
 #include <unordered_map>
 
 #include "commands/change_qobject_property_command.h"
@@ -21,6 +22,11 @@
 
 #include <QItemSelectionModel>
 #include <QtQmlIntegration/qqmlintegration.h>
+
+namespace zrythm::structure::tracks
+{
+class TrackLaneList;
+}
 
 namespace zrythm::actions
 {
@@ -411,6 +417,28 @@ private:
   remove_commands_for (
     const SelectedObjectsVector &objects,
     OwnerResolver               &resolver);
+
+  /**
+   * @brief Pushes DeleteLaneCommands for the trailing empty lanes of
+   * every lane list containing a lane that owns one of @p objects,
+   * keeping a single trailing empty lane per list.
+   *
+   * Called after the removal commands for @p objects were pushed, with
+   * the same @p resolver that built them: it answers from the
+   * pre-removal owner resolutions it memoized, where the objects still
+   * had their owners.
+   */
+  void trim_trailing_empty_lanes (
+    const SelectedObjectsVector &objects,
+    OwnerResolver               &resolver);
+
+  /**
+   * @brief Pushes DeleteLaneCommands removing the trailing empty lanes
+   * of each list in @p lane_lists, keeping a single trailing empty
+   * lane per list.
+   */
+  void trim_trailing_empty_lanes (
+    const std::set<structure::tracks::TrackLaneList *> &lane_lists);
 
   /**
    * @brief Owner-resolving overloads used inside one operation: @p resolver

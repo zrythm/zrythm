@@ -10,6 +10,7 @@
 #include "commands/arranger_object_owner_ref.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/tracks/track_lane_list.h"
 
 #include <QUndoCommand>
 
@@ -72,7 +73,11 @@ public:
   // owners held as raw pointers), so these resolves cannot return null
   void undo () override
   {
-    object_owner_.resolve<ObjectT> ()->remove_object (object_ref_.id ());
+    auto * owner = object_owner_.resolve<ObjectT> ();
+    owner->remove_object (object_ref_.id ());
+    // Restores the single trailing empty lane when the object was
+    // added to the last lane (its spare lane was appended on redo)
+    structure::tracks::trim_trailing_empty_lanes_if_lane (owner);
   }
   void redo () override
   {

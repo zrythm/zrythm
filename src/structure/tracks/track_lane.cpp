@@ -26,6 +26,15 @@ TrackLane::owner_list () const
   return owner_list_;
 }
 
+void
+TrackLane::on_object_added ()
+{
+  if (auto * list = owner_list (); list != nullptr)
+    {
+      list->ensure_trailing_empty_lane ();
+    }
+}
+
 TrackLane::TrackLane (TrackLaneDependencies dependencies, QObject * parent)
     : utils::UuidIdentifiableObject<TrackLane> (parent),
       arrangement::ArrangerObjectOwner<

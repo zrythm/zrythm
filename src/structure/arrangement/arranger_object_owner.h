@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -120,7 +120,16 @@ public:
     ArrangerObjectOwner<ChildT>::insert_object (
       obj_ref,
       static_cast<int> (ArrangerObjectOwner<ChildT>::children_.size ()));
+    on_object_added ();
   }
+
+  /**
+   * @brief Called after an object was added to this owner.
+   *
+   * Does nothing by default; owners override it to maintain invariants
+   * that depend on the presence of children.
+   */
+  virtual void on_object_added () { }
 
   void clear_objects () { list_model_->clear (); }
 

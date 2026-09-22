@@ -9,6 +9,7 @@
 #include "commands/arranger_object_owner_ref.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/tracks/track_lane_list.h"
 
 #include <QUndoCommand>
 
@@ -71,16 +72,22 @@ public:
   void undo () override
   {
     // move object back
-    auto clip_ref =
-      target_owner_.resolve<ObjectT> ()->remove_object (obj_ref_.id ());
-    source_owner_.resolve<ObjectT> ()->add_object (clip_ref);
+    auto * source = source_owner_.resolve<ObjectT> ();
+    auto * target = target_owner_.resolve<ObjectT> ();
+    auto   clip_ref = target->remove_object (obj_ref_.id ());
+    source->add_object (clip_ref);
+    // keeps a single trailing empty lane in the list the object left
+    structure::tracks::trim_trailing_empty_lanes_if_lane (target);
   }
   void redo () override
   {
     // move object
-    auto clip_ref =
-      source_owner_.resolve<ObjectT> ()->remove_object (obj_ref_.id ());
-    target_owner_.resolve<ObjectT> ()->add_object (clip_ref);
+    auto * source = source_owner_.resolve<ObjectT> ();
+    auto * target = target_owner_.resolve<ObjectT> ();
+    auto   clip_ref = source->remove_object (obj_ref_.id ());
+    target->add_object (clip_ref);
+    // keeps a single trailing empty lane in the list the object left
+    structure::tracks::trim_trailing_empty_lanes_if_lane (source);
   }
 
 private:

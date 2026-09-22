@@ -8,6 +8,7 @@
 #include "commands/arranger_object_owner_ref.h"
 #include "commands/change_timebase_override_command.h"
 #include "commands/change_uuid_identifiable_object_property_command.h"
+#include "commands/delete_lane_command.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "commands/resize_arranger_objects_command.h"
@@ -457,6 +458,64 @@ ArrangerObjectSelectionOperator::remove_commands_for (
     }
 }
 
+void
+ArrangerObjectSelectionOperator::trim_trailing_empty_lanes (
+  const SelectedObjectsVector &objects,
+  OwnerResolver               &resolver)
+{
+  std::set<structure::tracks::TrackLaneList *> lane_lists;
+  for (const auto &obj_ref : objects)
+    {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      auto owner_var = resolver.resolve (obj_var);
+      std::visit (
+        [&] (const auto &owner) {
+          if (owner == nullptr)
+            return;
+          auto * lane = dynamic_cast<structure::tracks::TrackLane *> (owner);
+          if (lane != nullptr)
+            {
+              if (auto * list = lane->owner_list (); list != nullptr)
+                lane_lists.insert (list);
+            }
+        },
+        owner_var);
+    }
+  trim_trailing_empty_lanes (lane_lists);
+}
+
+void
+ArrangerObjectSelectionOperator::trim_trailing_empty_lanes (
+  const std::set<structure::tracks::TrackLaneList *> &lane_lists)
+{
+  for (auto * lane_list : lane_lists)
+    {
+      // Each push removes the lane it deletes, so the loop re-checks
+      // the new last two lanes until a single trailing empty lane (or
+      // the minimum of one lane) remains
+      while (
+        lane_list->size () > 1
+        && lane_list->at (lane_list->size () - 1)->is_empty ()
+        && lane_list->at (lane_list->size () - 2)->is_empty ())
+        {
+          try
+            {
+              auto * last_lane = lane_list->at (lane_list->size () - 1);
+              undo_stack_.push (new commands::DeleteLaneCommand (
+                *lane_list,
+                structure::tracks::TrackLaneUuidReference (
+                  last_lane->get_uuid (), project_registry_)));
+            }
+          catch (const std::exception &e)
+            {
+              z_error ("Failed to trim empty lane: {}", e.what ());
+              break;
+            }
+        }
+    }
+}
+
 bool
 ArrangerObjectSelectionOperator::delete_objects (
   const SelectedObjectsVector &objects,
@@ -479,6 +538,8 @@ ArrangerObjectSelectionOperator::delete_objects (
     {
       undo_stack_.push (command.release ());
     }
+
+  trim_trailing_empty_lanes (objects, resolver);
 
   return true;
 }
@@ -508,6 +569,55 @@ ArrangerObjectSelectionOperator::deleteObject (
     }
 
   auto owner_var = object_owner_provider_ (obj_var);
+
+  // Predict whether this removal leaves a tail of empty lanes behind,
+  // so the removal and the trim share one macro (one undo step)
+  auto * owner_lane = std::visit (
+    [] (const auto &owner) -> structure::tracks::TrackLane * {
+      return dynamic_cast<structure::tracks::TrackLane *> (owner);
+    },
+    owner_var);
+  auto * owner_lane_list =
+    owner_lane != nullptr ? owner_lane->owner_list () : nullptr;
+  const bool trims_tail = [&] () {
+    if (owner_lane == nullptr || owner_lane_list == nullptr)
+      return false;
+    if (owner_lane_list->size () <= 1)
+      return false;
+    const auto lane_index = owner_lane_list->indexOfLane (owner_lane);
+    if (!lane_index.has_value ())
+      return false;
+    // Only clip removals can empty a lane
+    const bool lane_empties = std::visit (
+      [lane = owner_lane] (const auto * obj) {
+        using ObjectT = utils::base_type<decltype (obj)>;
+        if constexpr (std::is_same_v<ObjectT, structure::arrangement::MidiClip>)
+          {
+            return lane->midiClips ()->rowCount () == 1
+                   && lane->audioClips ()->rowCount () == 0;
+          }
+        else if constexpr (
+          std::is_same_v<ObjectT, structure::arrangement::AudioClip>)
+          {
+            return lane->audioClips ()->rowCount () == 1
+                   && lane->midiClips ()->rowCount () == 0;
+          }
+        else
+          {
+            return false;
+          }
+      },
+      obj_var);
+    if (!lane_empties)
+      return false;
+    // A last lane keeps its place: it becomes the trailing empty lane
+    if (*lane_index + 1 == owner_lane_list->size ())
+      return false;
+    return std::ranges::all_of (
+      std::views::iota (*lane_index + 1, owner_lane_list->size ()),
+      [list = owner_lane_list] (size_t i) { return list->at (i)->is_empty (); });
+  }();
+
   try
     {
       return std::visit (
@@ -530,9 +640,21 @@ ArrangerObjectSelectionOperator::deleteObject (
           std::visit (
             [&] (auto * obj) {
               using ObjectT = utils::base_type<decltype (obj)>;
+              auto owner_ref =
+                commands::to_owner_ref (owner_var, project_registry_);
+              std::optional<undo::UndoStack::ScopedMacro> macro;
+              if (trims_tail)
+                macro.emplace (undo_stack_, QObject::tr ("Delete Object"));
               undo_stack_.push (
                 new commands::RemoveArrangerObjectCommand<ObjectT> (
-                  commands::to_owner_ref (owner_var, project_registry_), *it));
+                  std::move (owner_ref), *it));
+              if (trims_tail)
+                {
+                  trim_trailing_empty_lanes (
+                    std::set<structure::tracks::TrackLaneList *>{
+                      owner_lane_list });
+                  macro.reset ();
+                }
             },
             obj_var);
           return true;
@@ -1128,6 +1250,7 @@ ArrangerObjectSelectionOperator::cutObjects (
     {
       undo_stack_.push (command.release ());
     }
+  trim_trailing_empty_lanes (copyable, resolver);
   return true;
 }
 

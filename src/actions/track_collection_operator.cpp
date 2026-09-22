@@ -7,6 +7,7 @@
 
 #include "actions/track_collection_operator.h"
 #include "commands/add_track_command.h"
+#include "commands/delete_lane_command.h"
 #include "commands/delete_tracks_command.h"
 #include "commands/move_tracks_command.h"
 #include "commands/route_track_command.h"
@@ -123,6 +124,33 @@ TrackCollectionOperator::deleteTracks (
   auto cmd = std::make_unique<commands::DeleteTracksCommand> (
     *collection_, std::move (expanded_refs));
   undo_stack_->push (cmd.release ());
+}
+
+void
+TrackCollectionOperator::deleteLane (structure::tracks::TrackLane * lane)
+{
+  if ((collection_ == nullptr) || (undo_stack_ == nullptr) || lane == nullptr)
+    return;
+
+  auto * list = lane->owner_list ();
+  if (list == nullptr)
+    {
+      refuse_operation (QObject::tr ("The lane is not attached to a track"));
+      return;
+    }
+
+  try
+    {
+      auto &registry = collection_->get_registry ();
+      undo_stack_->push (new commands::DeleteLaneCommand (
+        *list,
+        structure::tracks::TrackLaneUuidReference (lane->get_uuid (), registry)));
+    }
+  catch (const std::exception &e)
+    {
+      z_error ("Failed to delete lane: {}", e.what ());
+      refuse_operation (QObject::tr ("The lane could not be deleted"));
+    }
 }
 
 bool

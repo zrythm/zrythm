@@ -3,6 +3,7 @@
 
 #include "commands/add_arranger_object_command.h"
 #include "commands/arranger_object_owner_ref.h"
+#include "commands/relocate_arranger_object_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "dsp/parameter.h"
 #include "structure/arrangement/arranger_object_all.h"
@@ -141,8 +142,9 @@ TEST_F (ArrangerObjectOwnerRefTest, LastRefReleaseDeletesOwner)
 TEST_F (ArrangerObjectOwnerRefTest, CommandKeepsRemovedLaneAlive)
 {
   structure::tracks::TrackLaneList lane_list{ registry_, nullptr };
-  auto *                           lane = lane_list.addLane ();
-  auto                             clip_ref =
+  lane_list.addLane ();
+  auto * lane = lane_list.addLane ();
+  auto   clip_ref =
     factory_->get_builder<structure::arrangement::MidiClip> ()
       .build_in_registry ();
 
@@ -157,7 +159,7 @@ TEST_F (ArrangerObjectOwnerRefTest, CommandKeepsRemovedLaneAlive)
       .size (),
     1);
 
-  lane_list.removeLane (0);
+  lane_list.removeLane (1);
   EXPECT_TRUE (registry_.contains (lane_id));
 
   // The command still resolves the detached lane and detaches the clip
@@ -175,8 +177,9 @@ TEST_F (ArrangerObjectOwnerRefTest, CommandKeepsRemovedLaneAlive)
 TEST_F (ArrangerObjectOwnerRefTest, CommandSurvivesOwnerReattachment)
 {
   structure::tracks::TrackLaneList list_a{ registry_, nullptr };
-  auto *                           lane = list_a.addLane ();
-  auto                             clip_ref =
+  list_a.addLane ();
+  auto * lane = list_a.addLane ();
+  auto   clip_ref =
     factory_->get_builder<structure::arrangement::MidiClip> ()
       .build_in_registry ();
 
@@ -187,11 +190,12 @@ TEST_F (ArrangerObjectOwnerRefTest, CommandSurvivesOwnerReattachment)
   nlohmann::json list_json;
   to_json (list_json, list_a);
 
-  list_a.removeLane (0);
+  list_a.removeLane (1);
 
   structure::tracks::TrackLaneList list_b{ registry_, nullptr };
   from_json (list_json, list_b);
-  EXPECT_EQ (list_b.size (), 1);
+  // The clip attach appended a trailing empty lane to list_a
+  EXPECT_EQ (list_b.size (), 3);
 
   // The command resolves the lane through its registry identity and
   // removes the clip from it in its new list
@@ -202,6 +206,54 @@ TEST_F (ArrangerObjectOwnerRefTest, CommandSurvivesOwnerReattachment)
         structure::arrangement::MidiClip>::get_children_vector ()
       .size (),
     0);
+}
+
+// A clip landing on the last lane keeps the list ending with an empty
+// lane; undoing the add restores the previous lane count
+TEST_F (ArrangerObjectOwnerRefTest, AddToLastLaneKeepsTrailingEmptyLane)
+{
+  structure::tracks::TrackLaneList lane_list{ registry_, nullptr };
+  auto *                           lane = lane_list.addLane ();
+  auto                             clip_ref =
+    factory_->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+
+  AddArrangerObjectCommand<structure::arrangement::MidiClip> command (
+    make_owner_ref (*lane, registry_), clip_ref);
+  command.redo ();
+  EXPECT_EQ (lane_list.size (), 2);
+  EXPECT_TRUE (lane_list.at (1)->is_empty ());
+
+  command.undo ();
+  EXPECT_EQ (lane_list.size (), 1);
+}
+
+// Moving a clip onto the last lane appends a trailing empty lane, and
+// moving it away leaves a single trailing empty lane
+TEST_F (ArrangerObjectOwnerRefTest, RelocateKeepsTrailingEmptyLane)
+{
+  structure::tracks::TrackLaneList lane_list{ registry_, nullptr };
+  auto *                           lane_1 = lane_list.addLane ();
+  auto *                           lane_2 = lane_list.addLane ();
+  auto                             clip_ref =
+    factory_->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+  AddArrangerObjectCommand<structure::arrangement::MidiClip> attach (
+    make_owner_ref (*lane_1, registry_), clip_ref);
+  attach.redo ();
+  // Lane 1 is not the last lane, so no spare was appended
+  ASSERT_EQ (lane_list.size (), 2);
+
+  RelocateArrangerObjectCommand<structure::arrangement::MidiClip> move_down (
+    clip_ref, make_owner_ref (*lane_1, registry_),
+    make_owner_ref (*lane_2, registry_));
+  move_down.redo ();
+  EXPECT_EQ (lane_list.size (), 3);
+  EXPECT_TRUE (lane_list.at (2)->is_empty ());
+
+  move_down.undo ();
+  EXPECT_EQ (lane_list.size (), 2);
+  EXPECT_TRUE (lane_list.at (1)->is_empty ());
 }
 
 // Owner pointers resolved by the selection operator convert to handles

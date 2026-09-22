@@ -287,6 +287,55 @@ protected:
       .size ();
   }
 
+  // An audio track normalized to a single lane, with the keep-alive
+  // reference that owns the track
+  struct SingleLaneAudioTrack
+  {
+    structure::tracks::TrackUuidReference track_ref;
+    structure::tracks::AudioTrack *       track;
+    structure::tracks::TrackLaneList *    lanes;
+  };
+  SingleLaneAudioTrack make_single_lane_audio_track () const
+  {
+    auto track_ref =
+      track_factory_->create_empty_track<structure::tracks::AudioTrack> ();
+    auto * track = track_ref.get_object_as<structure::tracks::AudioTrack> ();
+    auto * lanes = track->lanes ();
+    for (
+      const auto idx :
+      std::views::iota (size_t{ 1 }, lanes->size ()) | std::views::reverse)
+      lanes->removeLane (idx);
+    return { std::move (track_ref), track, lanes };
+  }
+
+  // An operator whose owner provider reports @p lane for audio clips
+  std::unique_ptr<ArrangerObjectSelectionOperator>
+  make_lane_operator (structure::tracks::TrackLane * lane)
+  {
+    auto lane_owner_provider =
+      [lane] (structure::arrangement::ArrangerObjectPtrVariant obj_var)
+      -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+      return std::visit (
+        [&] (auto &&obj)
+          -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+          using ObjectT = utils::base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AudioClip>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::AudioClip> *> (lane);
+            }
+          return static_cast<
+            structure::arrangement::ArrangerObjectOwner<ObjectT> *> (nullptr);
+        },
+        obj_var);
+    };
+    return std::make_unique<ArrangerObjectSelectionOperator> (
+      *undo_stack_, lane_owner_provider, *factory, registry_, clipboard_,
+      [this] () { return current_project_id_; },
+      [] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor) { });
+  }
+
   // Selects the row of the given object in the list model.
   void select_object (
     const structure::arrangement::ArrangerObjectUuidReference &ref,
@@ -3644,6 +3693,120 @@ TEST_F (
           .toStdString ())
       .get<int> (),
     0);
+}
+
+// Deleting the last clip of a track collapses the list to a single
+// empty lane, and undo restores the lanes with the clip
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DeleteObjectsCollapseTrackWithoutContentToSingleLane)
+{
+  const auto   setup = make_single_lane_audio_track ();
+  auto * const lane_2 = setup.lanes->addLane ();
+  lane_2->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::add_object (audio_clip_ref);
+  // The attach appended a trailing empty lane below lane 2
+  ASSERT_EQ (setup.lanes->size (), 3);
+  auto lane_operator = make_lane_operator (lane_2);
+
+  selection_model_->clear ();
+  select_object (audio_clip_ref);
+  EXPECT_TRUE (lane_operator->deleteObjects (selection_model_.get ()));
+  // The track has no content left, so a single empty lane remains
+  EXPECT_EQ (setup.lanes->size (), 1);
+  EXPECT_TRUE (setup.lanes->at (0)->is_empty ());
+
+  undo_stack_->undo ();
+  EXPECT_EQ (setup.lanes->size (), 3);
+  EXPECT_EQ (
+    lane_2
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioClip>::get_children_vector ()
+      .size (),
+    1u);
+}
+
+// A single delete that collapses the tail is one undo step, and a redo
+// cycle collapses it again
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DeleteObjectTrimsEmptiedTrailingLaneInOneStep)
+{
+  const auto   setup = make_single_lane_audio_track ();
+  auto * const lane_2 = setup.lanes->addLane ();
+  lane_2->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::add_object (audio_clip_ref);
+  // The attach appended a trailing empty lane below lane 2
+  ASSERT_EQ (setup.lanes->size (), 3);
+  auto lane_operator = make_lane_operator (lane_2);
+
+  EXPECT_TRUE (lane_operator->deleteObject (audio_clip_ref.get ()));
+  EXPECT_EQ (setup.lanes->size (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (setup.lanes->size (), 3);
+  EXPECT_EQ (
+    lane_2
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioClip>::get_children_vector ()
+      .size (),
+    1u);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (setup.lanes->size (), 1);
+}
+
+// Deleting the only clip of the last lane with content keeps that lane
+// as the trailing empty lane and removes the spare below it
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DeleteObjectKeepsEmptiedLaneAsTrailingEmpty)
+{
+  const auto   setup = make_single_lane_audio_track ();
+  auto * const lane_1 = setup.lanes->getFirstLane ();
+  auto * const lane_2 = setup.lanes->addLane ();
+  const auto   clip_1_ref =
+    utils::create_object<structure::arrangement::AudioClip> (
+      registry_, *tempo_map_wrapper, registry_);
+  lane_1->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::add_object (clip_1_ref);
+  lane_2->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::add_object (audio_clip_ref);
+  // The attach on lane 2 appended a trailing empty lane below it
+  ASSERT_EQ (setup.lanes->size (), 3);
+  auto lane_operator = make_lane_operator (lane_2);
+
+  EXPECT_TRUE (lane_operator->deleteObject (audio_clip_ref.get ()));
+  EXPECT_EQ (setup.lanes->size (), 2);
+  EXPECT_EQ (setup.lanes->at (1), lane_2);
+  EXPECT_TRUE (lane_2->is_empty ());
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (setup.lanes->size (), 3);
+  EXPECT_EQ (
+    lane_2
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioClip>::get_children_vector ()
+      .size (),
+    1u);
+}
+
+// A track always keeps its last lane, even when its last clip is
+// deleted
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsKeepsLastLane)
+{
+  const auto   setup = make_single_lane_audio_track ();
+  auto * const lane_1 = setup.lanes->getFirstLane ();
+  lane_1->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::add_object (audio_clip_ref);
+  auto lane_operator = make_lane_operator (lane_1);
+
+  selection_model_->clear ();
+  select_object (audio_clip_ref);
+  EXPECT_TRUE (lane_operator->deleteObjects (selection_model_.get ()));
+  EXPECT_EQ (setup.lanes->size (), 1);
 }
 
 // A null selection model (e.g. a pane without a usable selection model)

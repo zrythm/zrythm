@@ -259,8 +259,11 @@ TEST_F (TimelineArrangerObjectsModelTest, LanesAddedAndRemovedAreCovered)
   const auto clip_ref = create_midi_clip ();
   new_lane->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::add_object (
     clip_ref);
+  // The clip attach appended a trailing empty lane below new_lane
+  EXPECT_EQ (model_->sourceModels ().size (), sources_before + 4);
   EXPECT_EQ (model_->rowCount (), 1);
 
+  track->lanes ()->removeLane (track->lanes ()->size () - 1);
   track->lanes ()->removeLane (track->lanes ()->size () - 1);
   EXPECT_EQ (model_->sourceModels ().size (), sources_before);
   EXPECT_EQ (model_->rowCount (), 0);

@@ -82,6 +82,14 @@ public:
   void            set_owner_list (TrackLaneList * list);
   TrackLaneList * owner_list () const;
 
+  /**
+   * @brief Returns whether the lane holds no clips.
+   */
+  bool is_empty () const
+  {
+    return midiClips ()->rowCount () == 0 && audioClips ()->rowCount () == 0;
+  }
+
   // ========================================================================
   // QML Interface
   // ========================================================================
@@ -177,6 +185,12 @@ public:
   {
     return "audioClips";
   }
+
+  /**
+   * @brief Keeps the owning list ending with an empty lane when a clip
+   * lands on its last lane.
+   */
+  void on_object_added () override;
 
 private:
   static constexpr std::string_view kNameKey = "name";

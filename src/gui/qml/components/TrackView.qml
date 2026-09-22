@@ -400,9 +400,22 @@ Control {
                 id: laneDelegate
 
                 required property TrackLane trackLane
+                required property int index
 
                 height: trackLane.height
                 width: ListView.view.width
+
+                ContextMenu.menu: Menu {
+                  MenuItem {
+                    enabled: laneDelegate.index < lanesListView.count - 1
+
+                    text: qsTr("Delete Lane")
+
+                    onTriggered: {
+                      root.trackCollectionOperator.deleteLane(laneDelegate.trackLane);
+                    }
+                  }
+                }
 
                 RowLayout {
                   spacing: 2

@@ -712,6 +712,55 @@ TEST_F (TrackCollectionOperatorTest, DeleteWithNullUndoStack)
   EXPECT_EQ (track_collection_->track_count (), 1);
 }
 
+TEST_F (TrackCollectionOperatorTest, DeleteLaneWithNullLane)
+{
+  track_collection_operator_->deleteLane (nullptr);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// A track keeps at least one lane: deleting the only lane is refused
+TEST_F (TrackCollectionOperatorTest, DeleteLaneRefusesLastLane)
+{
+  auto audio_track_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioTrack> ();
+  track_collection_->add_track (audio_track_ref);
+  auto * audio_track =
+    audio_track_ref.get_object_as<structure::tracks::AudioTrack> ();
+  auto * lanes = audio_track->lanes ();
+  for (
+    const auto idx :
+    std::views::iota (size_t{ 1 }, lanes->size ()) | std::views::reverse)
+    lanes->removeLane (idx);
+  auto * lane = lanes->getFirstLane ();
+
+  track_collection_operator_->deleteLane (lane);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (lanes->size (), 1);
+}
+
+TEST_F (TrackCollectionOperatorTest, DeleteLaneRemovesLane)
+{
+  auto audio_track_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioTrack> ();
+  track_collection_->add_track (audio_track_ref);
+  auto * audio_track =
+    audio_track_ref.get_object_as<structure::tracks::AudioTrack> ();
+  auto * lanes = audio_track->lanes ();
+  for (
+    const auto idx :
+    std::views::iota (size_t{ 1 }, lanes->size ()) | std::views::reverse)
+    lanes->removeLane (idx);
+  auto * lane_2 = lanes->addLane ();
+
+  track_collection_operator_->deleteLane (lane_2);
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (lanes->size (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (lanes->size (), 2);
+  EXPECT_EQ (lanes->at (1), lane_2);
+}
+
 // ============================================================================
 // Clipboard Tests
 // ============================================================================

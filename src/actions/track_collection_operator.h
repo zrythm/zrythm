@@ -128,6 +128,15 @@ public:
   deleteTracks (const QList<zrythm::structure::tracks::Track *> &tracks);
 
   /**
+   * @brief Deletes the given lane from its track.
+   *
+   * The lane's clips stay owned by the lane, so undoing the command
+   * restores the lane with its contents. Refused (with a logged
+   * reason) if the lane is detached or is its track's only lane.
+   */
+  Q_INVOKABLE void deleteLane (zrythm::structure::tracks::TrackLane * lane);
+
+  /**
    * @brief Copies the closure of @p tracks (each track with its lanes,
    * clips, automation, channel and plugins) to the clipboard.
    *

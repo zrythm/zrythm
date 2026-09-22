@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
@@ -115,10 +115,10 @@ TEST_F (TrackLaneListTest, RemoveLanes)
   EXPECT_EQ (lane_list_->size (), 1);
   EXPECT_EQ (lane_list_->at (0), lane3);
 
-  // Test removing last lane
+  // A track keeps at least one lane: removing the last lane is refused
   lane_list_->removeLane (0);
-  EXPECT_EQ (lane_list_->size (), 0);
-  EXPECT_TRUE (lane_list_->empty ());
+  EXPECT_EQ (lane_list_->size (), 1);
+  EXPECT_FALSE (lane_list_->empty ());
 }
 
 TEST_F (TrackLaneListTest, MoveLanes)
@@ -258,10 +258,11 @@ TEST_F (TrackLaneListTest, SingleLaneOperations)
   EXPECT_EQ (lane_list_->size (), 1);
   EXPECT_EQ (lane_list_->at (0), lane);
 
-  // Test removing single lane
+  // A track keeps at least one lane: removing the single lane is
+  // refused
   lane_list_->removeLane (0);
-  EXPECT_EQ (lane_list_->size (), 0);
-  EXPECT_TRUE (lane_list_->empty ());
+  EXPECT_EQ (lane_list_->size (), 1);
+  EXPECT_FALSE (lane_list_->empty ());
 }
 
 TEST_F (TrackLaneListTest, LargeNumberOfLanes)
@@ -345,7 +346,10 @@ TEST_F (TrackLaneListTest, EdgeCases)
 {
   // Test operations on empty list
   EXPECT_THROW (lane_list_->at (0), std::out_of_range);
-  EXPECT_THROW (lane_list_->removeLane (0), std::out_of_range);
+  // A track keeps at least one lane: removal on an empty list is a
+  // no-op
+  lane_list_->removeLane (0);
+  EXPECT_TRUE (lane_list_->empty ());
   EXPECT_THROW (lane_list_->moveLane (0, 1), std::out_of_range);
 
   // Test invalid indices
@@ -457,6 +461,44 @@ TEST_F (TrackLaneListTest, RemoveEmptyLastLanes)
 
   // Remove empty last lanes (should keep only first lane)
   lane_list_->remove_empty_last_lanes ();
+  EXPECT_EQ (lane_list_->size (), 1);
+}
+
+// ensure_trailing_empty_lane appends a lane to an empty list and keeps
+// a list that already ends with an empty lane unchanged
+TEST_F (TrackLaneListTest, EnsureTrailingEmptyLane)
+{
+  lane_list_->ensure_trailing_empty_lane ();
+  EXPECT_EQ (lane_list_->size (), 1);
+  EXPECT_TRUE (lane_list_->at (0)->is_empty ());
+
+  lane_list_->ensure_trailing_empty_lane ();
+  EXPECT_EQ (lane_list_->size (), 1);
+
+  lane_list_->addLane ();
+  lane_list_->ensure_trailing_empty_lane ();
+  EXPECT_EQ (lane_list_->size (), 2);
+}
+
+// trim_trailing_empty_lanes keeps a single lane in lists with only
+// empty lanes
+TEST_F (TrackLaneListTest, TrimTrailingEmptyLanes)
+{
+  lane_list_->addLane ();
+  lane_list_->addLane ();
+  lane_list_->addLane ();
+
+  lane_list_->trim_trailing_empty_lanes ();
+  EXPECT_EQ (lane_list_->size (), 1);
+
+  lane_list_->addLane ();
+  lane_list_->trim_trailing_empty_lanes ();
+  EXPECT_EQ (lane_list_->size (), 1);
+
+  lane_list_->addLane ();
+  lane_list_->addLane ();
+  lane_list_->addLane ();
+  lane_list_->trim_trailing_empty_lanes ();
   EXPECT_EQ (lane_list_->size (), 1);
 }
 
@@ -655,7 +697,8 @@ TEST_F (TrackLaneListTest, DeserializedLanesPropagateContentChanged)
   auto deserialized = std::make_unique<TrackLaneList> (*registry_, nullptr);
   from_json (j, *deserialized);
 
-  ASSERT_EQ (deserialized->size (), 1);
+  // The clip attach kept a trailing empty lane after the content lane
+  ASSERT_EQ (deserialized->size (), 2);
 
   // 4. Verify signal connections work after deserialization:
   // changing a clip's position should trigger laneObjectsNeedRecache.

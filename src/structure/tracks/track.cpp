@@ -283,6 +283,19 @@ Track::init_cache_scheduler ()
         lanes_.get (), &TrackLaneList::laneObjectsNeedRecache,
         playable_content_cache_request_debouncer_.get (),
         &utils::PlaybackCacheScheduler::queueCacheRequest);
+
+      // Attaching or detaching a lane changes which clips the track
+      // plays back, independent of any clip content change, so lane
+      // row changes need a full rebuild
+      const auto queue_full_rebuild = [this] () {
+        playable_content_cache_request_debouncer_->queueCacheRequest ({});
+      };
+      QObject::connect (
+        lanes_.get (), &QAbstractListModel::rowsInserted,
+        playable_content_cache_request_debouncer_.get (), queue_full_rebuild);
+      QObject::connect (
+        lanes_.get (), &QAbstractListModel::rowsRemoved,
+        playable_content_cache_request_debouncer_.get (), queue_full_rebuild);
     }
 
   if (

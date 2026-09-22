@@ -126,9 +126,35 @@ public:
   }
 
   /**
+   * @brief Attaches an already-registered lane at @p index.
+   *
+   * Used to reattach a lane kept alive by a reference while it was
+   * detached from the list.
+   *
+   * @throw std::out_of_range if @p index is greater than the list size.
+   * @throw std::invalid_argument if the lane is already in the list or
+   * still attached to a list.
+   */
+  void reinsert_lane (size_t index, TrackLaneUuidReference lane_ref);
+
+  /**
    * @brief Creates missing TrackLane's until @p index.
    */
   void create_missing_lanes (size_t index);
+
+  /**
+   * @brief Appends an empty lane when the last lane has content, so the
+   * list always ends with an empty lane.
+   */
+  void ensure_trailing_empty_lane ();
+
+  /**
+   * @brief Removes trailing empty lanes until a single trailing empty
+   * lane remains.
+   *
+   * Always keeps at least one lane.
+   */
+  void trim_trailing_empty_lanes ();
 
   /**
    * @brief Removes the empty last lanes of the Track (except the last one).
@@ -162,4 +188,24 @@ private:
 
   BOOST_DESCRIBE_CLASS (TrackLaneList, (), (), (), (lanes_, lanes_visible_))
 };
+
+/**
+ * @brief Trims the trailing empty lanes of the list owning @p owner.
+ *
+ * No effect when @p owner is not a track lane or is detached from its
+ * list.
+ */
+template <arrangement::FinalArrangerObjectSubclass ChildT>
+void
+trim_trailing_empty_lanes_if_lane (
+  arrangement::ArrangerObjectOwner<ChildT> * owner)
+{
+  if (const auto * lane = dynamic_cast<TrackLane *> (owner); lane != nullptr)
+    {
+      if (auto * list = lane->owner_list (); list != nullptr)
+        {
+          list->trim_trailing_empty_lanes ();
+        }
+    }
+}
 }
