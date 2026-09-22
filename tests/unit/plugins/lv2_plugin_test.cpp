@@ -250,6 +250,7 @@ protected:
     uint32_t (*last_event_port) () = nullptr;
     float (*last_event_value) () = nullptr;
     void (*write_gain) (float) = nullptr;
+    void (*touch_gain) (int) = nullptr;
     void (*write_message) () = nullptr;
     void (*set_close_on_idle) () = nullptr;
     int (*worker_responses) () = nullptr;
@@ -273,6 +274,7 @@ protected:
       AMP_UI_FN (last_event_port)
       AMP_UI_FN (last_event_value)
       AMP_UI_FN (write_gain)
+      AMP_UI_FN (touch_gain)
       AMP_UI_FN (write_message)
       AMP_UI_FN (set_close_on_idle)
       AMP_UI_FN (worker_responses)
@@ -694,8 +696,9 @@ TEST_F (Lv2PluginTest, NativeUiSessionOpensWithHostWindow)
   EXPECT_GT (stub.cleanups (), clean_before);
 }
 
-// A control write from the UI rides the parameter path: the value
-// reaches the parameter as a user edit (which marks the preset dirty)
+// A control write from the UI rides the parameter path: the value is
+// staged as a pending user edit and the flush applies it (which marks
+// the preset dirty)
 TEST_F (Lv2PluginTest, UiControlWriteRidesParameterPath)
 {
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
@@ -712,7 +715,12 @@ TEST_F (Lv2PluginTest, UiControlWriteRidesParameterPath)
   plugin_->setPresetIndex (0);
   ASSERT_FALSE (plugin_->presetDirty ());
 
+  QSignalSpy edited_spy{ gain, &dsp::ProcessorParameter::baseValueEditedByUser };
   stub.write_gain (-6.0206f);
+  // No flush has run yet: the staged value is not applied
+  EXPECT_TRUE (edited_spy.isEmpty ());
+  plugin_->flush_plugin_values ();
+  EXPECT_EQ (edited_spy.count (), 1);
   EXPECT_NEAR (
     gain->baseValue (), gain->range ().convertTo0To1 (-6.0206f), 0.001f);
   EXPECT_TRUE (plugin_->presetDirty ());
@@ -720,8 +728,9 @@ TEST_F (Lv2PluginTest, UiControlWriteRidesParameterPath)
 
 // A control write from a thread other than the main thread cannot use
 // the parameter path directly: the value rides the event ring (applied
-// by the audio thread) and the parameter update is deferred
-TEST_F (Lv2PluginTest, UiControlWriteFromOtherThreadRidesRingAndDeferredParam)
+// by the audio thread) and the parameter update is staged for the main
+// thread flush
+TEST_F (Lv2PluginTest, UiControlWriteFromOtherThreadRidesRingAndStagedParam)
 {
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
 
@@ -742,17 +751,194 @@ TEST_F (Lv2PluginTest, UiControlWriteFromOtherThreadRidesRingAndDeferredParam)
   {
     std::jthread writer ([&] { stub.write_gain (-20.f); });
   }
-  // No event processing has happened since the write: the deferred
-  // parameter update cannot have run, so the audio path can only see
-  // the value through the ring
+  // No event processing has happened since the write: the staged
+  // parameter edit cannot have been applied, so the audio path can
+  // only see the value through the ring
   EXPECT_NEAR (gain->baseValue (), initial_0_to_1, 0.001f);
   process_blocks (1);
   // The fixture amp maps -20 dB to a 0.1 coefficient
   EXPECT_NEAR (read_first_output_sample (), 0.1f, 0.001f);
 
-  // The deferred update attributes the edit on the main thread
-  EXPECT_TRUE (pump_until ([&] { return plugin_->presetDirty (); }));
+  // The flush applies the staged edit as a user edit on the main
+  // thread
+  plugin_->flush_plugin_values ();
+  EXPECT_TRUE (plugin_->presetDirty ());
   EXPECT_NEAR (gain->baseValue (), gain->range ().convertTo0To1 (-20.f), 0.001f);
+}
+
+// A UI edit bracketed by touch events is attributed as a user gesture:
+// the grab and release reach the parameter as gesture begin/end, and
+// the flushed value reports as a user edit
+TEST_F (Lv2PluginTest, TouchUiEditsAreAttributedAsUserEdits)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+
+  QSignalSpy gesture_started_spy{
+    gain, &dsp::ProcessorParameter::userGestureStarted
+  };
+  QSignalSpy gesture_finished_spy{
+    gain, &dsp::ProcessorParameter::userGestureFinished
+  };
+  QSignalSpy edited_spy{ gain, &dsp::ProcessorParameter::baseValueEditedByUser };
+
+  stub.touch_gain (1);
+  stub.write_gain (-6.0206f);
+  stub.touch_gain (0);
+
+  // The gesture notifications ride the main-thread dispatcher
+  EXPECT_TRUE (pump_until ([&] {
+    return gesture_started_spy.count () >= 1 && gesture_finished_spy.count () >= 1;
+  }));
+  plugin_->flush_plugin_values ();
+  EXPECT_EQ (edited_spy.count (), 1);
+  EXPECT_NEAR (
+    gain->baseValue (), gain->range ().convertTo0To1 (-6.0206f), 0.001f);
+}
+
+// Writes arriving between a touch pair at drag event rate coalesce
+// into one user edit per flush: the flush applies the last reported
+// value once and consumes the pending slot
+TEST_F (Lv2PluginTest, TouchUiEditsCoalesceIntoOneUserEditPerFlush)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+
+  QSignalSpy edited_spy{ gain, &dsp::ProcessorParameter::baseValueEditedByUser };
+
+  stub.touch_gain (1);
+  for (const auto db : { -10.f, -5.f, 0.f, 6.f, 12.f })
+    {
+      stub.write_gain (db);
+    }
+  stub.touch_gain (0);
+
+  plugin_->flush_plugin_values ();
+  EXPECT_EQ (edited_spy.count (), 1);
+  EXPECT_NEAR (gain->baseValue (), gain->range ().convertTo0To1 (12.f), 0.001f);
+  // The pending slot is consumed: a second flush applies nothing
+  plugin_->flush_plugin_values ();
+  EXPECT_EQ (edited_spy.count (), 1);
+}
+
+// Touch notifications from a thread other than the main thread open
+// and close the gesture like main-thread ones
+TEST_F (Lv2PluginTest, TouchFromOtherThreadOpensGestures)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+
+  QSignalSpy gesture_started_spy{
+    gain, &dsp::ProcessorParameter::userGestureStarted
+  };
+  QSignalSpy gesture_finished_spy{
+    gain, &dsp::ProcessorParameter::userGestureFinished
+  };
+
+  {
+    std::jthread toucher ([&] {
+      stub.touch_gain (1);
+      stub.write_gain (0.f);
+      stub.touch_gain (0);
+    });
+  }
+
+  EXPECT_TRUE (pump_until ([&] {
+    return gesture_started_spy.count () >= 1 && gesture_finished_spy.count () >= 1;
+  }));
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (gain->baseValue (), gain->range ().convertTo0To1 (0.f), 0.001f);
+}
+
+// Unbalanced touch events are ignored: a release without a preceding
+// grab and a second grab while the gesture is open change nothing,
+// and a balanced pair still reports exactly one gesture
+TEST_F (Lv2PluginTest, UnbalancedTouchEventsAreIgnored)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+
+  QSignalSpy gesture_started_spy{
+    gain, &dsp::ProcessorParameter::userGestureStarted
+  };
+  QSignalSpy gesture_finished_spy{
+    gain, &dsp::ProcessorParameter::userGestureFinished
+  };
+  QSignalSpy edited_spy{ gain, &dsp::ProcessorParameter::baseValueEditedByUser };
+
+  stub.touch_gain (0);
+  stub.touch_gain (1);
+  stub.touch_gain (1);
+  stub.write_gain (6.f);
+  stub.touch_gain (0);
+
+  EXPECT_TRUE (pump_until ([&] { return gesture_finished_spy.count () >= 1; }));
+  EXPECT_EQ (gesture_started_spy.count (), 1);
+  EXPECT_EQ (gesture_finished_spy.count (), 1);
+  plugin_->flush_plugin_values ();
+  EXPECT_EQ (edited_spy.count (), 1);
+  EXPECT_NEAR (gain->baseValue (), gain->range ().convertTo0To1 (6.f), 0.001f);
+}
+
+// An open touch gesture is closed when the plugin's resources are
+// released: the user gesture must not outlive the plugin
+TEST_F (Lv2PluginTest, OpenTouchGestureIsClosedOnRelease)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  auto stub_opt = AmpUiStub::create (bundle_path ("eg-amp.lv2"));
+  ASSERT_TRUE (stub_opt.has_value ());
+  auto &stub = *stub_opt;
+  plugin_->setUiVisible (true);
+  ASSERT_TRUE (pump_until ([&] { return stub.instantiations () >= 1; }));
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+
+  QSignalSpy gesture_started_spy{
+    gain, &dsp::ProcessorParameter::userGestureStarted
+  };
+  QSignalSpy gesture_finished_spy{
+    gain, &dsp::ProcessorParameter::userGestureFinished
+  };
+
+  stub.touch_gain (1);
+  EXPECT_TRUE (pump_until ([&] { return gesture_started_spy.count () >= 1; }));
+
+  plugin_->release_resources ();
+  EXPECT_TRUE (pump_until ([&] { return gesture_finished_spy.count () >= 1; }));
 }
 
 // A UI atom written to a scratch atom input is delivered to the plugin
@@ -1318,13 +1504,13 @@ TEST_F (Lv2PluginTest, SamplerStateRoundTripsIntoNewInstance)
   auto * reloaded_gain = find_param_by_unique_id (gain_uri);
   ASSERT_NE (reloaded_gain, nullptr);
   // The plugin reports the restored gain back through its notify port;
-  // the deferred parameter update rides the main thread dispatcher and
-  // is value synchronization, not a user edit
+  // the flush applies it as value synchronization, not a user edit
   QSignalSpy user_edits{
     reloaded_gain, &dsp::ProcessorParameter::baseValueEditedByUser
   };
   process_blocks (1);
-  EXPECT_TRUE (pump_until ([&] { return reloaded_gain->baseValue () > 0.7f; }));
+  plugin_->flush_plugin_values ();
+  EXPECT_GT (reloaded_gain->baseValue (), 0.7f);
   EXPECT_TRUE (user_edits.isEmpty ());
 
   auto * midi_in = midi_in_port ();

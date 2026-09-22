@@ -10,5 +10,6 @@
 	lv2:optionalFeature ui:noUserResize ;
 	lv2:requiredFeature opts:options ,
 		ui:idleInterface ,
+		ui:touch ,
 		urid:map ,
 		work:schedule .

@@ -33,6 +33,7 @@ static LV2UI_Write_Function g_write = NULL;
 static LV2UI_Controller g_controller = NULL;
 static const LV2_URID_Map * g_map = NULL;
 static const LV2_Worker_Schedule * g_ui_schedule = NULL;
+static const LV2UI_Touch * g_touch = NULL;
 
 int
 amp_ui_instantiations (void)
@@ -112,6 +113,17 @@ amp_ui_write_gain (float value)
     }
 }
 
+/* Simulates the user grabbing or releasing the gain knob: the host is
+ * told through the ui:touch feature. */
+void
+amp_ui_touch_gain (int grabbed)
+{
+  if (g_touch != NULL)
+    {
+      g_touch->touch (g_touch->handle, 0, grabbed != 0);
+    }
+}
+
 /* Sends a string atom to the plugin's message port (index 4) via
  * atom:eventTransfer. */
 void
@@ -159,6 +171,10 @@ ui_instantiate (
         {
           g_ui_schedule = (const LV2_Worker_Schedule *) (*f)->data;
         }
+      else if (strcmp ((*f)->URI, LV2_UI__touch) == 0)
+        {
+          g_touch = (const LV2UI_Touch *) (*f)->data;
+        }
     }
 
   g_write = write_function;
@@ -180,6 +196,7 @@ ui_cleanup (LV2UI_Handle ui)
   g_controller = NULL;
   g_map = NULL;
   g_ui_schedule = NULL;
+  g_touch = NULL;
   ++g_cleanups;
 }
 

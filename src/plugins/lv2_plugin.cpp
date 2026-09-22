@@ -386,6 +386,20 @@ public:
    */
   void parse_patch_messages () noexcept [[clang::nonblocking]];
 
+  /**
+   * Counts a plugin report mapping to an out-of-range parameter
+   * index; reports the cumulative count to the main thread with
+   * throttled warnings.
+   */
+  void note_param_index_drop () noexcept;
+
+  /**
+   * Counts a dropped UI gesture notification (@p reason describes the
+   * drop and must point to a string literal); reports the cumulative
+   * count to the main thread with throttled warnings.
+   */
+  void note_ui_gesture_drop (std::string_view reason) noexcept;
+
   /** Reads the control output ports (latency). */
   void read_control_outputs () noexcept [[clang::nonblocking]];
 
@@ -479,6 +493,11 @@ public:
     uint32_t         buffer_size,
     uint32_t         port_protocol,
     const void *     buffer);
+
+  /** LV2 UI touch callback: the user grabbed or released the control
+   * of a port. */
+  static void
+  ui_touch (LV2UI_Feature_Handle handle, uint32_t port_index, bool grabbed);
 
   /** LV2 UI port map callback: port symbol -> port index. */
   static uint32_t
@@ -691,6 +710,7 @@ public:
     std::vector<const LV2_Feature *>  feature_ptrs;
     LV2UI_Resize                      resize_feature_{};
     LV2UI_Port_Map                    port_map_feature_{};
+    LV2UI_Touch                       touch_feature_{};
     LV2_Extension_Data_Feature        ext_data_feature_{};
     std::array<LV2_Options_Option, 3> options_{};
     std::string                       window_title_;
@@ -890,6 +910,32 @@ public:
       static_cast<float> (it - ctrl.port->scale_point_values.begin ()));
   }
 
+  /**
+   * Stages a value reported by the plugin's UI for @p ctrl's
+   * parameter as a pending user edit: the next main-thread flush
+   * applies it through the user-edit path, coalescing drag-rate
+   * reports into one edit per flush. Drops the value while the param
+   * sync entries are not prepared yet (before processing starts or
+   * across a rechain).
+   */
+  void stage_ui_param_edit (const CtrlInParam &ctrl, float normalized) noexcept
+  {
+    assert (ctrl.param != nullptr);
+    if (ctrl.param_index >= owner_.param_sync_.entries.size ())
+      {
+        // With prepared entries an out-of-range index is this host's
+        // own bookkeeping bug
+        if (!owner_.param_sync_.entries.empty ())
+          {
+            note_param_index_drop ();
+          }
+        return;
+      }
+    auto &entry = owner_.param_sync_.entries[ctrl.param_index];
+    entry.pending_is_user_edit.store (true, std::memory_order_release);
+    owner_.set_param_pending_from_plugin (ctrl.param_index, normalized);
+  }
+
   /** The metadata of the control input with @p symbol, or nullptr when no
    * such port exists. */
   const PortInfo * find_control_input (std::string_view symbol) const
@@ -1019,6 +1065,9 @@ public:
     dsp::ProcessorParameter * param{};
     /** The port the parameter drives (null for unrouted buffers). */
     const PortInfo * port{};
+    /** Index into the live parameter list (and the param_sync_ entries)
+     * while @ref param is set. */
+    size_t param_index{};
   };
   /** Parallel to control_in_bufs_. */
   std::vector<CtrlInParam> ctrl_in_params_;
@@ -1038,6 +1087,9 @@ public:
   struct PatchParam
   {
     dsp::ProcessorParameter * param{};
+    /** Index into the live parameter list (and the param_sync_
+     * entries). */
+    size_t param_index{};
     /** URID of the parameter URI. */
     uint32_t uri_id{};
     /** Atom type of patch:value (atom:Float, atom:Int or atom:Bool). */
@@ -1072,6 +1124,12 @@ public:
   size_t pending_patch_set_count_ = 0;
   /** Number of patch sets dropped since the last report. */
   std::atomic<uint32_t> patch_sets_dropped_{ 0 };
+  /** Cumulative number of plugin reports dropped for an out-of-range
+   * parameter index (reported with throttled warnings). */
+  std::atomic<uint32_t> param_index_drops_{ 0 };
+  /** Cumulative number of UI gesture notifications dropped (reported
+   * with throttled warnings). */
+  std::atomic<uint32_t> ui_gesture_drops_{ 0 };
   /** control_out_bufs_ index of the latency port, or -1. */
   int32_t latency_buf_index_ = -1;
 
@@ -2176,6 +2234,7 @@ Lv2Plugin::create_ports_and_parameters (bool generate_new)
             type_safe::get (param->get_unique_id ()).view ());
           assert (index_it != param_index_by_id.end ());
           ctrl_param.param = param;
+          ctrl_param.param_index = index_it->second;
           pimpl_->param_to_ctrl_in_[index_it->second] =
             static_cast<int32_t> (buf_index);
 
@@ -2328,10 +2387,12 @@ Lv2Plugin::Lv2PluginImpl::discover_patch_parameters (
         }
 
       dsp::ProcessorParameter * param = nullptr;
+      size_t                    param_index = 0;
       const auto found_it = param_index_by_id.find (param_uri.view ());
       if (found_it != param_index_by_id.end ())
         {
           param = owner_.get_parameters ()[found_it->second].get ();
+          param_index = found_it->second;
           param_to_patch_[found_it->second] =
             static_cast<int32_t> (patch_params_.size ());
         }
@@ -2355,6 +2416,7 @@ Lv2Plugin::Lv2PluginImpl::discover_patch_parameters (
             name);
           owner_.add_parameter (param_ref);
           param = param_ref.get ();
+          param_index = owner_.get_parameters ().size () - 1;
           param_to_ctrl_in_.push_back (-1);
           param_to_patch_.push_back (
             static_cast<int32_t> (patch_params_.size ()));
@@ -2372,6 +2434,7 @@ Lv2Plugin::Lv2PluginImpl::discover_patch_parameters (
       patch_params_.push_back (
         {
           param,
+          param_index,
           owner_.world_->urid_map ().map (param_uri.c_str ()),
           value_type,
           param->baseValue (),
@@ -2897,6 +2960,28 @@ Lv2Plugin::prepare_plugin_for_processing (
 void
 Lv2Plugin::release_resources_impl ()
 {
+  assert (QThread::currentThread () == thread ());
+
+  // Close open user gestures regardless of the activation state: UI
+  // touches arrive independently of processing, so the sweep must not
+  // sit behind the active-instance early return. Releasing resources
+  // is the definitive end of any UI-reported gesture
+  const auto params = get_parameters ();
+  const auto count = std::min (params.size (), param_sync_.entries.size ());
+  for (const auto i : std::views::iota (size_t{ 0 }, count))
+    {
+      auto &entry = param_sync_.entries[i];
+      if (!entry.in_user_gesture.exchange (false, std::memory_order_relaxed))
+        continue;
+      auto * param = params[i].get ();
+      if (param != nullptr && !post_main_thread_action_deferred ([param] {
+            param->endUserGesture ();
+          }))
+        {
+          z_warning ("LV2: failed to close open user gesture on release");
+        }
+    }
+
   // Like the other backends, releasing resources deactivates the
   // instance instead of freeing it: hard graph rechains are frequent,
   // and the instance — and any open UI, which holds the instance handle
@@ -3493,6 +3578,38 @@ Lv2Plugin::Lv2PluginImpl::forge_pending_patch_sets () noexcept
 }
 
 void
+Lv2Plugin::Lv2PluginImpl::note_param_index_drop () noexcept
+{
+  const auto drops =
+    param_index_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
+  if (drops == 1 || (drops & (drops - 1)) == 0)
+    {
+      owner_.post_main_thread_action ([this, drops] {
+        z_warning (
+          "LV2 plugin '{}': dropped {} report(s) mapping to an out-of-range "
+          "parameter index so far",
+          owner_.get_name (), drops);
+      });
+    }
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::note_ui_gesture_drop (std::string_view reason) noexcept
+{
+  const auto drops =
+    ui_gesture_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
+  if (drops == 1 || (drops & (drops - 1)) == 0)
+    {
+      owner_.post_main_thread_action ([this, drops, reason] {
+        z_warning (
+          "LV2 plugin '{}': dropped {} UI gesture notification(s) so far "
+          "(last: {})",
+          owner_.get_name (), drops, reason);
+      });
+    }
+}
+
+void
 Lv2Plugin::Lv2PluginImpl::parse_patch_messages () noexcept
 {
   if (patch_params_.empty ())
@@ -3569,17 +3686,26 @@ Lv2Plugin::Lv2PluginImpl::parse_patch_messages () noexcept
     if (!sync && std::abs (normalized - patch_it->last_sent_0_to_1) < 1e-6f)
       return;
 
-    auto * param = patch_it->param;
-    owner_.post_main_thread_action_deferred ([param, normalized, sync] {
-      if (sync)
-        {
-          param->setBaseValue (normalized);
-        }
-      else
-        {
-          param->setBaseValueByUser (normalized);
-        }
-    });
+    // The value is staged in the pending slot instead of posting one
+    // action per Set: live edits arrive at drag event rates, where one
+    // deferred user edit per value would flood the shared main-thread
+    // dispatcher
+    if (patch_it->param_index >= owner_.param_sync_.entries.size ())
+      {
+        // Sets can arrive before param_sync_ is prepared (a state
+        // restore at project load); the full parameter sync after the
+        // restore is authoritative, so those are safe to drop. With a
+        // prepared param_sync_, an out-of-range index is this host's
+        // own bookkeeping bug
+        if (!owner_.param_sync_.entries.empty ())
+          {
+            note_param_index_drop ();
+          }
+        return;
+      }
+    auto &entry = owner_.param_sync_.entries[patch_it->param_index];
+    entry.pending_is_user_edit.store (!sync, std::memory_order_release);
+    owner_.set_param_pending_from_plugin (patch_it->param_index, normalized);
   };
 
   const auto walk_sequence =
@@ -5090,6 +5216,8 @@ Lv2Plugin::show_editor (bool force_float_window)
     ui.port_map_feature_ = LV2UI_Port_Map{
       .handle = pimpl_.get (), .port_index = &Lv2PluginImpl::ui_port_index
     };
+    ui.touch_feature_ =
+      LV2UI_Touch{ .handle = pimpl_.get (), .touch = &Lv2PluginImpl::ui_touch };
     ui.ext_data_feature_.data_access =
       lilv_instance_get_descriptor (pimpl_->instance_)->extension_data;
 
@@ -5109,6 +5237,7 @@ Lv2Plugin::show_editor (bool force_float_window)
       }
     push_feature (LV2_UI__resize, &ui.resize_feature_);
     push_feature (LV2_UI__portMap, &ui.port_map_feature_);
+    push_feature (LV2_UI__touch, &ui.touch_feature_);
     // ui:idleInterface is extension data with no feature payload; the
     // feature is passed to acknowledge that this host drives idle (the
     // idle pump below), which UIs may declare required
@@ -5383,10 +5512,11 @@ Lv2Plugin::Lv2PluginImpl::resolve_ui ()
       // those open no embed area at all, so a UI requiring it cannot
       // be floated either way
       const std::string_view supported_ui_features[] = {
-        LV2_URID__map,       LV2_URID__unmap,       LV2_OPTIONS__options,
-        LV2_UI__parent,      LV2_UI__resize,        LV2_UI__portMap,
-        LV2_UI__fixedSize,   LV2_UI__noUserResize,  LV2_INSTANCE_ACCESS_URI,
-        LV2_DATA_ACCESS_URI, LV2_UI__idleInterface, LV2_WORKER__schedule
+        LV2_URID__map,           LV2_URID__unmap,     LV2_OPTIONS__options,
+        LV2_UI__parent,          LV2_UI__resize,      LV2_UI__portMap,
+        LV2_UI__touch,           LV2_UI__fixedSize,   LV2_UI__noUserResize,
+        LV2_INSTANCE_ACCESS_URI, LV2_DATA_ACCESS_URI, LV2_UI__idleInterface,
+        LV2_WORKER__schedule
       };
       const LilvUIsUPtr uis{ lilv_plugin_get_uis (plugin_) };
       if (uis != nullptr)
@@ -5593,31 +5723,26 @@ Lv2Plugin::Lv2PluginImpl::ui_write (
       if (ctrl_param.param != nullptr)
         {
           // Ports with a parameter ride the parameter path: the value
-          // reaches the audio thread through the change tracker and the
-          // edit is attributed as a user edit
-          if (QThread::currentThread () == impl->owner_.thread ())
+          // is staged as a pending user edit (the flush coalesces
+          // drag-rate reports) and reaches the audio thread through
+          // the change tracker once applied
+          if (QThread::currentThread () != impl->owner_.thread ())
             {
-              ctrl_param.param->setBaseValueByUser (
-                impl->param_value_0_to_1_for_control (ctrl_param, value));
-              return;
+              // UIs may call write() from their own threads, where Qt
+              // signal emission is not allowed: the ring record also
+              // delivers the value to the control buffer on the audio
+              // thread
+              const auto header = UiEventHeader{ port_index, 0, sizeof (float) };
+              const auto * value_bytes =
+                reinterpret_cast<const std::byte *> (&value);
+              push_record (
+                { reinterpret_cast<const std::byte *> (&header),
+                  sizeof (header) },
+                { value_bytes, sizeof (float) });
             }
-          // UIs may call write() from their own threads, where Qt
-          // signal emission is not allowed. The value is delivered
-          // twice by design: the ring record applies it to the
-          // control buffer on the audio thread, and the deferred
-          // parameter update attributes the edit as a user action
-          const auto   header = UiEventHeader{ port_index, 0, sizeof (float) };
-          const auto * value_bytes =
-            reinterpret_cast<const std::byte *> (&value);
-          push_record (
-            { reinterpret_cast<const std::byte *> (&header), sizeof (header) },
-            { value_bytes, sizeof (float) });
-          auto *     param = ctrl_param.param;
-          const auto normalized =
-            impl->param_value_0_to_1_for_control (ctrl_param, value);
-          impl->owner_.post_main_thread_action_deferred ([param, normalized] {
-            param->setBaseValueByUser (normalized);
-          });
+          impl->stage_ui_param_edit (
+            ctrl_param,
+            impl->param_value_0_to_1_for_control (ctrl_param, value));
           return;
         }
       const auto   header = UiEventHeader{ port_index, 0, sizeof (float) };
@@ -5671,6 +5796,71 @@ Lv2Plugin::Lv2PluginImpl::ui_write (
   z_warning (
     "LV2: the UI of '{}' wrote with an unsupported protocol; ignoring it",
     impl->owner_.get_name ());
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::
+  ui_touch (LV2UI_Feature_Handle handle, uint32_t port_index, bool grabbed)
+{
+  auto * impl = static_cast<Lv2PluginImpl *> (handle);
+
+  if (port_index >= impl->ports_.size ())
+    {
+      z_warning (
+        "LV2: the UI of '{}' touched unknown port index {}; ignoring it",
+        impl->owner_.get_name (), port_index);
+      return;
+    }
+  const auto &port = impl->ports_[port_index];
+  if (port.type != PortInfo::Type::Control || port.flow != dsp::PortFlow::Input)
+    {
+      z_warning (
+        "LV2: the UI of '{}' touched port {} which is no control input; "
+        "ignoring it",
+        impl->owner_.get_name (), port.symbol);
+      return;
+    }
+  const auto &ctrl_param = impl->ctrl_in_params_[port.control_buffer_index];
+  if (ctrl_param.param == nullptr)
+    return;
+
+  if (ctrl_param.param_index >= impl->owner_.param_sync_.entries.size ())
+    {
+      // The entries prepare with processing; gestures cannot outlive
+      // the plugin, so a gesture before prepare is dropped
+      if (!impl->owner_.param_sync_.entries.empty ())
+        {
+          z_warning (
+            "LV2: the UI of '{}' touched port {} whose parameter index is "
+            "out of range; ignoring it",
+            impl->owner_.get_name (), port.symbol);
+        }
+      return;
+    }
+
+  auto &entry = impl->owner_.param_sync_.entries[ctrl_param.param_index];
+  if (grabbed == entry.in_user_gesture.load (std::memory_order_relaxed))
+    {
+      // Grab while the gesture is already open, or release without a
+      // preceding grab
+      impl->note_ui_gesture_drop ("unbalanced touch event"sv);
+      return;
+    }
+  entry.in_user_gesture.store (grabbed, std::memory_order_relaxed);
+  if (
+    !impl->owner_.post_main_thread_action_deferred (
+      [param = ctrl_param.param, grabbed] {
+        if (grabbed)
+          param->beginUserGesture ();
+        else
+          param->endUserGesture ();
+      }))
+    {
+      // The main-thread gesture state would diverge from the flag;
+      // revert the flag so later events stay consistent
+      entry.in_user_gesture.store (!grabbed, std::memory_order_relaxed);
+      impl->note_ui_gesture_drop ("dispatcher queue full"sv);
+    }
 }
 
 uint32_t
