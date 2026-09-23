@@ -1,5 +1,5 @@
 <!---
-SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 SPDX-License-Identifier: FSFAP
 -->
 
@@ -119,6 +119,8 @@ sequenceDiagram
 - Derive from `QUndoCommand`
 - Implement `redo()` (apply change) and `undo()` (revert change)
 - Dumb and focused - know how to apply/revert changes but not why
+- Reference deletable objects through registry handles (see
+  [Owner Handles](#9-owner-handles-in-commands)), never raw pointers
 
 ### Actions (`zrythm::actions`)
 Two types of actions:
@@ -216,6 +218,10 @@ Button {
 5. Add unit tests for factory, command and action
 6. Expose action to QML
 
+In both cases, commands that target arranger-object owners hold an
+owner handle instead of a raw owner pointer (see
+[Owner Handles](#9-owner-handles-in-commands)).
+
 ---
 
 ## 7. Non-Undoable State
@@ -237,3 +243,65 @@ Button {
 5. **UI Agnosticism**: Core Model and Command logic is independent of QML/Qt Widgets
 
 This architecture ensures that Zrythm's codebase remains robust, flexible, and maintainable as it grows in complexity.
+
+---
+
+## 9. Owner Handles in Commands
+
+Arranger objects live inside owners: tracks, track lanes, automation
+tracks, clip slots, the tempo/time-signature object manager, and clips
+that contain child objects. Owners are deletable one at a time as user
+operations (deleting a lane, deleting an automation track, …), while a
+command pushed today can be replayed arbitrarily later. A command
+therefore cannot hold a raw owner pointer: the owner may be gone by the
+time the stack redoes or undoes the command, and null checks do not
+catch dangling memory.
+
+Commands hold **owner handles** instead: small value types that pair
+the owner's registry identity with a keep-alive reference.
+
+- `ArrangerObjectOwnerRef` (`src/commands/arranger_object_owner_ref.h`)
+  is the handle used by the generic add/remove-object commands. It
+  stores a typed registry reference and resolves through the registry
+  on every `resolve()` call, so an owner detached and reattached in
+  between is still found. Holding the reference keeps the owner alive
+  for as long as the command exists.
+- Owners with dedicated commands use their own typed reference
+  directly — for example `AddClipToClipSlotCommand` stores a
+  `ClipSlotUuidReference`.
+- Owner kinds without a registry identity fall back to raw owner
+  pointers (`from_owner_pointers()`), reported with a warning: there is
+  no keep-alive, so the owner must outlive the command by construction.
+
+Handles are created and validated up front: `make_owner_ref()` throws
+when the owner is not registered. Operations that push multiple
+commands should construct and validate all of them before pushing, so a
+failing handle cannot leave a half-applied macro on the stack.
+
+```mermaid
+sequenceDiagram
+    participant Q as QML UI
+    participant O as Operator
+    participant S as UndoStack
+    participant C as Command
+    participant R as Registry
+
+    Q->>O: addClipToLane(clip, lane)
+    O->>R: make_owner_ref(lane) — keep-alive acquired
+    R-->>O: owner handle
+    O->>C: new AddArrangerObjectCommand(handle, clip)
+    O->>S: push(C)
+    S->>C: redo()
+    C->>R: handle.resolve()
+    R-->>C: lane (alive — keep-alive)
+    Note over S,C: …later, after unrelated edits…
+    S->>C: undo()
+    C->>R: handle.resolve()
+    R-->>C: lane (identity resolves through<br/>the registry every time)
+```
+
+Known trade-off (recorded follow-up): keep-alive references mean saving
+with a non-empty undo stack serializes owners that the project no
+longer references — they are re-serialized as inert orphans until the
+stack is cleared. The fix belongs to an undo-stack lifecycle policy on
+save, not to the handles themselves.
