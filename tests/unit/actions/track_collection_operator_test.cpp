@@ -1820,4 +1820,57 @@ TEST_F (TrackCollectionOperatorClipboardTest, PasteSucceedsWithInstantiatedPlugi
     plugins::Plugin::InstantiationStatus::Successful);
 }
 
+// A pasted track carries its lane content: the clip comes along as a new
+// object with a new identity at the same position, and undo/redo carry
+// the content with the track
+TEST_F (TrackCollectionOperatorClipboardTest, PasteCarriesLaneClipContent)
+{
+  auto midi_track_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
+  track_collection_->add_track (midi_track_ref);
+  auto * midi_track =
+    midi_track_ref.get_object_as<structure::tracks::MidiTrack> ();
+  auto * lane = midi_track->lanes ()->at (0);
+
+  auto clip_ref = utils::create_object<structure::arrangement::MidiClip> (
+    registry_, tempo_map_wrapper_, registry_);
+  auto * clip = clip_ref.get ();
+  clip->position ()->setTicks (1920.);
+  lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::add_object (clip_ref);
+  ASSERT_EQ (lane->midiClips ()->rowCount (), 1);
+
+  ASSERT_TRUE (
+    track_collection_operator_->copyTracks (track_list ({ midi_track_ref })));
+
+  const auto pasted_ids = track_collection_operator_->pasteTracks (-1);
+  ASSERT_EQ (pasted_ids.size (), 1);
+
+  const auto pasted_midi_track = static_cast<structure::tracks::MidiTrack *> (
+    track_collection_->get_track_at_index (1));
+  ASSERT_NE (pasted_midi_track, nullptr);
+  auto * pasted_lane = pasted_midi_track->lanes ()->at (0);
+  ASSERT_EQ (pasted_lane->midiClips ()->rowCount (), 1);
+  auto * pasted_clip = pasted_lane->midiClips ()->object_at (0);
+  ASSERT_NE (pasted_clip, nullptr);
+  EXPECT_NE (pasted_clip->get_uuid (), clip->get_uuid ());
+  EXPECT_EQ (pasted_clip->position ()->ticks (), clip->position ()->ticks ());
+  EXPECT_EQ (pasted_clip->position ()->ticks (), 1920.);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_collection_->track_count (), 1);
+  EXPECT_EQ (lane->midiClips ()->rowCount (), 1);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (track_collection_->track_count (), 2);
+  EXPECT_EQ (
+    static_cast<structure::tracks::MidiTrack *> (
+      track_collection_->get_track_at_index (1))
+      ->lanes ()
+      ->at (0)
+      ->midiClips ()
+      ->rowCount (),
+    1);
+}
+
 } // namespace zrythm::actions
