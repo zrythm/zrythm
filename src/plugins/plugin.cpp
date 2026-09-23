@@ -541,7 +541,7 @@ Plugin::latencySamples () const
 void
 Plugin::notify_latency_changed () noexcept
 {
-  post_main_thread_action ([this] {
+  post_main_thread_action_deferred ([this] {
     if (main_thread_callbacks_.latency_recalc_)
       {
         main_thread_callbacks_.latency_recalc_ ();

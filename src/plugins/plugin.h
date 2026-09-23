@@ -561,9 +561,10 @@ public:
    * dispatcher pump runs, so @p action may safely capture `this` or plugin
    * members.
    *
-   * Realtime-safe: no allocations or locks (the weak self-reference was
-   * primed at construction). When called on the main thread, the action
-   * runs synchronously, after any already-queued actions.
+   * Posting is wait-free from non-main threads (lock-free queue push). On
+   * the main thread, already-queued actions are drained and @p action then
+   * runs synchronously, so the call performs arbitrary main-thread work
+   * there.
    *
    * @return False if the action was dropped because the dispatcher queue
    * was full.
@@ -571,7 +572,7 @@ public:
   template <typename F>
     requires std::is_nothrow_move_constructible_v<std::decay_t<F>>
              && std::is_nothrow_copy_constructible_v<std::decay_t<F>>
-  bool post_main_thread_action (F &&action) noexcept [[clang::nonblocking]]
+  bool post_main_thread_action (F &&action) noexcept
   {
     assert (main_thread_dispatcher_ != nullptr);
     return main_thread_dispatcher_->post (

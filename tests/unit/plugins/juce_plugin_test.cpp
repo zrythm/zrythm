@@ -609,6 +609,7 @@ TEST_F (JucePluginTest, LatencyChangeNotifiesHost)
   mock_plugin->updateHostDisplay (
     juce::AudioProcessorListener::ChangeDetails{}.withLatencyChanged (true));
 
+  dispatcher.process_pending ();
   EXPECT_TRUE (latency_recalc_called);
 }
 

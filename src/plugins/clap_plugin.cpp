@@ -178,7 +178,7 @@ public:
       invalid_output_event_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
     if (drops == 1 || (drops & (drops - 1)) == 0)
       {
-        owner_.post_main_thread_action ([this, drops, violation] {
+        owner_.post_main_thread_action_deferred ([this, drops, violation] {
           z_warning (
             "CLAP plugin '{}': dropped {} invalid output event(s) so far "
             "(last: {})",

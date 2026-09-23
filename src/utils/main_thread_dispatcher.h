@@ -118,11 +118,12 @@ public:
   /**
    * @brief Posts a request to be handled on the context's thread.
    *
-   * Realtime-safe: no allocations or locks (the queue push is lock-free and
-   * bounded). When called on the context's own thread, pending requests are
+   * Posting is wait-free from other threads (lock-free bounded queue).
+   * When called on the context's own thread, pending requests are
    * drained first and the request is then handled synchronously, so
-   * requests are always handled in the order they were posted. A reentrant
-   * post from a running handler is queued instead of running inline, so
+   * requests are always handled in the order they were posted; the call
+   * performs arbitrary handler work there. A reentrant post from a
+   * running handler is queued instead of running inline, so
    * self-reposting handlers cannot recurse unboundedly.
    *
    * @return False if the request was dropped because the queue was full
@@ -157,7 +158,7 @@ public:
    * Unlike @ref post, the handler runs after the posting call stack has
    * unwound, even when posted from the context's own thread.
    *
-   * Realtime-safe, same as @ref post. Both use the same queue, so FIFO
+   * Wait-free on every thread. Both variants use the same queue, so FIFO
    * ordering between the two is preserved.
    *
    * @return False if the request was dropped because the queue was full.

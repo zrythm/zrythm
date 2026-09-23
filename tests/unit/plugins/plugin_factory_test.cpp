@@ -506,8 +506,8 @@ TEST_F (PluginFactoryTest, MainThreadServicesAreWiredByBuilder)
   auto * plugin = plugin_ref.get_object_as<FaustPlugin> ();
   ASSERT_NE (plugin, nullptr);
 
-  // Called on the main thread: handled synchronously
   plugin->notify_latency_changed ();
+  dispatcher.process_pending ();
   EXPECT_TRUE (latency_recalc_called);
 }
 
@@ -567,8 +567,8 @@ TEST_F (PluginFactoryTest, LatencyNotifyInvokesCallback)
         [&latency_recalc_called] { latency_recalc_called = true; },
       .with_paused_processing_ = {} });
 
-  // Called on the dispatcher's thread: handled synchronously
   plugin->notify_latency_changed ();
+  dispatcher.process_pending ();
   EXPECT_TRUE (latency_recalc_called);
 }
 
