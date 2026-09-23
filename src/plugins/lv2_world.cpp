@@ -16,6 +16,15 @@
 namespace zrythm::plugins
 {
 
+utils::Utf8String
+node_to_utf8 (const LilvNode * node)
+{
+  return node != nullptr
+           ? utils::Utf8String::from_utf8_encoded_string (
+               lilv_node_as_string (node))
+           : utils::Utf8String{};
+}
+
 Lv2World::Lv2World (const std::filesystem::path &spec_bundles_dir)
     : world_ (lilv_world_new ())
 {

@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <QOpenGLContext>
-
 namespace zrythm::plugins
 {
 
@@ -25,12 +23,8 @@ namespace zrythm::plugins
  *   actually current and silently no-op. Releasing the context forces
  *   the next Qt GL operation to bind for real.
  */
-inline void
-release_current_gl_context ()
-{
-  if (auto * ctx = QOpenGLContext::currentContext (); ctx != nullptr)
-    ctx->doneCurrent ();
-}
+void
+release_current_gl_context ();
 
 /**
  * @brief RAII bracket for foreign (plug-in) UI code that may issue raw GL

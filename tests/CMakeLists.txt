@@ -42,6 +42,8 @@ endfunction()
 add_library(zrythm_test_helpers_lib STATIC)
 
 target_sources(zrythm_test_helpers_lib
+  PRIVATE
+    helpers/scoped_juce_qapplication.cpp
   PUBLIC
     FILE_SET HEADERS
     FILES

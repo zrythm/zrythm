@@ -42,6 +42,7 @@ target_sources(zrythm_plugins_lib
   PRIVATE
     CLAPPluginFormat.cpp
     clap_plugin.cpp
+    gl_context_utils.cpp
     host_window_units.cpp
     internal_plugin_base.cpp
     juce_plugin.cpp

@@ -55,14 +55,8 @@ struct LilvCharPtrDeleter
 };
 using LilvCharPtrUPtr = std::unique_ptr<char[], LilvCharPtrDeleter>;
 
-inline utils::Utf8String
-node_to_utf8 (const LilvNode * node)
-{
-  return node != nullptr
-           ? utils::Utf8String::from_utf8_encoded_string (
-               lilv_node_as_string (node))
-           : utils::Utf8String{};
-}
+utils::Utf8String
+node_to_utf8 (const LilvNode * node);
 
 /**
  * @brief RAII owner of a lilv world, shared by scanning and hosting.

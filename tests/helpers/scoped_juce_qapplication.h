@@ -20,15 +20,8 @@ namespace zrythm::test_helpers
 class ScopedJuceQApplication : public ScopedQCoreApplication
 {
 public:
-  ScopedJuceQApplication ()
-  {
-    QObject::connect (&timer_, &QTimer::timeout, qApp, [] () {
-      juce::MessageManager::getInstance ()->runDispatchLoopUntil (10);
-    });
-    timer_.start ();
-    juce::MessageManager::getInstance ()->runDispatchLoopUntil (0);
-  }
-  ~ScopedJuceQApplication () = default;
+  ScopedJuceQApplication ();
+  ~ScopedJuceQApplication ();
   ScopedJuceQApplication (const ScopedJuceQApplication &) = delete;
   ScopedJuceQApplication &operator= (const ScopedJuceQApplication &) = delete;
   ScopedJuceQApplication (ScopedJuceQApplication &&) = delete;
