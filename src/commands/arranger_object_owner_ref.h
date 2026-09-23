@@ -23,15 +23,9 @@ namespace zrythm::commands
 /**
  * @brief A handle to the owner of arranger objects.
  *
- * For every owner type that is a registry object (tracks, lanes, clips
- * and the tempo object manager), the handle pairs the owner's registry
- * identity with a keep-alive reference. Resolution goes through the
- * registry on every resolve() call, so an owner detached and reattached
- * in between is still found.
- *
- * Owner types that are not registry objects (currently AutomationTrack)
- * are held as raw owner-base pointers instead. These carry no identity
- * or keep-alive: the caller guarantees the owner outlives the handle.
+ * The handle pairs the owner's registry identity with a keep-alive
+ * reference. Resolution goes through the registry on every resolve()
+ * call, so an owner detached and reattached in between is still found.
  */
 class ArrangerObjectOwnerRef
 {
@@ -39,6 +33,11 @@ public:
   using PtrVariant = structure::arrangement::ArrangerObjectOwnerPtrVariant;
 
   explicit ArrangerObjectOwnerRef (structure::tracks::TrackUuidReference ref)
+      : storage_ (std::move (ref))
+  {
+  }
+  explicit ArrangerObjectOwnerRef (
+    structure::tracks::AutomationTrackUuidReference ref)
       : storage_ (std::move (ref))
   {
   }
@@ -127,6 +126,7 @@ private:
 
   std::variant<
     structure::tracks::TrackUuidReference,
+    structure::tracks::AutomationTrackUuidReference,
     structure::tracks::TrackLaneUuidReference,
     structure::arrangement::ArrangerObjectUuidReference,
     structure::arrangement::TempoObjectManagerUuidReference,
@@ -139,53 +139,27 @@ private:
  *
  * @throw std::runtime_error if the owner is not registered.
  */
-inline ArrangerObjectOwnerRef
-make_owner_ref (structure::tracks::Track &track, utils::IObjectRegistry &registry)
-{
-  return ArrangerObjectOwnerRef (
-    structure::tracks::TrackUuidReference (track.get_uuid (), registry));
-}
-inline ArrangerObjectOwnerRef
+ArrangerObjectOwnerRef
+make_owner_ref (
+  structure::tracks::Track &track,
+  utils::IObjectRegistry   &registry);
+ArrangerObjectOwnerRef
 make_owner_ref (
   structure::tracks::TrackLane &lane,
-  utils::IObjectRegistry       &registry)
-{
-  return ArrangerObjectOwnerRef (
-    structure::tracks::TrackLaneUuidReference (lane.get_uuid (), registry));
-}
-inline ArrangerObjectOwnerRef
+  utils::IObjectRegistry       &registry);
+ArrangerObjectOwnerRef
 make_owner_ref (
   structure::arrangement::ArrangerObject &obj,
-  utils::IObjectRegistry                 &registry)
-{
-  return ArrangerObjectOwnerRef (
-    structure::arrangement::ArrangerObjectUuidReference (
-      obj.get_uuid (), registry));
-}
-inline ArrangerObjectOwnerRef
+  utils::IObjectRegistry                 &registry);
+ArrangerObjectOwnerRef
 make_owner_ref (
   structure::arrangement::TempoObjectManager &manager,
-  utils::IObjectRegistry                     &registry)
-{
-  return ArrangerObjectOwnerRef (
-    structure::arrangement::TempoObjectManagerUuidReference (
-      manager.get_uuid (), registry));
-}
+  utils::IObjectRegistry                     &registry);
 
-/**
- * @brief Builds a handle for an AutomationTrack owner.
- *
- * AutomationTracks are not registry objects yet, so the handle falls back
- * to raw owner pointers.
- */
-inline ArrangerObjectOwnerRef
-make_owner_ref (structure::tracks::AutomationTrack &at)
-{
-  return ArrangerObjectOwnerRef::from_owner_pointers (
-    structure::arrangement::ArrangerObjectOwnerPtrVariant{
-      static_cast<structure::arrangement::ArrangerObjectOwner<
-        structure::arrangement::AutomationClip> *> (&at) });
-}
+ArrangerObjectOwnerRef
+make_owner_ref (
+  structure::tracks::AutomationTrack &automation_track,
+  utils::IObjectRegistry             &registry);
 
 /**
  * @brief Converts an owner resolved as raw owner-base pointers into a
@@ -209,16 +183,16 @@ to_owner_ref (
         }
       if (auto * track = dynamic_cast<structure::tracks::Track *> (owner))
         return make_owner_ref (*track, registry);
+      if (
+        auto * automation_track =
+          dynamic_cast<structure::tracks::AutomationTrack *> (owner))
+        return make_owner_ref (*automation_track, registry);
       if (auto * lane = dynamic_cast<structure::tracks::TrackLane *> (owner))
         return make_owner_ref (*lane, registry);
       if (
         auto * manager =
           dynamic_cast<structure::arrangement::TempoObjectManager *> (owner))
         return make_owner_ref (*manager, registry);
-      if (
-        auto * automation_track =
-          dynamic_cast<structure::tracks::AutomationTrack *> (owner))
-        return make_owner_ref (*automation_track);
       if (
         auto * obj =
           dynamic_cast<structure::arrangement::ArrangerObject *> (owner))

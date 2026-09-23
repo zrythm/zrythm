@@ -103,10 +103,10 @@ protected:
       *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"param"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
       u8"Param");
-    auto at = utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      *tempo_map_wrapper_, *registry_, std::move (param_id));
+    auto at = utils::create_object<structure::tracks::AutomationTrack> (
+      *registry_, *tempo_map_wrapper_, *registry_, std::move (param_id));
     auto * at_ptr = at.get ();
-    track->automationTracklist ()->add_automation_track (std::move (at));
+    track->automationTracklist ()->add_automation_track (at);
     return at_ptr;
   }
 

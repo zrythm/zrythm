@@ -120,6 +120,7 @@
         "parameters",
         "plugins",
         "tracks",
+        "automationTracks",
         "lanes",
         "clipSlots",
         "arrangerObjects",
@@ -158,6 +159,13 @@
           "type": "array",
           "items": {
             "$ref": "common.schema.json#/definitions/trackLane"
+          },
+          "maxItems": 100000
+        },
+        "automationTracks": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/automationTrack"
           },
           "maxItems": 100000
         },

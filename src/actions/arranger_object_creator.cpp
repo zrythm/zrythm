@@ -163,14 +163,14 @@ ArrangerObjectCreator::addEmptyAutomationClip (
       .build_in_registry ();
   auto * ar = ar_ref.get_object_as<structure::arrangement::AutomationClip> ();
   ar->name ()->setName (track->generate_name_for_clip (*ar, automationTrack));
-  // AutomationTracks are not registry objects yet, so this site builds
-  // the raw-pointer handle directly
   try
     {
       undo_stack_.push (
         new commands::AddArrangerObjectCommand<
           structure::arrangement::AutomationClip> (
-          commands::make_owner_ref (*automationTrack), ar_ref));
+          commands::make_owner_ref (
+            *automationTrack, arranger_object_factory_.registry ()),
+          ar_ref));
     }
   catch (const std::exception &e)
     {

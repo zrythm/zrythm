@@ -40,17 +40,17 @@ public:
   };
 
   AutomationTrackHolder (Dependencies dependencies, QObject * parent = nullptr)
-      : QObject (parent), dependencies_ (dependencies)
+      : QObject (parent), dependencies_ (dependencies),
+        automation_track_ (dependencies.registry_)
   {
   }
   AutomationTrackHolder (
-    Dependencies                               dependencies,
-    utils::QObjectUniquePtr<AutomationTrack> &&at,
-    QObject *                                  parent = nullptr)
+    Dependencies                 dependencies,
+    AutomationTrackUuidReference at,
+    QObject *                    parent = nullptr)
       : AutomationTrackHolder (dependencies, parent)
   {
     automation_track_ = std::move (at);
-    automation_track_->setParent (this);
   }
 
   // ========================================================================
@@ -110,7 +110,7 @@ public:
 private:
   Dependencies dependencies_;
 
-  utils::QObjectUniquePtr<AutomationTrack> automation_track_;
+  AutomationTrackUuidReference automation_track_;
 
   /**
    * Whether this automation track is visible.
@@ -123,7 +123,7 @@ private:
   double height_{ DEFAULT_AUTOMATION_TRACK_HEIGHT };
 
 private:
-  static constexpr auto kAutomationTrackKey = "automationTrack"sv;
+  static constexpr auto kAutomationTrackIdKey = "automationTrackId"sv;
   static constexpr auto kCreatedByUserKey = "createdByUser"sv;
   static constexpr auto kVisible = "visible"sv;
   static constexpr auto kHeightKey = "height"sv;
@@ -182,8 +182,7 @@ public:
   /**
    * @brief Adds the given automation track.
    */
-  AutomationTrack *
-  add_automation_track (utils::QObjectUniquePtr<AutomationTrack> &&at);
+  AutomationTrack * add_automation_track (AutomationTrackUuidReference at);
 
   AutomationTrack *
   add_automation_track (utils::QObjectUniquePtr<AutomationTrackHolder> &&ath);
@@ -275,6 +274,9 @@ public:
   get_next_visible_automation_track (const AutomationTrack &at) const;
 
 private:
+  /** Removes all holders, with the model row callbacks. */
+  void clear_holders ();
+
   static constexpr auto kAutomationTracksKey = "automationTracks"sv;
   static constexpr auto kAutomationVisibleKey = "automationVisible"sv;
   friend void to_json (nlohmann::json &j, const AutomationTracklist &ats);

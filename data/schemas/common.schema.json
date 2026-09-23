@@ -732,25 +732,9 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "automationMode": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 2,
-                        "description": "0=Read, 1=Record, 2=Off"
-                      },
-                      "recordMode": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 1,
-                        "description": "0=Touch, 1=Latch"
-                      },
-                      "parameter": {
+                      "automationTrackId": {
                         "$ref": "#/definitions/uuid",
-                        "description": "UUID reference to parameter in registry.parameters"
-                      },
-                      "clips": {
-                        "$ref": "#/definitions/uuidArray",
-                        "description": "UUID references to AutomationClip objects in registry.arrangerObjects"
+                        "description": "UUID reference to an automation track in registry.automationTracks"
                       },
                       "createdByUser": {
                         "type": "boolean",
@@ -766,7 +750,7 @@
                       }
                     },
                     "required": [
-                      "parameter"
+                      "automationTrackId"
                     ]
                   }
                 },
@@ -1579,6 +1563,42 @@
       },
       "required": [
         "id"
+      ]
+    },
+    "automationTrack": {
+      "type": "object",
+      "description": "An automation track (registry.automationTracks entry): automates one processor parameter",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "parameter": {
+          "$ref": "#/definitions/uuid",
+          "description": "UUID reference to the automated parameter in registry.parameters"
+        },
+        "automationMode": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=Read, 1=Record, 2=Off"
+        },
+        "recordMode": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "0=Touch, 1=Latch"
+        },
+        "clips": {
+          "$ref": "#/definitions/uuidArray",
+          "description": "UUID references to AutomationClip objects in registry.arrangerObjects"
+        }
+      },
+      "required": [
+        "id",
+        "parameter",
+        "automationMode",
+        "recordMode",
+        "clips"
       ]
     },
     "scene": {

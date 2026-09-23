@@ -187,6 +187,7 @@ Project::Project (
       *track_factory_,
       *arranger_object_factory_,
       *plugin_factory_,
+      *tempo_map_wrapper_,
     });
 
   audio_engine_->set_monitor_out_source (monitor_fader_.get_stereo_out_port ());

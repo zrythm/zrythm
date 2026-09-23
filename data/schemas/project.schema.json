@@ -418,6 +418,7 @@
             "parameters",
             "plugins",
             "tracks",
+            "automationTracks",
             "lanes",
             "clipSlots",
             "arrangerObjects",
@@ -457,6 +458,13 @@
               "description": "All track lanes (referenced by tracks' laneIds)",
               "items": {
                 "$ref": "common.schema.json#/definitions/trackLane"
+              }
+            },
+            "automationTracks": {
+              "type": "array",
+              "description": "All automation tracks (referenced by tracks' automationTracklists)",
+              "items": {
+                "$ref": "common.schema.json#/definitions/automationTrack"
               }
             },
             "clipSlots": {

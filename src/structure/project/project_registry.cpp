@@ -14,6 +14,7 @@
 #include "structure/arrangement/tempo_object_manager.h"
 #include "structure/project/project_registry.h"
 #include "structure/scenes/clip_slot.h"
+#include "structure/tracks/automation_track.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane.h"
@@ -41,6 +42,8 @@ struct ProjectRegistry::Impl
       std::visit ([] (auto * p) { delete p; }, var);
     for (auto &[id, var] : tracks_)
       std::visit ([] (auto * p) { delete p; }, var);
+    for (auto &[id, ptr] : automation_tracks_)
+      delete ptr;
     for (auto &[id, ptr] : lanes_)
       delete ptr;
     for (auto &[id, ptr] : clip_slots_)
@@ -58,6 +61,8 @@ struct ProjectRegistry::Impl
   boost::unordered::unordered_flat_map<QUuid, plugins::PluginPtrVariant> plugins_;
   boost::unordered::unordered_flat_map<QUuid, structure::tracks::TrackPtrVariant>
     tracks_;
+  boost::unordered::unordered_flat_map<QUuid, structure::tracks::AutomationTrack *>
+    automation_tracks_;
   boost::unordered::unordered_flat_map<QUuid, structure::tracks::TrackLane *>
     lanes_;
   boost::unordered::unordered_flat_map<QUuid, structure::scenes::ClipSlot *>
@@ -142,6 +147,16 @@ ProjectRegistry::register_object_impl (utils::UuidIdentifiableBase &base)
         structure::tracks::TrackPtrVariant> (track);
       impl_->tracks_.emplace (uuid, var);
       impl_->uuid_to_category_.emplace (uuid, Impl::Category::Track);
+      qobj->setParent (this);
+      return;
+    }
+
+  if (
+    auto * automation_track =
+      qobject_cast<structure::tracks::AutomationTrack *> (qobj))
+    {
+      impl_->automation_tracks_.emplace (uuid, automation_track);
+      impl_->uuid_to_category_.emplace (uuid, Impl::Category::AutomationTrack);
       qobj->setParent (this);
       return;
     }
@@ -256,6 +271,11 @@ ProjectRegistry::find_by_raw_uuid_impl (const QUuid &id) const
         auto it = impl_->tracks_.find (id);
         return it != impl_->tracks_.end () ? extract_base (it->second) : nullptr;
       }
+    case Impl::Category::AutomationTrack:
+      {
+        auto it = impl_->automation_tracks_.find (id);
+        return it != impl_->automation_tracks_.end () ? it->second : nullptr;
+      }
     case Impl::Category::Lane:
       {
         auto it = impl_->lanes_.find (id);
@@ -333,6 +353,12 @@ ProjectRegistry::for_each_matching_impl (
     {
       for (const auto &[uuid, var] : impl_->tracks_)
         std::visit ([&] (auto * p) { visit_if_matching (*p); }, var);
+      return;
+    }
+  if (meta_type.inherits (&structure::tracks::AutomationTrack::staticMetaObject))
+    {
+      for (const auto &[uuid, ptr] : impl_->automation_tracks_)
+        visit_if_matching (*ptr);
       return;
     }
   if (meta_type.inherits (&structure::tracks::TrackLane::staticMetaObject))
@@ -472,6 +498,16 @@ ProjectRegistry::delete_object_by_id (const QUuid &id)
           }
         break;
       }
+    case Impl::Category::AutomationTrack:
+      {
+        auto it = impl_->automation_tracks_.find (id);
+        if (it != impl_->automation_tracks_.end ())
+          {
+            raw = it->second;
+            impl_->automation_tracks_.erase (it);
+          }
+        break;
+      }
     case Impl::Category::Lane:
       {
         auto it = impl_->lanes_.find (id);
@@ -556,6 +592,9 @@ ProjectRegistry::serialize_object_by_uuid (
     case ObjectCategory::Track:
       j_out = impl_->tracks_.at (id);
       break;
+    case ObjectCategory::AutomationTrack:
+      j_out = *impl_->automation_tracks_.at (id);
+      break;
     case ObjectCategory::Lane:
       j_out = *impl_->lanes_.at (id);
       break;
@@ -608,6 +647,8 @@ to_json (nlohmann::json &j, const ProjectRegistry &registry)
     serialize_bucket_variant (registry.impl_->plugins_);
   j[ProjectRegistry::kTracksKey] =
     serialize_bucket_variant (registry.impl_->tracks_);
+  j[ProjectRegistry::kAutomationTracksKey] =
+    serialize_bucket_ptr (registry.impl_->automation_tracks_);
   j[ProjectRegistry::kLanesKey] = serialize_bucket_ptr (registry.impl_->lanes_);
   j[ProjectRegistry::kClipSlotsKey] =
     serialize_bucket_ptr (registry.impl_->clip_slots_);
@@ -672,6 +713,17 @@ struct TrackBuilder
   template <typename T> std::unique_ptr<T> build () const
   {
     return factory.get_builder<T> ().build_for_deserialization ();
+  }
+};
+
+struct AutomationTrackBuilder
+{
+  dsp::TempoMapWrapper                    &tempo_map;
+  ProjectRegistry                         &registry;
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    static_assert (std::is_same_v<T, structure::tracks::AutomationTrack>);
+    return std::make_unique<T> (tempo_map, registry);
   }
 };
 
@@ -855,6 +907,8 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
     deferred_arranger_objects;
   std::vector<std::pair<structure::tracks::TrackPtrVariant, nlohmann::json>>
     deferred_tracks;
+  std::vector<std::pair<structure::tracks::AutomationTrack *, nlohmann::json>>
+    deferred_automation_tracks;
   std::vector<std::pair<structure::tracks::TrackLane *, nlohmann::json>>
     deferred_lanes;
   std::vector<std::pair<structure::scenes::ClipSlot *, nlohmann::json>>
@@ -916,6 +970,16 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
         TrackBuilder{ deps.track_factory }, deferred_tracks);
     }
 
+  if (j.contains (ProjectRegistry::kAutomationTracksKey))
+    {
+      deferred_automation_tracks.reserve (
+        j[ProjectRegistry::kAutomationTracksKey].size ());
+      create_and_register_ptr_all<structure::tracks::AutomationTrack> (
+        registry, j[ProjectRegistry::kAutomationTracksKey],
+        AutomationTrackBuilder{ deps.tempo_map_wrapper, registry },
+        deferred_automation_tracks);
+    }
+
   if (j.contains (ProjectRegistry::kLanesKey))
     {
       deferred_lanes.reserve (j[ProjectRegistry::kLanesKey].size ());
@@ -934,11 +998,14 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
 
   // --- Phase 2: Deserialize data into ALL objects from ALL buckets ---
   // Same order as Phase 1: ports → params → plugins → file audio sources →
-  // arranger objects → tracks → lanes. Within each bucket, JSON array order
-  // is preserved so children are deserialized before parents. Lanes come
-  // after tracks: the tracks' TrackLaneLists attach the (still empty) lanes
-  // and wire their dependencies, so the clips arriving during lane data
-  // deserialization see a live timebase source.
+  // arranger objects → tracks → automation tracks → lanes → clip slots.
+  // Within each bucket, JSON array order is preserved so children are
+  // deserialized before parents. Lanes come after tracks: the tracks'
+  // TrackLaneLists attach the (still empty) lanes and wire their
+  // dependencies, so the clips arriving during lane data deserialization
+  // see a live timebase source. Automation tracks likewise come after
+  // tracks: the tracks' AutomationTracklists attach them and rewire
+  // their timebase providers before their clips arrive.
 
   deserialize_all<dsp::PortPtrVariant> (deferred_ports);
   deserialize_ptr_all<dsp::ProcessorParameter> (deferred_params);
@@ -947,6 +1014,8 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
   deserialize_all<structure::arrangement::ArrangerObjectPtrVariant> (
     deferred_arranger_objects);
   deserialize_all<structure::tracks::TrackPtrVariant> (deferred_tracks);
+  deserialize_ptr_all<structure::tracks::AutomationTrack> (
+    deferred_automation_tracks);
   deserialize_ptr_all<structure::tracks::TrackLane> (deferred_lanes);
   deserialize_ptr_all<structure::scenes::ClipSlot> (deferred_clip_slots);
 }

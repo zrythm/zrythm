@@ -8,6 +8,7 @@
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::structure::tracks
@@ -25,6 +26,7 @@ protected:
       *registry, *registry, dsp::ProcessorParameter::UniqueId (u8"test_param"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
       u8"Test Parameter");
+    param_ref = param_id;
 
     automation_track = std::make_unique<AutomationTrack> (
       *tempo_map_wrapper, *registry, std::move (param_id));
@@ -60,7 +62,11 @@ protected:
   std::unique_ptr<dsp::TempoMap>         tempo_map;
   std::unique_ptr<dsp::TempoMapWrapper>  tempo_map_wrapper;
   std::unique_ptr<utils::ObjectRegistry> registry;
-  std::unique_ptr<AutomationTrack>       automation_track;
+
+  /** Keeps the parameter alive independently of the automation track. */
+  std::optional<dsp::ProcessorParameterUuidReference> param_ref;
+
+  std::unique_ptr<AutomationTrack> automation_track;
 };
 
 TEST_F (AutomationTrackTest, InitialState)
@@ -313,8 +319,8 @@ TEST_F (AutomationTrackTest, GenerateAutomationTracks)
     utils::IObjectRegistry &registry_;
   };
 
-  MockProcessor                                         processor{ *registry };
-  std::vector<utils::QObjectUniquePtr<AutomationTrack>> tracks;
+  MockProcessor                             processor{ *registry };
+  std::vector<AutomationTrackUuidReference> tracks;
   generate_automation_tracks_for_processor (
     tracks, processor, *tempo_map_wrapper, *registry, nullptr);
 
@@ -322,8 +328,48 @@ TEST_F (AutomationTrackTest, GenerateAutomationTracks)
   EXPECT_EQ (tracks.size (), 2);
 
   // Verify parameter names
-  EXPECT_EQ (tracks[0]->parameter ()->label (), "Param 1");
-  EXPECT_EQ (tracks[1]->parameter ()->label (), "Param 2");
+  EXPECT_EQ (tracks[0].get ()->parameter ()->label (), "Param 1");
+  EXPECT_EQ (tracks[1].get ()->parameter ()->label (), "Param 2");
+}
+
+// Cloning from a source whose parameter is not filled yet leaves the
+// clone parameterless instead of crashing
+TEST_F (AutomationTrackTest, InitFromSourceWithoutParameter)
+{
+  auto source =
+    std::make_unique<AutomationTrack> (*tempo_map_wrapper, *registry);
+  auto clone = utils::create_object<AutomationTrack> (
+    *registry, *tempo_map_wrapper, *registry);
+
+  init_from (*clone.get (), *source, utils::ObjectCloneType::NewIdentity);
+
+  EXPECT_EQ (clone.get ()->parameter (), nullptr);
+  EXPECT_EQ (clone.id (), clone.get ()->get_uuid ());
+}
+
+// An automation track unhooks its parameter's automation provider when
+// destroyed, so the parameter falls back to its base value
+TEST_F (AutomationTrackTest, DestructorUnhooksParameterProvider)
+{
+  auto clip = create_automation_clip (0, 400);
+  automation_track->add_object (clip);
+  add_automation_point (
+    clip.get_object_as<arrangement::AutomationClip> (), 0.75, 0.0);
+  automation_track->regeneratePlaybackCaches (
+    utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
+
+  auto * param = automation_track->parameter ();
+  param->prepare_for_processing (
+    nullptr, units::sample_rate (44100), units::samples (256));
+  dsp::graph_test::MockTransport transport;
+
+  param->process_block ({}, transport, *tempo_map);
+  EXPECT_FLOAT_EQ (param->valueAfterAutomationApplied (), 0.75f);
+
+  automation_track.reset ();
+  param->process_block ({}, transport, *tempo_map);
+  EXPECT_FLOAT_EQ (param->valueAfterAutomationApplied (), param->baseValue ());
+  param->release_resources ();
 }
 
 TEST_F (AutomationTrackTest, Serialization)

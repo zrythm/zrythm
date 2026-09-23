@@ -68,6 +68,8 @@ protected:
       nlohmann::json::array ();
     registry[structure::project::ProjectRegistry::kTracksKey] =
       nlohmann::json::array ();
+    registry[structure::project::ProjectRegistry::kAutomationTracksKey] =
+      nlohmann::json::array ();
     registry[structure::project::ProjectRegistry::kLanesKey] =
       nlohmann::json::array ();
     registry[structure::project::ProjectRegistry::kClipSlotsKey] =

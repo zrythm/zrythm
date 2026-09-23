@@ -14,6 +14,10 @@ namespace zrythm::plugins
 {
 class PluginFactory;
 }
+namespace zrythm::dsp
+{
+class TempoMapWrapper;
+}
 namespace zrythm::structure::tracks
 {
 class TrackFactory;
@@ -40,6 +44,7 @@ public:
   static constexpr std::string_view kParametersKey = "parameters";
   static constexpr std::string_view kPluginsKey = "plugins";
   static constexpr std::string_view kTracksKey = "tracks";
+  static constexpr std::string_view kAutomationTracksKey = "automationTracks";
   static constexpr std::string_view kLanesKey = "lanes";
   static constexpr std::string_view kClipSlotsKey = "clipSlots";
   static constexpr std::string_view kArrangerObjectsKey = "arrangerObjects";
@@ -50,6 +55,7 @@ public:
     structure::tracks::TrackFactory               &track_factory;
     structure::arrangement::ArrangerObjectFactory &arranger_object_factory;
     plugins::PluginFactory                        &plugin_factory;
+    dsp::TempoMapWrapper                          &tempo_map_wrapper;
   };
 
   /**
@@ -66,6 +72,7 @@ public:
     Param,
     Plugin,
     Track,
+    AutomationTrack,
     Lane,
     ClipSlot,
     ArrangerObject,
@@ -83,6 +90,7 @@ public:
     std::pair{ ObjectCategory::Param,           kParametersKey       },
     std::pair{ ObjectCategory::Plugin,          kPluginsKey          },
     std::pair{ ObjectCategory::Track,           kTracksKey           },
+    std::pair{ ObjectCategory::AutomationTrack, kAutomationTracksKey },
     std::pair{ ObjectCategory::Lane,            kLanesKey            },
     std::pair{ ObjectCategory::ClipSlot,        kClipSlotsKey        },
     std::pair{ ObjectCategory::ArrangerObject,  kArrangerObjectsKey  },

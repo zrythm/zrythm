@@ -365,7 +365,7 @@ Track::generate_basic_automation_tracks ()
   if (!automation_tracklist_)
     return;
 
-  std::vector<utils::QObjectUniquePtr<AutomationTrack>> ats;
+  std::vector<AutomationTrackUuidReference> ats;
 
   const auto gen = [&] (const dsp::ProcessorBase &processor) {
     generate_automation_tracks_for_processor (ats, processor);
@@ -383,9 +383,9 @@ Track::generate_basic_automation_tracks ()
 
   // insert the generated automation tracks
   auto * atl = automationTracklist ();
-  for (auto &at : ats)
+  for (const auto &at : ats)
     {
-      atl->add_automation_track (std::move (at));
+      atl->add_automation_track (at);
     }
 
   // mark first automation track as created & visible

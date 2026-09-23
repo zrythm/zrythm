@@ -449,11 +449,27 @@ public:
 
   // ========================================================================
 
+  /**
+   * @brief Sets the automation value provider invoked by process_block().
+   *
+   * @pre The audio engine is paused: the provider is read and invoked on
+   * the processing thread without synchronization.
+   */
   void set_automation_provider (AutomationValueProvider provider)
   {
     automation_value_provider_ = provider;
   }
+
+  /**
+   * @brief Unsets the automation value provider.
+   *
+   * @pre The audio engine is paused (see set_automation_provider()).
+   */
   void unset_automation_provider () { automation_value_provider_.reset (); }
+  bool hasAutomationProvider () const
+  {
+    return automation_value_provider_.has_value ();
+  }
 
   PortUuidReference get_modulation_input_port_ref () const
   {

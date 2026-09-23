@@ -5,6 +5,7 @@ qt_add_library(zrythm_commands_lib STATIC)
 
 target_sources(zrythm_commands_lib
   PRIVATE
+    arranger_object_owner_ref.cpp
     chord_pad_commands.cpp
     move_arranger_objects_command.cpp
     move_plugins_command.cpp

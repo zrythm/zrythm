@@ -94,7 +94,8 @@ protected:
       .main_thread_dispatcher_ = main_dispatcher_ });
 
     registry_.set_deserialization_dependencies (
-      { *track_factory_for_paste_, *arranger_object_factory_, *plugin_factory_ });
+      { *track_factory_for_paste_, *arranger_object_factory_, *plugin_factory_,
+        *tempo_map_wrapper_ });
   }
 
   void TearDown () override
@@ -518,8 +519,8 @@ TEST_F (PluginOperatorTest, MovePluginWithAutomationBetweenTracks)
 
   // Add automation track for the parameter on the source track
   source_atl->add_automation_track (
-    utils::make_qobject_unique<AutomationTrack> (
-      *tempo_map_wrapper_, registry_, param_ref));
+    utils::create_object<AutomationTrack> (
+      registry_, *tempo_map_wrapper_, registry_, param_ref));
   ASSERT_EQ (source_atl->rowCount (), source_atl_count_before + 1);
   ASSERT_EQ (target_atl->rowCount (), target_atl_count_before);
 

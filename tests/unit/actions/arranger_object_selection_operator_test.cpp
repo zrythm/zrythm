@@ -83,7 +83,7 @@ protected:
           std::make_shared<test_helpers::MockPluginHostWindowState> ()),
       .main_thread_dispatcher_ = main_dispatcher_ });
     registry_.set_deserialization_dependencies (
-      { *track_factory_, *factory, *plugin_factory_ });
+      { *track_factory_, *factory, *plugin_factory_, *tempo_map_wrapper });
 
     marker_ref = utils::create_object<structure::arrangement::Marker> (
       registry_, *tempo_map_wrapper,
@@ -509,7 +509,7 @@ protected:
             std::make_shared<test_helpers::MockPluginHostWindowState> ()),
         .main_thread_dispatcher_ = main_thread_dispatcher });
       registry.set_deserialization_dependencies (
-        { *track_factory, arranger_factory, *plugin_factory });
+        { *track_factory, arranger_factory, *plugin_factory, tempo_map_wrapper });
       op.emplace (
         undo_stack,
         [] (structure::arrangement::ArrangerObjectPtrVariant)

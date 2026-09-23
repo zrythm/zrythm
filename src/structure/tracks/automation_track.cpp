@@ -16,7 +16,7 @@ AutomationTrack::AutomationTrack (
   dsp::ProcessorParameterUuidReference param_id,
   dsp::TimebaseProvider *              timebase_provider,
   QObject *                            parent)
-    : QObject (parent),
+    : utils::UuidIdentifiableObject<AutomationTrack> (parent),
       arrangement::ArrangerObjectOwner<
         arrangement::AutomationClip> (registry, *this),
       tempo_map_ (tempo_map), registry_ (registry),
@@ -27,11 +27,7 @@ AutomationTrack::AutomationTrack (
       automation_cache_request_debouncer_ (
         utils::make_qobject_unique<utils::PlaybackCacheScheduler> (this))
 {
-  parameter ()->set_automation_provider ([this] (auto sample_position) {
-    return automation_mode_.load () == AutomationMode::Read
-             ? automation_data_provider_->get_automation_value_rt (sample_position)
-             : std::nullopt;
-  });
+  hook_parameter_provider ();
 
   QObject::connect (
     get_model (), &arrangement::ArrangerObjectListModel::rowsInserted, this,
@@ -79,6 +75,67 @@ AutomationTrack::AutomationTrack (
       return tm.samples_to_tick (sample).asDouble ();
     },
     this);
+}
+
+AutomationTrack::AutomationTrack (
+  const dsp::TempoMapWrapper &tempo_map,
+  utils::IObjectRegistry     &registry,
+  QObject *                   parent)
+    : AutomationTrack (
+        tempo_map,
+        registry,
+        dsp::ProcessorParameterUuidReference{ registry },
+        nullptr,
+        parent)
+{
+}
+
+AutomationTrack::~AutomationTrack ()
+{
+  if (auto * param = hooked_param_.data ())
+    {
+      param->unset_automation_provider ();
+    }
+}
+
+void
+AutomationTrack::hook_parameter_provider ()
+{
+  if (auto * previous = hooked_param_.data ())
+    {
+      previous->unset_automation_provider ();
+    }
+  auto * param = parameter ();
+  if (param == nullptr)
+    {
+      return;
+    }
+  if (param->hasAutomationProvider ())
+    {
+      z_warning (
+        "parameter already has an automation provider: this automation "
+        "track's automation stays inactive");
+      return;
+    }
+  param->set_automation_provider ([this] (auto sample_position) {
+    return automation_mode_.load () == AutomationMode::Read
+             ? automation_data_provider_->get_automation_value_rt (sample_position)
+             : std::nullopt;
+  });
+  hooked_param_ = param;
+}
+
+void
+AutomationTrack::setTimebaseProvider (dsp::TimebaseProvider * provider)
+{
+  timebase_provider_ = provider;
+  for (auto * clip : get_children_view ())
+    {
+      if (auto * clip_tbp = clip->timebaseProvider ())
+        {
+          clip_tbp->setSource (provider);
+        }
+    }
 }
 
 // ========================================================================
@@ -383,18 +440,28 @@ init_from (
   const AutomationTrack &other,
   utils::ObjectCloneType clone_type)
 {
+  // The UUID identity is assigned at creation and must stay matching the
+  // registry key, so it is not copied here
   init_from (
     static_cast<AutomationTrack::ArrangerObjectOwner &> (obj),
     static_cast<const AutomationTrack::ArrangerObjectOwner &> (other),
     clone_type);
   obj.automation_mode_.store (other.automation_mode_.load ());
   obj.record_mode_ = other.record_mode_;
+  // The clone shares the source's parameter. A parameter holds at most
+  // one automation provider, so hook_parameter_provider() leaves the
+  // source's provider in place and the clone's automation stays
+  // inactive; in-memory track duplication needs to remap parameters to
+  // give the clone its own
   obj.param_id_ = other.param_id_;
+  obj.hook_parameter_provider ();
 }
 
 void
 to_json (nlohmann::json &j, const AutomationTrack &track)
 {
+  to_json (
+    j, static_cast<const AutomationTrack::UuidIdentifiableObject &> (track));
   to_json (j, static_cast<const AutomationTrack::ArrangerObjectOwner &> (track));
   j[AutomationTrack::kParameterKey] = track.param_id_;
   j[AutomationTrack::kAutomationModeKey] = track.automation_mode_.load ();
@@ -410,5 +477,6 @@ from_json (const nlohmann::json &j, AutomationTrack &track)
   j.at (AutomationTrack::kAutomationModeKey).get_to (automation_mode);
   track.automation_mode_.store (automation_mode);
   j.at (AutomationTrack::kRecordModeKey).get_to (track.record_mode_);
+  track.hook_parameter_provider ();
 }
 }

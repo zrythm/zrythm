@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -14,6 +14,8 @@
 #include "structure/tracks/playback_cache_activity_tracker.h"
 #include "utils/enum_utils.h"
 #include "utils/playback_cache_scheduler.h"
+#include "utils/registry_utils.h"
+#include "utils/typed_uuid_reference.h"
 #include "utils/units.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -21,7 +23,7 @@
 namespace zrythm::structure::tracks
 {
 class AutomationTrack
-    : public QObject,
+    : public utils::UuidIdentifiableObject<AutomationTrack>,
       public arrangement::ArrangerObjectOwner<arrangement::AutomationClip>
 {
   Q_OBJECT
@@ -74,6 +76,19 @@ public:
     dsp::TimebaseProvider *              timebase_provider = nullptr,
     QObject *                            parent = nullptr);
 
+  /**
+   * @brief Creates an automation track with no parameter.
+   *
+   * Deserialization fills the parameter (and hooks its automation
+   * provider) afterwards.
+   */
+  AutomationTrack (
+    const dsp::TempoMapWrapper &tempo_map,
+    utils::IObjectRegistry     &registry,
+    QObject *                   parent = nullptr);
+
+  ~AutomationTrack () override;
+
 public:
   // ========================================================================
   // QML Interface
@@ -111,6 +126,13 @@ public:
   {
     return playback_cache_activity_tracker_.get ();
   }
+
+  dsp::TimebaseProvider * timebaseProvider () const
+  {
+    return timebase_provider_;
+  }
+
+  void setTimebaseProvider (dsp::TimebaseProvider * provider);
 
   // ========================================================================
 
@@ -199,6 +221,15 @@ public:
   static constexpr auto kParameterKey = "parameter"sv;
 
 private:
+  /**
+   * @brief Connects this track's automation provider to its parameter.
+   *
+   * A parameter holds at most one automation provider: if the parameter
+   * already has one, the existing provider is kept and this track's
+   * automation stays inactive.
+   */
+  void hook_parameter_provider ();
+
   static constexpr auto kAutomationModeKey = "automationMode"sv;
   static constexpr auto kRecordModeKey = "recordMode"sv;
   friend void to_json (nlohmann::json &j, const AutomationTrack &track);
@@ -216,6 +247,9 @@ private:
   /** Parameter this AutomationTrack is for. */
   dsp::ProcessorParameterUuidReference param_id_;
   QPointer<dsp::TimebaseProvider>      timebase_provider_;
+
+  /** Parameter whose automation provider is currently hooked. */
+  QPointer<dsp::ProcessorParameter> hooked_param_;
 
   /** Automation mode. */
   std::atomic<AutomationMode> automation_mode_{ AutomationMode::Read };
@@ -239,16 +273,18 @@ private:
     playback_cache_activity_tracker_;
 };
 
+using AutomationTrackUuidReference = utils::TypedUuidReference<AutomationTrack>;
+
 /**
  * @brief Generates automatables for the given processor.
  */
 inline void
 generate_automation_tracks_for_processor (
-  std::vector<utils::QObjectUniquePtr<AutomationTrack>> &ret,
-  const dsp::ProcessorBase                              &processor,
-  const dsp::TempoMapWrapper                            &tempo_map,
-  utils::IObjectRegistry                                &registry,
-  dsp::TimebaseProvider *                                timebase_provider)
+  std::vector<AutomationTrackUuidReference> &ret,
+  const dsp::ProcessorBase                  &processor,
+  const dsp::TempoMapWrapper                &tempo_map,
+  utils::IObjectRegistry                    &registry,
+  dsp::TimebaseProvider *                    timebase_provider)
 {
   z_debug ("generating automation tracks for {}...", processor.get_node_name ());
   for (const auto &param_ref : processor.get_parameters ())
@@ -257,9 +293,9 @@ generate_automation_tracks_for_processor (
       if (!param->automatable ())
         continue;
 
-      ret.emplace_back (
-        utils::make_qobject_unique<AutomationTrack> (
-          tempo_map, registry, param_ref, timebase_provider));
+      ret.push_back (
+        utils::create_object<AutomationTrack> (
+          registry, tempo_map, registry, param_ref, timebase_provider));
     }
 }
 }

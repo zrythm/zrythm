@@ -116,10 +116,11 @@ protected:
     target_track_factory_ = make_track_factory (target_registry_);
     target_plugin_factory_ = make_plugin_factory (target_registry_);
     source_registry_.set_deserialization_dependencies (
-      { *track_factory_, *arranger_factory_, *plugin_factory_ });
+      { *track_factory_, *arranger_factory_, *plugin_factory_,
+        *tempo_map_wrapper_ });
     target_registry_.set_deserialization_dependencies (
       { *target_track_factory_, *target_arranger_factory_,
-        *target_plugin_factory_ });
+        *target_plugin_factory_, *tempo_map_wrapper_ });
   }
 
   static bool json_contains_uuid (const nlohmann::json &j, const QUuid &id)

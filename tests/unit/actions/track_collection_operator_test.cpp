@@ -816,7 +816,8 @@ protected:
       .main_thread_dispatcher_ = main_dispatcher_ });
 
     registry_.set_deserialization_dependencies (
-      { *track_factory_, *arranger_object_factory_, *plugin_factory_ });
+      { *track_factory_, *arranger_object_factory_, *plugin_factory_,
+        tempo_map_wrapper_ });
 
     master_track_ =
       track_factory_->create_empty_track<structure::tracks::MasterTrack> ();

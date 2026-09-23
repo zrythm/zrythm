@@ -279,10 +279,10 @@ TEST_F (
     *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
     dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
     u8"Test Param");
-  auto at = utils::make_qobject_unique<AutomationTrack> (
-    *tempo_map_wrapper, *registry_, std::move (param_id));
+  auto at = utils::create_object<AutomationTrack> (
+    *registry_, *tempo_map_wrapper, *registry_, std::move (param_id));
   auto * at_ptr = at.get ();
-  atl->add_automation_track (std::move (at));
+  atl->add_automation_track (at);
 
   // Trigger cache regeneration on the automation track
   at_ptr->regeneratePlaybackCaches (
@@ -328,10 +328,10 @@ TEST_F (
     *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
     dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
     u8"Test Param");
-  auto at = utils::make_qobject_unique<AutomationTrack> (
-    *tempo_map_wrapper, *registry_, std::move (param_id));
+  auto at = utils::create_object<AutomationTrack> (
+    *registry_, *tempo_map_wrapper, *registry_, std::move (param_id));
   auto * at_ptr = at.get ();
-  atl->add_automation_track (std::move (at));
+  atl->add_automation_track (at);
 
   // Trigger cache regeneration on the automation track
   at_ptr->regeneratePlaybackCaches (

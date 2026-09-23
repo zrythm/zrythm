@@ -90,19 +90,18 @@ TEST_F (ArrangerObjectOwnerRefTest, ResolvesClipOwnerBases)
   EXPECT_EQ (owner_ref.resolve<structure::arrangement::MidiClip> (), nullptr);
 }
 
-// AutomationTracks are not registry objects; their handle holds raw owner
-// pointers and resolves the automation clip owner base
-TEST_F (ArrangerObjectOwnerRefTest, AutomationTrackUsesRawOwnerPointers)
+// A handle built for an automation track resolves the automation clip
+// owner base
+TEST_F (ArrangerObjectOwnerRefTest, AutomationTrackHandleResolvesOwnerBase)
 {
   auto param_ref = utils::create_object<dsp::ProcessorParameter> (
     registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
     dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
     utils::Utf8String::from_utf8_encoded_string ("Test Parameter"));
-  structure::tracks::AutomationTrack automation_track{
-    tempo_map_wrapper_, registry_, param_ref
-  };
+  auto at_ref = utils::create_object<structure::tracks::AutomationTrack> (
+    registry_, tempo_map_wrapper_, registry_, param_ref);
 
-  const auto owner_ref = make_owner_ref (automation_track);
+  const auto owner_ref = make_owner_ref (*at_ref.get (), registry_);
   EXPECT_NE (
     owner_ref.resolve<structure::arrangement::AutomationClip> (), nullptr);
   EXPECT_EQ (owner_ref.resolve<structure::arrangement::TempoObject> (), nullptr);

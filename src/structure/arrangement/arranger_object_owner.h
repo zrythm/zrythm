@@ -166,8 +166,9 @@ public:
               }
             else if constexpr (ClipObject<ChildT>)
               {
-                z_warning ("ClipObject clone not implemented - skipping");
-                continue;
+                clone_ref = utils::clone_object (
+                  *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
+                  child->get_tempo_map_wrapper (), obj.registry_);
               }
             else if constexpr (std::is_same_v<ChildT, Marker>)
               {
