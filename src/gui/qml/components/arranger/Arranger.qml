@@ -55,6 +55,17 @@ Item {
 
   property alias arrangerContentHeight: arrangerContent.height
   required property ItemSelectionModel arrangerSelectionModel
+
+  readonly property ClipboardContext clipboardContext: ClipboardContext {
+    canCopy: true
+    canPaste: root.selectionOperator.canPasteObjects
+
+    onCopyRequested: root.selectionOperator.copyObjects(root.arrangerSelectionModel)
+    onCutRequested: root.selectionOperator.cutObjects(root.arrangerSelectionModel)
+    onPasteRequested: root.selectObjectsByUuidStrings(root.pasteAtPlayhead())
+    onDuplicateRequested: root.selectObjectsByUuidStrings(root.selectionOperator.duplicateObjects(root.arrangerSelectionModel))
+  }
+
   // Audition tool: playhead position and rolling state saved on press and
   // restored on release
   property double auditionSavedPlayheadTicks: 0
@@ -647,25 +658,25 @@ Item {
           MenuItem {
             text: qsTr("Cut")
 
-            onTriggered: root.selectionOperator.cutObjects(root.arrangerSelectionModel)
+            onTriggered: root.clipboardContext.cutRequested()
           }
 
           MenuItem {
             text: qsTr("Copy")
 
-            onTriggered: root.selectionOperator.copyObjects(root.arrangerSelectionModel)
+            onTriggered: root.clipboardContext.copyRequested()
           }
 
           MenuItem {
             text: qsTr("Paste")
 
-            onTriggered: root.selectObjectsByUuidStrings(root.pasteAtPlayhead())
+            onTriggered: root.clipboardContext.pasteRequested()
           }
 
           MenuItem {
             text: qsTr("Duplicate")
 
-            onTriggered: root.selectObjectsByUuidStrings(root.selectionOperator.duplicateObjects(root.arrangerSelectionModel))
+            onTriggered: root.clipboardContext.duplicateRequested()
           }
 
           MenuItem {

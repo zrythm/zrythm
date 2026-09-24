@@ -33,6 +33,8 @@ namespace zrythm::actions
 class ArrangerObjectSelectionOperator : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY (
+    bool canPasteObjects READ canPasteObjects NOTIFY canPasteObjectsChanged FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
   QML_EXTENDED_NAMESPACE (zrythm::commands)
@@ -102,7 +104,12 @@ Q_SIGNALS:
    */
   void pasteContentModified (const QString &summary);
 
+  void canPasteObjectsChanged ();
+
 public:
+  /** Whether the clipboard holds a pasteable arranger-object payload. */
+  bool canPasteObjects () const { return clipboard_.hasArrangerObjects (); }
+
   Q_INVOKABLE bool
   moveByTicks (QItemSelectionModel * selectionModel, double tick_delta);
 

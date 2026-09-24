@@ -15,35 +15,31 @@ ApplicationWindow {
   id: root
 
   property Arranger activeArranger: null
+
+  // Clipboard context of the focused view (arranger, tracklist or
+  // plugin slot list); see components/ClipboardContext.qml
+  property ClipboardContext activeClipboardContext: null
   required property AlertManager alertManager
   required property AppSettings appSettings
   required property ChordPresetManager chordPresetManager
+  required property ControlRoom controlRoom
   readonly property Action copyAction: Action {
     id: copyAction
 
-    enabled: root.activeArranger !== null
+    enabled: root.activeClipboardContext !== null && root.activeClipboardContext.canCopy
     shortcut: StandardKey.Copy
     text: qsTr("&Copy")
 
-    onTriggered: {
-      if (root.activeArranger) {
-        root.activeArranger.selectionOperator.copyObjects(root.activeArranger.arrangerSelectionModel);
-      }
-    }
+    onTriggered: root.activeClipboardContext.copyRequested()
   }
-  required property ControlRoom controlRoom
   readonly property Action cutAction: Action {
     id: cutAction
 
-    enabled: root.activeArranger !== null
+    enabled: root.activeClipboardContext !== null && root.activeClipboardContext.canCopy
     shortcut: StandardKey.Cut
     text: qsTr("Cu&t")
 
-    onTriggered: {
-      if (root.activeArranger) {
-        root.activeArranger.selectionOperator.cutObjects(root.activeArranger.arrangerSelectionModel);
-      }
-    }
+    onTriggered: root.activeClipboardContext.cutRequested()
   }
   readonly property Action deleteAction: Action {
     id: deleteAction
@@ -62,15 +58,11 @@ ApplicationWindow {
   readonly property Action duplicateAction: Action {
     id: duplicateAction
 
-    enabled: root.activeArranger !== null
+    enabled: root.activeClipboardContext !== null && root.activeClipboardContext.canCopy
     shortcut: "Ctrl+D"
     text: qsTr("&Duplicate")
 
-    onTriggered: {
-      if (root.activeArranger) {
-        root.activeArranger.selectObjectsByUuidStrings(root.activeArranger.selectionOperator.duplicateObjects(root.activeArranger.arrangerSelectionModel));
-      }
-    }
+    onTriggered: root.activeClipboardContext.duplicateRequested()
   }
   readonly property Action fullScreenAction: Action {
     id: fullScreenAction
@@ -82,21 +74,17 @@ ApplicationWindow {
       root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
     }
   }
-  readonly property Project project: session.project
-  required property ProjectSession session
   readonly property Action pasteAction: Action {
     id: pasteAction
 
-    enabled: root.activeArranger !== null && root.session.clipboard.hasArrangerObjects
+    enabled: root.activeClipboardContext !== null && root.activeClipboardContext.canPaste
     shortcut: StandardKey.Paste
     text: qsTr("&Paste")
 
-    onTriggered: {
-      if (root.activeArranger) {
-        root.activeArranger.selectObjectsByUuidStrings(root.activeArranger.pasteAtPlayhead());
-      }
-    }
+    onTriggered: root.activeClipboardContext.pasteRequested()
   }
+  readonly property Project project: session.project
+  required property ProjectSession session
   readonly property Action toggleMuteAction: Action {
     id: toggleMuteAction
 
@@ -144,6 +132,21 @@ ApplicationWindow {
   Component.onCompleted: {
     console.log("ApplicationWindow created on platform", Qt.platform.os);
     project.engine.activate();
+  }
+
+  // Resolves the clipboard context from focus: the nearest ancestor of
+  // the focused item that exposes a clipboardContext property, or null
+  // when focus is outside any context-providing view
+  onActiveFocusItemChanged: {
+    let item = activeFocusItem;
+    activeClipboardContext = null;
+    while (item !== null && item !== undefined) {
+      if (item.clipboardContext !== undefined) {
+        activeClipboardContext = item.clipboardContext;
+        break;
+      }
+      item = item.parent;
+    }
   }
   onClosing: {
     console.log("Closing project window...");

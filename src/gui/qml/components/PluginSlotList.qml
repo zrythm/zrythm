@@ -9,6 +9,23 @@ import Zrythm
 ListView {
   id: root
 
+  readonly property ClipboardContext clipboardContext: ClipboardContext {
+    canCopy: root.pluginSelectionModel.hasSelection
+    canPaste: root.pluginOperator.canPastePlugins
+
+    onCopyRequested: root.pluginOperator.copyPlugins(root.selectedPlugins())
+    onCutRequested: root.pluginOperator.cutPlugins(root.selectedPlugins(), root.pluginGroup, root.track)
+    onDuplicateRequested: {
+      const duplicatedIds = root.pluginOperator.duplicatePlugins(root.selectedPlugins(), root.pluginGroup);
+      if (duplicatedIds.length > 0)
+        root.pluginSelectionModel.selectPluginsByUuidStrings(duplicatedIds);
+    }
+    onPasteRequested: {
+      const pastedIds = root.pluginOperator.pastePlugins(root.pluginGroup, -1);
+      if (pastedIds.length > 0)
+        root.pluginSelectionModel.selectPluginsByUuidStrings(pastedIds);
+    }
+  }
   required property PluginGroup pluginGroup
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
@@ -18,11 +35,22 @@ ListView {
 
   signal pluginClicked(Plugin plugin)
 
+  function selectedPlugins(): list<Plugin> {
+    const plugins = [];
+    for (const idx of root.pluginSelectionModel.selectedIndexes) {
+      const plugin = root.pluginSelectionModel.getPluginFromModelIndex(idx);
+      if (plugin !== null)
+        plugins.push(plugin);
+    }
+    return plugins;
+  }
+
   implicitHeight: contentHeight
   interactive: false
   model: pluginGroup
 
   delegate: PluginSlotView {
+    clipboardContext: root.clipboardContext
     pluginGroup: root.pluginGroup
     pluginImporter: root.pluginImporter
     pluginOperator: root.pluginOperator
@@ -30,7 +58,7 @@ ListView {
     track: root.track
     trackSelectionModel: root.trackSelectionModel
 
-    onPluginClicked: function(plugin: Plugin) {
+    onPluginClicked: function (plugin: Plugin) {
       root.pluginClicked(plugin);
     }
   }
@@ -39,6 +67,7 @@ ListView {
 
     // Reacts to row changes through the view's count property
     readonly property bool groupEmpty: ListView.view.count === 0
+
     height: groupEmpty ? Math.max(32, pasteButton.implicitHeight + 8) : 24
     text: qsTr("Drop plugins here")
     width: ListView.view.width
@@ -46,14 +75,7 @@ ListView {
     onDataDropped: (drop, dragSource) => {
       const pluginSrc = dragSource as PluginDragItem;
       if (pluginSrc && pluginSrc.selectedPlugins.length > 0) {
-        root.pluginOperator.movePlugins(
-          pluginSrc.selectedPlugins,
-          pluginSrc.sourceGroup,
-          pluginSrc.sourceTrack,
-          root.pluginGroup,
-          root.track,
-          -1,
-        );
+        root.pluginOperator.movePlugins(pluginSrc.selectedPlugins, pluginSrc.sourceGroup, pluginSrc.sourceTrack, root.pluginGroup, root.track, -1);
         return;
       }
       const descSrc = dragSource as DescriptorDragItem;
@@ -91,6 +113,13 @@ ListView {
         text: qsTr("Paste the plugins from the clipboard")
       }
     }
+  }
+
+  // Passive tap tracking: clicking anywhere in the slot list focuses
+  // it, which makes the window resolve the active clipboard context
+  // from here
+  TapHandler {
+    onTapped: root.forceActiveFocus()
   }
 
   PluginSelectionModel {

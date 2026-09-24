@@ -16,6 +16,7 @@ Control {
   required property AudioEngine audioEngine
   readonly property real buttonHeight: 18
   readonly property real buttonPadding: 1
+  required property ClipboardContext clipboardContext
   readonly property real contentBottomMargins: 3
   readonly property real contentTopMargins: 1
   required property int depth
@@ -55,16 +56,6 @@ Control {
   ContextMenu.menu: Menu {
     id: contextMenu
 
-    function selectedTracks(): list<Track> {
-      const tracks = [];
-      for (const idx of root.trackSelectionModel.selectedIndexes) {
-        const t = idx.data(TrackCollection.TrackPtrRole);
-        if (t !== null)
-          tracks.push(t);
-      }
-      return tracks;
-    }
-
     onAboutToShow: {
       const selectedIndexes = root.trackSelectionModel.selectedIndexes;
       let anyUndeletable = false;
@@ -95,7 +86,7 @@ Control {
       text: qsTr("Cut Track")
 
       onTriggered: {
-        root.trackCollectionOperator.cutTracks(contextMenu.selectedTracks());
+        root.clipboardContext.cutRequested();
       }
     }
 
@@ -105,7 +96,7 @@ Control {
       text: qsTr("Copy Track")
 
       onTriggered: {
-        root.trackCollectionOperator.copyTracks(contextMenu.selectedTracks());
+        root.clipboardContext.copyRequested();
       }
     }
 
@@ -114,18 +105,7 @@ Control {
 
       text: qsTr("Paste Tracks")
 
-      onTriggered: {
-        // Insert after the last selected track (appends when the
-        // selection is empty)
-        let targetPosition = -1;
-        for (const idx of root.trackSelectionModel.selectedIndexes) {
-          if (targetPosition < idx.row + 1)
-            targetPosition = idx.row + 1;
-        }
-        const newUuidStrings = root.trackCollectionOperator.pasteTracks(targetPosition);
-        if (newUuidStrings.length > 0)
-          root.trackSelectionModel.selectTracksByUuidStrings(newUuidStrings);
-      }
+      onTriggered: root.clipboardContext.pasteRequested()
     }
 
     MenuItem {
@@ -134,9 +114,7 @@ Control {
       text: qsTr("Duplicate Track")
 
       onTriggered: {
-        const newUuidStrings = root.trackCollectionOperator.duplicateTracks(contextMenu.selectedTracks());
-        if (newUuidStrings.length > 0)
-          root.trackSelectionModel.selectTracksByUuidStrings(newUuidStrings);
+        root.clipboardContext.duplicateRequested();
       }
     }
 
@@ -399,8 +377,8 @@ Control {
               delegate: ItemDelegate {
                 id: laneDelegate
 
-                required property TrackLane trackLane
                 required property int index
+                required property TrackLane trackLane
 
                 height: trackLane.height
                 width: ListView.view.width
@@ -408,7 +386,6 @@ Control {
                 ContextMenu.menu: Menu {
                   MenuItem {
                     enabled: laneDelegate.index < lanesListView.count - 1
-
                     text: qsTr("Delete Lane")
 
                     onTriggered: {
@@ -510,7 +487,6 @@ Control {
       }
     }
   }
-
 
   SelectionTracker {
     id: selectionTracker

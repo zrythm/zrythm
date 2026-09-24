@@ -9,6 +9,7 @@ import Zrythm
 Control {
   id: root
 
+  required property ClipboardContext clipboardContext
   required property var deviceGroupOrPlugin
   property bool down: false
 
@@ -30,13 +31,6 @@ Control {
 
   signal pluginClicked(Plugin plugin)
 
-  // Returns a fresh model index for this delegate's plugin. Must be called at
-  // time of use - QModelIndex values must not be cached in QML because they
-  // are frozen snapshots that go stale when model rows change.
-  function pluginModelIndex(): var {
-    return pluginSelectionModel.getModelIndex(index);
-  }
-
   function gatherSelectedPlugins() {
     const plugins = [];
     const groupModel = root.pluginGroup;
@@ -51,6 +45,13 @@ Control {
     if (plugins.length === 0 && root.plugin)
       plugins.push(root.plugin);
     return plugins;
+  }
+
+  // Returns a fresh model index for this delegate's plugin. Must be called at
+  // time of use - QModelIndex values must not be cached in QML because they
+  // are frozen snapshots that go stale when model rows change.
+  function pluginModelIndex(): var {
+    return pluginSelectionModel.getModelIndex(index);
   }
 
   function selectCurrentTrack() {
@@ -101,7 +102,7 @@ Control {
 
       onTriggered: {
         if (root.plugin) {
-          root.pluginOperator.cutPlugins(root.gatherSelectedPlugins(), root.pluginGroup, root.track);
+          root.clipboardContext.cutRequested();
         }
       }
     }
@@ -114,7 +115,7 @@ Control {
 
       onTriggered: {
         if (root.plugin) {
-          root.pluginOperator.copyPlugins(root.gatherSelectedPlugins());
+          root.clipboardContext.copyRequested();
         }
       }
     }
@@ -138,9 +139,7 @@ Control {
 
       onTriggered: {
         if (root.plugin) {
-          const duplicatedIds = root.pluginOperator.duplicatePlugins(root.gatherSelectedPlugins(), root.pluginGroup);
-          if (duplicatedIds.length > 0)
-            root.pluginSelectionModel.selectPluginsByUuidStrings(duplicatedIds);
+          root.clipboardContext.duplicateRequested();
         }
       }
     }
@@ -199,6 +198,7 @@ Control {
     acceptedModifiers: Qt.NoModifier
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex());
@@ -212,6 +212,7 @@ Control {
     acceptedModifiers: Qt.ControlModifier
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         root.pluginSelectionModel.select(root.pluginModelIndex(), ItemSelectionModel.Toggle);
@@ -225,6 +226,7 @@ Control {
     acceptedModifiers: Qt.ShiftModifier
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         const currentIdx = root.pluginSelectionModel.currentIndex;
@@ -246,6 +248,7 @@ Control {
     acceptedModifiers: Qt.ControlModifier | Qt.ShiftModifier
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         const currentIdx = root.pluginSelectionModel.currentIndex;
@@ -266,6 +269,7 @@ Control {
     acceptedButtons: Qt.RightButton
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         if (!root.pluginSelectionModel.isSelected(root.pluginModelIndex()))
@@ -305,7 +309,6 @@ Control {
 
   PluginDragItem {
     id: dragItem
-
   }
 
   DropArea {

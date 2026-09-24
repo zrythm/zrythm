@@ -26,6 +26,52 @@ ListView {
   required property Tracklist tracklist
   required property UndoStack undoStack
 
+  readonly property ClipboardContext clipboardContext: ClipboardContext {
+    canCopy: root.trackSelectionModel.hasSelection
+    canPaste: root.trackCollectionOperator.canPasteTracks
+
+    onCopyRequested: root.trackCollectionOperator.copyTracks(root.selectedTracks())
+    onCutRequested: root.trackCollectionOperator.cutTracks(root.selectedTracks())
+    onPasteRequested: {
+      const newUuidStrings = root.trackCollectionOperator.pasteTracks(root.pasteTargetPosition());
+      if (newUuidStrings.length > 0)
+        root.trackSelectionModel.selectTracksByUuidStrings(newUuidStrings);
+    }
+    onDuplicateRequested: {
+      const newUuidStrings = root.trackCollectionOperator.duplicateTracks(root.selectedTracks());
+      if (newUuidStrings.length > 0)
+        root.trackSelectionModel.selectTracksByUuidStrings(newUuidStrings);
+    }
+  }
+
+  function selectedTracks(): list<Track> {
+    const tracks = [];
+    for (const idx of root.trackSelectionModel.selectedIndexes) {
+      const track = root.trackSelectionModel.getTrackFromModelIndex(idx);
+      if (track !== null)
+        tracks.push(track);
+    }
+    return tracks;
+  }
+
+  // Position the first pasted track ends up at: after the last selected
+  // track, or past the end when the selection is empty
+  function pasteTargetPosition(): int {
+    let targetPosition = -1;
+    for (const idx of root.trackSelectionModel.selectedIndexes) {
+      if (targetPosition < idx.row + 1)
+        targetPosition = idx.row + 1;
+    }
+    return targetPosition;
+  }
+
+  // Passive tap tracking: clicking anywhere in the tracklist focuses
+  // it, which makes the window resolve the active clipboard context
+  // from here
+  TapHandler {
+    onTapped: root.forceActiveFocus()
+  }
+
   Layout.fillWidth: true
   boundsBehavior: Flickable.StopAtBounds
   clip: true
@@ -39,6 +85,7 @@ ListView {
     required property int index
 
     audioEngine: root.audioEngine
+    clipboardContext: root.clipboardContext
     listViewDraggedTrack: root.draggedTrack
     listViewDropTargetFolder: root.dropTargetFolder
     listViewDropTargetIndex: root.dropTargetIndex

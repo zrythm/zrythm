@@ -147,6 +147,9 @@ ArrangerObjectSelectionOperator ::ArrangerObjectSelectionOperator (
       project_id_provider_ (std::move (projectIdProvider)),
       timeline_objects_enumerator_ (std::move (timelineObjectsEnumerator))
 {
+  QObject::connect (
+    &clipboard_, &controllers::Clipboard::payloadChanged, this,
+    [this] () { Q_EMIT canPasteObjectsChanged (); });
 }
 
 bool
