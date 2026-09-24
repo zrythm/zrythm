@@ -217,7 +217,6 @@ set(rel_qml_file_paths
   components/basic/RotatedLabel.qml
   components/basic/ScrubbableValueSegment.qml
   components/basic/SoloButton.qml
-  components/basic/ZrythmActionRow.qml
   components/basic/ZrythmFilePicker.qml
   components/basic/ZrythmPreferencesPage.qml
   components/basic/ZrythmResizablePanel.qml
@@ -267,6 +266,7 @@ set(rel_qml_file_paths
   components/editors/ChordRowLabels.qml
   components/AboutDialog.qml
   components/AboutThirdPartyLicensesPage.qml
+  components/ActionRow.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
   components/BalanceControl.qml

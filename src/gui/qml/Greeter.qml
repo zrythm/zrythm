@@ -248,7 +248,7 @@ ApplicationWindow {
           anchors.fill: parent
           title: qsTr("Initial Configuration")
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: "Preferred language"
             title: "Language"
 
@@ -257,7 +257,7 @@ ApplicationWindow {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: "Location to save user files"
             title: "User Path"
 

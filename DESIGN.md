@@ -507,6 +507,21 @@ used by combo popup and menu items. Alternating row backgrounds use
 | Selected (highlighted) | accent `#FFAE00` | dark `#161616` |
 | Pressed | strengthened | unchanged |
 
+Two-line list rows share one row anatomy: 40 px rows with a medium title
+and a small subtitle at 55 % opacity — falling back to a static string
+(e.g. a type or format label) when no subtitle exists, never an empty
+second line — plus 16 px leading glyphs and alternating
+`alternateBackgroundColor` fills. The 40 px height is a deliberate
+exception to the 24 px row metric for two-line rows. Suffix action buttons
+follow the toolbar-button rules (24 px hit area, 16 px glyph, radius 6,
+white @ 10 % hover overlay) and are revealed on row hover or keyboard
+focus; a checked action stays visible at rest. Additional actions live
+behind a "…" button that opens the shared menu. Selection follows the
+table above, with all content — text and glyphs — switching to dark on
+the accent fill. Rows also serve as plain setting rows (title + subtitle
++ always-visible suffix controls, no interactions) in preferences-style
+forms.
+
 ### Selection
 
 Selected arranger objects (clips, chords, MIDI notes, automation points,
