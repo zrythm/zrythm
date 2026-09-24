@@ -384,20 +384,38 @@ ApplicationWindow {
           anchors.margins: 16
           model: recentProjects
 
-          delegate: ItemDelegate {
+          delegate: ActionRow {
             id: projectItem
 
+            required property string name
             required property string path
 
+            interactive: true
+            subtitle: projectItem.path
+            title: projectItem.name
             width: recentProjectsListView.width
 
-            contentItem: Label {
-              elide: Text.ElideMiddle
-              text: projectItem.path
-              verticalAlignment: Qt.AlignVCenter
-            }
+            onClicked: loadController.loadProject (projectItem.path)
 
-            onClicked: loadController.loadProject(projectItem.path)
+            resources: [
+              Action {
+                id: revealAction
+
+                text: qsTr ("Show in File Manager")
+
+                onTriggered: QmlUtils.revealInFileManager (projectItem.path)
+              },
+              Action {
+                id: removeAction
+
+                text: qsTr ("Remove From List")
+
+                onTriggered: recentProjectsListView.recentProjects.removeRecentProject (
+                  projectItem.path)
+              }
+            ]
+
+            overflowActions: [revealAction, removeAction]
           }
 
           Component.onCompleted: {

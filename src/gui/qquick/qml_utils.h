@@ -67,6 +67,13 @@ public:
   Q_INVOKABLE static void    copyToClipboard (const QString &text);
 
   /**
+   * @brief Shows @p path in the platform file manager.
+   *
+   * Logs a warning and does nothing when the path does not exist.
+   */
+  Q_INVOKABLE static void revealInFileManager (const QString &path);
+
+  /**
    * @brief Helper to create a selection from a list of rows in a single column.
    */
   Q_INVOKABLE static QItemSelection createRowSelection (

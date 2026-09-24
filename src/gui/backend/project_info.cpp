@@ -11,9 +11,11 @@ ProjectInfo::ProjectInfo (QObject * parent) : QObject (parent) { }
 ProjectInfo::ProjectInfo (const std::filesystem::path &path, QObject * parent)
     : QObject (parent), path_ (path)
 {
+  // Display name derived from the path; entries are shown even when the
+  // project file no longer exists, so the name does not depend on existence
+  name_ = utils::Utf8String::from_path (path.stem ()).to_qstring ();
   if (exists ())
     {
-      name_ = utils::Utf8String::from_path (path.filename ()).to_qstring ();
       const auto time_since_epoch =
         std::filesystem::last_write_time (path).time_since_epoch ();
       const auto secs_since_epoch =
