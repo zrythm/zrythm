@@ -331,6 +331,9 @@ ApplicationWindow {
       id: projectSelectorPage
 
       NavigatablePage {
+        // Distinguishes this page when inspecting the StackView's current item
+        readonly property bool isProjectSelectorPage: true
+
         showBackButton: false
         title: qsTr("Open a Project")
 
@@ -515,16 +518,17 @@ ApplicationWindow {
 
     Connections {
       function onProjectLoaded(session: ProjectSession) {
+        // ProjectManager already set the active session and updated the
+        // recent projects list before emitting this signal
         console.log("Project loaded: ", session.title);
-        root.projectManager.activeSession = session;
-        console.log("Opening project: ", root.projectManager.activeSession.title);
-        root.projectManager.recentProjects.addRecentProject(root.projectManager.activeSession.projectDirectory);
         root.openProjectWindow(session);
       }
 
       function onProjectLoadingFailed(errorMessage: string) {
         console.log("Project loading failed: ", errorMessage);
-        stack.push(projectSelectorPage);
+        if (!stack.currentItem?.isProjectSelectorPage) {
+          stack.push(projectSelectorPage);
+        }
         root.alertManager.showAlert(qsTr("Project Loading Failed"), errorMessage);
       }
 
@@ -532,6 +536,10 @@ ApplicationWindow {
     }
 
     Connections {
+      // Alerts are presented by the visible window: while a project window is
+      // open the Greeter is hidden and must not open dialogs
+      enabled: root.visible
+
       function onAlertRequested(title, message) {
         console.log("Alert requested: ", title, message);
         alertDialog.text = title;

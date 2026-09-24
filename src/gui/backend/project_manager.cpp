@@ -285,6 +285,9 @@ ProjectManager::createNewProject (
         session->setParent (this);
         session->setProjectDirectory (
           utils::Utf8String::from_path (project_dir_path).to_qstring ());
+        // Add to recent projects
+        recent_projects_model_->addRecentProject (
+          utils::Utf8String::from_path (project_dir_path).to_qstring ());
         setActiveSession (session);
         session->project ()->engine ()->graph_dispatcher ().recalc_graph (false);
         session->project ()->engine ()->set_running (true);
