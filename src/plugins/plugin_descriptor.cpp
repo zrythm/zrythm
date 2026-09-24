@@ -111,6 +111,16 @@ PluginDescriptor::vendor () const
 }
 
 QString
+PluginDescriptor::pathOrId () const
+{
+  if (auto * path = std::get_if<std::filesystem::path> (&path_or_id_))
+    {
+      return utils::Utf8String::from_path (*path).to_qstring ();
+    }
+  return {};
+}
+
+QString
 PluginDescriptor::category () const
 {
   return category_str_.to_qstring ();

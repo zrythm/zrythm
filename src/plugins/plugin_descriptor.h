@@ -103,6 +103,8 @@ class PluginDescriptor : public QObject
   Q_PROPERTY (QString vendor READ vendor CONSTANT FINAL)
   Q_PROPERTY (QString format READ format CONSTANT FINAL)
   Q_PROPERTY (QString category READ category CONSTANT FINAL)
+  Q_PROPERTY (QString pathOrId READ pathOrId CONSTANT FINAL)
+  Q_PROPERTY (qint64 uniqueId READ uniqueId CONSTANT FINAL)
   QML_UNCREATABLE ("")
 
 public:
@@ -122,6 +124,15 @@ public:
   QString               format () const;
   QString               vendor () const;
   QString               category () const;
+
+  /**
+   * @brief File path of the plugin, for formats identified by a file.
+   *
+   * Empty when the plugin is identified by a URI/identifier instead (e.g.
+   * internal and AudioUnit plugins).
+   */
+  [[nodiscard]] QString pathOrId () const;
+  [[nodiscard]] qint64  uniqueId () const { return unique_id_; }
 
   /**
    * @brief Serializes the descriptor to a string.

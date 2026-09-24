@@ -89,7 +89,7 @@ TestCase {
     // star + insert + "…" overflow
     compare(buttons.length, 3);
     const starButton = buttons.find((b) => b.action?.text === "Favorite");
-    const insertButton = buttons.find((b) => b.action?.text === "Insert");
+    const insertButton = buttons.find((b) => b.action?.text === "Import");
     const overflowButton = buttons.find((b) => b.action === null);
     verify(starButton);
     verify(insertButton);
@@ -151,7 +151,7 @@ TestCase {
       Action {
         id: insertAction
 
-        text: "Insert"
+        text: "Import"
       }
 
       Action {
