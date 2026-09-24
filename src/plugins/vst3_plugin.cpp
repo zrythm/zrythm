@@ -32,6 +32,7 @@
 #include "utils/logger.h"
 #include "utils/math_utils.h"
 #include "utils/qt.h"
+#include "utils/rt_logger.h"
 #include "utils/serialization.h"
 #include "utils/views.h"
 
@@ -709,33 +710,28 @@ private:
   Vst3ParameterChanges output_param_changes_{};
 
   /**
-   * @brief Reports dropped items at a bounded rate (audio-thread safe).
-   *
-   * The drop is counted in @p counter and logged on the main thread at
-   * power-of-two counts, so a flood of drops cannot flood the log or the
-   * dispatcher.
+   * @brief Counts dropped items in @p counter and reports them at a
+   * bounded (power-of-two) rate; audio-thread safe.
    *
    * @param what Static string describing the dropped items, e.g.
    * "input event(s) (event list capacity exhausted)".
    */
-  void
-  note_drop (std::atomic<uint32_t> &counter, std::string_view what) noexcept
+  void log_drop (std::atomic<uint32_t> &counter, std::string_view what) noexcept
+    [[clang::nonblocking]]
   {
     const auto drops = counter.fetch_add (1, std::memory_order_relaxed) + 1;
     if (drops == 1 || (drops & (drops - 1)) == 0)
       {
-        owner_.post_main_thread_action ([this, drops, what] {
-          z_warning (
-            "VST3 plugin '{}': dropped {} {} so far", owner_.get_name (), drops,
-            what);
-        });
+        z_rt_warning (
+          "VST3 plugin '{}': dropped {} {} so far", owner_.node_name_view (),
+          drops, what);
       }
   }
 
   /** Per-parameter queue capacity exhausted (addPoint failed). */
-  void note_input_point_drop () noexcept
+  void log_input_point_drop () noexcept
   {
-    note_drop (
+    log_drop (
       input_point_drops_,
       "parameter change point(s) (per-parameter queue capacity exhausted)"sv);
   }
@@ -743,9 +739,9 @@ private:
   std::atomic<uint32_t> input_point_drops_{ 0 };
 
   /** Event list capacity exhausted (addEvent failed). */
-  void note_input_event_drop () noexcept
+  void log_input_event_drop () noexcept
   {
-    note_drop (
+    log_drop (
       input_event_drops_, "input event(s) (event list capacity exhausted)"sv);
   }
 
@@ -753,9 +749,9 @@ private:
 
   /** Events targeting an event input bus the plugin no longer has (stale
    * port topology after an IO change). */
-  void note_stale_bus_event_drop () noexcept
+  void log_stale_bus_event_drop () noexcept
   {
-    note_drop (
+    log_drop (
       stale_bus_event_drops_,
       "input event(s) (no such event bus on the plugin)"sv);
   }
@@ -772,9 +768,9 @@ private:
   std::atomic<int32_t> event_in_bus_count_{ 0 };
 
   /** Queue table capacity exhausted (addParameterData failed). */
-  void note_param_queue_drop () noexcept
+  void log_param_queue_drop () noexcept
   {
-    note_drop (
+    log_drop (
       param_queue_drops_,
       "parameter change queue(s) (queue table capacity exhausted)"sv);
   }
@@ -783,9 +779,9 @@ private:
 
   /** Preset selection whose program index no longer exists (the program
    * list shrank between selection and processing). */
-  void note_stale_program_drop () noexcept
+  void log_stale_program_drop () noexcept
   {
-    note_drop (
+    log_drop (
       stale_program_drops_,
       "preset selection(s) (program list shrank before the selection was applied)"sv);
   }
@@ -794,9 +790,9 @@ private:
 
   /** Preset selection dropped because the program-change parameter became
    * unavailable between selection and processing. */
-  void note_missing_program_param_drop () noexcept
+  void log_missing_program_param_drop () noexcept
   {
-    note_drop (
+    log_drop (
       missing_program_param_drops_,
       "preset selection(s) (program-change parameter became unavailable)"sv);
   }
@@ -804,9 +800,9 @@ private:
   std::atomic<uint32_t> missing_program_param_drops_{ 0 };
 
   /** Main-thread dispatcher queue full (controller notification dropped). */
-  void note_controller_notification_drop () noexcept
+  void log_controller_notification_drop () noexcept
   {
-    note_drop (
+    log_drop (
       controller_notification_drops_,
       "controller notification(s) (dispatcher queue full)"sv);
   }
@@ -814,9 +810,9 @@ private:
   std::atomic<uint32_t> controller_notification_drops_{ 0 };
 
   /** Gesture callback dropped (dispatcher queue full). */
-  void note_gesture_drop () noexcept
+  void log_gesture_drop () noexcept
   {
-    note_drop (
+    log_drop (
       gesture_drops_, "gesture notification(s) (dispatcher queue full)"sv);
   }
 
@@ -824,33 +820,29 @@ private:
 
   /** Preset-selection sync post dropped (dispatcher queue full); the
    * display is left stale until the next sync event. */
-  void note_preset_sync_drop () noexcept
+  void log_preset_sync_drop () noexcept
   {
-    note_drop (
+    log_drop (
       preset_sync_drops_, "preset selection sync(s) (dispatcher queue full)"sv);
   }
 
   std::atomic<uint32_t> preset_sync_drops_{ 0 };
 
   /**
-   * @brief Reports a dropped plugin output event (audio-thread safe).
-   *
-   * The event violated the output contract (see
-   * validate_vst3_output_event); the drop is counted and logged on the
-   * main thread at a bounded (power-of-two) rate.
+   * @brief Counts and reports an output event that violated the output
+   * contract (see validate_vst3_output_event); audio-thread safe.
    */
-  void note_invalid_output_event_drop (std::string_view violation) noexcept
+  void log_invalid_output_event_drop (std::string_view violation) noexcept
+    [[clang::nonblocking]]
   {
     const auto drops =
       invalid_output_event_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
     if (drops == 1 || (drops & (drops - 1)) == 0)
       {
-        owner_.post_main_thread_action ([this, drops, violation] {
-          z_warning (
-            "VST3 plugin '{}': dropped {} invalid output event(s) so far "
-            "(last: {})",
-            owner_.get_name (), drops, violation);
-        });
+        z_rt_warning (
+          "VST3 plugin '{}': dropped {} invalid output event(s) so far "
+          "(last: {})",
+          owner_.node_name_view (), drops, violation);
       }
   }
 
@@ -1624,7 +1616,7 @@ Vst3Plugin::load_plugin (
                     set_preset_dirty (true);
                   }))
                 {
-                  pimpl_->note_gesture_drop ();
+                  pimpl_->log_gesture_drop ();
                 }
             }
           return;
@@ -1632,7 +1624,7 @@ Vst3Plugin::load_plugin (
       const auto param_index = it->second.param_index;
       if (param_index >= param_sync_.entries.size ())
         {
-          pimpl_->note_gesture_drop ();
+          pimpl_->log_gesture_drop ();
           return;
         }
       auto &entry = param_sync_.entries[param_index];
@@ -1640,13 +1632,13 @@ Vst3Plugin::load_plugin (
         {
           // beginEdit while a gesture is already open, or endEdit
           // without a preceding beginEdit
-          pimpl_->note_gesture_drop ();
+          pimpl_->log_gesture_drop ();
           return;
         }
       auto * param = get_parameters ()[param_index].get ();
       if (param == nullptr)
         {
-          pimpl_->note_gesture_drop ();
+          pimpl_->log_gesture_drop ();
           return;
         }
       entry.in_user_gesture.store (begin, std::memory_order_relaxed);
@@ -1666,7 +1658,7 @@ Vst3Plugin::load_plugin (
           // The main-thread gesture state would diverge from the flag;
           // revert the flag so later events stay consistent
           entry.in_user_gesture.store (!begin, std::memory_order_relaxed);
-          pimpl_->note_gesture_drop ();
+          pimpl_->log_gesture_drop ();
         }
     },
     [this] {
@@ -2532,7 +2524,7 @@ Vst3Plugin::notify_controller_param_value (
           pimpl_->controller_host_editing_->endEditFromHost (param_id);
       }))
     {
-      pimpl_->note_controller_notification_drop ();
+      pimpl_->log_controller_notification_drop ();
     }
 }
 
@@ -2552,7 +2544,7 @@ Vst3Plugin::notify_controller_reported_value (
         pimpl_->controller_->setParamNormalized (param_id, value);
       }))
     {
-      pimpl_->note_controller_notification_drop ();
+      pimpl_->log_controller_notification_drop ();
     }
 }
 
@@ -2744,7 +2736,7 @@ Vst3Plugin::process_impl (
       if (bus_index >= impl.event_in_bus_count_.load (std::memory_order_acquire))
         {
           if (chunk_events.begin () != chunk_events.end ())
-            impl.note_stale_bus_event_drop ();
+            impl.log_stale_bus_event_drop ();
           continue;
         }
       for (const auto &ev : chunk_events)
@@ -2767,7 +2759,7 @@ Vst3Plugin::process_impl (
               vst_ev.data.bytes =
                 reinterpret_cast<const uint8_t *> (ev_data.data ());
               if (impl.input_events_.addEvent (vst_ev) != kResultOk)
-                pimpl_->note_input_event_drop ();
+                pimpl_->log_input_event_drop ();
               continue;
             }
 
@@ -2817,16 +2809,16 @@ Vst3Plugin::process_impl (
                               static_cast<int> (program));
                           }))
                         {
-                          pimpl_->note_preset_sync_drop ();
+                          pimpl_->log_preset_sync_drop ();
                         }
                     }
                   else if (queue == nullptr)
                     {
-                      pimpl_->note_param_queue_drop ();
+                      pimpl_->log_param_queue_drop ();
                     }
                   else
                     {
-                      pimpl_->note_input_point_drop ();
+                      pimpl_->log_input_point_drop ();
                     }
                 }
               continue;
@@ -2849,7 +2841,7 @@ Vst3Plugin::process_impl (
                 static_cast<float> (ev_data[2]) / 127.f;
               vst_ev.polyPressure.noteId = -1;
               if (impl.input_events_.addEvent (vst_ev) != kResultOk)
-                pimpl_->note_input_event_drop ();
+                pimpl_->log_input_event_drop ();
               continue;
             }
 
@@ -2888,7 +2880,7 @@ Vst3Plugin::process_impl (
                     param_id, queue_index);
                   if (queue == nullptr)
                     {
-                      pimpl_->note_param_queue_drop ();
+                      pimpl_->log_param_queue_drop ();
                       continue;
                     }
                   int32 point_index = 0;
@@ -2896,7 +2888,7 @@ Vst3Plugin::process_impl (
                     queue->addPoint (sample_offset, ctrl_value, point_index)
                     != kResultTrue)
                     {
-                      pimpl_->note_input_point_drop ();
+                      pimpl_->log_input_point_drop ();
                     }
                 }
               continue;
@@ -2933,7 +2925,7 @@ Vst3Plugin::process_impl (
               vst_ev.noteOff.noteId = -1;
             }
           if (impl.input_events_.addEvent (vst_ev) != kResultOk)
-            pimpl_->note_input_event_drop ();
+            pimpl_->log_input_event_drop ();
         }
     }
 
@@ -2981,14 +2973,14 @@ Vst3Plugin::process_impl (
         impl.input_param_changes_.addParameterData (it->second, queue_index);
       if (queue == nullptr)
         {
-          pimpl_->note_param_queue_drop ();
+          pimpl_->log_param_queue_drop ();
           continue;
         }
       int32 point_index = 0;
       if (
         queue->addPoint (0, change.modulated_value, point_index) != kResultTrue)
         {
-          pimpl_->note_input_point_drop ();
+          pimpl_->log_input_point_drop ();
         }
 
       // Also notify the edit controller on the main thread, or a
@@ -3021,12 +3013,12 @@ Vst3Plugin::process_impl (
                   // selection was pending; leaving it queued would apply a
                   // stale program if the parameter returned with a
                   // different list
-                  pimpl_->note_missing_program_param_drop ();
+                  pimpl_->log_missing_program_param_drop ();
                 }
               else
                 {
                   // The program list shrank after the selection was made
-                  pimpl_->note_stale_program_drop ();
+                  pimpl_->log_stale_program_drop ();
                 }
               // The selection state was already committed host-side: re-sync
               // the display with the program the plugin actually holds
@@ -3037,7 +3029,7 @@ Vst3Plugin::process_impl (
                     adopt_current_program_from_controller ();
                   }))
                 {
-                  pimpl_->note_preset_sync_drop ();
+                  pimpl_->log_preset_sync_drop ();
                 }
               break;
             }
@@ -3167,7 +3159,7 @@ Vst3Plugin::process_impl (
           if (
             const auto violation = validate_vst3_output_event (vst_ev, nframes))
             {
-              impl.note_invalid_output_event_drop (*violation);
+              impl.log_invalid_output_event_drop (*violation);
               continue;
             }
 
@@ -3175,7 +3167,7 @@ Vst3Plugin::process_impl (
             vst_ev.busIndex < 0
             || static_cast<size_t> (vst_ev.busIndex) >= midi_out_ports_.size ())
             {
-              impl.note_invalid_output_event_drop ("bus index out of range"sv);
+              impl.log_invalid_output_event_drop ("bus index out of range"sv);
               continue;
             }
           auto * midi_out_port =

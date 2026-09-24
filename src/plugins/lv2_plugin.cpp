@@ -52,6 +52,7 @@
 #include "utils/math_utils.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
+#include "utils/rt_logger.h"
 #include "utils/serialization.h"
 #include "utils/views.h"
 #include "utils/zip_utils.h"
@@ -387,18 +388,18 @@ public:
   void parse_patch_messages () noexcept [[clang::nonblocking]];
 
   /**
-   * Counts a plugin report mapping to an out-of-range parameter
-   * index; reports the cumulative count to the main thread with
-   * throttled warnings.
+   * @brief Counts a plugin report mapping to an out-of-range parameter
+   * index and reports the cumulative total; audio-thread safe.
    */
-  void note_param_index_drop () noexcept;
+  void log_param_index_drop () noexcept [[clang::nonblocking]];
 
   /**
-   * Counts a dropped UI gesture notification (@p reason describes the
-   * drop and must point to a string literal); reports the cumulative
-   * count to the main thread with throttled warnings.
+   * @brief Counts a dropped UI gesture notification (@p reason
+   * describes the drop and must point to a string literal) and reports
+   * the cumulative total; audio-thread safe.
    */
-  void note_ui_gesture_drop (std::string_view reason) noexcept;
+  void
+  log_ui_gesture_drop (std::string_view reason) noexcept [[clang::nonblocking]];
 
   /** Reads the control output ports (latency). */
   void read_control_outputs () noexcept [[clang::nonblocking]];
@@ -927,7 +928,7 @@ public:
         // own bookkeeping bug
         if (!owner_.param_sync_.entries.empty ())
           {
-            note_param_index_drop ();
+            log_param_index_drop ();
           }
         return;
       }
@@ -3578,34 +3579,30 @@ Lv2Plugin::Lv2PluginImpl::forge_pending_patch_sets () noexcept
 }
 
 void
-Lv2Plugin::Lv2PluginImpl::note_param_index_drop () noexcept
+Lv2Plugin::Lv2PluginImpl::log_param_index_drop () noexcept
 {
   const auto drops =
     param_index_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
   if (drops == 1 || (drops & (drops - 1)) == 0)
     {
-      owner_.post_main_thread_action ([this, drops] {
-        z_warning (
-          "LV2 plugin '{}': dropped {} report(s) mapping to an out-of-range "
-          "parameter index so far",
-          owner_.get_name (), drops);
-      });
+      z_rt_warning (
+        "LV2 plugin '{}': dropped {} report(s) mapping to an out-of-range "
+        "parameter index so far",
+        owner_.node_name_view (), drops);
     }
 }
 
 void
-Lv2Plugin::Lv2PluginImpl::note_ui_gesture_drop (std::string_view reason) noexcept
+Lv2Plugin::Lv2PluginImpl::log_ui_gesture_drop (std::string_view reason) noexcept
 {
   const auto drops =
     ui_gesture_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
   if (drops == 1 || (drops & (drops - 1)) == 0)
     {
-      owner_.post_main_thread_action ([this, drops, reason] {
-        z_warning (
-          "LV2 plugin '{}': dropped {} UI gesture notification(s) so far "
-          "(last: {})",
-          owner_.get_name (), drops, reason);
-      });
+      z_rt_warning (
+        "LV2 plugin '{}': dropped {} UI gesture notification(s) so far "
+        "(last: {})",
+        owner_.node_name_view (), drops, reason);
     }
 }
 
@@ -3699,7 +3696,7 @@ Lv2Plugin::Lv2PluginImpl::parse_patch_messages () noexcept
         // own bookkeeping bug
         if (!owner_.param_sync_.entries.empty ())
           {
-            note_param_index_drop ();
+            log_param_index_drop ();
           }
         return;
       }
@@ -5843,7 +5840,7 @@ Lv2Plugin::Lv2PluginImpl::
     {
       // Grab while the gesture is already open, or release without a
       // preceding grab
-      impl->note_ui_gesture_drop ("unbalanced touch event"sv);
+      impl->log_ui_gesture_drop ("unbalanced touch event"sv);
       return;
     }
   entry.in_user_gesture.store (grabbed, std::memory_order_relaxed);
@@ -5859,7 +5856,7 @@ Lv2Plugin::Lv2PluginImpl::
       // The main-thread gesture state would diverge from the flag;
       // revert the flag so later events stay consistent
       entry.in_user_gesture.store (!grabbed, std::memory_order_relaxed);
-      impl->note_ui_gesture_drop ("dispatcher queue full"sv);
+      impl->log_ui_gesture_drop ("dispatcher queue full"sv);
     }
 }
 

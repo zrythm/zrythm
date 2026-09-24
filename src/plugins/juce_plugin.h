@@ -195,15 +195,14 @@ private:
   std::unordered_map<size_t, size_t> zrythm_param_index_to_mapping_;
 
   /**
-   * @brief Reports a dropped plugin output event (audio-thread safe).
-   *
-   * The event violated the output contract (out-of-range param index or
-   * event position); the drop is counted and logged on the main thread at
-   * a bounded (power-of-two) rate.
+   * @brief Counts and reports an output event that violated the output
+   * contract (out-of-range param index or event position); audio-thread
+   * safe.
    */
-  void note_invalid_output_event_drop (std::string_view violation) noexcept;
+  void log_invalid_output_event_drop (std::string_view violation) noexcept
+    [[clang::nonblocking]];
 
-  /** Drop counter for note_invalid_output_event_drop(). */
+  /** Drop counter for log_invalid_output_event_drop(). */
   std::atomic<uint32_t> invalid_output_event_drops_{ 0 };
 
   // Audio/MIDI buffer management

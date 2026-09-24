@@ -167,27 +167,25 @@ public:
   void param_flush_on_main_thread () [[clang::blocking]];
 
   /**
-   * @brief Reports a dropped plugin output event (audio-thread safe).
-   *
-   * The event violated the output contract (out-of-range port index or
-   * note fields); the drop is counted and logged on the main thread at a
-   * bounded (power-of-two) rate.
+   * @brief Counts and reports an output event that violated the output
+   * contract (out-of-range port index or note fields); audio-thread
+   * safe.
    */
-  void note_invalid_output_event_drop (std::string_view violation) noexcept
+  void log_invalid_output_event_drop (std::string_view violation) noexcept
+    [[clang::nonblocking]]
   {
     const auto drops =
       invalid_output_event_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
     if (drops == 1 || (drops & (drops - 1)) == 0)
       {
-        owner_.post_main_thread_action_deferred ([this, drops, violation] {
-          z_warning (
-            "CLAP plugin '{}': dropped {} invalid output event(s) so far "
-            "(last: {})",
-            owner_.get_name (), drops, violation);
-        });
+        z_rt_warning (
+          "CLAP plugin '{}': dropped {} invalid output event(s) so far "
+          "(last: {})",
+          owner_.node_name_view (), drops, violation);
       }
   }
 
+  /** Drop counter for log_invalid_output_event_drop(). */
   std::atomic<uint32_t> invalid_output_event_drops_{ 0 };
 
   /**
@@ -2009,7 +2007,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
       // Event times must lie within the processed block
       if (block_length.has_value () && units::samples (h->time) >= *block_length)
         {
-          note_invalid_output_event_drop ("event time out of range"sv);
+          log_invalid_output_event_drop ("event time out of range"sv);
           continue;
         }
       switch (h->type)
@@ -2027,7 +2025,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
                 // plugin reports a parameter that was never adopted
                 if (!maps.by_id_.empty ())
                   {
-                    note_invalid_output_event_drop (
+                    log_invalid_output_event_drop (
                       "param value for unknown param"sv);
                   }
                 break;
@@ -2049,8 +2047,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
                 // the plugin's own parameter reporting
                 if (!owner_.param_sync_.entries.empty ())
                   {
-                    note_invalid_output_event_drop (
-                      "param index out of range"sv);
+                    log_invalid_output_event_drop ("param index out of range"sv);
                   }
                 break;
               }
@@ -2083,7 +2080,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
                 // can arrive before the param maps are built
                 if (!maps.by_id_.empty ())
                   {
-                    note_invalid_output_event_drop (
+                    log_invalid_output_event_drop (
                       "gesture for unknown param"sv);
                   }
                 break;
@@ -2103,7 +2100,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
                 // param value events; those are safe to drop
                 if (!owner_.param_sync_.entries.empty ())
                   {
-                    note_invalid_output_event_drop (
+                    log_invalid_output_event_drop (
                       "gesture param index out of range"sv);
                   }
                 break;
@@ -2115,7 +2112,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               {
                 // BEGIN while a gesture is already open, or END without
                 // a preceding BEGIN
-                note_invalid_output_event_drop ("unbalanced gesture event"sv);
+                log_invalid_output_event_drop ("unbalanced gesture event"sv);
                 break;
               }
             entry.in_user_gesture.store (begin, std::memory_order_relaxed);
@@ -2131,7 +2128,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
                 // The main-thread gesture state would diverge from the
                 // flag; revert the flag so later events stay consistent
                 entry.in_user_gesture.store (!begin, std::memory_order_relaxed);
-                note_invalid_output_event_drop (
+                log_invalid_output_event_drop (
                   "gesture notification dropped (dispatcher queue full)"sv);
               }
             break;
@@ -2148,8 +2145,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               || static_cast<size_t> (ev->port_index)
                    >= owner_.midi_out_ports_.size ())
               {
-                note_invalid_output_event_drop (
-                  "note port index out of range"sv);
+                log_invalid_output_event_drop ("note port index out of range"sv);
                 break;
               }
             // Plugin-supplied fields are forwarded as raw MIDI bytes, so
@@ -2159,7 +2155,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               ev->channel < 0 || ev->channel > 15 || ev->key < 0
               || ev->key > 127 || !(ev->velocity >= 0.0 && ev->velocity <= 1.0))
               {
-                note_invalid_output_event_drop ("note field out of range"sv);
+                log_invalid_output_event_drop ("note field out of range"sv);
                 break;
               }
 
@@ -2186,7 +2182,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
                     time);
             if (
               !midi_out_port->buffer_.push_back (midi_ev.time_, midi_ev.data ()))
-              note_invalid_output_event_drop ("MIDI output buffer overflow"sv);
+              log_invalid_output_event_drop ("MIDI output buffer overflow"sv);
             break;
           }
         case CLAP_EVENT_MIDI:
@@ -2197,8 +2193,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               static_cast<size_t> (ev->port_index)
               >= owner_.midi_out_ports_.size ())
               {
-                note_invalid_output_event_drop (
-                  "MIDI port index out of range"sv);
+                log_invalid_output_event_drop ("MIDI port index out of range"sv);
                 break;
               }
 
@@ -2211,7 +2206,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               + event_time_offset;
             if (!midi_out_port->buffer_.push_back (
                   time, std::span<const midi_byte_t> (ev->data, 3)))
-              note_invalid_output_event_drop ("MIDI output buffer overflow"sv);
+              log_invalid_output_event_drop ("MIDI output buffer overflow"sv);
             break;
           }
         default:
