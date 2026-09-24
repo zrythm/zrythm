@@ -12,9 +12,13 @@ MenuBar {
   id: root
 
   required property AboutDialog aboutDialog
+  required property Action copyAction
+  required property Action cutAction
   required property DeviceManager deviceManager
+  required property Action duplicateAction
   required property ExportDialog exportDialog
   required property LoadController loadController
+  required property Action pasteAction
   readonly property Project project: session.project
   required property SaveController saveController
   required property ProjectSession session
@@ -81,6 +85,25 @@ MenuBar {
       text: enabled ? "%1: %2".arg(qsTr("Redo")).arg(root.session.undoStack.redoActions[0]) : qsTr("Redo")
 
       onTriggered: root.session.undoStack.redo()
+    }
+
+    MenuSeparator {
+    }
+
+    MenuItem {
+      action: root.cutAction
+    }
+
+    MenuItem {
+      action: root.copyAction
+    }
+
+    MenuItem {
+      action: root.pasteAction
+    }
+
+    MenuItem {
+      action: root.duplicateAction
     }
   }
 

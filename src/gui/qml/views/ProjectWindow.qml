@@ -122,9 +122,13 @@ ApplicationWindow {
     id: mainMenuBar
 
     aboutDialog: aboutDialog
+    copyAction: root.copyAction
+    cutAction: root.cutAction
     deviceManager: root.deviceManager
+    duplicateAction: root.duplicateAction
     exportDialog: exportDialog
     loadController: loadController
+    pasteAction: root.pasteAction
     saveController: saveController
     session: root.session
   }
@@ -135,15 +139,17 @@ ApplicationWindow {
   }
 
   // Resolves the clipboard context from focus: the nearest ancestor of
-  // the focused item that exposes a clipboardContext property, or null
-  // when focus is outside any context-providing view
+  // the focused item that exposes a clipboardContext property. Focus
+  // moving to items without a context (menu bar, menus, buttons, text
+  // fields) keeps the last resolved context; the property clears
+  // automatically when the providing view is destroyed. Text inputs
+  // consume the standard edit shortcuts while focused.
   onActiveFocusItemChanged: {
     let item = activeFocusItem;
-    activeClipboardContext = null;
     while (item !== null && item !== undefined) {
       if (item.clipboardContext !== undefined) {
         activeClipboardContext = item.clipboardContext;
-        break;
+        return;
       }
       item = item.parent;
     }
