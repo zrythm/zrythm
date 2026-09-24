@@ -65,6 +65,7 @@
 #include "utils/qt.h"
 #include "utils/raii_utils.h"
 #include "utils/registry_utils.h"
+#include "utils/rt_logger.h"
 #include "utils/serialization.h"
 #include "utils/views.h"
 
@@ -935,9 +936,9 @@ ClapPlugin::guiRequestResize (uint32_t width, uint32_t height) noexcept
 {
   if (width == 0 || height == 0)
     {
-      z_warning (
+      z_rt_warning (
         "CLAP plugin '{}' requested an invalid GUI resize to {}x{}; refusing",
-        get_name (), width, height);
+        get_descriptor ().name_.view (), width, height);
       return false;
     }
   // Deferred: resizing the host window calls gui.set_size() back on the
@@ -1067,10 +1068,10 @@ ClapPlugin::threadPoolRequestExec (uint32_t numTasks) noexcept
       if (!pimpl_->thread_pool_misuse_warning_emitted_)
         {
           pimpl_->thread_pool_misuse_warning_emitted_ = true;
-          z_warning (
+          z_rt_warning (
             "CLAP plugin '{}' called thread-pool request_exec without "
             "providing the thread-pool extension",
-            get_node_name ());
+            node_name_view ());
         }
       return false;
     }
@@ -2272,14 +2273,17 @@ ClapPlugin::logLog (clap_log_severity severity, const char * message)
   switch (severity)
     {
     case CLAP_LOG_DEBUG:
-      z_debug ("{}", message);
+      z_rt_debug ("{}", message);
       break;
     case CLAP_LOG_INFO:
-      z_info ("{}", message);
+      z_rt_info ("{}", message);
       break;
     case CLAP_LOG_WARNING:
-      z_warning ("{}", message);
+      z_rt_warning ("{}", message);
       break;
+    // ERROR, FATAL and HOST_MISBEHAVING stay synchronous: z_error's
+    // backtrace is only meaningful on the plugin's calling thread, and a
+    // fatal report means the process is going down
     case CLAP_LOG_FATAL:
       z_error ("[fatal CLAP error] {}", message);
       break;
@@ -2287,7 +2291,7 @@ ClapPlugin::logLog (clap_log_severity severity, const char * message)
       z_error ("[CLAP host misbehaving] {}", message);
       break;
     case CLAP_LOG_PLUGIN_MISBEHAVING:
-      z_warning ("[CLAP plugin misbehaving] {}", message);
+      z_rt_warning ("[CLAP plugin misbehaving] {}", message);
       break;
     case CLAP_LOG_ERROR:
     default:

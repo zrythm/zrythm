@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 #include <thread>
@@ -13,7 +14,10 @@
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "utils/audio.h"
+#include "utils/logger.h"
 #include "utils/object_registry.h"
+#include "utils/rt_logger.h"
+#include "utils/utf8_string.h"
 #include "utils/views.h"
 
 #include <QCoreApplication>
@@ -1396,5 +1400,23 @@ INSTANTIATE_TEST_SUITE_P (
     "Test Synth"sv,
     // MIDI dialect only
     "Test Synth MIDI"sv));
+
+TEST_F (ClapPluginTest, LogExtensionFromProcessIsDeliveredAsync)
+{
+  utils::init_logging (utils::LoggerType::Test);
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+  process_blocks (2);
+
+  ASSERT_TRUE (utils::drain_rt_log (std::chrono::milliseconds{ 2000 }));
+
+  const auto entries = utils::get_last_log_entries (1000);
+  EXPECT_TRUE (std::ranges::any_of (entries, [] (const utils::Utf8String &entry) {
+    return entry.str ().find ("rt-log from process block") != std::string::npos;
+  }));
+  EXPECT_TRUE (std::ranges::any_of (entries, [] (const utils::Utf8String &entry) {
+    return entry.str ().find ("[rt thread ") != std::string::npos;
+  }));
+}
 
 } // namespace zrythm::plugins

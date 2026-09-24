@@ -32,6 +32,7 @@ target_sources(zrythm_utils_lib
     pcg_rand.cpp
     playback_cache_scheduler.cpp
     resampler.cpp
+    rt_logger.cpp
     rt_thread_id.cpp
     symap.cpp
     threads.cpp
@@ -92,6 +93,7 @@ target_sources(zrythm_utils_lib
       ranges.h
       resampler.h
       ring_buffer.h
+      rt_logger.h
       rt_thread_id.h
       serialization.h
       utf8_string.h

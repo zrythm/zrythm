@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 
 namespace zrythm::utils
 {
@@ -17,6 +18,14 @@ namespace zrythm::utils
  */
 std::string
 get_current_thread_name ();
+
+/**
+ * @brief Sets the name of the calling thread.
+ *
+ * No-op on platforms without thread naming.
+ */
+void
+set_current_thread_name (std::string_view name);
 
 /**
  * @brief Returns the stack size to request for a realtime worker thread.

@@ -255,6 +255,14 @@ public:
   utils::Utf8String get_node_name () const final { return name_; }
 
   /**
+   * @brief A view of the node name, for contexts that must not allocate.
+   */
+  std::string_view node_name_view () const noexcept [[clang::nonblocking]]
+  {
+    return name_.view ();
+  }
+
+  /**
    * @brief Calls custom_process_block() internally after processing all the
    * parameters.
    *

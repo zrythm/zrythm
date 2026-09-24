@@ -10,6 +10,7 @@
 
 #include "clap_fixture_factory.h"
 #include "gain_dsp.h"
+#include <clap/ext/log.h>
 #include <nlohmann/json.hpp>
 
 namespace zrythm_test_plugins
@@ -203,6 +204,18 @@ public:
   {
     apply_events (process->in_events);
 
+    // Logs through the host log extension once, from inside the process
+    // call
+    if (!logged_from_process_)
+      {
+        logged_from_process_ = true;
+        const auto * host = _host.host ();
+        if (
+          const auto * host_log = static_cast<const clap_host_log *> (
+            host->get_extension (host, CLAP_EXT_LOG)))
+          host_log->log (host, CLAP_LOG_INFO, "rt-log from process block");
+      }
+
     const auto num_frames = process->frames_count;
     if (process->audio_inputs_count < 1 || process->audio_outputs_count < 1)
       return CLAP_PROCESS_CONTINUE;
@@ -324,6 +337,8 @@ private:
   std::atomic<double> gain_{ 1.0 };
   std::atomic<double> level_input_count_{ 0.0 };
   std::atomic<int>    report_mode_{ 0 };
+
+  bool logged_from_process_ = false;
   /** Alternates the reported value in Sweep mode. */
   std::atomic<int>  sweep_step_{ 0 };
   std::atomic<bool> open_begin_pending_{ false };

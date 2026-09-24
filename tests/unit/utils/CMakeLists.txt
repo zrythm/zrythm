@@ -31,6 +31,7 @@ add_executable(zrythm_utils_unit_tests
   raii_utils_test.cpp
   ranges_test.cpp
   ring_buffer_test.cpp
+  rt_logger_test.cpp
   string_test.cpp
   test_uuid_identifiable_qobjects.h
   units_test.cpp

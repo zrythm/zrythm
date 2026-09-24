@@ -3,6 +3,9 @@
 
 #include "utils/logger.h"
 #include "utils/threads.h"
+#include "utils/utf8_string.h"
+
+#include <juce_core/juce_core.h>
 
 #ifndef _WIN32
 #  include <pthread.h>
@@ -29,6 +32,13 @@ get_current_thread_name ()
     return buf;
 #endif
   return fmt::format ("{}", std::this_thread::get_id ());
+}
+
+void
+set_current_thread_name (std::string_view name)
+{
+  juce::Thread::setCurrentThreadName (
+    Utf8String::from_utf8_encoded_string (name).to_juce_string ());
 }
 
 // This function incorporates work covered by the following copyright and
