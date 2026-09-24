@@ -249,6 +249,12 @@ Zrythm has comprehensive architecture documentation in the [`doc/dev/`](doc/dev/
 - **Key Components**: PlaybackCacheScheduler, MidiPlaybackCache, PlaybackCacheBuilder
 - **Real-time Safety**: Uses farbot::RealtimeObject for atomic cache swapping
 
+### Clipboard System
+- **Location**: [`doc/dev/clipboard_system.md`](doc/dev/clipboard_system.md)
+- **Purpose**: Type-tagged copy/cut/paste/duplicate for arranger objects, tracks and plugins over the project registry, with OS-clipboard bridging for cross-project/cross-instance paste
+- **Key Components**: `Clipboard` (service + OS bridge), `ClipboardPayload` (closure snapshot, UUID remap, import), per-family selection operators, `ClipboardContext` (focus-routed QML dispatch)
+- **Integration**: All inter-object references serialize as bare UUID strings; paste validates before mutating and attaches imported roots with undoable commands using owner handles
+
 ### Writing Documentation
 
 When editing or creating [developer documentation](doc/dev/), focus on high level concepts, utilizing mermaid diagrams where possible, instead of concrete code. Only include actual code where you think it's appropriate.
