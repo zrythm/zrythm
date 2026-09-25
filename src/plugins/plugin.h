@@ -173,6 +173,7 @@ public:
    * formats have no "unselect", so implementations are not notified).
    * Re-selecting the current preset re-applies it, reverting the plugin's
    * state to the preset. Out-of-range indices are refused with a warning.
+   * When applying fails, the previously selected preset stays selected.
    */
   void setPresetIndex (int index);
 
@@ -659,10 +660,13 @@ private:
   /**
    * @brief Applies a preset selection to the underlying plugin.
    *
-   * Receives the selected entry's durable identifier. The default
-   * implementation does nothing (no preset support).
+   * Receives the selected entry's durable identifier. Returns whether
+   * the preset was applied; when it returns false, setPresetIndex()
+   * restores the previously selected preset instead of keeping the
+   * failed one. The default implementation reports success (formats
+   * without preset support).
    */
-  virtual void apply_preset_impl (const PresetId &) { }
+  virtual bool apply_preset_impl (const PresetId &) { return true; }
 
   virtual void process_impl (
     dsp::graph::ProcessBlockInfo time_info,

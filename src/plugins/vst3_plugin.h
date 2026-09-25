@@ -231,7 +231,7 @@ private:
    * @brief Applies a preset selection by queueing a program change on the
    * plugin's kIsProgramChange parameter.
    */
-  void apply_preset_impl (const PresetId &id) override;
+  bool apply_preset_impl (const PresetId &id) override;
 
   /**
    * @brief Notifies the edit controller of a host-initiated parameter

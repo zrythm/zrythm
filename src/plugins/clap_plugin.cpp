@@ -53,6 +53,7 @@
 #include "dsp/midi_event.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
+#include "plugins/clap_preset_discovery.h"
 #include "plugins/clap_speaker_arrangement.h"
 #include "plugins/gl_context_utils.h"
 #include "plugins/host_window_units.h"
@@ -1154,7 +1155,27 @@ ClapPlugin::presetLoadLoaded (
   assert (is_main_thread);
   z_info (
     "CLAP preset loaded: location_kind={} location='{}' load_key='{}'",
-    locationKind, location, loadKey);
+    locationKind, location != nullptr ? location : "<null>",
+    loadKey != nullptr ? loadKey : "<null>");
+
+  const auto id = clap_preset_discovery::encode_preset_id (
+    { locationKind, location != nullptr ? location : "",
+      loadKey != nullptr ? loadKey : "" });
+  const auto known =
+    std::ranges::any_of (preset_entries_, [&id] (const PresetEntry &entry) {
+      return entry.id == PresetId{ id };
+    });
+  if (!known)
+    {
+      // The plugin loaded a preset our list does not contain: keep the
+      // selection honest by storing the unlisted id, which resolves to
+      // no listed preset
+      z_info (
+        "CLAP plugin '{}': loaded preset is not in the preset list; "
+        "selection follows the plugin",
+        get_name ());
+    }
+  update_selected_preset_from_backend (id);
 }
 
 void
@@ -1169,7 +1190,9 @@ ClapPlugin::presetLoadOnError (
   z_warning (
     "CLAP preset load error: location_kind={} location='{}' load_key='{}' "
     "os_error={} msg='{}'",
-    locationKind, location, loadKey, osError, msg);
+    locationKind, location != nullptr ? location : "<null>",
+    loadKey != nullptr ? loadKey : "<null>", osError,
+    msg != nullptr ? msg : "<null>");
 }
 
 void
@@ -1694,6 +1717,8 @@ ClapPlugin::load_plugin (
 
   Q_EMIT hasNativeUiChanged ();
 
+  rebuild_preset_list (path, desc->id);
+
   return true;
 }
 
@@ -1708,6 +1733,8 @@ ClapPlugin::unload_current_plugin ()
     *param_maps = ClapPluginImpl::ParamMaps{};
   }
   pimpl_->param_count_ = 0;
+
+  clear_preset_list ();
 
   Q_EMIT pluginLoadedChanged (false);
   Q_EMIT hasNativeUiChanged ();
@@ -3757,6 +3784,113 @@ ClapPlugin::sync_param_values_from_plugin ()
         }
     }
   z_debug ("CLAP: get_value updated {} params", updated);
+}
+
+void
+ClapPlugin::rebuild_preset_list (
+  const std::filesystem::path &library_path,
+  std::string_view             plugin_id)
+{
+  assert (is_main_thread);
+  z_return_if_fail (pimpl_->pluginEntry_ != nullptr);
+
+  auto entries = clap_preset_discovery::collect_presets_cached (
+    library_path, *pimpl_->pluginEntry_, plugin_id);
+
+  const bool changed = entries != preset_entries_;
+  preset_entries_ = std::move (entries);
+  if (changed)
+    {
+      z_debug (
+        "CLAP plugin '{}': discovered {} preset(s)", get_name (),
+        preset_entries_.size ());
+      notify_presets_rebuilt ();
+    }
+}
+
+void
+ClapPlugin::clear_preset_list ()
+{
+  if (preset_entries_.empty ())
+    return;
+
+  preset_entries_.clear ();
+  notify_presets_rebuilt ();
+}
+
+bool
+ClapPlugin::apply_preset_impl (const PresetId &id)
+{
+  assert (is_main_thread);
+
+  const auto * id_str = std::get_if<QString> (&id);
+  if (id_str == nullptr)
+    {
+      z_warning ("CLAP plugin '{}': preset id is not a string", get_name ());
+      return false;
+    }
+
+  const auto preset_location = clap_preset_discovery::decode_preset_id (*id_str);
+  if (!preset_location.has_value ())
+    {
+      z_warning (
+        "CLAP plugin '{}': invalid preset id '{}'", get_name (), *id_str);
+      return false;
+    }
+
+  if (pimpl_ == nullptr || pimpl_->plugin_ == nullptr)
+    {
+      z_warning ("CLAP plugin '{}': plugin not loaded", get_name ());
+      return false;
+    }
+  if (!pimpl_->plugin_->canUsePresetLoad ())
+    {
+      z_warning (
+        "CLAP plugin '{}': does not implement {}", get_name (),
+        CLAP_EXT_PRESET_LOAD);
+      return false;
+    }
+
+  bool       applied = false;
+  const auto load = [&] () {
+    applied = pimpl_->plugin_->presetLoadFromLocation (
+      preset_location->kind,
+      preset_location->location.empty ()
+        ? nullptr
+        : preset_location->location.c_str (),
+      preset_location->load_key.empty ()
+        ? nullptr
+        : preset_location->load_key.c_str ());
+  };
+  if (main_thread_callbacks_.with_paused_processing_)
+    {
+      main_thread_callbacks_.with_paused_processing_ (load);
+    }
+  else
+    {
+      load ();
+    }
+
+  if (!applied)
+    {
+      z_warning (
+        "CLAP plugin '{}': preset load failed for location '{}' key '{}'",
+        get_name (), preset_location->location, preset_location->load_key);
+      return false;
+    }
+
+  // Presets change parameter values like a state load: resolve deferred
+  // updates and read the values back
+  if (pimpl_->is_plugin_active ())
+    {
+      pimpl_->scheduleParamFlush_.store (true, std::memory_order_release);
+      sync_param_values_from_plugin ();
+    }
+  else
+    {
+      flush_and_sync_params_when_inactive ();
+    }
+  return true;
 }
 
 void

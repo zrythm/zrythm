@@ -42,6 +42,7 @@ target_sources(zrythm_plugins_lib
   PRIVATE
     CLAPPluginFormat.cpp
     clap_plugin.cpp
+    clap_preset_discovery.cpp
     gl_context_utils.cpp
     host_window_units.cpp
     internal_plugin_base.cpp
@@ -74,6 +75,7 @@ target_sources(zrythm_plugins_lib
     FILES
       CLAPPluginFormat.h
       clap_plugin.h
+      clap_preset_discovery.h
       clap_speaker_arrangement.h
       gl_context_utils.h
       host_window_units.h

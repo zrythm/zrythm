@@ -4853,7 +4853,7 @@ Lv2Plugin::presetEntries () const
   return preset_entries_;
 }
 
-void
+bool
 Lv2Plugin::apply_preset_impl (const PresetId &id)
 {
   assert (QThread::currentThread () == thread ());
@@ -4865,7 +4865,7 @@ Lv2Plugin::apply_preset_impl (const PresetId &id)
     {
       z_warning (
         "LV2 plugin '{}': refusing to apply a non-URI preset id", get_name ());
-      return;
+      return false;
     }
 
   if (pimpl_->instance_ == nullptr)
@@ -4874,7 +4874,7 @@ Lv2Plugin::apply_preset_impl (const PresetId &id)
         "LV2 plugin '{}': cannot apply preset '{}' while the plugin is not "
         "instantiated",
         get_name (), utils::Utf8String::from_qstring (*preset_uri));
-      return;
+      return false;
     }
 
   // The restore runs on the plugin instance and must not overlap audio
@@ -4882,16 +4882,18 @@ Lv2Plugin::apply_preset_impl (const PresetId &id)
   if (main_thread_callbacks_.with_paused_processing_)
     {
       const auto uri = utils::Utf8String::from_qstring (*preset_uri);
-      main_thread_callbacks_.with_paused_processing_ ([this, &uri] () {
-        pimpl_->restore_preset_from_world (uri.str ());
+      bool       restored = false;
+      main_thread_callbacks_.with_paused_processing_ ([&] () {
+        restored = pimpl_->restore_preset_from_world (uri.str ());
       });
-      return;
+      return restored;
     }
 
   z_warning (
     "LV2: cannot apply a preset to '{}' while processing; the host cannot "
     "pause processing",
     get_name ());
+  return false;
 }
 
 void

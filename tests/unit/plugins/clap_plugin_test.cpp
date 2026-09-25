@@ -3,17 +3,21 @@
 
 #include <algorithm>
 #include <array>
+#include <fstream>
 #include <string_view>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "dsp/fork_join_executor.h"
 #include "dsp/midi_event.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
+#include "plugins/clap_preset_discovery.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "utils/audio.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 #include "utils/object_registry.h"
 #include "utils/rt_logger.h"
@@ -21,7 +25,9 @@
 #include "utils/views.h"
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QSignalSpy>
+#include <QTemporaryDir>
 #include <QTest>
 
 #include "helpers/mock_plugin_host_window.h"
@@ -1417,6 +1423,243 @@ TEST_F (ClapPluginTest, LogExtensionFromProcessIsDeliveredAsync)
   EXPECT_TRUE (std::ranges::any_of (entries, [] (const utils::Utf8String &entry) {
     return entry.str ().find ("[rt thread ") != std::string::npos;
   }));
+}
+
+// ============================================================================
+// Preset discovery and loading (Test Presets fixture)
+// ============================================================================
+
+namespace
+{
+
+/**
+ * @brief Owns the fixture preset directory and its environment
+ * variable.
+ *
+ * Clears ZRYTHM_TEST_PRESET_DIR on destruction so no stale directory
+ * (already deleted by QTemporaryDir) can affect later tests.
+ */
+struct ClapPresetDirEnv
+{
+  std::unique_ptr<QTemporaryDir> dir;
+
+  explicit ClapPresetDirEnv (std::unique_ptr<QTemporaryDir> d)
+      : dir (std::move (d))
+  {
+  }
+  ~ClapPresetDirEnv () { qunsetenv ("ZRYTHM_TEST_PRESET_DIR"); }
+
+  bool is_valid () const { return dir != nullptr && dir->isValid (); }
+};
+
+/** Writes the fixture preset files into a fresh temp dir and points the
+ * fixture's preset-discovery provider at it. */
+[[nodiscard]] ClapPresetDirEnv
+setup_clap_preset_dir ()
+{
+  // Each test crawls a different directory; drop any cached result for
+  // this fixture from an earlier test
+  clap_preset_discovery::clear_preset_cache ();
+
+  auto dir = utils::io::make_tmp_dir ("ClapPresetDiscovery");
+
+  {
+    std::ofstream file (
+      utils::Utf8String::from_qstring (dir->filePath ("pack-a.zpreset"))
+        .to_path ());
+    file
+      << R"({"presets":[)"
+      << R"({"name":"File One","key":"file-one","level":0.3},)"
+      << R"({"name":"File Two","key":"file-two","level":0.35},)"
+      << R"({"name":"Other Target","key":"other","level":0.4,"pluginId":"org.other.thing"})"
+      << R"(]})";
+  }
+  // Same format but a non-matching extension: the crawl must skip it
+  {
+    std::ofstream file (
+      utils::Utf8String::from_qstring (dir->filePath ("notes.txt")).to_path ());
+    file << R"({"presets":[{"name":"Not A Preset","key":"txt","level":0.9}]})";
+  }
+
+  qputenv (
+    "ZRYTHM_TEST_PRESET_DIR", QDir (dir->path ()).absolutePath ().toUtf8 ());
+  return ClapPresetDirEnv (std::move (dir));
+}
+
+int
+clap_preset_row_by_name (const ClapPlugin &plugin, std::string_view name)
+{
+  const auto entries = plugin.presetEntries ();
+  const auto it = std::ranges::find_if (entries, [name] (const auto &entry) {
+    return utils::Utf8String::from_qstring (entry.name) == name;
+  });
+  return it != entries.end ()
+           ? static_cast<int> (std::distance (entries.begin (), it))
+           : -1;
+}
+
+} // namespace
+
+TEST_F (ClapPluginTest, PresetDiscoveryListsAndFiltersPresets)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  const auto entries = plugin_->presetEntries ();
+  ASSERT_EQ (entries.size (), 9u);
+
+  const std::pair<std::string_view, std::string_view> expected[] = {
+    { "Embedded A",             "Embedded"      },
+    { "Embedded B",             "Embedded"      },
+    { "Embedded Broken",        "Embedded"      },
+    { "Embedded Broken Hijack", "Embedded"      },
+    { "Embedded Ghost",         "Embedded"      },
+    { "Embedded Hijack",        "Embedded"      },
+    { "Embedded No Id",         "Embedded"      },
+    { "File One",               "Factory Files" },
+    { "File Two",               "Factory Files" },
+  };
+  for (size_t i = 0; i < std::size (expected); ++i)
+    {
+      EXPECT_TRUE (
+        utils::Utf8String::from_qstring (entries[i].name) == expected[i].first)
+        << "entry " << i;
+      EXPECT_TRUE (
+        utils::Utf8String::from_qstring (entries[i].group) == expected[i].second)
+        << "entry " << i;
+      EXPECT_NE (std::get_if<QString> (&entries[i].id), nullptr)
+        << "entry " << i;
+    }
+}
+
+TEST_F (ClapPluginTest, PresetApplyFromFileAndEmbeddedLocations)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+  install_direct_paused_processing ();
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+  EXPECT_NEAR (level->baseValue (), 1.0f, 1e-4f);
+
+  const auto file_one = clap_preset_row_by_name (*plugin_, "File One");
+  ASSERT_GE (file_one, 0);
+  plugin_->setPresetIndex (file_one);
+  EXPECT_NEAR (level->baseValue (), 0.3f, 1e-4f);
+  EXPECT_EQ (plugin_->presetIndex (), file_one);
+
+  const auto embedded_a = clap_preset_row_by_name (*plugin_, "Embedded A");
+  ASSERT_GE (embedded_a, 0);
+  plugin_->setPresetIndex (embedded_a);
+  EXPECT_NEAR (level->baseValue (), 0.1f, 1e-4f);
+  EXPECT_EQ (plugin_->presetIndex (), embedded_a);
+
+  // Preset loads run inside the host's paused-processing scope
+  EXPECT_GT (paused_processing_calls_, 0);
+}
+
+TEST_F (ClapPluginTest, PresetLoadFailureLeavesParameterUnchanged)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  const auto embedded_b = clap_preset_row_by_name (*plugin_, "Embedded B");
+  ASSERT_GE (embedded_b, 0);
+  plugin_->setPresetIndex (embedded_b);
+  EXPECT_NEAR (level->baseValue (), 0.2f, 1e-4f);
+
+  const auto broken = clap_preset_row_by_name (*plugin_, "Embedded Broken");
+  ASSERT_GE (broken, 0);
+  plugin_->setPresetIndex (broken);
+  EXPECT_NEAR (level->baseValue (), 0.2f, 1e-4f)
+    << "a refused preset load must not change parameter values";
+  EXPECT_EQ (plugin_->presetIndex (), embedded_b)
+    << "a refused preset load must not stay selected";
+}
+
+TEST_F (ClapPluginTest, PluginInitiatedPresetLoadSyncsSelection)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  // The hijack preset applies embedded-b's value and reports
+  // embedded-b as loaded, like a plugin switching presets from its own
+  // browser: the loaded notification must move the selection to the
+  // reported preset
+  const auto hijack = clap_preset_row_by_name (*plugin_, "Embedded Hijack");
+  ASSERT_GE (hijack, 0);
+  plugin_->setPresetIndex (hijack);
+
+  const auto embedded_b = clap_preset_row_by_name (*plugin_, "Embedded B");
+  ASSERT_GE (embedded_b, 0);
+  EXPECT_EQ (plugin_->presetIndex (), embedded_b)
+    << "the loaded notification must move the selection to the reported "
+       "preset";
+  EXPECT_NEAR (level->baseValue (), 0.2f, 1e-4f);
+}
+
+TEST_F (ClapPluginTest, PluginReportedPresetOutsideListClearsSelection)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  // The ghost preset applies its level but reports a load key that is
+  // not in the preset list: the selection follows the plugin and
+  // resolves to no listed preset
+  const auto ghost = clap_preset_row_by_name (*plugin_, "Embedded Ghost");
+  ASSERT_GE (ghost, 0);
+  plugin_->setPresetIndex (ghost);
+  EXPECT_NEAR (level->baseValue (), 0.25f, 1e-4f);
+  EXPECT_EQ (plugin_->presetIndex (), -1);
+}
+
+TEST_F (ClapPluginTest, FailedPresetLoadWithBackendReportRestoresSelection)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  const auto embedded_a = clap_preset_row_by_name (*plugin_, "Embedded A");
+  ASSERT_GE (embedded_a, 0);
+  plugin_->setPresetIndex (embedded_a);
+  ASSERT_EQ (plugin_->presetIndex (), embedded_a);
+
+  // The broken-hijack preset reports embedded-b as loaded and then
+  // fails the load: the report briefly moves the selection, but the
+  // failure must restore the previously applied preset
+  const auto broken_hijack =
+    clap_preset_row_by_name (*plugin_, "Embedded Broken Hijack");
+  ASSERT_GE (broken_hijack, 0);
+  plugin_->setPresetIndex (broken_hijack);
+
+  EXPECT_EQ (plugin_->presetIndex (), embedded_a)
+    << "a failed load must not leave the selection on the reported or "
+       "failed preset";
+  EXPECT_NEAR (level->baseValue (), 0.1f, 1e-4f)
+    << "the failed load must not change parameter values";
 }
 
 } // namespace zrythm::plugins

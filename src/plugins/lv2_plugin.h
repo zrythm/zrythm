@@ -148,7 +148,7 @@ private:
   /**
    * @brief Applies a preset by restoring its state from the lilv world.
    */
-  void apply_preset_impl (const PresetId &id) override;
+  bool apply_preset_impl (const PresetId &id) override;
 
   /** Creates the native UI window and instantiates the plugin's UI. */
   void show_editor (bool force_float_window = false);

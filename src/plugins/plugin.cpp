@@ -103,17 +103,35 @@ Plugin::setPresetIndex (int index)
     }
 
   const auto new_id = entries[static_cast<size_t> (index)].id;
-  const bool changed =
-    !selected_preset_id_.has_value () || *selected_preset_id_ != new_id;
+  const auto previous_id = selected_preset_id_;
 
   // Re-selecting the current preset re-applies it (revert to the preset's
   // state)
   selected_preset_id_ = new_id;
   // Pass an owned copy: implementations may refresh their entry list while
   // applying, which could mutate the selection state
-  apply_preset_impl (new_id);
-  set_preset_dirty (false);
-  if (changed)
+  const bool applied = apply_preset_impl (new_id);
+  if (applied)
+    {
+      set_preset_dirty (false);
+    }
+  else
+    {
+      // The failed preset must not stay selected; snap back to whatever
+      // was loaded before. A backend report received during the failed
+      // apply already moved the selection and emitted a change for a row
+      // that is no longer selected, so emit the restored selection
+      const bool selection_moved_during_apply = selected_preset_id_ != new_id;
+      selected_preset_id_ = previous_id;
+      if (selection_moved_during_apply)
+        {
+          Q_EMIT presetIndexChanged (presetIndex ());
+        }
+      return;
+    }
+
+  const bool selection_changed = previous_id != selected_preset_id_;
+  if (selection_changed)
     {
       // Re-resolve: applying may have rebuilt the entry list
       Q_EMIT presetIndexChanged (presetIndex ());

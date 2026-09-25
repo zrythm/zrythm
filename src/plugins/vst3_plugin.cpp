@@ -2471,7 +2471,7 @@ Vst3Plugin::rebuild_preset_list ()
     }
 }
 
-void
+bool
 Vst3Plugin::apply_preset_impl (const PresetId &id)
 {
   // VST3 presets are program indices; string ids belong to other formats
@@ -2481,7 +2481,7 @@ Vst3Plugin::apply_preset_impl (const PresetId &id)
       z_warning (
         "VST3 plugin '{}': refusing to apply non-index preset id",
         get_node_name ());
-      return;
+      return false;
     }
   if (
     !pimpl_->program_change_param_id_main_.has_value ()
@@ -2491,18 +2491,19 @@ Vst3Plugin::apply_preset_impl (const PresetId &id)
         "VST3 plugin '{}': preset {} selected but the plugin has no "
         "program-change parameter",
         get_node_name (), *index);
-      return;
+      return false;
     }
   if (*index > pimpl_->program_change_step_count_main_)
     {
       z_warning (
         "VST3 plugin '{}': refusing out-of-range program {} ({} steps)",
         get_node_name (), *index, pimpl_->program_change_step_count_main_);
-      return;
+      return false;
     }
 
   // Consumed at process time (see process_impl)
   pimpl_->pending_program_index_.store (*index, std::memory_order_release);
+  return true;
 }
 
 void
