@@ -9,8 +9,11 @@ colors:
   background: "#000000"
   on-surface: "#E3E3E3"
   alternate-surface: "#0F0F0F"
-  error: "#D90368"
-  solo: "#009B86"
+  danger: "#D90368"
+  solo-green: "#009B86"
+  success: "#009B86"
+  warning: "#FFD100"
+  error: "#FF4747"
   superorange: "#FF5500"
   spring-green: "#40FFA0"
   jonquil-yellow: "#FFD100"
@@ -90,7 +93,7 @@ components:
     backgroundColor: "{colors.on-surface}"
     textColor: "{colors.surface}"
   button-destructive:
-    backgroundColor: "{colors.error}"
+    backgroundColor: "{colors.danger}"
     textColor: "#FFFFFF"
   combo:
     backgroundColor: "{colors.secondary}"
@@ -193,11 +196,14 @@ share a value show it once.
 
 | Token | Dark | Light | Role |
 |---|---|---|---|
-| `primaryColor` | `#FFAE00` | `#009DFF` | Accent: selection, focus, checked/toggled fills, links |
+| `primaryColor` | `#FFAE00` | `#009DFF` | Accent: selection, focus, checked/toggled fills |
 | `zrythmColor` | `#FFAE00` | — | Default dark accent (Zrythm orange) |
 | `celestialBlueColor` | `#009DFF` | — | Default light accent fallback |
-| `dangerColor` | `#D90368` | — | Destructive actions (record, delete) |
-| `soloGreenColor` | `#009B86` | — | Solo state |
+| `dangerColor` | `#D90368` | `#D90368` | Destructive actions (record, delete) |
+| `soloGreenColor` | `#009B86` | `#009B86` | Solo state |
+| `successColor` | `#009B86` | `#006456` | Positive confirmations (export finished, project saved) |
+| `warningColor` | `#FFD100` | `#675300` | Recoverable problems (device fallback, refused operation) |
+| `errorColor` | `#FF4747` | `#A30015` | Failures needing attention (plugin crashed, save failed) |
 | `pageColor` | `#161616` | `#E3E3E3` | Window/panel background |
 | `backgroundColor` | `#000000` | `#FFFFFF` | Deepest background layer |
 | `alternateBackgroundColor` | `#0F0F0F` | `#D9D9D9` | Alternating row backgrounds (palette `alternateBase`) — the page color recessed by the same perceptual step (≈ 3.7 L*) in both modes |
@@ -213,6 +219,16 @@ automatically: dark-only accents (`zrythmColor`, `jonquilYellowColor`,
 `springGreen`, `munsellRed`) become `celestialBlueColor` in light mode, and the
 light-only `gunmetalColor` becomes `zrythmColor` in dark mode.
 
+`dangerColor`, `soloGreenColor`, and the severity colors (`successColor`,
+`warningColor`, `errorColor`) are exempt from this fallback: they carry
+explicit values in both modes, so their meaning survives theme
+switching. Severity light values derive
+mechanically from the dark ones — same OKLCH hue, maximum in-gamut
+chroma at a fixed OKLCH lightness of 0.45 — instead of being
+hand-picked. Value collisions with existing accents in dark mode
+(`successColor` = `soloGreenColor`, `warningColor` = `jonquilYellowColor`)
+are deliberate; the tokens are semantically independent and may diverge.
+
 ### Secondary accent colors
 
 | Token | Hex | Availability |
@@ -224,7 +240,7 @@ light-only `gunmetalColor` becomes `zrythmColor` in dark mode.
 | `electricPurple` | `#A654F7` | both |
 | `gunmetalColor` | `#2E3138` | light only |
 
-`superorangeColor` is a high-intensity accent for alerts and strongly active
+`superorangeColor` is a high-intensity accent for strongly active
 states; the rest are alternate accent choices.
 
 ### State derivation rules
@@ -266,7 +282,7 @@ shown; `blend` means "button background blended toward contrast × 1.3"
 | `dark` | `#E3E3E3` | Emphasized ("Important") button fill |
 | `brightText` | `#161616` | Text on accent/highlight fills |
 | `highlight` / `highlightedText` | `#FFAE00` / `#161616` | Selection fills and their text |
-| `link` / `linkVisited` | `#FFAE00` / `#C48300` | Hyperlinks |
+| `link` / `linkVisited` | `#FFAE00` / `#DBBB8F` | Hyperlinks (derived — see [Hyperlinks](#hyperlinks)) |
 | `placeholderText` | white @ 50 % | Placeholder text |
 | `shadow` | black @ 70 % | Shadows |
 | `toolTipBase` / `toolTipText` | `#323232` / `#E3E3E3` | Tooltips |
@@ -305,6 +321,11 @@ of it (4, 8, 12, 16, 24), and the standard control height is 24 px (6 units).
 | `animationDuration` / easing | 200 ms, `OutExpo` | Color/border transitions, popup enter |
 | `toolTipDelay` | 700 ms | Hover dwell before tooltip shows |
 | `disabledOpacityFactor` / `inactiveOpacityFactor` | 0.7 / 0.85 | See [State derivation rules](#state-derivation-rules) |
+
+When the platform requests reduced motion, slide and move animations are
+skipped in favor of instant changes or simple fades; continuous
+functional animations, such as an indeterminate progress bar, keep
+running.
 
 Additional fixed metrics: ComboBox implicit width 140; TextField and MenuItem
 implicit width 200; progress bar 6 px tall (radii = half the bar height);
@@ -386,8 +407,16 @@ keyboard highlight use the accent fill.
 
 ### Hyperlinks
 
-Hyperlinks use the palette `link` color. Normal links use the
-accent `#FFAE00`; visited links use the darker accent `#C48300`.
+Hyperlinks use the palette `link` color, derived from the accent in
+both modes: the accent itself where it passes 4.5:1 as text on the page
+(`#FFAE00` in dark mode), otherwise the accent hue at the severity-token
+lightness (OKLCH L 0.45, maximum in-gamut chroma — `#005894` in light
+mode). Visited links keep the link's hue and lightness and reduce the
+chroma to 40 % — a mechanical fade that preserves contrast on every
+surface for every accent. Inline links render underlined; button-like
+link affordances (the toast action) do not. Selection, focus, and
+toggled fills keep the full-strength accent in both modes. Links render
+on page surfaces.
 
 ### Tabs
 
@@ -452,6 +481,7 @@ implicit width, `normalTextFont`.
 |---|---|---|
 | Default | 1 px `mid` | `textColor` |
 | Focused | 2 px accent | `textColor`, selection = accent / page color |
+| Invalid | 2 px `errorColor` | `textColor` |
 | Placeholder | 1 px `mid` | 50 % white |
 
 ### Menu bar
@@ -522,6 +552,110 @@ the accent fill. Rows also serve as plain setting rows (title + subtitle
 + always-visible suffix controls, no interactions) in preferences-style
 forms.
 
+### Notifications
+
+User-facing events surface through a three-tier model. Toasts are the
+attention layer, the notification center (bell + history popover) is the
+memory layer, and modal dialogs stay reserved for blocking errors:
+
+| Tier | Surface | Gets |
+|---|---|---|
+| Attention | toast (transient) | info, success, warning, error |
+| Memory | bell + history popover | every notification is recorded here, including those surfaced as modals |
+| Interruption | modal dialog | critical only |
+
+**Toast anatomy.** A floating popup whose surface is defined directly
+in OKLCH: the severity hue at lightness 0.28 in dark mode and 0.90 in
+light mode, chroma 0.06 clipped to the sRGB gamut in both modes to keep
+perceived saturation consistent across themes; info has no severity hue
+and uses a neutral gray at the same lightness. Severity surfaces
+separate from the page by hue in addition to the shared popup recipe
+(4 px radius, raised shadow) with one deviation: a 1 px `mid` border in
+place of the shared popup's `backgroundAppendColor` — a stronger edge
+for a surface floating over arbitrary content; the neutral info
+surface separates by the border and shadow alone, like every popup
+surface. A 16 px severity glyph (aligned with the title line) is colored with
+the severity token at full strength — the tokens therefore remain in
+use for glyphs and the bell badge even though the backgrounds derive
+from the same hues at a fixed lightness and chroma. The title uses
+`semiBoldTextFont` and elides after one line; an optional detail line
+uses `fadedTextFont`
+(wrapped, elided after ~3 lines to accommodate translation expansion,
+spanning the full content width beneath the glyph),
+coalesced events show a "×N" chip after the title (`smallTextFont` on a
+solid `mid` pill), and a low-emphasis
+close button (real and focusable) sits on the trailing edge of the
+title line. An
+optional single action — a real, focusable text button in the palette
+`link` color — may precede the close button; activating it performs the
+action and dismisses the toast. Secondary
+text — the detail line and the chip — renders `textColor` at 70 %
+opacity, which keeps ≥4.5:1 contrast on every toast background. Toasts
+are 340 px wide with 12 px content padding; the close button is a
+24 × 24 flat target with a 16 px `cross-small-symbolic` glyph.
+
+**Severity language:**
+
+| Severity | Glyph | Glyph color | Background (dark / light) | Lifetime |
+|---|---|---|---|---|
+| Info | `info-outline-symbolic` | `textColor` | `#292929` / `#DEDEDE` | 5 s |
+| Success | `check-round-outline-symbolic` | `successColor` | `#003129` / `#B4ECDE` | 5 s |
+| Warning | `warning-outline-symbolic` | `warningColor` | `#332800` / `#ECDEB1` | 10 s |
+| Error | `cross-small-circle-outline-symbolic` | `errorColor` | `#421C19` / `#FFD1CC` | until dismissed |
+| Critical | `cross-small-circle-outline-symbolic` | `errorColor` | — | modal dialog |
+
+`dangerColor` and `errorColor` are distinct despite living side by side:
+danger marks the destructive *intent* of a user-initiated action (record,
+delete), error marks a system *failure* that has already happened.
+Critical marks failures that block further work or risk data loss
+(project failed to load, audio device lost); it interrupts via modal
+dialog and never appears as a toast.
+
+**Behavior.** Toasts enter by sliding down 8 px from beneath the
+toolbar while fading in (200 ms `OutExpo` — the popup-enter convention)
+and exit with a plain fade. Up to 3 are visible at once, newest on top;
+further events queue and appear in arrival order as slots free up — no
+severity preempts another, and every event keeps its place (an error
+holds its slot until dismissed). Two events
+coalesce when they share severity, title and context tag: the visible
+toast's ×N count is incremented and its dismissal timer restarts.
+Queued events coalesce the same way, bumping the queued count. A
+context tag identifies the event's source and is assigned by the
+producer (e.g. `plugin:<uuid>`, `export`). Hovering the toast — or
+focusing its close button — pauses the dismissal timer; clicking the
+body or the close button dismisses. Toasts never take focus on
+appearance; the close button remains tab-reachable, and toast buttons
+follow the main content in the tab order. `Escape` dismisses
+the topmost toast when no menu, popup, or dialog is open. Every
+notification is recorded in the history (including those surfaced as
+modals), so a missed, expired, or queued toast loses no information —
+the badge
+on the bell keeps unseen warnings and errors visible until the popover
+is opened. Toasts sit in the top trailing corner, just below the main
+toolbar, aligned 16 px from the trailing window edge (top-right in
+left-to-right layouts, mirrored in RTL), and expose their title as the
+accessible name and their detail as the accessible description. Toasts
+are announced by the platform screen-reader announcement mechanism when
+they appear; no focus change is involved.
+
+**Notification center.** A bell (`bell-outline-symbolic`) at the
+trailing end of the main toolbar badges the unacknowledged
+warning/error count, filled with the color of the highest unacknowledged
+severity and capped
+at "9+". Critical events never badge the bell — dismissing their modal
+acknowledges them; they appear in the history like every other event.
+The numeral uses the opposite polarity of its fill — the page
+color on the bright dark-mode fills, white on the dark light-mode fills
+— keeping ≥4.5:1 in every combination. Its popover lists the retained
+history — the most recent 100
+events, session-only, not persisted across restarts — on the standard
+popup surface: severity glyph, title, elided detail, locale-aware
+relative timestamp, ×N chip, and a Clear All action (immediate, not
+undoable). Opening it marks everything seen; dismissing a toast does
+not acknowledge it — only opening the popover does. Events arriving
+while the popover is open join the history immediately and are marked
+seen when it closes.
+
 ### Selection
 
 Selected arranger objects (clips, chords, MIDI notes, automation points,
@@ -532,7 +666,7 @@ toward contrast and the object name is rendered bold.
 
 ## Do's and Don'ts
 
-- Do use the accent for selection, keyboard focus, toggled states, links, and
+- Do use the accent for selection, keyboard focus, toggled states, and
   at most one primary action per view.
 - Don't introduce one-off colors; derive hover/press states with the rules in
   [State derivation rules](#state-derivation-rules) or add a named token.
@@ -541,6 +675,9 @@ toward contrast and the object name is rendered bold.
   text fields, checkboxes, and popups.
 - Do use dark text (`brightText` / page color) on accent fills.
 - Don't use `dangerColor` outside destructive contexts (record, delete).
+- Don't use the severity colors (`successColor`, `warningColor`,
+  `errorColor`) outside notification surfaces (toasts, history rows,
+  severity glyphs, bell badge) and inline form validation.
 - Do animate color and border-width changes at 200 ms `OutExpo`.
 - Don't hardcode color values in components; consume theme tokens or
   palette roles.
