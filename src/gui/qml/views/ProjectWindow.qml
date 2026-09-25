@@ -14,11 +14,9 @@ import "../config.js" as Config
 ApplicationWindow {
   id: root
 
-  property Arranger activeArranger: null
-
-  // Clipboard context of the focused view (arranger, tracklist or
-  // plugin slot list); see components/ClipboardContext.qml
-  property ClipboardContext activeClipboardContext: null
+  // View context of the focused view (arranger, tracklist or plugin
+  // slot list); see components/ViewContext.qml
+  property ViewContext activeViewContext: null
   required property AlertManager alertManager
   required property AppSettings appSettings
   required property ChordPresetManager chordPresetManager
@@ -26,43 +24,39 @@ ApplicationWindow {
   readonly property Action copyAction: Action {
     id: copyAction
 
-    enabled: root.activeClipboardContext !== null && root.activeClipboardContext.canCopy
+    enabled: root.activeViewContext !== null && root.activeViewContext.canCopy
     shortcut: StandardKey.Copy
     text: qsTr("&Copy")
 
-    onTriggered: root.activeClipboardContext.copyRequested()
+    onTriggered: root.activeViewContext.copyRequested()
   }
   readonly property Action cutAction: Action {
     id: cutAction
 
-    enabled: root.activeClipboardContext !== null && root.activeClipboardContext.canCopy
+    enabled: root.activeViewContext !== null && root.activeViewContext.canCopy
     shortcut: StandardKey.Cut
     text: qsTr("Cu&t")
 
-    onTriggered: root.activeClipboardContext.cutRequested()
+    onTriggered: root.activeViewContext.cutRequested()
   }
   readonly property Action deleteAction: Action {
     id: deleteAction
 
-    enabled: root.activeArranger !== null
+    enabled: root.activeViewContext !== null && root.activeViewContext.canDelete
     shortcut: StandardKey.Delete
     text: qsTr("&Delete")
 
-    onTriggered: {
-      if (root.activeArranger) {
-        root.activeArranger.selectionOperator.deleteObjects(root.activeArranger.arrangerSelectionModel);
-      }
-    }
+    onTriggered: root.activeViewContext.deleteRequested()
   }
   required property DeviceManager deviceManager
   readonly property Action duplicateAction: Action {
     id: duplicateAction
 
-    enabled: root.activeClipboardContext !== null && root.activeClipboardContext.canCopy
+    enabled: root.activeViewContext !== null && root.activeViewContext.canCopy
     shortcut: "Ctrl+D"
     text: qsTr("&Duplicate")
 
-    onTriggered: root.activeClipboardContext.duplicateRequested()
+    onTriggered: root.activeViewContext.duplicateRequested()
   }
   readonly property Action fullScreenAction: Action {
     id: fullScreenAction
@@ -77,27 +71,14 @@ ApplicationWindow {
   readonly property Action pasteAction: Action {
     id: pasteAction
 
-    enabled: root.activeClipboardContext !== null && root.activeClipboardContext.canPaste
+    enabled: root.activeViewContext !== null && root.activeViewContext.canPaste
     shortcut: StandardKey.Paste
     text: qsTr("&Paste")
 
-    onTriggered: root.activeClipboardContext.pasteRequested()
+    onTriggered: root.activeViewContext.pasteRequested()
   }
   readonly property Project project: session.project
   required property ProjectSession session
-  readonly property Action toggleMuteAction: Action {
-    id: toggleMuteAction
-
-    enabled: root.activeArranger !== null
-    shortcut: "Shift+M"
-    text: qsTr("Toggle &Mute")
-
-    onTriggered: {
-      if (root.activeArranger) {
-        root.activeArranger.selectionOperator.toggleMute(root.activeArranger.arrangerSelectionModel);
-      }
-    }
-  }
 
   function closeAndDestroy() {
     console.log("Closing and destroying project window");
@@ -124,6 +105,7 @@ ApplicationWindow {
     aboutDialog: aboutDialog
     copyAction: root.copyAction
     cutAction: root.cutAction
+    deleteAction: root.deleteAction
     deviceManager: root.deviceManager
     duplicateAction: root.duplicateAction
     exportDialog: exportDialog
@@ -138,17 +120,17 @@ ApplicationWindow {
     project.engine.activate();
   }
 
-  // Resolves the clipboard context from focus: the nearest ancestor of
-  // the focused item that exposes a clipboardContext property. Focus
-  // moving to items without a context (menu bar, menus, buttons, text
-  // fields) keeps the last resolved context; the property clears
-  // automatically when the providing view is destroyed. Text inputs
-  // consume the standard edit shortcuts while focused.
+  // Resolves the view context from focus: the nearest ancestor of the
+  // focused item that exposes a viewContext property. Focus moving to
+  // items without a context (menu bar, menus, buttons, text fields)
+  // keeps the last resolved context; the property clears automatically
+  // when the providing view is destroyed. Text inputs consume the
+  // standard edit shortcuts while focused.
   onActiveFocusItemChanged: {
     let item = activeFocusItem;
     while (item !== null && item !== undefined) {
-      if (item.clipboardContext !== undefined) {
-        activeClipboardContext = item.clipboardContext;
+      if (item.viewContext !== undefined) {
+        activeViewContext = item.viewContext;
         return;
       }
       item = item.parent;

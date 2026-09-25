@@ -56,16 +56,6 @@ Item {
   property alias arrangerContentHeight: arrangerContent.height
   required property ItemSelectionModel arrangerSelectionModel
 
-  readonly property ClipboardContext clipboardContext: ClipboardContext {
-    canCopy: true
-    canPaste: root.selectionOperator.canPasteObjects
-
-    onCopyRequested: root.selectionOperator.copyObjects(root.arrangerSelectionModel)
-    onCutRequested: root.selectionOperator.cutObjects(root.arrangerSelectionModel)
-    onPasteRequested: root.selectObjectsByUuidStrings(root.pasteAtPlayhead())
-    onDuplicateRequested: root.selectObjectsByUuidStrings(root.selectionOperator.duplicateObjects(root.arrangerSelectionModel))
-  }
-
   // Audition tool: playhead position and rolling state saved on press and
   // restored on release
   property double auditionSavedPlayheadTicks: 0
@@ -128,9 +118,30 @@ Item {
   required property Transport transport
   required property UndoStack undoStack
   required property UnifiedProxyModel unifiedObjectsModel
+  readonly property ViewContext viewContext: ViewContext {
+    canCopy: true
+    canPaste: root.selectionOperator.canPasteObjects
+    canDelete: true
+
+    onCopyRequested: root.selectionOperator.copyObjects(root.arrangerSelectionModel)
+    onCutRequested: root.selectionOperator.cutObjects(root.arrangerSelectionModel)
+    onPasteRequested: root.selectObjectsByUuidStrings(root.pasteAtPlayhead())
+    onDuplicateRequested: root.selectObjectsByUuidStrings(root.selectionOperator.duplicateObjects(root.arrangerSelectionModel))
+    onDeleteRequested: root.selectionOperator.deleteObjects(root.arrangerSelectionModel)
+  }
   // Whether the clicked object was already selected at press time (Ctrl+click only).
   // Used to defer deselection to mouse release so that Ctrl+drag always has a valid target.
   property bool wasClickedObjectSelectedOnPress: false
+
+  // Shift+M toggles mute of the selected objects. Handled here rather
+  // than as a window action: it applies only while an arranger has
+  // focus, and key events bubble here from anywhere inside it
+  Keys.onPressed: (event) => {
+    if (event.key === Qt.Key_M && event.modifiers === Qt.ShiftModifier) {
+      root.selectionOperator.toggleMute(root.arrangerSelectionModel);
+      event.accepted = true;
+    }
+  }
 
   // Emitted when a drop occurs on the arranger canvas. Subclasses can handle
   // this for type-specific drops (e.g. chord pad → chord editor).
@@ -630,64 +641,55 @@ Item {
       Item {
         id: arrangerContent
 
-        readonly property var appWindow: ApplicationWindow.window
-        property bool arrangerIsActive: activeFocus
-
         height: root.enableYScroll ? 600 : flickable.height
         width: root.ruler.contentWidth
-
-        onArrangerIsActiveChanged: {
-          appWindow.activeArranger = arrangerIsActive ? root : null;
-        }
 
         Menu {
           id: arrangerContextMenu
 
           property bool showTimebaseMenu: false
 
-          onAboutToHide: {
-            arrangerContent.arrangerIsActive = Qt.binding(function () {
-              return arrangerContent.activeFocus;
-            });
-          }
           onAboutToShow: {
-            arrangerContent.arrangerIsActive = true;
             arrangerContextMenu.showTimebaseMenu = root.selectionOperator && root.selectionOperator.selectionHasTimebaseProviders(root.arrangerSelectionModel);
           }
 
           MenuItem {
             text: qsTr("Cut")
 
-            onTriggered: root.clipboardContext.cutRequested()
+            onTriggered: root.viewContext.cutRequested()
           }
 
           MenuItem {
             text: qsTr("Copy")
 
-            onTriggered: root.clipboardContext.copyRequested()
+            onTriggered: root.viewContext.copyRequested()
           }
 
           MenuItem {
             text: qsTr("Paste")
 
-            onTriggered: root.clipboardContext.pasteRequested()
+            onTriggered: root.viewContext.pasteRequested()
           }
 
           MenuItem {
             text: qsTr("Duplicate")
 
-            onTriggered: root.clipboardContext.duplicateRequested()
+            onTriggered: root.viewContext.duplicateRequested()
           }
 
           MenuItem {
-            action: arrangerContent.appWindow.deleteAction
+            text: qsTr("Delete")
+
+            onTriggered: root.viewContext.deleteRequested()
           }
 
           MenuSeparator {
           }
 
           MenuItem {
-            action: arrangerContent.appWindow.toggleMuteAction
+            text: qsTr("Toggle &Mute")
+
+            onTriggered: root.selectionOperator.toggleMute(root.arrangerSelectionModel)
           }
 
           MenuSeparator {

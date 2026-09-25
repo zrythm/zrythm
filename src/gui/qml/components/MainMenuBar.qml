@@ -14,6 +14,7 @@ MenuBar {
   required property AboutDialog aboutDialog
   required property Action copyAction
   required property Action cutAction
+  required property Action deleteAction
   required property DeviceManager deviceManager
   required property Action duplicateAction
   required property ExportDialog exportDialog
@@ -104,6 +105,10 @@ MenuBar {
 
     MenuItem {
       action: root.duplicateAction
+    }
+
+    MenuItem {
+      action: root.deleteAction
     }
   }
 

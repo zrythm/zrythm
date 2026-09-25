@@ -16,7 +16,6 @@ Control {
   required property AudioEngine audioEngine
   readonly property real buttonHeight: 18
   readonly property real buttonPadding: 1
-  required property ClipboardContext clipboardContext
   readonly property real contentBottomMargins: 3
   readonly property real contentTopMargins: 1
   required property int depth
@@ -34,6 +33,7 @@ Control {
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
+  required property ViewContext viewContext
 
   signal dropTargetChanged(int index)
   signal dropTargetFolderChanged(var track, int index)
@@ -86,7 +86,7 @@ Control {
       text: qsTr("Cut Track")
 
       onTriggered: {
-        root.clipboardContext.cutRequested();
+        root.viewContext.cutRequested();
       }
     }
 
@@ -96,7 +96,7 @@ Control {
       text: qsTr("Copy Track")
 
       onTriggered: {
-        root.clipboardContext.copyRequested();
+        root.viewContext.copyRequested();
       }
     }
 
@@ -105,7 +105,7 @@ Control {
 
       text: qsTr("Paste Tracks")
 
-      onTriggered: root.clipboardContext.pasteRequested()
+      onTriggered: root.viewContext.pasteRequested()
     }
 
     MenuItem {
@@ -114,7 +114,7 @@ Control {
       text: qsTr("Duplicate Track")
 
       onTriggered: {
-        root.clipboardContext.duplicateRequested();
+        root.viewContext.duplicateRequested();
       }
     }
 
@@ -126,16 +126,7 @@ Control {
 
       text: qsTr("Delete Track")
 
-      onTriggered: {
-        const selectedIndexes = root.trackSelectionModel.selectedIndexes;
-        let tracksToDelete = [];
-        for (const idx of selectedIndexes) {
-          const t = idx.data(TrackCollection.TrackPtrRole);
-          if (t !== null && t.isDeletable)
-            tracksToDelete.push(t);
-        }
-        root.trackCollectionOperator.deleteTracks(tracksToDelete);
-      }
+      onTriggered: root.viewContext.deleteRequested()
     }
   }
   background: Rectangle {

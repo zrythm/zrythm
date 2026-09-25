@@ -26,9 +26,10 @@ ListView {
   required property Tracklist tracklist
   required property UndoStack undoStack
 
-  readonly property ClipboardContext clipboardContext: ClipboardContext {
+  readonly property ViewContext viewContext: ViewContext {
     canCopy: root.trackSelectionModel.hasSelection
     canPaste: root.trackCollectionOperator.canPasteTracks
+    canDelete: root.trackSelectionModel.hasSelection
 
     onCopyRequested: root.trackCollectionOperator.copyTracks(root.selectedTracks())
     onCutRequested: root.trackCollectionOperator.cutTracks(root.selectedTracks())
@@ -42,6 +43,16 @@ ListView {
       if (newUuidStrings.length > 0)
         root.trackSelectionModel.selectTracksByUuidStrings(newUuidStrings);
     }
+    onDeleteRequested: root.trackCollectionOperator.deleteTracks(root.selectedDeletableTracks())
+  }
+
+  function selectedDeletableTracks(): list<Track> {
+    const tracks = [];
+    for (const track of root.selectedTracks()) {
+      if (track.isDeletable)
+        tracks.push(track);
+    }
+    return tracks;
   }
 
   function selectedTracks(): list<Track> {
@@ -66,8 +77,8 @@ ListView {
   }
 
   // Passive tap tracking: clicking anywhere in the tracklist focuses
-  // it, which makes the window resolve the active clipboard context
-  // from here
+  // it, which makes the window resolve the active view context from
+  // here
   TapHandler {
     onTapped: root.forceActiveFocus()
   }
@@ -85,7 +96,7 @@ ListView {
     required property int index
 
     audioEngine: root.audioEngine
-    clipboardContext: root.clipboardContext
+    viewContext: root.viewContext
     listViewDraggedTrack: root.draggedTrack
     listViewDropTargetFolder: root.dropTargetFolder
     listViewDropTargetIndex: root.dropTargetIndex

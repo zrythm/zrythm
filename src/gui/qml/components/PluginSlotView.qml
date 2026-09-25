@@ -9,7 +9,6 @@ import Zrythm
 Control {
   id: root
 
-  required property ClipboardContext clipboardContext
   required property var deviceGroupOrPlugin
   property bool down: false
 
@@ -28,6 +27,7 @@ Control {
   required property PluginSelectionModel pluginSelectionModel
   required property Track track
   required property TrackSelectionModel trackSelectionModel
+  required property ViewContext viewContext
 
   signal pluginClicked(Plugin plugin)
 
@@ -102,7 +102,7 @@ Control {
 
       onTriggered: {
         if (root.plugin) {
-          root.clipboardContext.cutRequested();
+          root.viewContext.cutRequested();
         }
       }
     }
@@ -115,7 +115,7 @@ Control {
 
       onTriggered: {
         if (root.plugin) {
-          root.clipboardContext.copyRequested();
+          root.viewContext.copyRequested();
         }
       }
     }
@@ -139,7 +139,7 @@ Control {
 
       onTriggered: {
         if (root.plugin) {
-          root.clipboardContext.duplicateRequested();
+          root.viewContext.duplicateRequested();
         }
       }
     }

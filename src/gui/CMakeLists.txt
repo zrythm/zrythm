@@ -273,7 +273,6 @@ set(rel_qml_file_paths
   components/BottomDock.qml
   components/CenterDock.qml
   components/ChannelView.qml
-  components/ClipboardContext.qml
   components/ChordPadPanel.qml
   components/ChordSelectorDialog.qml
   components/ClipLaunchButton.qml
@@ -319,6 +318,7 @@ set(rel_qml_file_paths
   components/TrackView.qml
   components/TransportControls.qml
   components/UndoSplitButton.qml
+  components/ViewContext.qml
   components/WaveformViewer.qml
   Greeter.qml
   DemoView.qml

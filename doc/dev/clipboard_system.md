@@ -204,23 +204,23 @@ The envelope carries the source project's identity. At paste time:
 
 ## QML integration (focus-routed contexts)
 
-Shortcuts and menus route through per-view **clipboard contexts**.
-Each context-providing view exposes a `ClipboardContext` object
-with capability flags (`canCopy`, `canPaste`) and request signals
-(`copyRequested`, `cutRequested`, `pasteRequested`,
-`duplicateRequested`). The window owns the four clipboard `Action`s
-(standard-key shortcuts and enabled state) and resolves the active
-context from keyboard focus:
+Shortcuts and the Edit menu route through per-view **view contexts**.
+Each context-providing view exposes a `ViewContext` object with
+capability flags (`canCopy`, `canPaste`, `canDelete`) and request
+signals (`copyRequested`, `cutRequested`, `pasteRequested`,
+`duplicateRequested`, `deleteRequested`). The window owns the five
+`Action`s (standard-key shortcuts and enabled state) and resolves
+the active context from keyboard focus:
 
 ```mermaid
 flowchart TD
     FOCUS["Window.activeFocusItem changes"]
-    WALK["walk parent chain looking for<br/>a clipboardContext property"]
+    WALK["walk parent chain looking for<br/>a viewContext property"]
     STICKY{"found a<br/>provider?"}
-    SET["activeClipboardContext = provider"]
+    SET["activeViewContext = provider"]
     KEEP["keep the previous context<br/>(sticky)"]
     ACTIONS["window actions:<br/>enabled, shortcut dispatch"]
-    CTX["context: canCopy/canPaste,<br/>request signals"]
+    CTX["context: canCopy/canPaste/canDelete,<br/>request signals"]
 
     FOCUS --> WALK --> STICKY
     STICKY -->|yes| SET
@@ -245,7 +245,15 @@ Contexts are provided by the arranger, the tracklist view (passed
 down to track delegates) and the plugin slot lists (passed down to
 slot delegates). The same context gates the window actions and the
 views' context menus, so keyboard and menu behavior cannot drift
-apart.
+apart. The dividing rule: window-level UI (menubar, shortcuts)
+dispatches through the resolved context, while a view's own context
+menu emits the context's signals directly — a right-click does not
+necessarily move focus, so the sticky context may point at another
+view.
+
+Operations outside the context stay view-local: Toggle Mute
+(Shift+M) is handled by the arranger itself through key handling,
+since it only applies to arranger selections.
 
 ## Undo integration
 

@@ -9,9 +9,10 @@ import Zrythm
 ListView {
   id: root
 
-  readonly property ClipboardContext clipboardContext: ClipboardContext {
+  readonly property ViewContext viewContext: ViewContext {
     canCopy: root.pluginSelectionModel.hasSelection
     canPaste: root.pluginOperator.canPastePlugins
+    canDelete: root.pluginSelectionModel.hasSelection
 
     onCopyRequested: root.pluginOperator.copyPlugins(root.selectedPlugins())
     onCutRequested: root.pluginOperator.cutPlugins(root.selectedPlugins(), root.pluginGroup, root.track)
@@ -25,6 +26,7 @@ ListView {
       if (pastedIds.length > 0)
         root.pluginSelectionModel.selectPluginsByUuidStrings(pastedIds);
     }
+    onDeleteRequested: root.pluginOperator.removePlugins(root.selectedPlugins(), root.pluginGroup, root.track)
   }
   required property PluginGroup pluginGroup
   required property PluginImporter pluginImporter
@@ -50,13 +52,13 @@ ListView {
   model: pluginGroup
 
   delegate: PluginSlotView {
-    clipboardContext: root.clipboardContext
     pluginGroup: root.pluginGroup
     pluginImporter: root.pluginImporter
     pluginOperator: root.pluginOperator
     pluginSelectionModel: root.pluginSelectionModel
     track: root.track
     trackSelectionModel: root.trackSelectionModel
+    viewContext: root.viewContext
 
     onPluginClicked: function (plugin: Plugin) {
       root.pluginClicked(plugin);
@@ -116,8 +118,8 @@ ListView {
   }
 
   // Passive tap tracking: clicking anywhere in the slot list focuses
-  // it, which makes the window resolve the active clipboard context
-  // from here
+  // it, which makes the window resolve the active view context from
+  // here
   TapHandler {
     onTapped: root.forceActiveFocus()
   }

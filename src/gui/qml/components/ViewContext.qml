@@ -5,14 +5,13 @@ pragma ComponentBehavior: Bound
 
 import QtQml
 
-/// The clipboard operations a focused view provides to the window's
-/// clipboard shortcuts (see ProjectWindow's activeClipboardContext).
+/// The editing operations a focused view provides to the window's
+/// global actions (see ProjectWindow's activeViewContext).
 ///
-/// A view instantiates this as its clipboardContext, handles the four
-/// request signals and the two gating properties, and assigns itself
-/// to the window's activeClipboardContext while focused. The
-/// properties are required so a view cannot provide a partial
-/// implementation.
+/// A view instantiates this as its viewContext, handles the request
+/// signals and the gating properties, and the window resolves it from
+/// focus. The properties are required so a view cannot provide a
+/// partial implementation.
 QtObject {
   id: root
 
@@ -21,6 +20,9 @@ QtObject {
 
   /// Whether the clipboard holds content this context can paste.
   required property bool canPaste
+
+  /// Whether the current selection can be deleted.
+  required property bool canDelete
 
   /// Emitted to copy the current selection to the clipboard.
   signal copyRequested()
@@ -36,4 +38,7 @@ QtObject {
   /// Emitted to duplicate the current selection without touching the
   /// clipboard.
   signal duplicateRequested()
+
+  /// Emitted to delete the current selection.
+  signal deleteRequested()
 }

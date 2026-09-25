@@ -252,7 +252,7 @@ Zrythm has comprehensive architecture documentation in the [`doc/dev/`](doc/dev/
 ### Clipboard System
 - **Location**: [`doc/dev/clipboard_system.md`](doc/dev/clipboard_system.md)
 - **Purpose**: Type-tagged copy/cut/paste/duplicate for arranger objects, tracks and plugins over the project registry, with OS-clipboard bridging for cross-project/cross-instance paste
-- **Key Components**: `Clipboard` (service + OS bridge), `ClipboardPayload` (closure snapshot, UUID remap, import), per-family selection operators, `ClipboardContext` (focus-routed QML dispatch)
+- **Key Components**: `Clipboard` (service + OS bridge), `ClipboardPayload` (closure snapshot, UUID remap, import), per-family selection operators, `ViewContext` (focus-routed QML dispatch of clipboard + delete)
 - **Integration**: All inter-object references serialize as bare UUID strings; paste validates before mutating and attaches imported roots with undoable commands using owner handles
 
 ### Writing Documentation
