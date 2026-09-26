@@ -324,6 +324,10 @@ TrackCollection::remove_track (const Track::Uuid &track_id)
   for (const auto &plugin_ref : plugins)
     {
       auto * plugin = plugin_ref.get ();
+      // Apply any plugin-reported values the periodic flush hasn't
+      // applied yet: the track's plugins leave the tracklist with the
+      // track
+      plugin->flush_plugin_values ();
       if (plugin->uiVisible ())
         {
           plugin->setUiVisible (false);

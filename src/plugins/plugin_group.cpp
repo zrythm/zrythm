@@ -131,6 +131,9 @@ PluginGroup::remove_plugin (const plugins::Plugin::Uuid &plugin_id)
   auto       ret = std::get<1> (*it);
 
   auto * plugin = ret.get ();
+  // Apply any plugin-reported values the periodic flush hasn't applied
+  // yet: the plugin leaves the tracklist with this removal
+  plugin->flush_plugin_values ();
   if (plugin->uiVisible ())
     {
       plugin->setUiVisible (false);

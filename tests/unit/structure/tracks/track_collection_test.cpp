@@ -10,12 +10,18 @@
 
 #include <QSignalSpy>
 
+#include "helpers/scoped_qcoreapplication.h"
+
+#include "./track_collection_test.h"
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::structure::tracks
 {
-class TrackCollectionTest : public ::testing::Test
+
+class TrackCollectionTest
+    : public ::testing::Test,
+      public test_helpers::ScopedQCoreApplication
 {
 protected:
   void SetUp () override
@@ -1167,6 +1173,52 @@ TEST_F (TrackCollectionTest, NotifyTracksMovedNoSpuriousMoveInProgressChanged)
   track_collection->notify_tracks_moved (moved);
 
   EXPECT_EQ (spy.count (), 0);
+}
+
+TEST_F (TrackCollectionTest, RemovedPluginFlushesPendingValues)
+{
+  auto audio_ref = create_audio_track ();
+  track_collection->add_track (audio_ref);
+  auto * audio_track = audio_ref.get ();
+
+  auto plugin_ref = utils::create_object<FlushPlugin> (*registry_, *registry_);
+  audio_track->channel ()->inserts ()->append_plugin (plugin_ref);
+  auto * plugin = plugin_ref.get ();
+
+  plugin->prepare_param_sync ();
+  auto * gain = plugin->gain_parameter ();
+  ASSERT_NE (gain, nullptr);
+  const auto staged = 0.63f;
+  ASSERT_NE (gain->baseValue (), staged);
+
+  plugin->set_param_pending_from_plugin (0, staged);
+
+  audio_track->channel ()->inserts ()->remove_plugin (plugin_ref.id ());
+
+  EXPECT_NEAR (gain->baseValue (), staged, 1e-4f);
+}
+
+TEST_F (TrackCollectionTest, RemovedTrackFlushesPluginPendingValues)
+{
+  auto audio_ref = create_audio_track ();
+  track_collection->add_track (audio_ref);
+  auto * audio_track = audio_ref.get ();
+
+  auto plugin_ref = utils::create_object<FlushPlugin> (*registry_, *registry_);
+  audio_track->channel ()->inserts ()->append_plugin (plugin_ref);
+  auto * plugin = plugin_ref.get ();
+
+  plugin->prepare_param_sync ();
+  auto * gain = plugin->gain_parameter ();
+  ASSERT_NE (gain, nullptr);
+  const auto staged = 0.63f;
+  ASSERT_NE (gain->baseValue (), staged);
+
+  plugin->set_param_pending_from_plugin (0, staged);
+
+  track_collection->remove_track (audio_ref.id ());
+
+  EXPECT_NEAR (gain->baseValue (), staged, 1e-4f);
 }
 
 } // namespace zrythm::structure::tracks
