@@ -358,6 +358,8 @@ Zrythm makes extensive use of modern C++ features:
 - Instead, use `Connections` with the appropriate signal handler (e.g., `onSelectionChanged`) to reactively update properties
 - Never use `parent.parent.someProperty` chains to access delegate properties from child items — they are fragile and break easily. Use IDs instead (e.g., give the delegate an `id: myDelegate` and reference `myDelegate.someProperty`)
 - Always qualify the right-hand side of a property assignment with an explicit id (`trackCollectionOperator: root.trackCollectionOperator`), and never write `x: x`. An unqualified name in a binding can resolve to the object being configured (its own property of the same name), a component id, or the component root — and shadowing between these is silent. The dangerous case is passing a property down a chain as `prop: prop`: it looks like a pass-through but self-binds the target to `null`
+- Use proper types: annotate signal/function parameters and return types (`signal moved(real x)`, `function fits(width: int): bool`); `var` only for JS-dynamic values (e.g. rows from `ListModel::get()`). Arrow functions cannot have typed parameters — signal handler lambdas are untyped (`onMoved: (x) => …`)
+- Cast items returned by generic accessors (`Repeater::itemAt()`, `ListView::currentItem`) to their concrete type before accessing custom members
 
 ### UI Design
 
