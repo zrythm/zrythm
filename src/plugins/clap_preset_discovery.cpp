@@ -364,9 +364,10 @@ decode_preset_id (const QString &id)
     return std::nullopt;
 
   return PresetLocation{
-    parts[0] == u'P'
-      ? CLAP_PRESET_DISCOVERY_LOCATION_PLUGIN
-      : CLAP_PRESET_DISCOVERY_LOCATION_FILE,
+    static_cast<uint32_t> (
+      parts[0] == u'P'
+        ? CLAP_PRESET_DISCOVERY_LOCATION_PLUGIN
+        : CLAP_PRESET_DISCOVERY_LOCATION_FILE),
     utils::Utf8String::from_qstring (parts[1]).str (),
     utils::Utf8String::from_qstring (parts[2]).str ()
   };
