@@ -250,7 +250,7 @@ Control {
             const trackContentEnd = lv.contentHeight - footerH;
             const cursorContentY = lvPoint.y + lv.contentY;
             if (cursorContentY >= trackContentEnd - 10) {
-              const pastEndIndex = root.tracklist.isTrackPinned(root.track) ? root.tracklist.pinnedTracksCutoff : root.tracklist.collection.trackCount();
+              const pastEndIndex = root.tracklist.isTrackPinned(root.track) ? root.tracklist.pinnedTracksCutoff : root.tracklist.collection.trackCount;
               root.dropTargetChanged(pastEndIndex);
             }
           }

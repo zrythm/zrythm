@@ -65,6 +65,7 @@ TrackCollection::TrackCollection (
       Q_EMIT numSoloedTracksChanged ();
       Q_EMIT numMutedTracksChanged ();
       Q_EMIT numListenedTracksChanged ();
+      Q_EMIT trackCountChanged ();
     });
   QObject::connect (
     this, &TrackCollection::rowsAboutToBeRemoved, this,
@@ -102,6 +103,7 @@ TrackCollection::TrackCollection (
     Q_EMIT numSoloedTracksChanged ();
     Q_EMIT numMutedTracksChanged ();
     Q_EMIT numListenedTracksChanged ();
+    Q_EMIT trackCountChanged ();
   });
 }
 

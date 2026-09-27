@@ -222,6 +222,8 @@ set(rel_qml_file_paths
   components/basic/ZrythmResizablePanel.qml
   components/basic/ZrythmSearchField.qml
   components/basic/SplitButton.qml
+  components/basic/StatusBar.qml
+  components/basic/StatusBarText.qml
   components/basic/WarpDragArea.qml
   components/basic/ZrythmToolBar.qml
   components/dragndrop/DescriptorDragItem.qml

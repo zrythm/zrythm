@@ -389,6 +389,12 @@ ApplicationWindow {
     session: root.session
   }
 
+  PlaybackCacheActivityAggregator {
+    id: cacheActivityAggregator
+
+    collection: root.project.tracklist.collection
+  }
+
   // Generic editor windows for plugins without a native UI
   Instantiator {
     id: genericPluginWindows
@@ -484,34 +490,25 @@ ApplicationWindow {
       }
     }
 
-    Rectangle {
-      id: botBar
+    StatusBar {
+      id: statusBar
 
       Layout.fillWidth: true
-      color: root.palette.window
-      implicitHeight: 24
 
-      PlaybackCacheActivityAggregator {
-        id: cacheActivityAggregator
-
-        collection: root.project.tracklist.collection
-      }
-
-      RowLayout {
-        anchors.fill: parent
-        anchors.rightMargin: ZrythmTheme.buttonPadding * 2
-        spacing: ZrythmTheme.buttonPadding * 2
-
-        Item {
-          Layout.fillWidth: true
+      leftItems: [
+        StatusBarText {
+          text: qsTr("%1 Hz · %2 samples").arg(root.project.engine.sampleRate.toLocaleString(Qt.locale(), "f", 0)).arg(root.project.engine.blockLength.toLocaleString(Qt.locale(), "f", 0))
+        },
+        StatusBarText {
+          text: qsTr("%1 tracks").arg(root.project.tracklist.collection.trackCount)
         }
-
-        Label {
-          font: root.font
+      ]
+      rightItems: [
+        StatusBarText {
           text: qsTr("Cache: %1 pending · %2 complete").arg(cacheActivityAggregator.cachePendingCount).arg(cacheActivityAggregator.cacheCompleteCount)
           visible: root.appSettings.showCacheActivity
         }
-      }
+      ]
     }
   }
 }

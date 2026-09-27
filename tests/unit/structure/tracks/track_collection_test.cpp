@@ -114,6 +114,21 @@ TEST_F (TrackCollectionTest, RemoveTracks)
   EXPECT_EQ (track_collection->rowCount (), 0);
 }
 
+TEST_F (TrackCollectionTest, TrackCountChangedEmittedOnRowChanges)
+{
+  QSignalSpy spy (track_collection.get (), &TrackCollection::trackCountChanged);
+  EXPECT_EQ (track_collection->trackCount (), 0);
+
+  auto folder_track = create_folder_track ();
+  track_collection->add_track (folder_track);
+  EXPECT_EQ (track_collection->trackCount (), 1);
+  EXPECT_EQ (spy.count (), 1);
+
+  track_collection->remove_track (folder_track.id ());
+  EXPECT_EQ (track_collection->trackCount (), 0);
+  EXPECT_EQ (spy.count (), 2);
+}
+
 TEST_F (TrackCollectionTest, MoveTracks)
 {
   auto track1 = create_folder_track ();

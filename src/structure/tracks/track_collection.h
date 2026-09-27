@@ -31,6 +31,7 @@ class TrackCollection : public QAbstractListModel
   Q_PROPERTY (
     bool moveInProgress READ moveInProgress WRITE setMoveInProgress NOTIFY
       moveInProgressChanged)
+  Q_PROPERTY (int trackCount READ trackCount NOTIFY trackCountChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
@@ -80,10 +81,7 @@ public:
   /**
    * @brief Returns the number of tracks in the collection.
    */
-  Q_INVOKABLE int trackCount () const
-  {
-    return static_cast<int> (tracks_.size ());
-  }
+  int trackCount () const { return static_cast<int> (tracks_.size ()); }
 
   int           numSoloedTracks () const;
   Q_SIGNAL void numSoloedTracksChanged ();
@@ -91,6 +89,7 @@ public:
   Q_SIGNAL void numMutedTracksChanged ();
   int           numListenedTracks () const;
   Q_SIGNAL void numListenedTracksChanged ();
+  Q_SIGNAL void trackCountChanged ();
 
   /**
    * @brief Whether a compound track move (remove + reinsert) is in progress.
