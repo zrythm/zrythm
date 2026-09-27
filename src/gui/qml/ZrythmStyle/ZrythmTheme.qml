@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // zrythm color variant (accent | accent lighter | accent darker):
 // F79616 | FFA533 | D68A0C
@@ -66,7 +66,8 @@ QtObject {
   readonly property var darkOnlyThemeColors: [zrythmColor, jonquilYellowColor, springGreen, munsellRed]
   readonly property real disabledOpacityFactor: 0.7
   readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
-  readonly property color electricPurple: "#A654F7"
+  readonly   property color electricPurple: "#A654F7"
+  property color errorColor: darkMode ? "#FF4747" : "#A30015"
   readonly property font fadedTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 11,
@@ -79,7 +80,13 @@ QtObject {
   readonly property color jonquilYellowColor: "#FFD100"
   readonly property var lightOnlyThemeColors: [gunmetalColor]
   readonly property real lightenFactor: 1.3 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
-  readonly property color munsellRed: "#FF0040"
+  readonly   property color munsellRed: "#FF0040"
+  // Notification surfaces: the severity hue at a fixed lightness per mode
+  // (see DESIGN.md, Notifications); info uses a neutral surface
+  property color notificationSurfaceErrorColor: darkMode ? "#421C19" : "#FFCFCA"
+  property color notificationSurfaceInfoColor: darkMode ? "#292929" : "#DEDEDE"
+  property color notificationSurfaceSuccessColor: darkMode ? "#003229" : "#B4ECDE"
+  property color notificationSurfaceWarningColor: darkMode ? "#332800" : "#ECDEB1"
   readonly property font normalTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 12,
@@ -141,6 +148,7 @@ QtObject {
     })
   readonly property color soloGreenColor: "#009B86"
   readonly property color springGreen: "#40FFA0"
+  readonly property color successColor: darkMode ? "#009B86" : "#006456"
   readonly property color superorangeColor: "#FF5500"
   property color textColor: darkMode ? "#E3E3E3" : "#161616" // used in contrast with pageColor
   readonly property font trackNameTextFont: ({
@@ -151,6 +159,7 @@ QtObject {
   readonly property real textFieldRadius: 4
   readonly property real toolButtonRadius: 6
   readonly property int toolTipDelay: 700
+  property color warningColor: darkMode ? "#FFD100" : "#675300"
   readonly property font xSmallTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 9,

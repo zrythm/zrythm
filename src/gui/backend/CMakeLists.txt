@@ -18,6 +18,12 @@ target_sources(zrythm_gui_lib
     file_system_model.h
     file_system_model.cpp
     global_state.h
+    notification.h
+    notification.cpp
+    notification_center.h
+    notification_center.cpp
+    notification_model.h
+    notification_model.cpp
     plugin_collections.h
     plugin_collections.cpp
     plugin_manager.h

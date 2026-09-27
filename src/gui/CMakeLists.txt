@@ -291,6 +291,9 @@ set(rel_qml_file_paths
   components/MetronomeSplitButton.qml
   components/MixerView.qml
   components/MonitorSection.qml
+  components/NotificationArea.qml
+  components/NotificationCenterButton.qml
+  components/NotificationCenterPopover.qml
   components/PlayheadTriangle.qml
   components/PluginBrowserPage.qml
   components/PluginInspectorPage.qml
