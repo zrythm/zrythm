@@ -12,6 +12,7 @@
 #include "gui/backend/qt_plugin_host_window.h"
 #include "gui/backend/x11_plugin_host_window.h"
 #include "gui/backend/zrythm_application.h"
+#include "plugins/plugin.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/directory_manager.h"
@@ -489,6 +490,8 @@ ProjectManager::loadProject (const QString &filepath)
             // Emit success signal
             Q_EMIT projectLoaded (session);
 
+            report_plugins_failed_to_load (*session->project ());
+
             report_progress (kStageDone, tr ("Project loaded"));
             promise.addResult (
               utils::Utf8String::from_path (project_dir).to_qstring ());
@@ -521,6 +524,32 @@ ProjectManager::loadProject (const QString &filepath)
   QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
 
   return wrapper;
+}
+
+void
+ProjectManager::report_plugins_failed_to_load (
+  structure::project::Project &project)
+{
+  QStringList failures;
+  project.get_registry ().for_each_matching<plugins::Plugin> (
+    [&failures] (const plugins::Plugin &plugin) {
+      if (
+        plugin.instantiationStatus ()
+        != plugins::Plugin::InstantiationStatus::Failed)
+        return;
+      const auto error =
+        plugin.instantiationError ().isEmpty ()
+          ? tr ("unknown error")
+          : plugin.instantiationError ();
+      failures.append (
+        u"%1: %2"_s.arg (plugin.get_name ().to_qstring ()).arg (error));
+    });
+  if (!failures.isEmpty ())
+    {
+      Q_EMIT pluginsFailedToLoad (
+        tr ("%n plugin(s) failed to load", nullptr, failures.size ()),
+        failures.join (u'\n'));
+    }
 }
 
 ProjectSession *

@@ -24,9 +24,11 @@ Plugin::Plugin (utils::IObjectRegistry &registry, QObject * parent)
       load_measurer_ (std::make_unique<juce::AudioProcessLoadMeasurer> ())
 {
   QObject::connect (
-    this, &Plugin::instantiationFinished, this, [this] (bool successful) {
+    this, &Plugin::instantiationFinished, this,
+    [this] (bool successful, const QString &error) {
       instantiation_status_ =
         successful ? InstantiationStatus::Successful : InstantiationStatus::Failed;
+      instantiation_error_ = successful ? QString{} : error;
       Q_EMIT instantiationStatusChanged (instantiation_status_);
     });
 

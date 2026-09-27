@@ -15,6 +15,11 @@
 #define PROJECT \
   (zrythm::gui::ProjectManager::get_instance ()->activeSession ()->project ())
 
+namespace zrythm::structure::project
+{
+class Project;
+}
+
 namespace zrythm::gui
 {
 
@@ -83,9 +88,24 @@ public:
 Q_SIGNALS:
   void projectLoaded (ProjectSession * project);
   void projectLoadingFailed (const QString &errorMessage);
+
+  /**
+   * @brief Emitted after a project with failed plugin instantiations
+   * finished loading.
+   *
+   * @param title Aggregated, translated title with the plugin count.
+   * @param detail One line per failed plugin (name and error).
+   */
+  void pluginsFailedToLoad (const QString &title, const QString &detail);
   void activeSessionChanged (ProjectSession * project);
 
 private:
+  /**
+   * @brief Collects the plugins of @p project whose instantiation
+   * failed and emits @ref pluginsFailedToLoad for them, if any.
+   */
+  void report_plugins_failed_to_load (structure::project::Project &project);
+
   /**
    * Initializes the array of project templates.
    */

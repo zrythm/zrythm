@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
 #include <fmt/std.h>
 
 #include "controllers/project_saver.h"
 #include "gui/backend/project_session.h"
 #include "gui/dsp/quantize_options.h"
+#include "gui/qquick/qfuture_qml_wrapper.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/app_settings.h"
@@ -739,24 +741,39 @@ ProjectSession::saveAs (const QString &path)
 
   auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
 
-  // Update project directory and title when save completes
+  // On failure or cancel the original identity is restored while the
+  // installed identity is still current; on success the project
+  // directory and title move to the saved copy
+  const auto restore_identity = [this, previous_id, installed_id] () {
+    save_as_in_flight_ = false;
+    if (project_->project_id () == installed_id)
+      {
+        project_->set_project_id (previous_id);
+      }
+  };
   QObject::connect (
-    wrapper, &gui::qquick::QFutureQmlWrapperT<QString>::finished, this,
-    [this, new_path, previous_id, installed_id, future] () {
+    wrapper, &gui::qquick::QFutureQmlWrapper::failed, this,
+    [restore_identity] (const QString &error) {
+      z_warning ("Save As failed: {}", error);
+      restore_identity ();
+    });
+  QObject::connect (
+    wrapper, &gui::qquick::QFutureQmlWrapper::canceled, this,
+    [restore_identity] () {
+      z_info ("Save As canceled");
+      restore_identity ();
+    });
+  QObject::connect (
+    wrapper, &gui::qquick::QFutureQmlWrapper::succeeded, this,
+    [this, new_path, future] () {
       save_as_in_flight_ = false;
-      const bool saved =
-        future.resultCount () > 0 && !future.result ().isEmpty ();
-      if (saved)
+      const auto saved_path = future.result ();
+      if (!saved_path.isEmpty ())
         {
-          setProjectDirectory (future.result ());
+          setProjectDirectory (saved_path);
           setTitle (
             utils::Utf8String::from_path (utils::io::path_get_basename (new_path))
               .to_qstring ());
-        }
-      else if (project_->project_id () == installed_id)
-        {
-          z_warning ("Save As failed: restoring the previous project identity");
-          project_->set_project_id (previous_id);
         }
     });
 

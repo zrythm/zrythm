@@ -391,6 +391,9 @@ public:
   }
   Q_SIGNAL void instantiationStatusChanged (InstantiationStatus status);
 
+  /** Empty while instantiation is pending or succeeded. */
+  QString instantiationError () const { return instantiation_error_; }
+
   /**
    * @brief To be emitted by implementations when instantiation finished.
    *
@@ -982,6 +985,9 @@ private:
   std::optional<AuditionSnapshot> audition_snapshot_;
 
   InstantiationStatus instantiation_status_{ InstantiationStatus::Pending };
+
+  /** Error reported by the implementation when instantiation failed. */
+  QString instantiation_error_;
 
   /** Whether plugin UI is opened or not. */
   bool visible_ = false;

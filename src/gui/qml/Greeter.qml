@@ -14,12 +14,12 @@ import "config.js" as Config
 ApplicationWindow {
   id: root
 
-  readonly property AlertManager alertManager: app?.alertManager ?? null
   readonly property ZrythmApplication app: GlobalState.application
   readonly property AppSettings appSettings: app?.appSettings ?? null
   property ProjectWindow currentProjectWindow: null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
   readonly property string pendingProjectPath: app?.pendingProjectFile ?? ""
+  readonly property NotificationCenter notificationCenter: app?.notificationCenter ?? null
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
   readonly property ProjectManager projectManager: app?.projectManager ?? null
@@ -31,7 +31,7 @@ ApplicationWindow {
       "appSettings": appSettings,
       "chordPresetManager": app.chordPresetManager,
       "controlRoom": app.controlRoom,
-      "alertManager": alertManager
+      "notificationCenter": notificationCenter
     }) as ProjectWindow;
     newWindow.closing.connect(function () {
       root.show();
@@ -62,6 +62,16 @@ ApplicationWindow {
 
   AboutDialog {
     id: aboutDialog
+  }
+
+  NotificationArea {
+    notificationCenter: root.notificationCenter
+
+    onCriticalNotification: (notification) => {
+      alertDialog.text = notification.title;
+      alertDialog.informativeText = notification.detail;
+      alertDialog.open();
+    }
   }
 
   LoadController {
@@ -221,6 +231,7 @@ ApplicationWindow {
       id: configPage
 
       NavigatablePage {
+        notificationCenter: root.notificationCenter
         title: qsTr("Configuration")
 
         footer: DialogButtonBox {
@@ -334,6 +345,7 @@ ApplicationWindow {
         // Distinguishes this page when inspecting the StackView's current item
         readonly property bool isProjectSelectorPage: true
 
+        notificationCenter: root.notificationCenter
         showBackButton: false
         title: qsTr("Open a Project")
 
@@ -434,6 +446,7 @@ ApplicationWindow {
       NavigatablePage {
         id: createProjectPage
 
+        notificationCenter: root.notificationCenter
         title: qsTr("Create New Project")
 
         ColumnLayout {
@@ -492,6 +505,7 @@ ApplicationWindow {
       id: projectCreationProgressPage
 
       NavigatablePage {
+        notificationCenter: root.notificationCenter
         title: qsTr("Creating Project")
 
         ColumnLayout {
@@ -529,25 +543,9 @@ ApplicationWindow {
         if (!stack.currentItem?.isProjectSelectorPage) {
           stack.push(projectSelectorPage);
         }
-        root.alertManager.showAlert(qsTr("Project Loading Failed"), errorMessage);
       }
 
       target: root.projectManager
-    }
-
-    Connections {
-      // Alerts are presented by the visible window: while a project window is
-      // open the Greeter is hidden and must not open dialogs
-      enabled: root.visible
-
-      function onAlertRequested(title, message) {
-        console.log("Alert requested: ", title, message);
-        alertDialog.text = title;
-        alertDialog.informativeText = message;
-        alertDialog.open();
-      }
-
-      target: root.alertManager
     }
 
     MessageDialog {
@@ -562,6 +560,7 @@ ApplicationWindow {
     id: navigatablePage
 
     // Public API
+    property NotificationCenter notificationCenter: null
     property alias rightActions: rightActionsRow.data
     property bool showBackButton: navigatablePage.StackView.view && navigatablePage.StackView.view.depth > 1
 
@@ -589,6 +588,10 @@ ApplicationWindow {
           id: rightActionsRow
 
           spacing: 4
+        }
+
+        NotificationCenterButton {
+          notificationCenter: navigatablePage.notificationCenter
         }
       }
     }

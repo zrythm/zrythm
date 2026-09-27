@@ -4,10 +4,10 @@
 #pragma once
 
 #include "engine/session/control_room.h"
-#include "gui/backend/alert_manager.h"
 #include "gui/backend/chord_preset_manager.h"
 #include "gui/backend/device_manager.h"
 #include "gui/backend/file_system_model.h"
+#include "gui/backend/notification_center.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/translation_manager.h"
@@ -40,7 +40,8 @@ class ZrythmApplication final : public QApplication
     zrythm::gui::old_dsp::plugins::PluginManager * pluginManager READ
       pluginManager CONSTANT FINAL)
   Q_PROPERTY (
-    zrythm::gui::AlertManager * alertManager READ alertManager CONSTANT FINAL)
+    zrythm::gui::NotificationCenter * notificationCenter READ notificationCenter
+      CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::gui::TranslationManager * translationManager READ translationManager
       CONSTANT FINAL)
@@ -74,7 +75,7 @@ public:
   zrythm::utils::AppSettings *          appSettings () const;
   zrythm::gui::ProjectManager *         projectManager () const;
   old_dsp::plugins::PluginManager *     pluginManager () const;
-  zrythm::gui::AlertManager *           alertManager () const;
+  zrythm::gui::NotificationCenter *     notificationCenter () const;
   zrythm::gui::TranslationManager *     translationManager () const;
   zrythm::gui::backend::DeviceManager * deviceManager () const;
   zrythm::gui::FileSystemModel *        fileSystemModel () const;

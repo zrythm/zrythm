@@ -263,6 +263,19 @@ TEST_F (PluginTest, ConstructionAndBasicProperties)
   EXPECT_FALSE (plugin_->presetDirty ());
 }
 
+TEST_F (PluginTest, InstantiationErrorRetainedUntilSuccess)
+{
+  plugin_->trigger_instantiation_finished (false, QStringLiteral ("boom"));
+  EXPECT_EQ (
+    plugin_->instantiationStatus (), Plugin::InstantiationStatus::Failed);
+  EXPECT_EQ (plugin_->instantiationError (), QStringLiteral ("boom"));
+
+  plugin_->trigger_instantiation_finished (true, {});
+  EXPECT_EQ (
+    plugin_->instantiationStatus (), Plugin::InstantiationStatus::Successful);
+  EXPECT_TRUE (plugin_->instantiationError ().isEmpty ());
+}
+
 TEST_F (PluginTest, SetConfiguration)
 {
   // Create a plugin descriptor

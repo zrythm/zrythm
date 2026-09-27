@@ -7,8 +7,6 @@ target_sources(zrythm_gui_lib
     action_controller.cpp
     chord_preset_manager.h
     chord_preset_manager.cpp
-    alert_manager.h
-    alert_manager.cpp
     cursor_manager.h
     cursor_manager.cpp
     curve_preset.h

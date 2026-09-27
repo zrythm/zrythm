@@ -14,6 +14,7 @@ ZrythmToolBar {
   required property AppSettings appSettings
   required property ControlRoom controlRoom
   readonly property Project project: session.project
+  required property NotificationCenter notificationCenter
   required property ProjectSession session
 
   centerItems: [
@@ -122,6 +123,9 @@ ZrythmToolBar {
       ToolTip {
         text: qsTr("Toggle Right Panel")
       }
+    },
+    NotificationCenterButton {
+      notificationCenter: root.notificationCenter
     }
   ]
 

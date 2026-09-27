@@ -18,6 +18,7 @@ Dialog {
   property string metadataGenre: "Genre"
   property string metadataTitle: "Title"
   readonly property Project project: session.project
+  required property NotificationCenter notificationCenter
   required property ProjectSession session
   required property string exportDirectory
 
@@ -26,6 +27,14 @@ Dialog {
     exportProgressDialog.open();
     root.exportFuture = ProjectExporter.exportAudio(root.project,
     exportDirectory, session.title);
+  }
+
+  Connections {
+    function onFailed(errorString: string) {
+      root.notificationCenter.postCritical(qsTr("Export Failed"), errorString);
+    }
+
+    target: root.exportFuture
   }
 
   implicitHeight: 500

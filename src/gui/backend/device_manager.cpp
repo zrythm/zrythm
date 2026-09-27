@@ -79,13 +79,24 @@ DeviceManager::DeviceManager (
       midi_impl_ (std::make_unique<MidiImpl> (*this))
 {
   addChangeListener (&device_change_listener_);
+  addAudioCallback (&device_error_probe_);
   midi_impl_->register_with_device_manager ();
 }
 
 DeviceManager::~DeviceManager ()
 {
   midi_impl_->unregister_from_device_manager ();
+  removeAudioCallback (&device_error_probe_);
   removeChangeListener (&device_change_listener_);
+}
+
+void
+DeviceManager::DeviceErrorProbe::audioDeviceError (
+  const juce::String &errorMessage)
+{
+  // Called on the audio device thread
+  Q_EMIT dev_manager_.errorOccurred (
+    utils::Utf8String::from_juce_string (errorMessage).to_qstring ());
 }
 
 void

@@ -17,7 +17,6 @@ ApplicationWindow {
   // View context of the focused view (arranger, tracklist or plugin
   // slot list); see components/ViewContext.qml
   property ViewContext activeViewContext: null
-  required property AlertManager alertManager
   required property AppSettings appSettings
   required property ChordPresetManager chordPresetManager
   required property ControlRoom controlRoom
@@ -68,6 +67,7 @@ ApplicationWindow {
       root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
     }
   }
+  required property NotificationCenter notificationCenter
   readonly property Action pasteAction: Action {
     id: pasteAction
 
@@ -97,6 +97,7 @@ ApplicationWindow {
 
     appSettings: root.appSettings
     controlRoom: root.controlRoom
+    notificationCenter: root.notificationCenter
     session: root.session
   }
   menuBar: MainMenuBar {
@@ -154,24 +155,23 @@ ApplicationWindow {
     target: KeyboardState
   }
 
-  Connections {
-    function onAlertRequested(title, message) {
-      console.log("Alert requested: ", title, message);
-      alertDialog.text = title;
-      alertDialog.informativeText = message;
+  NotificationArea {
+    notificationCenter: root.notificationCenter
+
+    onCriticalNotification: (notification) => {
+      alertDialog.text = notification.title;
+      alertDialog.informativeText = notification.detail;
       alertDialog.open();
     }
-
-    target: root.alertManager
   }
 
   Connections {
     function onOperationRefused(reason) {
-      root.alertManager.showAlert(qsTr("Cannot Perform Operation"), reason);
+      root.notificationCenter.postError(qsTr("Cannot Perform Operation"), reason);
     }
 
     function onPasteContentModified(summary) {
-      root.alertManager.showAlert(qsTr("Pasted Content Modified"), summary);
+      root.notificationCenter.postWarning(qsTr("Pasted Content Modified"), summary);
     }
 
     target: root.session.arrangerObjectSelectionOperator
@@ -179,7 +179,7 @@ ApplicationWindow {
 
   Connections {
     function onOperationRefused(reason) {
-      root.alertManager.showAlert(qsTr("Cannot Perform Operation"), reason);
+      root.notificationCenter.postError(qsTr("Cannot Perform Operation"), reason);
     }
 
     target: root.session.pluginOperator
@@ -187,11 +187,11 @@ ApplicationWindow {
 
   Connections {
     function onOperationRefused(reason) {
-      root.alertManager.showAlert(qsTr("Cannot Perform Operation"), reason);
+      root.notificationCenter.postError(qsTr("Cannot Perform Operation"), reason);
     }
 
     function onPasteContentModified(summary) {
-      root.alertManager.showAlert(qsTr("Pasted Content Modified"), summary);
+      root.notificationCenter.postWarning(qsTr("Pasted Content Modified"), summary);
     }
 
     target: root.session.trackCollectionOperator
@@ -199,9 +199,7 @@ ApplicationWindow {
 
   Connections {
     function onInstantiationFailed(pluginName, error) {
-      alertDialog.text = qsTr("Plugin Instantiation Failed");
-      alertDialog.informativeText = qsTr("Failed to instantiate plugin %1:\n\n%2").arg(pluginName).arg(error);
-      alertDialog.open();
+      root.notificationCenter.postError(qsTr("Plugin Instantiation Failed"), qsTr("Failed to instantiate plugin %1:\n\n%2").arg(pluginName).arg(error));
     }
 
     target: root.session.pluginImporter
@@ -261,6 +259,7 @@ ApplicationWindow {
     id: exportDialog
 
     exportDirectory: root.session.projectDirectory + "/exports"
+    notificationCenter: root.notificationCenter
     session: root.session
   }
 
@@ -386,6 +385,7 @@ ApplicationWindow {
   SaveController {
     id: saveController
 
+    notificationCenter: root.notificationCenter
     session: root.session
   }
 
