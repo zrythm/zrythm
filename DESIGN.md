@@ -9,11 +9,15 @@ colors:
   background: "#000000"
   on-surface: "#E3E3E3"
   alternate-surface: "#0F0F0F"
-  danger: "#D90368"
+  record: "#D90368"
   solo-green: "#009B86"
   success: "#009B86"
   warning: "#FFD100"
   error: "#FF4747"
+  notification-surface-info: "#292929"
+  notification-surface-success: "#003229"
+  notification-surface-warning: "#332800"
+  notification-surface-error: "#421C19"
   superorange: "#FF5500"
   spring-green: "#40FFA0"
   jonquil-yellow: "#FFD100"
@@ -74,6 +78,7 @@ spacing:
   base: 4px
   control-height: 24px
   dropdown-icon-size: 16px
+  floating-surface-width: 360px
 components:
   button:
     backgroundColor: "{colors.secondary}"
@@ -92,9 +97,9 @@ components:
   button-emphasized:
     backgroundColor: "{colors.on-surface}"
     textColor: "{colors.surface}"
-  button-destructive:
-    backgroundColor: "{colors.danger}"
-    textColor: "#FFFFFF"
+  button-destructive-toggled:
+    backgroundColor: "{colors.error}"
+    textColor: "{colors.surface}"
   combo:
     backgroundColor: "{colors.secondary}"
     textColor: "{colors.on-surface}"
@@ -148,6 +153,14 @@ components:
     textColor: "{colors.on-surface}"
     rounded: "{rounded.sm}"
     padding: 4px
+  dialog:
+    backgroundColor: "{colors.surface}"
+    padding: 12px
+  alert-dialog:
+    width: "{spacing.floating-surface-width}"
+  toast:
+    width: "{spacing.floating-surface-width}"
+    padding: 12px
 elevation:
   raised:
     offset: 2px
@@ -168,6 +181,12 @@ light theme follows the same rules with mirrored token values. The YAML front
 matter carries the machine-readable dark-mode tokens; the markdown body is
 the human-readable specification.
 
+Scope note: this document records tokens, reusable conventions, and
+accessibility contracts. Per-component realization arithmetic — padding
+sums, inset offsets, one-off geometry no other surface reuses — lives in
+the components' code; canonical proportions more than one surface shares
+(control heights, floating-surface widths) are tokens and stay here.
+
 ## Overview
 
 1. **Dark-first** — near-black surfaces (`#000000`–`#161616`) for extended studio
@@ -179,8 +198,8 @@ the human-readable specification.
    surfaces for selection and playhead indicators.
 4. **Compact density** — 24 px control height, 8–14 px type scale, 4 px padding:
    professional audio-tool conventions.
-5. **Semantic color roles** — solo (green), record/delete (danger pink), etc.
-   map directly to DAW interaction patterns.
+5. **Semantic color roles** — solo (green), record (pink), failure and
+   destructive actions (red) — map directly to DAW interaction patterns.
 6. **Derived states, not new colors** — hover/press/focus colors are computed
    from base tokens by fixed rules (see [State derivation rules](#state-derivation-rules)), so
    every control shifts consistently.
@@ -199,11 +218,11 @@ share a value show it once.
 | `primaryColor` | `#FFAE00` | `#009DFF` | Accent: selection, focus, checked/toggled fills |
 | `zrythmColor` | `#FFAE00` | — | Default dark accent (Zrythm orange) |
 | `celestialBlueColor` | `#009DFF` | — | Default light accent fallback |
-| `dangerColor` | `#D90368` | `#D90368` | Destructive actions (record, delete) |
-| `soloGreenColor` | `#009B86` | `#009B86` | Solo state |
+| `recordColor` | `#D90368` | `#9E004A` | Recording workflow (record buttons, armed states, playhead while recording) |
+| `soloGreenColor` | `#009B86` | `#006456` | Solo state |
 | `successColor` | `#009B86` | `#006456` | Positive confirmations (export finished, project saved) |
 | `warningColor` | `#FFD100` | `#675300` | Recoverable problems (device fallback, refused operation) |
-| `errorColor` | `#FF4747` | `#A30015` | Failures needing attention (plugin crashed, save failed) |
+| `errorColor` | `#FF4747` | `#A30015` | Failures (plugin crashed, export failed), destructive actions (delete, Don't Save), and over-level metering |
 | `pageColor` | `#161616` | `#E3E3E3` | Window/panel background |
 | `backgroundColor` | `#000000` | `#FFFFFF` | Deepest background layer |
 | `alternateBackgroundColor` | `#0F0F0F` | `#D9D9D9` | Alternating row backgrounds (palette `alternateBase`) — the page color recessed by the same perceptual step (≈ 3.7 L*) in both modes |
@@ -219,15 +238,22 @@ automatically: dark-only accents (`zrythmColor`, `jonquilYellowColor`,
 `springGreen`, `munsellRed`) become `celestialBlueColor` in light mode, and the
 light-only `gunmetalColor` becomes `zrythmColor` in dark mode.
 
-`dangerColor`, `soloGreenColor`, and the severity colors (`successColor`,
-`warningColor`, `errorColor`) are exempt from this fallback: they carry
-explicit values in both modes, so their meaning survives theme
-switching. Severity light values derive
-mechanically from the dark ones — same OKLCH hue, maximum in-gamut
-chroma at a fixed OKLCH lightness of 0.45 — instead of being
-hand-picked. Value collisions with existing accents in dark mode
-(`successColor` = `soloGreenColor`, `warningColor` = `jonquilYellowColor`)
-are deliberate; the tokens are semantically independent and may diverge.
+`recordColor`, `soloGreenColor`, and the severity colors (`successColor`,
+`warningColor`, `errorColor`) are exempt from this fallback: their hues —
+and therefore their meaning — are fixed across modes. Their light values
+derive mechanically from the dark ones — same OKLCH hue, maximum in-gamut
+chroma at a fixed OKLCH lightness of 0.45.
+Value collisions with other tokens (`successColor` = `soloGreenColor` in
+both modes, `warningColor` = `jonquilYellowColor` in dark mode) are
+deliberate; the tokens are semantically independent and may diverge.
+
+Text and meaningful glyphs reach ≥4.5:1 against the surface beneath;
+indicator fills, bars, and lines — non-text elements — reach 3:1.
+When a mode-exempt hue (`recordColor`, `soloGreenColor`, the severity
+colors) misses that as resting text or glyphs, keep its OKLCH hue and
+chroma (within gamut) and shift the lightness away from the surface
+until it passes; fills keep the base value and take polarity text
+([Buttons](#buttons)).
 
 ### Secondary accent colors
 
@@ -245,8 +271,7 @@ states; the rest are alternate accent choices.
 
 ### State derivation rules
 
-State colors are derived programmatically from the base fill, never
-hand-picked:
+State colors derive programmatically from the base fill:
 
 | State | Fill rule | Border | Content |
 |---|---|---|---|
@@ -327,20 +352,9 @@ skipped in favor of instant changes or simple fades; continuous
 functional animations, such as an indeterminate progress bar, keep
 running.
 
-Additional fixed metrics: ComboBox implicit width 140; TextField and MenuItem
-implicit width 200; progress bar 6 px tall (radii = half the bar height);
-check indicator 16 × 16 with 12 px glyph; combo chevron 16 px with 10 px
-trailing inset (6 px control padding + 4 px indicator padding);
-in-toolbar/menu icons 16 px (24 − 2 × 4); list-row icons 24 px; menu-bar item
-padding 12 px left / 16 px right; popup items (menus, combo popups, lists)
-are radius 4 with a 6 px text pad (menus 8 px) on 4 px popup content
-padding; menu items inset 1 px inside their popup; combo popup keeps 4 px
-margin from window edges and 4 px header/footer padding; tooltip gap 3 px.
-
 ## Elevation
 
-Depth comes from a single shadow level plus surface/border contrast, not from
-a scale of elevations:
+Depth comes from a single shadow level plus surface/border contrast:
 
 | Level | Shadow | Applied to |
 |---|---|---|
@@ -380,15 +394,15 @@ text inset, drop shadow.
 | Keyboard focus | ≈ `#414141` + 2 px accent border | unchanged |
 | Toggled (checked) | accent `#FFAE00` | dark (`brightText` `#161616`) |
 | **Emphasized** (`highlighted`) | near-white `#E3E3E3` (`dark` role) | dark `#161616` |
-| **Destructive** | checkable button with `palette.accent`/`palette.buttonText` overridden to `dangerColor` `#D90368`; toggled = danger fill + white text | danger-tinted at rest |
+| **Destructive** | base button fill at rest, error fill when toggled | adjusted error hue at rest, polarity text when toggled |
 
-White text is reserved for danger fills.
+Fill text is white or `#161616` — whichever reaches ≥4.5:1 against the
+fill.
 
 ### Drop Down (ComboBox)
 
 Button-styled closure (radius 9, 140 × 24, bold 12 px) with a 16 px
-chevrons-up-down glyph in `textColor`, inset 10 px from the trailing edge
-(6 px control padding + 4 px indicator padding).
+chevrons-up-down glyph in `textColor`, inset 10 px from the trailing edge.
 
 | State | Appearance |
 |---|---|
@@ -398,10 +412,12 @@ chevrons-up-down glyph in `textColor`, inset 10 px from the trailing edge
 | Keyboard focus | 2 px accent border |
 | Editable | inset text field matching [Text fields](#text-fields): `base` fill, radius 4, 1 px `mid` border → 2 px accent when focused |
 
-The popup is a `base`-style surface (see [Tooltips and popups](#tooltips-and-popups)) with
-4 px content padding that slides in from half its height while fading in
-(200 ms, `OutExpo`) and fades out. Items follow the shared item spec
-(radius 4, 6 px text pad — see [Lists](#lists)); the **current item is marked
+The popup is a `base`-style surface (see
+[Tooltips and popups](#tooltips-and-popups)) with 4 px content padding,
+kept 4 px from the window edges, that slides in from half its height
+while fading in (200 ms, `OutExpo`) and fades out. Items follow the
+shared item spec (radius 4, 6 px text pad — see [Lists](#lists)); the
+**current item is marked
 with a check glyph at its trailing edge** in `textColor`, while hover and
 keyboard highlight use the accent fill.
 
@@ -439,13 +455,37 @@ Tabs activate on drag-hover after a short dwell (drag-to-switch-tab).
 The shared popup surface: `button` fill `#323232`,
 radius 4, 1 px `backgroundAppendColor` (white @ 25 %) border, drop shadow.
 Used by tooltips and combo/menu popups. Content (menu and combo items) sits
-on 4 px padding inside the surface. Dialogs open as native windows: the OS
-provides the title bar, frame and shadow, and the dialog paints a flat
-window-colored client area inside that frame.
+on 4 px padding inside the surface.
 
 Tooltips: 12 px text in `toolTipText`, 4 px padding, 700 ms
-delay, placed 3 px above the control (below if it does not fit), closing on
-Escape or click outside.
+delay, placed 3 px above the control (below if it does not fit).
+
+### Dialogs
+
+Dialogs open as native windows: the OS provides the title bar, frame and
+shadow, and the dialog paints a flat surface-colored client area inside
+that frame. Alerts fill that client area with the layout below. Content
+padding is 12 px on the spacing grid; standard dialogs carry their title
+in the OS title bar and the client area does not repeat it — alerts are
+the exception, their heading and window title mirror each other.
+
+**Alerts** — confirmations and the notification Interruption tier —
+show a 16 px severity glyph in the full-strength severity token at the
+leading edge of a `semiBoldTextFont` heading with the message in
+`normalTextFont` spanning the full content width beneath the glyph.
+Alerts are 360 px wide.
+
+**Buttons** sit in a trailing-aligned row, mirrored in RTL: accept in the
+trailing slot, cancel next to it, further actions leading. The accept
+button is the dialog's default — Return activates it — and renders in
+the Emphasized variant; destructive actions render in the Destructive
+variant and are never the default, so when the accept action is
+destructive, the safe action takes the default. Escape activates
+cancel; a dialog without one dismisses, activating no button. Initial
+focus goes to the first text field if present, else the default button;
+dialogs take focus on appearance. While a modal dialog is open, the
+parent window paints a black @ 35 % scrim that fades with the standard
+transition.
 
 ### Progress bar
 
@@ -574,10 +614,10 @@ separate from the page by hue in addition to the shared popup recipe
 place of the shared popup's `backgroundAppendColor` — a stronger edge
 for a surface floating over arbitrary content; the neutral info
 surface separates by the border and shadow alone, like every popup
-surface. A 16 px severity glyph (aligned with the title line) is colored with
-the severity token at full strength — the tokens therefore remain in
-use for glyphs and the bell badge even though the backgrounds derive
-from the same hues at a fixed lightness and chroma. The title uses
+surface. A 16 px severity glyph (aligned with the title line) takes the
+severity hue with the lightness adjustment applied where the surface
+requires it; the bell badge fill keeps the full-strength token. The
+title uses
 `semiBoldTextFont` and elides after one line; an optional detail line
 uses `fadedTextFont`
 (wrapped, elided after ~3 lines to accommodate translation expansion,
@@ -591,22 +631,24 @@ optional single action — a real, focusable text button in the palette
 action and dismisses the toast. Secondary
 text — the detail line and the chip — renders `textColor` at 70 %
 opacity, which keeps ≥4.5:1 contrast on every toast background. Toasts
-are 340 px wide with 12 px content padding; the close button is a
-24 × 24 flat target with a 16 px `cross-small-symbolic` glyph.
+are 360 px wide — the shared floating-surface width — with 12 px content
+padding; the close button is a 24 × 24 flat target with a 16 px
+`cross-small-symbolic` glyph.
 
 **Severity language:**
 
 | Severity | Glyph | Glyph color | Background (dark / light) | Lifetime |
 |---|---|---|---|---|
 | Info | `info-outline-symbolic` | `textColor` | `#292929` / `#DEDEDE` | 5 s |
-| Success | `check-round-outline-symbolic` | `successColor` | `#003129` / `#B4ECDE` | 5 s |
+| Success | `check-round-outline-symbolic` | `successColor` | `#003229` / `#B4ECDE` | 5 s |
 | Warning | `warning-outline-symbolic` | `warningColor` | `#332800` / `#ECDEB1` | 10 s |
-| Error | `cross-small-circle-outline-symbolic` | `errorColor` | `#421C19` / `#FFD1CC` | until dismissed |
+| Error | `cross-small-circle-outline-symbolic` | `errorColor` | `#421C19` / `#FFCFCA` | 30 s |
 | Critical | `cross-small-circle-outline-symbolic` | `errorColor` | — | modal dialog |
 
-`dangerColor` and `errorColor` are distinct despite living side by side:
-danger marks the destructive *intent* of a user-initiated action (record,
-delete), error marks a system *failure* that has already happened.
+`recordColor` and `errorColor` are distinct: record marks the *capture
+intent* of the user — recording is a mode, not a problem — while error
+marks a *failure* that has already happened or a destructive action
+*about to* happen (delete, Don't Save).
 Critical marks failures that block further work or risk data loss
 (project failed to load, audio device lost); it interrupts via modal
 dialog and never appears as a toast.
@@ -616,7 +658,7 @@ toolbar while fading in (200 ms `OutExpo` — the popup-enter convention)
 and exit with a plain fade. Up to 3 are visible at once, newest on top;
 further events queue and appear in arrival order as slots free up — no
 severity preempts another, and every event keeps its place (an error
-holds its slot until dismissed). Two events
+holds its slot for its full 30 s lifetime). Two events
 coalesce when they share severity, title and context tag: the visible
 toast's ×N count is incremented and its dismissal timer restarts.
 Queued events coalesce the same way, bumping the queued count. A
@@ -630,8 +672,8 @@ the topmost toast when no menu, popup, or dialog is open. Every
 notification is recorded in the history (including those surfaced as
 modals), so a missed, expired, or queued toast loses no information —
 the badge
-on the bell keeps unseen warnings and errors visible until the popover
-is opened. Toasts sit in the top trailing corner, just below the main
+on the bell keeps unseen warnings and errors visible until the toast is
+dismissed or the popover is opened. Toasts sit in the top trailing corner, just below the main
 toolbar, aligned 16 px from the trailing window edge (top-right in
 left-to-right layouts, mirrored in RTL), and expose their title as the
 accessible name and their detail as the accessible description. Toasts
@@ -639,22 +681,25 @@ are announced by the platform screen-reader announcement mechanism when
 they appear; no focus change is involved.
 
 **Notification center.** A bell (`bell-outline-symbolic`) at the
-trailing end of the main toolbar badges the unacknowledged
-warning/error count, filled with the color of the highest unacknowledged
+trailing end of the main toolbar badges the number of unacknowledged
+warning/error occurrences — the history keeps one row per occurrence,
+so a recurring problem counts once per unseen event — filled with the
+color of the highest unacknowledged
 severity and capped
 at "9+". Critical events never badge the bell — dismissing their modal
 acknowledges them; they appear in the history like every other event.
-The numeral uses the opposite polarity of its fill — the page
-color on the bright dark-mode fills, white on the dark light-mode fills
-— keeping ≥4.5:1 in every combination. Its popover lists the retained
+The numeral keeps ≥4.5:1 against its fill in every combination (see
+[Buttons](#buttons)). Its popover, at the shared floating-surface width,
+lists the retained
 history — the most recent 100
 events, session-only, not persisted across restarts — on the standard
 popup surface: severity glyph, title, elided detail, locale-aware
-relative timestamp, ×N chip, and a Clear All action (immediate, not
-undoable). Opening it marks everything seen; dismissing a toast does
-not acknowledge it — only opening the popover does. Events arriving
-while the popover is open join the history immediately and are marked
-seen when it closes.
+relative timestamp, and a Clear All action (immediate, not
+undoable). Opening it marks everything seen. Explicitly dismissing a
+toast — close button, click, Escape, or its action — acknowledges
+every occurrence it absorbed; expiry does not acknowledge. Events
+arriving while the popover is open join the history immediately and are
+marked seen when it closes.
 
 ### Selection
 
@@ -664,20 +709,36 @@ their bounds, following each object's corner radius (fully round for
 automation points). On top of the outline, the fill brightens slightly
 toward contrast and the object name is rendered bold.
 
+### Playhead
+
+A 2 px full-height accent line in the arranger; it switches to
+`recordColor` while the transport records. A same-color glow hugs the
+line — accent at rest, `recordColor` while recording — and a small cap
+at the ruler marks its
+position. While the transport records, the record indicators in the
+transport buttons blink: one 1 s ease-in-out cycle between full and
+25 % opacity and back, continuing under reduced motion.
+
 ## Do's and Don'ts
 
 - Do use the accent for selection, keyboard focus, toggled states, and
   at most one primary action per view.
+- Do make the accept button the dialog's only emphasized button;
+  destructive actions are never the default.
 - Don't introduce one-off colors; derive hover/press states with the rules in
   [State derivation rules](#state-derivation-rules) or add a named token.
 - Do keep controls on the 4 px spacing grid and the 24 px control height.
 - Don't mix corner radii: 9 px buttons/combos/tabs, 6 px toolbuttons, 4 px
   text fields, checkboxes, and popups.
-- Do use dark text (`brightText` / page color) on accent fills.
-- Don't use `dangerColor` outside destructive contexts (record, delete).
-- Don't use the severity colors (`successColor`, `warningColor`,
-  `errorColor`) outside notification surfaces (toasts, history rows,
-  severity glyphs, bell badge) and inline form validation.
+- Do give accent fills the text polarity that passes AA — page color in
+  dark mode, base text color in light mode.
+- Don't use `recordColor` outside recording contexts (record buttons, the
+  playhead while recording, armed states).
+- Severity colors (`successColor`, `warningColor`, `errorColor`) are
+  reserved for notification surfaces (toasts, history rows, alert
+  dialogs, severity glyphs, bell badge), destructive actions
+  (destructive buttons, delete/cut tool feedback), over-level metering,
+  and inline form validation.
 - Do animate color and border-width changes at 200 ms `OutExpo`.
 - Don't hardcode color values in components; consume theme tokens or
   palette roles.
