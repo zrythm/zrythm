@@ -10,7 +10,7 @@ import ZrythmStyle 1.0
 T.MenuItem {
   id: control
 
-  readonly property string shortcutDisplayText: ShortcutUtils.displayText (control.action !== null ? control.action.shortcut : "")
+  readonly property string shortcutDisplayText: ShortcutUtils.displayText(control.action !== null ? control.action.shortcut : "")
 
   font: ZrythmTheme.semiBoldTextFont
   icon.color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
@@ -34,6 +34,10 @@ T.MenuItem {
     visible: control.subMenu
     x: control.mirrored ? control.leftPadding : control.width - width - control.rightPadding
     y: control.topPadding + (control.availableHeight - height) / 2
+
+    Behavior on color {
+      animation: ZrythmTheme.propertyAnimation
+    }
   }
   background: Rectangle {
     readonly property color baseColor: control.highlighted ? ZrythmTheme.colorPalette.highlight : ZrythmTheme.colorPalette.button
@@ -72,20 +76,33 @@ T.MenuItem {
       rightPadding: control.mirrored ? parent.indicatorPadding : parent.arrowPadding
       spacing: control.spacing
       text: control.text
+
+      Behavior on color {
+        animation: ZrythmTheme.propertyAnimation
+      }
     }
+
     Text {
       id: shortcutLabel
 
-      anchors.right: !control.mirrored ? parent.right : undefined
       anchors.left: control.mirrored ? parent.left : undefined
-      anchors.rightMargin: !control.mirrored ? parent.arrowPadding : 0
       anchors.leftMargin: control.mirrored ? parent.arrowPadding : 0
+      anchors.right: !control.mirrored ? parent.right : undefined
+      anchors.rightMargin: !control.mirrored ? parent.arrowPadding : 0
       anchors.verticalCenter: parent.verticalCenter
       color: Qt.alpha(control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText, 0.62)
       font: ZrythmTheme.fadedTextFont
+
+      // Reserve a minimum gap between the label and the shortcut
+      leftPadding: control.mirrored ? 0 : 16
+      rightPadding: control.mirrored ? 16 : 0
       text: control.shortcutDisplayText
-      visible: control.shortcutDisplayText !== ""
       verticalAlignment: Text.AlignVCenter
+      visible: control.shortcutDisplayText !== ""
+
+      Behavior on color {
+        animation: ZrythmTheme.propertyAnimation
+      }
     }
   }
   indicator: ColorImage {
@@ -97,5 +114,9 @@ T.MenuItem {
     visible: control.checked
     x: control.mirrored ? control.width - width - control.rightPadding : control.leftPadding
     y: control.topPadding + (control.availableHeight - height) / 2
+
+    Behavior on color {
+      animation: ZrythmTheme.propertyAnimation
+    }
   }
 }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
 // SPDX-License-Identifier: GPL-3.0-only
 
@@ -26,6 +26,11 @@ T.MenuBarItem {
     color: control.down || control.menuOpen ? control.palette.highlight : baseColor
     implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 40
+    radius: ZrythmTheme.textFieldRadius
+
+    Behavior on color {
+      animation: ZrythmTheme.propertyAnimation
+    }
   }
   contentItem: IconLabel {
     alignment: Qt.AlignLeft
@@ -36,6 +41,10 @@ T.MenuBarItem {
     mirrored: control.mirrored
     spacing: control.spacing
     text: control.text
+
+    Behavior on color {
+      animation: ZrythmTheme.propertyAnimation
+    }
   }
 
   icon {

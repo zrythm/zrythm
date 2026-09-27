@@ -21,6 +21,15 @@ TestCase {
     return null;
   }
 
+  function findIconLabel(item, shortcut) {
+    for (let i = 0; i < item.children.length; ++i) {
+      const current = item.children[i];
+      if (current !== shortcut && typeof current.text !== "undefined")
+        return current;
+    }
+    return null;
+  }
+
   function createShownItem(component) {
     const win = createTemporaryObject(component, test);
     verify(win);
@@ -59,6 +68,19 @@ TestCase {
     verify(label.visible);
     verify(label.text !== "");
     verify(label.text !== "5");
+  }
+
+  function test_shortcut_label_keeps_minimum_gap_from_long_label() {
+    const win = createShownItem(longLabelItemComponent);
+    const item = win.menuItem;
+    const shortcut = findShortcutLabel(item.contentItem);
+    verify(shortcut);
+    const iconLabel = findIconLabel(item.contentItem, shortcut);
+    verify(iconLabel);
+    compare(item.width, item.implicitWidth);
+    const shortcutGlyphsX = shortcut.x + shortcut.leftPadding;
+    const gap = shortcutGlyphsX - (iconLabel.x + iconLabel.width);
+    verify(gap >= item.spacing + 16, "gap was " + gap);
   }
 
   Component {
@@ -104,6 +126,30 @@ TestCase {
         action: Action {
           shortcut: "Ctrl+Z"
           text: qsTr("Undo")
+        }
+      }
+    }
+  }
+
+  Component {
+    id: longLabelItemComponent
+
+    ApplicationWindow {
+      width: 400
+      height: 100
+      visible: true
+
+      property alias menuItem: menuItem
+
+      MenuItem {
+        id: menuItem
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: qsTr("Undo: Move Objects and Rename Them")
+
+        action: Action {
+          shortcut: "Ctrl+Z"
+          text: qsTr("Undo: Move Objects and Rename Them")
         }
       }
     }
