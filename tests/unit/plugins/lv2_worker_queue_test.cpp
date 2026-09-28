@@ -37,7 +37,7 @@ popped_equals (Lv2WorkerQueue &queue, const std::vector<std::byte> &expected)
   if (!queue.pop (scratch, size))
     return false;
   return size == expected.size ()
-         && std::memcmp (scratch.data (), expected.data (), size) == 0;
+         && (size == 0 || std::memcmp (scratch.data (), expected.data (), size) == 0);
 }
 
 } // namespace
@@ -113,18 +113,29 @@ TEST (Lv2WorkerQueueTest, ConcurrentProducerConsumerKeepIntegrity)
     uint32_t                                    received = 0;
     std::array<std::byte, kMaxWorkerRecordSize> scratch{};
     uint32_t                                    size = 0;
+    // The queue counts as drained only when a pop fails after the
+    // producer was observed finished: a failed pop that runs before
+    // that observation may miss the producer's final records
+    bool done = false;
     while (received < kRecordCount)
       {
         if (queue.pop (scratch, size))
           {
             const auto expected = make_payload (received, size);
-            ASSERT_EQ (std::memcmp (scratch.data (), expected.data (), size), 0)
+            ASSERT_TRUE (
+              size == 0
+              || std::memcmp (scratch.data (), expected.data (), size) == 0)
               << "record " << received;
             ++received;
           }
-        else if (producer_done.load ())
+        else if (done)
           {
             break;
+          }
+        else
+          {
+            done = producer_done.load ();
+            std::this_thread::yield ();
           }
       }
     EXPECT_EQ (received, kRecordCount);
