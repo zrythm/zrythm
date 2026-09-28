@@ -45,8 +45,6 @@ NotificationModel::data (const QModelIndex &index, int role) const
       return notification->isAcknowledged ();
     case ActionLabelRole:
       return notification->actionLabel ();
-    case ActionIdRole:
-      return notification->actionId ();
     case NotificationRole:
       return QVariant::fromValue (const_cast<Notification *> (notification));
     default:
@@ -65,7 +63,6 @@ NotificationModel::roleNames () const
   roles[TimestampRole] = "timestamp";
   roles[AcknowledgedRole] = "acknowledged";
   roles[ActionLabelRole] = "actionLabel";
-  roles[ActionIdRole] = "actionId";
   roles[NotificationRole] = "notification";
   return roles;
 }

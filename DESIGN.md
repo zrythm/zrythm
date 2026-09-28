@@ -629,7 +629,8 @@ solid `mid` pill), and a low-emphasis
 close button (real and focusable) sits on the trailing edge of the
 title line. An
 optional single action — a real, focusable text button in the palette
-`link` color — may precede the close button; activating it performs the
+`link` color — sits below the detail line, aligned to the trailing
+edge; activating it performs the
 action and dismisses the toast. Secondary
 text — the detail line and the chip — renders `textColor` at 70 %
 opacity, which keeps ≥4.5:1 contrast on every toast background. Toasts

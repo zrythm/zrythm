@@ -3,7 +3,11 @@
 
 #pragma once
 
+#include <functional>
+#include <variant>
+
 #include <QDateTime>
+#include <QJSValue>
 #include <QObject>
 #include <QString>
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -32,11 +36,18 @@ class Notification : public QObject
     bool acknowledged READ isAcknowledged WRITE setAcknowledged NOTIFY
       acknowledgedChanged FINAL)
   Q_PROPERTY (QString actionLabel READ actionLabel CONSTANT FINAL)
-  Q_PROPERTY (QString actionId READ actionId CONSTANT FINAL)
+  Q_PROPERTY (QJSValue actionCallback READ actionCallback CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("Notifications are created by NotificationCenter::post()")
 
 public:
+  /**
+   * The action callback: a QML lambda (GUI-thread posts only) or a C++
+   * lambda (carried through the queued delivery). Monostate means no
+   * action.
+   */
+  using ActionCallback =
+    std::variant<std::monostate, QJSValue, std::function<void ()>>;
   /**
    * How urgent the message is and which surface presents it.
    *
@@ -61,8 +72,9 @@ public:
    * @param detail Optional longer explanation.
    * @param context_tag Groups occurrences for coalescing.
    * @param action_label Optional label of the toast action button.
-   * @param action_id Id the hosting window resolves to a callable.
-   * @param parent Owning center.
+   * @param action_callback Optional callback invoked on the GUI thread
+   *   when the action is activated; C++ callers capture receivers via
+   *   QPointer if they may be destroyed before activation.
    */
   Notification (
     Severity       severity,
@@ -70,8 +82,7 @@ public:
     const QString &detail,
     const QString &context_tag,
     const QString &action_label,
-    const QString &action_id,
-    QObject *      parent = nullptr);
+    ActionCallback action_callback = {});
 
   Severity         severity () const { return severity_; }
   const QString   &title () const { return title_; }
@@ -81,7 +92,12 @@ public:
   bool             isAcknowledged () const { return acknowledged_; }
   void             setAcknowledged (bool acknowledged);
   const QString   &actionLabel () const { return action_label_; }
-  const QString   &actionId () const { return action_id_; }
+
+  /** Returns the QML callback, or an undefined value if there is none. */
+  QJSValue actionCallback () const;
+
+  /** Invokes the action callback, if one was set; otherwise does nothing. */
+  Q_INVOKABLE void triggerAction ();
 
   /**
    * @brief Returns true if this notification coalesces with @p other:
@@ -98,14 +114,14 @@ Q_SIGNALS:
   void acknowledgedChanged (bool acknowledged);
 
 private:
-  Severity  severity_ = Info;
-  QString   title_;
-  QString   detail_;
-  QString   context_tag_;
-  QDateTime timestamp_;
-  bool      acknowledged_ = false;
-  QString   action_label_;
-  QString   action_id_;
+  Severity       severity_ = Info;
+  QString        title_;
+  QString        detail_;
+  QString        context_tag_;
+  QDateTime      timestamp_;
+  bool           acknowledged_ = false;
+  QString        action_label_;
+  ActionCallback action_callback_;
 };
 
 } // namespace zrythm::gui

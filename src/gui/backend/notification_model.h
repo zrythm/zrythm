@@ -43,7 +43,6 @@ public:
     TimestampRole,
     AcknowledgedRole,
     ActionLabelRole,
-    ActionIdRole,
     NotificationRole,
   };
 

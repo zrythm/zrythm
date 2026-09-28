@@ -1,12 +1,14 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <stdexcept>
 #include <thread>
 
 #include "gui/backend/notification_center.h"
 #include "gui/backend/notification_model.h"
 #include "utils/logger.h"
 
+#include <QJSEngine>
 #include <QSignalSpy>
 #include <QTest>
 
@@ -228,6 +230,122 @@ TEST_F (NotificationCenterTest, ClearHistoryRemovesAllRows)
 
   EXPECT_EQ (center_->history ()->rowCount (), 0);
   EXPECT_EQ (center_->history ()->unacknowledgedAttentionCount (), 0);
+}
+
+TEST_F (NotificationCenterTest, ActionWithoutCallbackIsDropped)
+{
+  center_->postError (u"Cannot Perform Operation"_s, {}, {}, u"Retry"_s);
+
+  const auto * stored = center_->history ()->entries ()[0];
+  EXPECT_EQ (stored->actionLabel (), QString ());
+  EXPECT_FALSE (stored->actionCallback ().isCallable ());
+}
+
+TEST_F (NotificationCenterTest, PostWithActionKeepsLabelAndCallback)
+{
+  QJSEngine      engine;
+  const QJSValue callback = engine.evaluate ("(function () {})");
+
+  center_->postError (
+    u"Cannot Perform Operation"_s, {}, {}, u"Retry"_s, callback);
+
+  const auto * stored = center_->history ()->entries ()[0];
+  EXPECT_EQ (stored->actionLabel (), u"Retry"_s);
+  EXPECT_TRUE (stored->actionCallback ().strictlyEquals (callback));
+}
+
+TEST_F (NotificationCenterTest, WorkerThreadPostDropsAction)
+{
+  QJSEngine      engine;
+  const QJSValue callback = engine.evaluate ("(function () {})");
+
+  std::jthread worker ([this, &callback] {
+    center_->postError (
+      u"Cannot Perform Operation"_s, {}, {}, u"Retry"_s, callback);
+  });
+  worker.join ();
+  QCoreApplication::processEvents ();
+
+  ASSERT_EQ (center_->history ()->rowCount (), 1);
+  const auto * stored = center_->history ()->entries ()[0];
+  EXPECT_EQ (stored->actionLabel (), QString ());
+  EXPECT_FALSE (stored->actionCallback ().isCallable ());
+}
+
+TEST_F (NotificationCenterTest, PostWithCppLambdaStoresAndInvokesAction)
+{
+  bool fired = false;
+
+  center_->post (
+    Notification::Error, u"Cannot Perform Operation"_s, {}, {}, u"Retry"_s,
+    [&fired] { fired = true; });
+
+  auto * stored = center_->history ()->entries ()[0];
+  EXPECT_EQ (stored->actionLabel (), u"Retry"_s);
+  EXPECT_FALSE (stored->actionCallback ().isCallable ());
+
+  stored->triggerAction ();
+  EXPECT_TRUE (fired);
+}
+
+TEST_F (NotificationCenterTest, CppLambdaWithoutLabelIsDropped)
+{
+  center_->post (
+    Notification::Error, u"Cannot Perform Operation"_s, {}, {}, QString (),
+    [] { });
+
+  auto * stored = center_->history ()->entries ()[0];
+  EXPECT_EQ (stored->actionLabel (), QString ());
+  stored->triggerAction ();
+}
+
+TEST_F (NotificationCenterTest, WorkerThreadPostCarriesCppLambdaAction)
+{
+  bool fired = false;
+
+  std::jthread worker ([this, &fired] {
+    center_->post (
+      Notification::Error, u"Cannot Perform Operation"_s, {}, {}, u"Retry"_s,
+      [&fired] { fired = true; });
+  });
+  worker.join ();
+  QCoreApplication::processEvents ();
+
+  ASSERT_EQ (center_->history ()->rowCount (), 1);
+  auto * stored = center_->history ()->entries ()[0];
+  EXPECT_EQ (stored->actionLabel (), u"Retry"_s);
+  stored->triggerAction ();
+  EXPECT_TRUE (fired);
+}
+
+TEST_F (NotificationCenterTest, CriticalWithActionIsDropped)
+{
+  center_->post (
+    Notification::Critical, u"Project Loading Failed"_s, {}, {}, u"Retry"_s,
+    [] { });
+
+  auto * stored = center_->history ()->entries ()[0];
+  EXPECT_EQ (stored->actionLabel (), QString ());
+  stored->triggerAction ();
+}
+
+TEST_F (NotificationCenterTest, ThrowingCppLambdaActionIsReported)
+{
+  utils::init_logging (utils::LoggerType::Test);
+
+  center_->post (
+    Notification::Error, u"Cannot Perform Operation"_s, {}, {}, u"Retry"_s,
+    [] () { throw std::runtime_error ("boom"); });
+
+  auto * stored = center_->history ()->entries ()[0];
+  stored->triggerAction ();
+
+  const auto entries = utils::get_last_log_entries (10);
+  const bool reported = std::ranges::any_of (entries, [] (const auto &entry) {
+    return entry.str ().find ("notification action failed: boom")
+           != std::string::npos;
+  });
+  EXPECT_TRUE (reported);
 }
 
 } // namespace zrythm::gui

@@ -39,7 +39,6 @@ Item {
   readonly property int pendingCount: queuedToasts.length
 
   signal criticalNotification(Notification notification)
-  signal actionTriggered(string actionId)
 
   anchors.top: parent.top
   anchors.topMargin: 8
@@ -161,8 +160,6 @@ Item {
       delegate: Toast {
         id: toastDelegate
 
-        onActionRequested: (actionId) => root.actionTriggered(actionId)
-
         onDismissed: (userDismissed) => {
           if (userDismissed) {
             for (const notification of toastDelegate.occurrences)
@@ -184,6 +181,10 @@ Item {
     /** The occurrences this toast absorbed, oldest first. */
     property var occurrences: []
     readonly property int count: occurrences.length
+
+    /** The occurrence whose action the button presents and triggers. */
+    readonly property var newestOccurrence:
+      toast.occurrences[toast.occurrences.length - 1] ?? null
 
     readonly property color severityColor: {
       if (toast.notification.severity === Notification.Info)
@@ -225,7 +226,6 @@ Item {
     }
 
     signal dismissed(bool userDismissed)
-    signal actionRequested(string actionId)
 
     property bool closing: false
     property bool userDismissed: false
@@ -386,19 +386,6 @@ Item {
           }
         }
 
-        Button {
-          visible: toast.notification.actionLabel !== ""
-          implicitHeight: 24
-
-          palette.buttonText: toast.palette.link
-
-          onClicked: {
-            toast.actionRequested(toast.notification.actionId);
-            toast.dismiss(true);
-          }
-          text: toast.notification.actionLabel
-        }
-
         ToolButton {
           id: closeButton
           activeFocusOnTab: true
@@ -424,6 +411,26 @@ Item {
         text: toast.notification.detail
         visible: toast.notification.detail !== ""
         wrapMode: Text.WordWrap
+      }
+
+      // Flat text button in the link color per the toast anatomy spec
+      Button {
+        visible: (toast.newestOccurrence?.actionLabel ?? "") !== ""
+        Layout.alignment: Qt.AlignTrailing
+        background: null
+        font: ZrythmTheme.semiBoldTextFont
+        horizontalPadding: 4
+        implicitHeight: 24
+
+        palette.buttonText: toast.palette.link
+
+        onClicked: {
+          const newest = toast.newestOccurrence;
+          if (newest)
+            newest.triggerAction();
+          toast.dismiss(true);
+        }
+        text: toast.newestOccurrence?.actionLabel ?? ""
       }
     }
   }

@@ -35,6 +35,42 @@ severity_name (Notification::Severity severity)
   std::unreachable ();
 }
 
+void
+log_post (
+  Notification::Severity severity,
+  const QString         &title,
+  const QString         &detail,
+  const QString         &context_tag)
+{
+  auto base =
+    fmt::format ("[notification] [{}] {}", severity_name (severity), title);
+  if (!detail.isEmpty ())
+    base += fmt::format (" — {}", detail);
+  if (!context_tag.isEmpty ())
+    base += fmt::format (" [{}]", context_tag);
+
+  switch (severity)
+    {
+    case Notification::Info:
+    case Notification::Success:
+      z_info ("{}", base);
+      break;
+    case Notification::Warning:
+    case Notification::Error:
+    case Notification::Critical:
+      z_warning ("{}", base);
+      break;
+    }
+}
+
+void
+warn_incomplete_action ()
+{
+  z_warning (
+    "notification actions need both a label and a callback; the action "
+    "was dropped");
+}
+
 } // namespace
 
 NotificationCenter::NotificationCenter (QObject * parent)
@@ -47,73 +83,170 @@ NotificationCenter::post (
   Notification::Severity severity,
   const QString         &title,
   const QString         &detail,
-  const QString         &context_tag)
+  const QString         &context_tag,
+  const QString         &action_label,
+  const QJSValue        &action_callback)
 {
-  const auto log_message = [&] () -> std::string {
-    auto base =
-      fmt::format ("[notification] [{}] {}", severity_name (severity), title);
-    if (!detail.isEmpty ())
-      base += fmt::format (" — {}", detail);
-    if (!context_tag.isEmpty ())
-      base += fmt::format (" [{}]", context_tag);
-    return base;
-  }();
-  switch (severity)
+  // QML closures must not cross threads: the closure is never copied
+  // or inspected off the GUI thread — an off-GUI-thread post drops the
+  // action and the closure dies in the caller's frame
+  if (QThread::currentThread () != thread ())
     {
-    case Notification::Info:
-    case Notification::Success:
-      z_info ("{}", log_message);
-      break;
-    case Notification::Warning:
-    case Notification::Error:
-    case Notification::Critical:
-      z_warning ("{}", log_message);
-      break;
+      if (!action_label.isEmpty ())
+        {
+          z_warning (
+            "notification actions must be posted on the GUI thread; the "
+            "action was dropped");
+        }
+      post_dispatch (severity, title, detail, context_tag, QString (), {});
+      return;
     }
 
+  post_dispatch (
+    severity, title, detail, context_tag, action_label, action_callback);
+}
+
+void
+NotificationCenter::post (
+  Notification::Severity severity,
+  const QString         &title,
+  const QString         &detail,
+  const QString         &context_tag,
+  const QString         &action_label,
+  std::function<void ()> action_callback)
+{
+  post_dispatch (
+    severity, title, detail, context_tag, action_label,
+    std::move (action_callback));
+}
+
+void
+NotificationCenter::post_dispatch (
+  Notification::Severity       severity,
+  const QString               &title,
+  const QString               &detail,
+  const QString               &context_tag,
+  const QString               &action_label,
+  Notification::ActionCallback action_callback)
+{
+  log_post (severity, title, detail, context_tag);
+
+  QString    effective_action_label = action_label;
+  const bool has_callback = std::visit (
+    [] (const auto &callback) {
+      using Callback = std::decay_t<decltype (callback)>;
+      if constexpr (std::is_same_v<Callback, QJSValue>)
+        return callback.isCallable ();
+      else if constexpr (std::is_same_v<Callback, std::function<void ()>>)
+        return static_cast<bool> (callback);
+      else
+        return false;
+    },
+    action_callback);
+  const bool has_label = !effective_action_label.isEmpty ();
+
+  // Actions render on toasts only: a Critical post opens a modal
+  // dialog, which has no action button
+  if (severity == Notification::Critical && (has_label || has_callback))
+    {
+      z_warning ("notification actions are toast-only; the action was dropped");
+      effective_action_label.clear ();
+      action_callback = {};
+    }
+  // Actions need both a label and a callback; half an action is a bug
+  // in the caller, so it is dropped loudly
+  else if (has_label != has_callback)
+    {
+      warn_incomplete_action ();
+      effective_action_label.clear ();
+      action_callback = {};
+    }
+
+  // C++ callbacks are carried through the queued delivery and invoked
+  // on the GUI thread
   if (QThread::currentThread () == thread ())
     {
-      post_internal (severity, title, detail, context_tag);
+      post_internal (
+        severity, title, detail, context_tag, effective_action_label,
+        std::move (action_callback));
     }
   else
     {
       QMetaObject::invokeMethod (
         this,
-        [this, severity, title, detail, context_tag] () {
-          post_internal (severity, title, detail, context_tag);
+        [this, severity, title, detail, context_tag, effective_action_label,
+         action_callback] () {
+          post_internal (
+            severity, title, detail, context_tag, effective_action_label,
+            action_callback);
         },
         Qt::QueuedConnection);
     }
 }
 
 void
-NotificationCenter::postInfo (const QString &title, const QString &detail)
+NotificationCenter::postInfo (
+  const QString  &title,
+  const QString  &detail,
+  const QString  &context_tag,
+  const QString  &action_label,
+  const QJSValue &action_callback)
 {
-  post (Notification::Info, title, detail);
+  post (
+    Notification::Info, title, detail, context_tag, action_label,
+    action_callback);
 }
 
 void
-NotificationCenter::postSuccess (const QString &title, const QString &detail)
+NotificationCenter::postSuccess (
+  const QString  &title,
+  const QString  &detail,
+  const QString  &context_tag,
+  const QString  &action_label,
+  const QJSValue &action_callback)
 {
-  post (Notification::Success, title, detail);
+  post (
+    Notification::Success, title, detail, context_tag, action_label,
+    action_callback);
 }
 
 void
-NotificationCenter::postWarning (const QString &title, const QString &detail)
+NotificationCenter::postWarning (
+  const QString  &title,
+  const QString  &detail,
+  const QString  &context_tag,
+  const QString  &action_label,
+  const QJSValue &action_callback)
 {
-  post (Notification::Warning, title, detail);
+  post (
+    Notification::Warning, title, detail, context_tag, action_label,
+    action_callback);
 }
 
 void
-NotificationCenter::postError (const QString &title, const QString &detail)
+NotificationCenter::postError (
+  const QString  &title,
+  const QString  &detail,
+  const QString  &context_tag,
+  const QString  &action_label,
+  const QJSValue &action_callback)
 {
-  post (Notification::Error, title, detail);
+  post (
+    Notification::Error, title, detail, context_tag, action_label,
+    action_callback);
 }
 
 void
-NotificationCenter::postCritical (const QString &title, const QString &detail)
+NotificationCenter::postCritical (
+  const QString  &title,
+  const QString  &detail,
+  const QString  &context_tag,
+  const QString  &action_label,
+  const QJSValue &action_callback)
 {
-  post (Notification::Critical, title, detail);
+  post (
+    Notification::Critical, title, detail, context_tag, action_label,
+    action_callback);
 }
 
 void
@@ -152,17 +285,29 @@ NotificationCenter::history () const
 
 void
 NotificationCenter::post_internal (
-  Notification::Severity severity,
-  const QString         &title,
-  const QString         &detail,
-  const QString         &context_tag)
+  Notification::Severity       severity,
+  const QString               &title,
+  const QString               &detail,
+  const QString               &context_tag,
+  const QString               &action_label,
+  Notification::ActionCallback action_callback)
 {
-  auto notification = utils::make_qobject_unique<Notification> (
-    severity, title, detail, context_tag, QString (), QString ());
+  finalize_post (
+    utils::make_qobject_unique<Notification> (
+      severity, title, detail, context_tag, action_label,
+      std::move (action_callback)));
+}
 
+void
+NotificationCenter::finalize_post (
+  utils::QObjectUniquePtr<Notification> notification)
+{
   if (QAccessible::isActive ())
     {
-      const QString text = detail.isEmpty () ? title : title + ". " + detail;
+      const QString text =
+        notification->detail ().isEmpty ()
+          ? notification->title ()
+          : notification->title () + ". " + notification->detail ();
       QAccessible::updateAccessibility (
         new QAccessibleAnnouncementEvent (notification.get (), text));
     }

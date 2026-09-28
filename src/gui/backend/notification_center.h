@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include <functional>
 #include <vector>
 
 #include "gui/backend/notification.h"
 #include "gui/backend/notification_model.h"
 #include "utils/qt.h"
 
+#include <QJSValue>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -46,18 +48,68 @@ public:
    *
    * @param context_tag Groups occurrences for coalescing: posts sharing
    *   severity, title and tag merge into one visible toast with a count.
+   * @param action_label Label of the toast action button; requires
+   *   @p action_callback.
+   * @param action_callback Callable invoked when the action button is
+   *   activated. Only carried by GUI-thread posts.
    */
   void post (
     Notification::Severity severity,
     const QString         &title,
     const QString         &detail = {},
-    const QString         &context_tag = {});
+    const QString         &context_tag = {},
+    const QString         &action_label = {},
+    const QJSValue        &action_callback = {});
 
-  Q_INVOKABLE void postInfo (const QString &title, const QString &detail);
-  Q_INVOKABLE void postSuccess (const QString &title, const QString &detail);
-  Q_INVOKABLE void postWarning (const QString &title, const QString &detail);
-  Q_INVOKABLE void postError (const QString &title, const QString &detail);
-  Q_INVOKABLE void postCritical (const QString &title, const QString &detail);
+  /**
+   * @brief Posts a message with a C++ action callback.
+   *
+   * Callable from any thread; the callback is carried through the
+   * queued delivery and invoked on the GUI thread when the action is
+   * activated. Capture receivers via QPointer if they may be destroyed
+   * before activation.
+   *
+   * @param action_label Label of the toast action button; requires
+   *   @p action_callback.
+   */
+  void post (
+    Notification::Severity severity,
+    const QString         &title,
+    const QString         &detail,
+    const QString         &context_tag,
+    const QString         &action_label,
+    std::function<void ()> action_callback);
+
+  Q_INVOKABLE void postInfo (
+    const QString  &title,
+    const QString  &detail,
+    const QString  &context_tag = {},
+    const QString  &action_label = {},
+    const QJSValue &action_callback = {});
+  Q_INVOKABLE void postSuccess (
+    const QString  &title,
+    const QString  &detail,
+    const QString  &context_tag = {},
+    const QString  &action_label = {},
+    const QJSValue &action_callback = {});
+  Q_INVOKABLE void postWarning (
+    const QString  &title,
+    const QString  &detail,
+    const QString  &context_tag = {},
+    const QString  &action_label = {},
+    const QJSValue &action_callback = {});
+  Q_INVOKABLE void postError (
+    const QString  &title,
+    const QString  &detail,
+    const QString  &context_tag = {},
+    const QString  &action_label = {},
+    const QJSValue &action_callback = {});
+  Q_INVOKABLE void postCritical (
+    const QString  &title,
+    const QString  &detail,
+    const QString  &context_tag = {},
+    const QString  &action_label = {},
+    const QJSValue &action_callback = {});
 
   /** Marks every retained notification as acknowledged. */
   Q_INVOKABLE void acknowledgeAll ();
@@ -83,10 +135,24 @@ Q_SIGNALS:
 
 private:
   void post_internal (
-    Notification::Severity severity,
-    const QString         &title,
-    const QString         &detail,
-    const QString         &context_tag);
+    Notification::Severity       severity,
+    const QString               &title,
+    const QString               &detail,
+    const QString               &context_tag,
+    const QString               &action_label,
+    Notification::ActionCallback action_callback);
+
+  /** Logs, validates and dispatches a post for either callback carrier. */
+  void post_dispatch (
+    Notification::Severity       severity,
+    const QString               &title,
+    const QString               &detail,
+    const QString               &context_tag,
+    const QString               &action_label,
+    Notification::ActionCallback action_callback);
+
+  /** Announces, stores and emits an already created notification. */
+  void finalize_post (utils::QObjectUniquePtr<Notification> notification);
 
   NotificationModel * history_ = nullptr;
 

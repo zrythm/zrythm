@@ -4,6 +4,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Templates as T
 import QtTest
 import QmlTests
 
@@ -19,6 +20,18 @@ TestCase {
   function makeArea(properties: var): NotificationArea {
     const center = createTemporaryObject(centerComponent, test);
     return createTemporaryObject(areaComponent, test, Object.assign({ "notificationCenter": center }, properties ?? {}));
+  }
+
+  function findActionButton(item: Item, label: string): T.Button {
+    for (let i = 0; i < item.children.length; ++i) {
+      const child = item.children[i];
+      if (child instanceof T.Button && child.text === label)
+        return child;
+      const nested = findActionButton(child, label);
+      if (nested !== null)
+        return nested;
+    }
+    return null;
   }
 
   function test_visibleToastsCappedAtThree() {
@@ -140,6 +153,122 @@ TestCase {
     compare(area.visibleCount, 0);
   }
 
+  function test_actionButtonClickInvokesCallbackAndDismissesToast() {
+    const area = makeArea({ "errorDurationMs": 60000 });
+    const state = createTemporaryObject(actionStateComponent, test);
+    area.notificationCenter.postError(
+      "Save Failed", "detail", "", "Do It",
+      () => { state.fired = true; });
+    compare(area.visibleCount, 1);
+    const button = findActionButton(area, "Do It");
+    verify(button !== null);
+    verify(button.visible);
+    button.clicked(null);
+    verify(state.fired);
+    tryCompare(area, "visibleCount", 0);
+  }
+
+  function test_actionCallbackIsReadableAsFunction() {
+    const area = makeArea({});
+    const state = createTemporaryObject(actionStateComponent, test);
+    const spy = createTemporaryObject(
+      postedSpyComponent, test, { "target": area.notificationCenter });
+    area.notificationCenter.postError(
+      "Save Failed", "detail", "", "Do It",
+      () => { state.fired = true; });
+    const notification = spy.signalArguments[0][0];
+    const callback = notification.actionCallback;
+    verify(typeof callback === "function");
+    callback();
+    verify(state.fired);
+  }
+
+  function test_coalescedToastTriggersNewestOccurrenceAction() {
+    const area = makeArea({ "errorDurationMs": 60000 });
+    const state = createTemporaryObject(actionStateComponent, test);
+    area.notificationCenter.postError(
+      "Flapping", "", "", "Do It",
+      () => { state.first = true; });
+    area.notificationCenter.postError(
+      "Flapping", "", "", "Do It",
+      () => { state.second = true; });
+    compare(area.visibleCount, 1);
+    compare(area.topmostCount(), 2);
+    const button = findActionButton(area, "Do It");
+    button.clicked(null);
+    verify(!state.first);
+    verify(state.second);
+    tryCompare(area, "visibleCount", 0);
+  }
+
+  // The button presents the newest occurrence's label, consistent with
+  // the callback it triggers
+  function test_coalescedToastShowsNewestOccurrenceLabel() {
+    const area = makeArea({ "errorDurationMs": 60000 });
+    const state = createTemporaryObject(actionStateComponent, test);
+    area.notificationCenter.postError(
+      "Flapping", "", "tag", "Retry",
+      () => { state.first = true; });
+    area.notificationCenter.postError(
+      "Flapping", "", "tag", "Save As…",
+      () => { state.second = true; });
+    compare(area.visibleCount, 1);
+    verify(findActionButton(area, "Retry") === null);
+    const button = findActionButton(area, "Save As…");
+    verify(button !== null);
+    button.clicked(null);
+    verify(!state.first);
+    verify(state.second);
+    tryCompare(area, "visibleCount", 0);
+  }
+
+  // Writing a property of a destroyed captured object is skipped
+  // without throwing, and the rest of the callback still runs
+  function test_actionCallbackToleratesDestroyedCapturedProperty() {
+    const area = makeArea({ "errorDurationMs": 60000 });
+    const state = createTemporaryObject(actionStateComponent, test);
+    const victim = Qt.createQmlObject(
+      "import QtQuick; Item { property bool marker: false }", test);
+    area.notificationCenter.postError(
+      "Save Failed", "detail", "", "Do It",
+      () => { victim.marker = true; state.survived = true; });
+    victim.destroy();
+    // destroy() defers deletion to the event loop; a destroyed item's
+    // parent reads as undefined (it had one while alive)
+    tryVerify(() => victim.parent === undefined);
+    const button = findActionButton(area, "Do It");
+    button.clicked(null);
+    verify(state.survived);
+    tryCompare(area, "visibleCount", 0);
+  }
+
+  // Calling a method of a destroyed captured object throws inside the
+  // callback; triggerAction() reports it and nothing crashes
+  function test_actionCallbackToleratesDestroyedCapturedMethod() {
+    const area = makeArea({ "errorDurationMs": 60000 });
+    const victim = Qt.createQmlObject(
+      "import QtQuick; Item { function poke(): void {} }", test);
+    area.notificationCenter.postError(
+      "Save Failed", "detail", "", "Do It",
+      () => { victim.poke(); });
+    victim.destroy();
+    tryVerify(() => victim.parent === undefined);
+    const button = findActionButton(area, "Do It");
+    button.clicked(null);
+    tryCompare(area, "visibleCount", 0);
+  }
+
+  function test_triggerActionWithoutCallbackDoesNothing() {
+    const area = makeArea({ "errorDurationMs": 60000 });
+    const spy = createTemporaryObject(
+      postedSpyComponent, test, { "target": area.notificationCenter });
+    area.notificationCenter.postError("Plain", "");
+    const notification = spy.signalArguments[0][0];
+    verify(notification.actionCallback === undefined);
+    notification.triggerAction();
+    compare(area.visibleCount, 1);
+  }
+
   Component {
     id: areaComponent
 
@@ -159,6 +288,25 @@ TestCase {
 
     SignalSpy {
       signalName: "criticalNotification"
+    }
+  }
+
+  Component {
+    id: actionStateComponent
+
+    QtObject {
+      property bool fired: false
+      property bool survived: false
+      property bool first: false
+      property bool second: false
+    }
+  }
+
+  Component {
+    id: postedSpyComponent
+
+    SignalSpy {
+      signalName: "notificationPosted"
     }
   }
 }
