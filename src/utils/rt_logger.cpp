@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cassert>
 #include <condition_variable>
 #include <mutex>
 #include <thread>
@@ -10,7 +9,7 @@
 #include "utils/rt_logger.h"
 #include "utils/threads.h"
 
-#include <boost/lockfree/queue.hpp>
+#include <rigtorp/MPMCQueue.h>
 
 namespace zrythm::utils
 {
@@ -18,25 +17,24 @@ namespace zrythm::utils
 namespace
 {
 
-// Pre-allocated node pool (capacity plus the queue's dummy node), so
-// pushes never allocate; a full queue rejects the push
-using RtLogQueue = boost::lockfree::
-  queue<RtLogMsg, boost::lockfree::capacity<rt_log_queue_capacity>>;
+// Slots are pre-allocated in the constructor, so pushes never
+// allocate; try_push rejects the push when the queue is full or the
+// consumer is still retiring the wrapped-around slot
+using RtLogQueue = rigtorp::MPMCQueue<RtLogMsg>;
 
 constexpr auto consumer_tick = std::chrono::milliseconds{ 10 };
 
 class RtLoggerState
 {
 public:
-  RtLoggerState () : queue_ ()
+  RtLoggerState () : queue_ (rt_log_queue_capacity)
   {
-    assert (queue_.is_lock_free ());
     thread_ = std::jthread ([this] (std::stop_token st) { run (st); });
   }
 
   void submit (RtLogMsg &&msg) noexcept
   {
-    if (!queue_.push (msg))
+    if (!queue_.try_push (msg))
       dropped_total_.fetch_add (1, std::memory_order_relaxed);
   }
 
@@ -116,7 +114,8 @@ private:
   void drain ()
   {
     RtLogMsg msg;
-    while (queue_.pop (msg))
+    // pop() would spin while the queue is empty, so drain with try_pop()
+    while (queue_.try_pop (msg))
       forward (msg);
 
     const auto dropped = dropped_total_.load (std::memory_order_relaxed);

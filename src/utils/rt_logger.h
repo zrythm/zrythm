@@ -17,22 +17,25 @@
 // Realtime-safe logging: messages are formatted into a fixed-size slot on
 // the calling thread and pushed to a lock-free multi-producer queue; a
 // background thread drains the queue and forwards each message to the
-// regular spdlog pipeline with the original call site's metadata. When the
-// queue is full the push fails and the message is counted as dropped; the
-// consumer reports the drop count, throttled to the first drop and each
-// power-of-two total. Errors and criticals have no realtime variant: they
-// keep using the synchronous z_error/z_critical, whose backtrace is only
-// meaningful on the calling thread and whose blocking is acceptable on a
-// path that is about to abort.
+// regular spdlog pipeline with the original call site's metadata. A push
+// fails and the message is counted as dropped when the queue is full, or
+// when it is one slot short of full and the consumer is still retiring
+// the wrapped-around slot; the consumer reports the drop count, throttled
+// to the first drop and each power-of-two total. Errors and criticals
+// have no realtime variant: they keep using the synchronous
+// z_error/z_critical, whose backtrace is only meaningful on the calling
+// thread and whose blocking is acceptable on a path that is about to
+// abort.
 //
 // The slot-and-drain-thread technique was popularized by rtlog-cpp
 // (https://github.com/cjappl/rtlog-cpp, ADCx 2023 talk); this is an
-// independent implementation on boost::lockfree::queue and fmt. A full
-// push is rejected and counted, so no message is delivered twice and
-// drops are counted exactly. Messages from concurrent producers appear
-// in the queue's linearization order, which need not match wall-clock
-// submission order across threads. Formatting arguments must not
-// allocate when formatted (plain strings and arithmetic types are safe).
+// independent implementation on rigtorp::MPMCQueue and fmt. A rejected
+// push is counted, so no message is delivered twice and every counted
+// drop is a message that was not delivered. Messages from concurrent
+// producers appear in the queue's linearization order, which need not
+// match wall-clock submission order across threads. Formatting arguments
+// must not allocate when formatted (plain strings and arithmetic types
+// are safe).
 
 namespace zrythm::utils
 {
