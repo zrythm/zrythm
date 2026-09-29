@@ -159,7 +159,7 @@ ColumnLayout {
         text: {
           let parts = [];
           if (detailRoot.componentVersion)
-            parts.push(qsTr("Version %1").arg(detailRoot.componentVersion));
+            parts.push("Version %1".arg(detailRoot.componentVersion));
           if (detailRoot.componentVia && detailRoot.componentVia !== "unknown")
             parts.push(qsTr("Required by %1").arg(detailRoot.componentVia));
           if (detailRoot.componentCopyright)
@@ -206,7 +206,7 @@ ColumnLayout {
 
             enabled: licenseTextArea.selectedText
             shortcut: StandardKey.Copy
-            text: qsTr("&Copy")
+            text: "&Copy"
 
             onTriggered: licenseTextArea.copy()
           }
@@ -216,7 +216,7 @@ ColumnLayout {
 
             enabled: true
             shortcut: StandardKey.SelectAll
-            text: qsTr("Select All")
+            text: "Select All"
 
             onTriggered: licenseTextArea.selectAll()
           }

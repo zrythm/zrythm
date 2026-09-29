@@ -224,7 +224,7 @@ Rectangle {
         focusPolicy: Qt.NoFocus
         icon.color: root.themeTextColor
         icon.source: ResourceManager.getIconUrl("zrythm-dark", (root.plugin?.abActive ?? false) ? "preset-ba.svg" : "preset-ab.svg")
-        text: qsTr("A/B")
+        text: "A/B"
 
         onClicked: root.plugin?.switchAbState()
       }

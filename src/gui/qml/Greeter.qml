@@ -571,7 +571,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         ToolButton {
-          text: qsTr("‹")
+          text: "‹"
           visible: navigatablePage.showBackButton
 
           onClicked: navigatablePage.StackView.view.pop()

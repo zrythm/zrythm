@@ -38,7 +38,7 @@ Button {
       return qsTr("%1 - Last object").arg(snapStr);
     case SnapGrid.NoteLengthType.Custom:
       const defaultStr = SnapGrid.stringize_length_and_type(snapGrid.default_note_length, snapGrid.default_note_type);
-      return qsTr("%1 - %2").arg(snapStr).arg(defaultStr);
+      return "%1 - %2".arg(snapStr).arg(defaultStr);
     default:
       return snapStr;
     }
@@ -139,7 +139,7 @@ Button {
                 }
               }
               enabled: root.snapGrid.snapToGrid && !root.snapGrid.snapAdaptive
-              model: [qsTr("Bar"), qsTr("1/1"), qsTr("1/2"), qsTr("1/4"), qsTr("1/8"), qsTr("1/16"), qsTr("1/32"), qsTr("1/64"), qsTr("1/128")]
+              model: [qsTr("Bar"), "1/1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/64", "1/128"]
 
               onActivated: {
                 const lengths = [SnapGrid.NoteLength.Bar, SnapGrid.NoteLength.Note_1_1, SnapGrid.NoteLength.Note_1_2, SnapGrid.NoteLength.Note_1_4, SnapGrid.NoteLength.Note_1_8, SnapGrid.NoteLength.Note_1_16, SnapGrid.NoteLength.Note_1_32, SnapGrid.NoteLength.Note_1_64, SnapGrid.NoteLength.Note_1_128];
@@ -284,7 +284,7 @@ Button {
                 }
               }
               enabled: root.snapGrid.snapToGrid && root.snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
-              model: [qsTr("Bar"), qsTr("1/1"), qsTr("1/2"), qsTr("1/4"), qsTr("1/8"), qsTr("1/16"), qsTr("1/32"), qsTr("1/64"), qsTr("1/128")]
+              model: [qsTr("Bar"), "1/1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/64", "1/128"]
 
               onActivated: {
                 const lengths = [SnapGrid.NoteLength.Bar, SnapGrid.NoteLength.Note_1_1, SnapGrid.NoteLength.Note_1_2, SnapGrid.NoteLength.Note_1_4, SnapGrid.NoteLength.Note_1_8, SnapGrid.NoteLength.Note_1_16, SnapGrid.NoteLength.Note_1_32, SnapGrid.NoteLength.Note_1_64, SnapGrid.NoteLength.Note_1_128];

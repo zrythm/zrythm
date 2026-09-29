@@ -64,7 +64,7 @@ ToolButton {
       anchors.centerIn: parent
       color: ZrythmTheme.darkMode ? ZrythmTheme.pageColor : "#FFFFFF"
       font: ZrythmTheme.smallTextFont
-      text: badge.count > 9 ? qsTr("9+") : String(badge.count)
+      text: badge.count > 9 ? "9+" : String(badge.count)
     }
   }
 }
