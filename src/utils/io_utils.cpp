@@ -39,7 +39,7 @@
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 #ifdef __linux__
 #  include <sys/ioctl.h>

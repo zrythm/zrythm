@@ -25,6 +25,15 @@
 #include <QWidget>
 #include <QWindow>
 
+#if defined(Q_OS_LINUX)
+#  include <cstdlib>
+
+#  include <QGuiApplication>
+#  include <QtGui/qguiapplication_platform.h>
+
+#  include <xcb/xcb.h>
+#endif
+
 namespace zrythm::gui
 {
 
@@ -566,6 +575,37 @@ float
 QtPluginHostWindow::contentScaleFactor () const
 {
   return static_cast<float> (pimpl_->window_->devicePixelRatioF ());
+}
+
+std::optional<QSize>
+QtPluginHostWindow::attachNativeView (quintptr native_view)
+{
+#if defined(Q_OS_LINUX)
+  // X11 view handles only exist on xcb sessions; Wayland sessions host
+  // plugins in X11PluginHostWindow
+  if (native_view == 0 || !QGuiApplication::platformName ().startsWith (u"xcb"))
+    return std::nullopt;
+
+  const auto * x11_app =
+    qApp->nativeInterface<QNativeInterface::QX11Application> ();
+  if (x11_app == nullptr)
+    return std::nullopt;
+
+  // One-shot query on Qt's own connection (a plain round-trip on the main
+  // thread); an invalid or not-yet-created window yields no reply
+  auto *     connection = x11_app->connection ();
+  const auto cookie =
+    xcb_get_geometry (connection, static_cast<xcb_window_t> (native_view));
+  const std::unique_ptr<xcb_get_geometry_reply_t, decltype (&std::free)> reply (
+    xcb_get_geometry_reply (connection, cookie, nullptr), &std::free);
+  if (reply == nullptr || reply->width == 0 || reply->height == 0)
+    return std::nullopt;
+  return QSize (
+    static_cast<int> (reply->width), static_cast<int> (reply->height));
+#else
+  (void) native_view;
+  return std::nullopt;
+#endif
 }
 
 } // namespace zrythm::gui

@@ -15,6 +15,7 @@ add_executable(zrythm_structure_tracks_unit_tests
   playback_cache_activity_tracker_test.cpp
   singleton_tracks_test.cpp
   track_collection_test.cpp
+  track_collection_test.h
   track_factory_test.cpp
   track_lane_test.cpp
   track_lane_list_test.cpp

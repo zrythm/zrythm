@@ -18,6 +18,7 @@ Dialog {
   property string metadataGenre: "Genre"
   property string metadataTitle: "Title"
   readonly property Project project: session.project
+  required property NotificationCenter notificationCenter
   required property ProjectSession session
   required property string exportDirectory
 
@@ -28,20 +29,32 @@ Dialog {
     exportDirectory, session.title);
   }
 
+  Connections {
+    function onFailed(errorString: string) {
+      root.notificationCenter.postCritical(qsTr("Export Failed"), errorString);
+    }
+
+    target: root.exportFuture
+  }
+
   implicitHeight: 500
   implicitWidth: 600
   modal: true
   popupType: Popup.Window
+  standardButtons: Dialog.Cancel
   title: qsTr("Export As...")
 
   // Dialog buttons
   footer: DialogButtonBox {
     Layout.fillWidth: true
-    standardButtons: Dialog.Cancel
+    defaultButton: exportButton
 
+    // Apply keeps the dialog open so the progress dialog (declared
+    // inside this dialog) stays alive while the export runs.
     Button {
+      id: exportButton
+
       DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
-      highlighted: true
       text: qsTr("Export")
     }
   }
@@ -103,7 +116,7 @@ Dialog {
             Layout.fillWidth: true
             title: qsTr("Export Audio")
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Track title")
               title: qsTr("Title")
 
@@ -121,7 +134,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Artist name")
               title: qsTr("Artist")
 
@@ -140,7 +153,7 @@ Dialog {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Music genre")
             title: qsTr("Genre")
 
@@ -158,7 +171,7 @@ Dialog {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Audio file format")
             title: qsTr("Format")
 
@@ -168,7 +181,7 @@ Dialog {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Audio bit depth")
             title: qsTr("Bit Depth")
 
@@ -178,7 +191,7 @@ Dialog {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Apply dithering")
             title: qsTr("Dither")
 
@@ -187,7 +200,7 @@ Dialog {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Pattern for generated filenames")
             title: qsTr("Filename Pattern")
 
@@ -197,7 +210,7 @@ Dialog {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Whether to export the selected tracks as a single mixdown file or each track in its own file.")
             title: qsTr("Mixdown or Stems")
 
@@ -213,7 +226,7 @@ Dialog {
           Layout.fillWidth: true
           title: qsTr("Export Audio")
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Only events inside this time range will be exported.")
             title: qsTr("Time Range")
 
@@ -223,7 +236,7 @@ Dialog {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Set custom start and end positions")
             title: qsTr("Custom Time Range")
 
@@ -308,7 +321,7 @@ Dialog {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: qsTr("Export destination and file info")
             title: qsTr("Output")
 
@@ -337,7 +350,7 @@ Dialog {
             Layout.fillWidth: true
             title: qsTr("Export MIDI")
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Track title")
               title: qsTr("Title")
 
@@ -355,7 +368,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Artist name")
               title: qsTr("Artist")
 
@@ -373,7 +386,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Music genre")
               title: qsTr("Genre")
 
@@ -391,7 +404,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("MIDI file format")
               title: qsTr("Format")
 
@@ -401,7 +414,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Export MIDI lanes as separate tracks")
               title: qsTr("Export Lanes as Tracks")
 
@@ -410,7 +423,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Pattern for generated filenames")
               title: qsTr("Filename Pattern")
 
@@ -420,7 +433,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Whether to export the selected tracks as a single mixdown file or each track in its own file.")
               title: qsTr("Mixdown or Stems")
 
@@ -436,7 +449,7 @@ Dialog {
             Layout.fillWidth: true
             title: qsTr("Export MIDI")
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Only events inside this time range will be exported.")
               title: qsTr("Time Range")
 
@@ -446,7 +459,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Set custom start and end positions")
               title: qsTr("Custom Time Range")
 
@@ -531,7 +544,7 @@ Dialog {
               }
             }
 
-            ZrythmActionRow {
+            ActionRow {
               subtitle: qsTr("Export destination and file info")
               title: qsTr("Output")
 

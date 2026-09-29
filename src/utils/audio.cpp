@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
@@ -15,7 +15,7 @@
 #  include <sys/sysctl.h>
 #endif
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 namespace zrythm::utils::audio
 {
@@ -98,7 +98,7 @@ audio_files_equal (
     }
   catch (const ZrythmException &e)
     {
-      e.handle ("An error occurred while comparing files");
+      log_exception (e, "An error occurred while comparing files");
       return false;
     }
 }

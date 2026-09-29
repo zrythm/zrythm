@@ -32,6 +32,7 @@ target_sources(zrythm_structure_tracks_lib
     piano_roll_track.cpp
     playback_cache_activity_aggregator.cpp
     playback_cache_activity_tracker.cpp
+    singleton_tracks.cpp
     track.cpp
     track_collection.cpp
     track_lane.cpp

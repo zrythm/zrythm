@@ -44,14 +44,16 @@ Item {
     future: root.saveFuture
     labelText: qsTr("Saving project...")
   }
+  required property NotificationCenter notificationCenter
   required property ProjectSession session
 
   Connections {
-    function onFinished() {
-      // resultVar() asserts when the future has no result (e.g. on cancel)
-      if (root.saveFuture.isCanceled())
-        return;
+    function onFailed(errorString: string) {
+      root.notificationCenter.postCritical(qsTr("Project Save Failed"), errorString);
+    }
 
+    function onSucceeded() {
+      // An empty result means the operation was refused before starting
       const savedPath = root.saveFuture.resultVar();
       if (savedPath && savedPath !== "") {
         GlobalState.application.projectManager.recentProjects.addRecentProject(savedPath);

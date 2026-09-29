@@ -124,6 +124,12 @@ public:
 
   bool hasNativeUi () const override;
 
+  /** Returns the presets discovered for the loaded plugin. */
+  std::span<const PresetEntry> presetEntries () const override
+  {
+    return preset_entries_;
+  }
+
   /**
    * @brief Negotiates the saved (restored) port topology into the plugin, or
    * adopts the live layout when negotiation is impossible or refused.
@@ -139,6 +145,14 @@ public:
   void restore_saved_bus_arrangements ();
 
 protected:
+  /**
+   * @brief Loads the preset addressed by @p id into the plugin via the
+   * clap.preset-load extension.
+   *
+   * @return whether the preset was applied.
+   */
+  bool apply_preset_impl (const PresetId &id) override;
+
   void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) override;
@@ -234,9 +248,33 @@ private:
    */
   void sync_param_values_from_plugin ();
 
+  /**
+   * @brief Rebuilds the cached preset list from the loaded library's
+   * preset-discovery providers.
+   *
+   * Emits the preset list signals when the content changed. The crawl
+   * result is cached per library for the process lifetime (see @ref
+   * clap_preset_discovery::collect_presets_cached).
+   *
+   * @param library_path Path of the loaded plugin library.
+   * @param plugin_id CLAP id of the hosted plugin, used to filter
+   * presets that declare compatible plugin ids.
+   */
+  void rebuild_preset_list (
+    const std::filesystem::path &library_path,
+    std::string_view             plugin_id);
+
+  /** Clears the cached preset list, emitting the preset list signals
+   * when the list was non-empty. */
+  void clear_preset_list ();
+
 private:
   class ClapPluginImpl;
   std::unique_ptr<ClapPluginImpl> pimpl_;
+
+  /** Presets discovered for the loaded plugin (encoded locations as
+   * ids). */
+  std::vector<PresetEntry> preset_entries_;
 
   /** Pending state to apply after plugin initialization (from JSON). */
   std::optional<QByteArray> state_to_apply_;

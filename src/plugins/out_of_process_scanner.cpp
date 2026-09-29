@@ -53,7 +53,7 @@
 using namespace Qt::StringLiterals;
 using namespace std::chrono_literals;
 using namespace std::literals;
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 constexpr auto PLUGIN_SCAN_TIMEOUT = 6s;
 

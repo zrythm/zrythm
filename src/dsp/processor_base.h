@@ -234,11 +234,33 @@ public:
     return change_tracker_;
   }
 
+  /**
+   * @brief Switches the processor into or out of offline rendering
+   * mode.
+   *
+   * Offline rendering processes the same blocks without a realtime
+   * deadline, so processors may trade latency for determinism (for
+   * example, running scheduled background work inline). Implementations
+   * must keep realtime processing safe when offline mode is off.
+   *
+   * @param offline True during offline rendering. Must be toggled
+   * while processing is stopped.
+   */
+  virtual void set_offline_mode (bool offline) noexcept { }
+
   // ============================================================================
   // IProcessable Interface
   // ============================================================================
 
   utils::Utf8String get_node_name () const final { return name_; }
+
+  /**
+   * @brief A view of the node name, for contexts that must not allocate.
+   */
+  std::string_view node_name_view () const noexcept [[clang::nonblocking]]
+  {
+    return name_.view ();
+  }
 
   /**
    * @brief Calls custom_process_block() internally after processing all the

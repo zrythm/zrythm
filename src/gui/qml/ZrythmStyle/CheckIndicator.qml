@@ -35,7 +35,7 @@ Rectangle {
 
   ColorImage {
     anchors.centerIn: parent
-    color: root.palette.brightText
+    color: ZrythmTheme.polarityTextColor(root.palette.accent)
     fillMode: Image.PreserveAspectFit
     height: 12
     source: "qrc:/qt/qml/Zrythm/icons/noto-glyphs/check.svg"

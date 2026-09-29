@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <atomic>
+#include <cmath>
 #include <string>
 
 #include "base/source/fstreamer.h"
@@ -25,6 +26,14 @@ class TestGain : public SingleComponentEffect, public IMidiMapping
 public:
   static constexpr ParamID kLevelParamId = 0;
   static constexpr ParamID kCcAssignParamId = 1;
+  static constexpr ParamID kAutoReportParamId = 2;
+  static constexpr ParamID kUiEditModeParamId = 3;
+  /** Fixed normalized Level value reported from process() while Auto
+   * Report is on */
+  static constexpr ParamValue kReportedLevel = 0.25;
+  /** Fixed normalized Level value reported through the component handler
+   * while UI Edit Mode is armed */
+  static constexpr ParamValue kUiEditedLevel = 0.75;
 
   DELEGATE_REFCOUNT (SingleComponentEffect)
 
@@ -45,6 +54,17 @@ public:
     parameters.addParameter (
       STR16 ("CC Assign"), STR16 (""), 1, 0.0, ParameterInfo::kCanAutomate,
       kCcAssignParamId);
+    // Toggle that makes process() report a parameter change through the
+    // output parameter queue every block
+    parameters.addParameter (
+      STR16 ("Auto Report"), STR16 (""), 1, 0.0, ParameterInfo::kCanAutomate,
+      kAutoReportParamId);
+    // Stepped (0 = off, 1 = edit, 2 = open edit) trigger for parameter
+    // edits reported through the component handler from the edit
+    // controller, like a plugin's own UI knob
+    parameters.addParameter (
+      STR16 ("UI Edit Mode"), STR16 (""), 2, 0.0, ParameterInfo::kCanAutomate,
+      kUiEditModeParamId);
     return kResultOk;
   }
 
@@ -113,6 +133,21 @@ public:
               }
           }
       }
+    if (res == kResultOk && tag == kAutoReportParamId)
+      {
+        auto_report_.store (value > 0.5);
+      }
+    if (res == kResultOk && tag == kUiEditModeParamId)
+      {
+        const auto mode = static_cast<int> (std::lround (value * 2.0));
+        if (mode > 0 && componentHandler != nullptr)
+          {
+            componentHandler->beginEdit (kLevelParamId);
+            componentHandler->performEdit (kLevelParamId, kUiEditedLevel);
+            if (mode == 1)
+              componentHandler->endEdit (kLevelParamId);
+          }
+      }
     return res;
   }
 
@@ -139,6 +174,7 @@ public:
     const nlohmann::json j{
       { "gain",                gain_.load ()                  },
       { "controllerEditCount", controller_edit_count_.load () },
+      { "levelInputCount",     level_input_count_.load ()     },
     };
     const auto json_text = j.dump ();
     IBStreamer streamer (state, kLittleEndian);
@@ -157,16 +193,43 @@ public:
         for (int32 i = 0; i < num_changes; ++i)
           {
             auto * queue = data.inputParameterChanges->getParameterData (i);
-            if (queue == nullptr || queue->getParameterId () != kLevelParamId)
+            if (queue == nullptr)
               continue;
             const auto num_points = queue->getPointCount ();
-            if (num_points > 0)
+            if (num_points <= 0)
+              continue;
+            int32      offset = 0;
+            ParamValue value = 0.0;
+            if (queue->getPoint (num_points - 1, offset, value) != kResultOk)
+              continue;
+            if (queue->getParameterId () == kLevelParamId)
               {
-                int32      offset = 0;
-                ParamValue value = 0.0;
-                if (queue->getPoint (num_points - 1, offset, value) == kResultOk)
-                  gain_.store (value);
+                gain_.store (value);
+                // Counted and exposed in the state chunk so hosts can
+                // verify that applied plugin reports are not echoed back
+                // as host-initiated changes
+                level_input_count_.fetch_add (1.0);
               }
+            else if (queue->getParameterId () == kAutoReportParamId)
+              {
+                auto_report_.store (value > 0.5);
+              }
+          }
+      }
+
+    // While Auto Report is on, report a fixed Level change from inside
+    // processing, like a plugin morphing a parameter on the audio thread
+    if (auto_report_.load () && data.outputParameterChanges != nullptr)
+      {
+        int32  queue_index = 0;
+        auto * queue = data.outputParameterChanges->addParameterData (
+          kLevelParamId, queue_index);
+        if (queue != nullptr)
+          {
+            int32 point_index = 0;
+            queue->addPoint (
+              data.numSamples > 0 ? data.numSamples - 1 : 0, kReportedLevel,
+              point_index);
           }
       }
 
@@ -199,7 +262,9 @@ public:
 private:
   std::atomic<double> gain_{ 1.0 };
   std::atomic<double> controller_edit_count_{ 0.0 };
+  std::atomic<double> level_input_count_{ 0.0 };
   std::atomic<bool>   cc7_mapped_{ false };
+  std::atomic<bool>   auto_report_{ false };
 };
 
 } // namespace zrythm_test_plugins

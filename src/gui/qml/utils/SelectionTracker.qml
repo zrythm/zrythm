@@ -16,5 +16,8 @@ Item {
   // Returns a fresh model index for this delegate's item.
   required property var modelIndexProvider // () => QModelIndex
   required property ItemSelectionModel selectionModel
-  readonly property bool isSelected: selectionModel.hasSelection && selectionModel.isSelected(modelIndexProvider())
+  // modelIndexProvider holds a callback that callers set to a function
+  // reference or closure; qmllint cannot verify that a var property is
+  // callable, so the check is disabled for this call.
+  readonly property bool isSelected: selectionModel.hasSelection && selectionModel.isSelected(modelIndexProvider()) // qmllint disable use-proper-function
 }

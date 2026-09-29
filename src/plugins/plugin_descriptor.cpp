@@ -30,10 +30,10 @@ PluginDescriptor::from_juce_description (
     switch (descr->protocol_)
       {
       case Protocol::ProtocolType::Internal:
-      case Protocol::ProtocolType::LV2:
       case Protocol::ProtocolType::AudioUnit:
         descr->path_or_id_ = tmp;
         break;
+      case Protocol::ProtocolType::LV2:
       case Protocol::ProtocolType::LADSPA:
       case Protocol::ProtocolType::VST:
       case Protocol::ProtocolType::VST3:
@@ -111,6 +111,16 @@ PluginDescriptor::vendor () const
 }
 
 QString
+PluginDescriptor::pathOrId () const
+{
+  if (auto * path = std::get_if<std::filesystem::path> (&path_or_id_))
+    {
+      return utils::Utf8String::from_path (*path).to_qstring ();
+    }
+  return {};
+}
+
+QString
 PluginDescriptor::category () const
 {
   return category_str_.to_qstring ();
@@ -140,6 +150,8 @@ init_from (
   obj.protocol_ = other.protocol_;
   obj.path_or_id_ = other.path_or_id_;
   obj.unique_id_ = other.unique_id_;
+  obj.juce_compat_deprecated_unique_id_ =
+    other.juce_compat_deprecated_unique_id_;
   obj.has_custom_ui_ = other.has_custom_ui_;
 }
 
@@ -409,7 +421,7 @@ from_json (const nlohmann::json &j, PluginDescriptor &p)
   j.at (PluginDescriptor::kProtocolKey).get_to (p.protocol_);
   {
     const auto &val = j.at (PluginDescriptor::kPathOrIdKey);
-    if (val[zrythm::utils::serialization::kVariantTypeKey] == 0)
+    if (val.at (zrythm::utils::serialization::kVariantTypeKey) == 0)
       {
         p.path_or_id_ =
           val.at (utils::serialization::kVariantNonObjectValueKey)

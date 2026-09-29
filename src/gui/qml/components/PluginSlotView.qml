@@ -27,15 +27,9 @@ Control {
   required property PluginSelectionModel pluginSelectionModel
   required property Track track
   required property TrackSelectionModel trackSelectionModel
+  required property ViewContext viewContext
 
   signal pluginClicked(Plugin plugin)
-
-  // Returns a fresh model index for this delegate's plugin. Must be called at
-  // time of use - QModelIndex values must not be cached in QML because they
-  // are frozen snapshots that go stale when model rows change.
-  function pluginModelIndex(): var {
-    return pluginSelectionModel.getModelIndex(index);
-  }
 
   function gatherSelectedPlugins() {
     const plugins = [];
@@ -51,6 +45,13 @@ Control {
     if (plugins.length === 0 && root.plugin)
       plugins.push(root.plugin);
     return plugins;
+  }
+
+  // Returns a fresh model index for this delegate's plugin. Must be called at
+  // time of use - QModelIndex values must not be cached in QML because they
+  // are frozen snapshots that go stale when model rows change.
+  function pluginModelIndex(): var {
+    return pluginSelectionModel.getModelIndex(index);
   }
 
   function selectCurrentTrack() {
@@ -76,12 +77,74 @@ Control {
 
     onAboutToShow: {
       if (root.plugin) {
-        removeMenuItem.visible = true;
         const selCount = root.gatherSelectedPlugins().length;
+        removeMenuItem.visible = true;
         removeMenuItem.text = selCount > 1 ? qsTr("Remove %1 Plugins").arg(selCount) : qsTr("Remove Plugin");
+        cutMenuItem.visible = true;
+        cutMenuItem.text = selCount > 1 ? qsTr("Cut %1 Plugins").arg(selCount) : qsTr("Cut Plugin");
+        copyMenuItem.visible = true;
+        copyMenuItem.text = selCount > 1 ? qsTr("Copy %1 Plugins").arg(selCount) : qsTr("Copy Plugin");
+        duplicateMenuItem.visible = true;
+        duplicateMenuItem.text = selCount > 1 ? qsTr("Duplicate %1 Plugins").arg(selCount) : qsTr("Duplicate Plugin");
       } else {
         removeMenuItem.visible = false;
+        cutMenuItem.visible = false;
+        copyMenuItem.visible = false;
+        duplicateMenuItem.visible = false;
       }
+    }
+
+    MenuItem {
+      id: cutMenuItem
+
+      enabled: root.plugin !== null
+      text: qsTr("Cut Plugin")
+
+      onTriggered: {
+        if (root.plugin) {
+          root.viewContext.cutRequested();
+        }
+      }
+    }
+
+    MenuItem {
+      id: copyMenuItem
+
+      enabled: root.plugin !== null
+      text: qsTr("Copy Plugin")
+
+      onTriggered: {
+        if (root.plugin) {
+          root.viewContext.copyRequested();
+        }
+      }
+    }
+
+    MenuItem {
+      enabled: root.pluginOperator.canPastePlugins
+      text: qsTr("Paste")
+
+      onTriggered: {
+        const pastedIds = root.pluginOperator.pastePlugins(root.pluginGroup, root.index);
+        if (pastedIds.length > 0)
+          root.pluginSelectionModel.selectPluginsByUuidStrings(pastedIds);
+      }
+    }
+
+    MenuItem {
+      id: duplicateMenuItem
+
+      enabled: root.plugin !== null
+      text: qsTr("Duplicate Plugin")
+
+      onTriggered: {
+        if (root.plugin) {
+          root.viewContext.duplicateRequested();
+        }
+      }
+    }
+
+    MenuSeparator {
     }
 
     MenuItem {
@@ -135,6 +198,7 @@ Control {
     acceptedModifiers: Qt.NoModifier
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex());
@@ -148,6 +212,7 @@ Control {
     acceptedModifiers: Qt.ControlModifier
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         root.pluginSelectionModel.select(root.pluginModelIndex(), ItemSelectionModel.Toggle);
@@ -161,6 +226,7 @@ Control {
     acceptedModifiers: Qt.ShiftModifier
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         const currentIdx = root.pluginSelectionModel.currentIndex;
@@ -182,6 +248,7 @@ Control {
     acceptedModifiers: Qt.ControlModifier | Qt.ShiftModifier
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         const currentIdx = root.pluginSelectionModel.currentIndex;
@@ -202,6 +269,7 @@ Control {
     acceptedButtons: Qt.RightButton
 
     onTapped: (eventPoint, button) => {
+      root.forceActiveFocus();
       if (root.plugin) {
         root.selectCurrentTrack();
         if (!root.pluginSelectionModel.isSelected(root.pluginModelIndex()))
@@ -241,7 +309,6 @@ Control {
 
   PluginDragItem {
     id: dragItem
-
   }
 
   DropArea {

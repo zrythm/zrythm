@@ -13,8 +13,8 @@ import Qt.labs.synchronizer
 Item {
   id: root
 
-  readonly property int activeFilterCount: selectedTypes.length + selectedFormats.length
-  // Chip entries for the active spec filters: { key, label, isType }
+  readonly property int activeFilterCount: selectedTypes.length + selectedFormats.length + (favoritesOnly ? 1 : 0)
+  // Chip entries for the active spec filters: { key, label, isType, isFavorites }
   readonly property var activeSpecEntries: {
     const typeLabels = {
       "instrument": qsTr("Instrument"),
@@ -22,18 +22,34 @@ Item {
       "midi": qsTr("MIDI"),
       "modulator": qsTr("Modulator")
     };
-    return selectedTypes.map(key => ({
+    const specEntries = selectedTypes.map(key => ({
           "key": key,
           "label": typeLabels[key],
-          "isType": true
+          "isType": true,
+          "isFavorites": false
         })).concat(selectedFormats.map(fmt => ({
           "key": fmt,
           "label": fmt,
-          "isType": false
+          "isType": false,
+          "isFavorites": false
         })));
+    return favoritesOnly ? [
+      {
+        "key": "favorites",
+        "label": qsTr("Favorites"),
+        "isType": false,
+        "isFavorites": true
+      }
+    ].concat(specEntries) : specEntries;
   }
   required property AppSettings appSettings
   readonly property color fadedTextColor: QmlUtils.adjustOpacity(palette.text, 0.6)
+  // Favorited plugin descriptors, as "format:uniqueId" keys, persisted in
+  // the app settings via the Synchronizer below
+  property list<string> favoriteKeys: []
+  // Whether the list is narrowed down to favorited plugins (view state,
+  // not persisted)
+  property bool favoritesOnly: false
   // The format list is non-empty whenever at least one plugin is known
   readonly property bool hasScannedPlugins: pluginManager.pluginDescriptors.availableFormats.length > 0
   required property PluginManager pluginManager
@@ -50,6 +66,16 @@ Item {
   function clearSpecFilters() {
     selectedTypes = [];
     selectedFormats = [];
+    favoritesOnly = false;
+  }
+
+  function descriptorFavoriteKey(descriptor: PluginDescriptor): string {
+    return descriptor.format + ":" + descriptor.uniqueId;
+  }
+
+  function toggleFavorite(descriptor: PluginDescriptor) {
+    const key = descriptorFavoriteKey(descriptor);
+    favoriteKeys = favoriteKeys.includes(key) ? favoriteKeys.filter(k => k !== key) : favoriteKeys.concat([key]);
   }
 
   function toggleFormatFilter(format: string, selected: bool) {
@@ -60,6 +86,10 @@ Item {
     selectedTypes = selected ? selectedTypes.concat([key]) : selectedTypes.filter(k => k !== key);
   }
 
+  Synchronizer on favoriteKeys {
+    sourceObject: root.appSettings
+    sourceProperty: "pluginBrowserFavorites"
+  }
   Synchronizer on selectedFormats {
     sourceObject: root.appSettings
     sourceProperty: "pluginBrowserSpecFormats"
@@ -97,11 +127,15 @@ Item {
       FunctionFilter {
         id: specFilter
 
+        property var favoriteKeys: root.favoriteKeys
+        property bool favoritesOnly: root.favoritesOnly
         property list<string> selectedFormats: root.selectedFormats
         property list<string> selectedTypes: root.selectedTypes
 
         function filter(data: RoleData): bool {
           const d = data.descriptor;
+          if (favoritesOnly && !favoriteKeys.includes(root.descriptorFavoriteKey(d)))
+            return false;
           if (selectedFormats.length > 0 && !selectedFormats.includes(d.format))
             return false;
           if (selectedTypes.length === 0)
@@ -109,6 +143,8 @@ Item {
           return (selectedTypes.includes("instrument") && d.isInstrument()) || (selectedTypes.includes("effect") && d.isEffect()) || (selectedTypes.includes("midi") && d.isMidiModifier()) || (selectedTypes.includes("modulator") && d.isModulator());
         }
 
+        onFavoriteKeysChanged: invalidate()
+        onFavoritesOnlyChanged: invalidate()
         onSelectedFormatsChanged: invalidate()
         onSelectedTypesChanged: invalidate()
       }
@@ -207,6 +243,18 @@ Item {
                 }
               }
 
+              SpecFilterRow {
+                selectedKeys: root.favoritesOnly ? ["favorites"] : []
+                specKey: "favorites"
+                text: qsTr("Favorites")
+
+                onSpecToggled: (key, selected) => root.favoritesOnly = selected
+              }
+
+              MenuSeparator {
+                Layout.fillWidth: true
+              }
+
               Label {
                 Layout.topMargin: 4
                 color: root.fadedTextColor
@@ -289,7 +337,15 @@ Item {
 
           text: modelData.label
 
-          onRemoveClicked: modelData.isType ? root.toggleTypeFilter(modelData.key, false) : root.toggleFormatFilter(modelData.key, false)
+          onRemoveClicked: {
+            if (modelData.isFavorites) {
+              root.favoritesOnly = false;
+            } else if (modelData.isType) {
+              root.toggleTypeFilter(modelData.key, false);
+            } else {
+              root.toggleFormatFilter(modelData.key, false);
+            }
+          }
         }
       }
     }
@@ -465,14 +521,19 @@ Item {
     }
   }
 
-  component PluginDescriptorRow: ItemDelegate {
-    id: pluginDescriptorItemDelegate
+  PluginInfoDialog {
+    id: pluginInfoDialog
+  }
+
+  component PluginDescriptorRow: ActionRow {
+    id: pluginDescriptorRow
 
     required property PluginDescriptor descriptor
+    readonly property bool favorited: root.favoriteKeys.includes(descriptor.format + ":" + descriptor.uniqueId)
     required property int index
 
+    alternate: index % 2 === 1
     highlighted: ListView.isCurrentItem
-    icon.height: 16
     icon.source: {
       if (descriptor.isInstrument()) {
         return ResourceManager.getIconUrl("zrythm-dark", "instrument.svg");
@@ -482,28 +543,146 @@ Item {
         return ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg");
       }
     }
-    icon.width: 16
-    text: descriptor?.name
+    interactive: true
+    subtitle: descriptor.vendor
+    subtitleFallback: descriptor.format
+    suffixActions: [favoriteAction, insertAction]
+    title: descriptor.name
+    width: pluginListView.width
 
-    DragHandler {
-      id: dragHandler
+    overflowActions: [
+      Action {
+        enabled: pluginDescriptorRow.descriptor.pathOrId !== ""
+        text: qsTr("Show in File Manager")
 
-      target: null
+        onTriggered: QmlUtils.revealInFileManager(pluginDescriptorRow.descriptor.pathOrId)
+      },
+      Action {
+        text: qsTr("Plugin Info")
 
-      onActiveChanged: {
-        if (active) {
-          pluginListView.currentIndex = pluginDescriptorItemDelegate.index;
-          draggable.descriptor = pluginDescriptorItemDelegate.descriptor;
-          draggable.Drag.active = true;
-        } else {
-          draggable.Drag.active = false;
-        }
+        onTriggered: pluginInfoDialog.openFor(pluginDescriptorRow.descriptor)
       }
+    ]
+
+    // Non-visual children (actions, handlers) go in `resources` — the
+    // component's default property routes plain children into the suffix
+    // controls area
+    resources: [
+      Action {
+        id: favoriteAction
+
+        // checked mirrors the persisted favorites list; the action itself
+        // is not checkable so the binding cannot be broken by clicks
+        checked: pluginDescriptorRow.favorited
+        icon.source: ResourceManager.getIconUrl("gnome-icon-library", pluginDescriptorRow.favorited ? "star-large-symbolic.svg" : "star-outline-rounded-symbolic.svg")
+        text: qsTr("Favorite")
+
+        onTriggered: root.toggleFavorite(pluginDescriptorRow.descriptor)
+      },
+      Action {
+        id: insertAction
+
+        icon.source: ResourceManager.getIconUrl("gnome-icon-library", "arrow-into-box-symbolic.svg")
+        text: qsTr("Import")
+
+        onTriggered: root.pluginDescriptorActivated(pluginDescriptorRow.descriptor)
+      },
+      DragHandler {
+        id: dragHandler
+
+        target: null
+
+        onActiveChanged: {
+          if (active) {
+            pluginListView.currentIndex = pluginDescriptorRow.index;
+            draggable.descriptor = pluginDescriptorRow.descriptor;
+            draggable.Drag.active = true;
+          } else {
+            draggable.Drag.active = false;
+          }
+        }
+      },
+      TapHandler {
+        onDoubleTapped: root.pluginDescriptorActivated(pluginDescriptorRow.descriptor)
+      }
+    ]
+
+    onClicked: pluginListView.currentIndex = pluginDescriptorRow.index
+  }
+
+  // Dialog showing a plugin descriptor's metadata
+  component PluginInfoDialog: Dialog {
+    id: infoDialog
+
+    property PluginDescriptor descriptor
+
+    function openFor(descriptor: PluginDescriptor) {
+      infoDialog.descriptor = descriptor;
+      open();
     }
 
-    TapHandler {
-      onDoubleTapped: root.pluginDescriptorActivated(pluginDescriptorItemDelegate.descriptor)
-      onTapped: pluginListView.currentIndex = pluginDescriptorItemDelegate.index
+    anchors.centerIn: Overlay.overlay
+    implicitWidth: 440
+    modal: true
+    standardButtons: Dialog.Close
+    title: descriptor?.name ?? ""
+
+    ColumnLayout {
+      spacing: 8
+
+      GridLayout {
+        columnSpacing: 16
+        columns: 2
+        rowSpacing: 4
+
+        Label {
+          Layout.alignment: Qt.AlignRight
+          color: QmlUtils.adjustOpacity(infoDialog.palette.text, 0.6)
+          text: qsTr("Vendor")
+        }
+
+        Label {
+          Layout.fillWidth: true
+          elide: Text.ElideRight
+          text: infoDialog.descriptor?.vendor ?? ""
+        }
+
+        Label {
+          Layout.alignment: Qt.AlignRight
+          color: QmlUtils.adjustOpacity(infoDialog.palette.text, 0.6)
+          text: qsTr("Format")
+        }
+
+        Label {
+          Layout.fillWidth: true
+          text: infoDialog.descriptor?.format ?? ""
+        }
+
+        Label {
+          Layout.alignment: Qt.AlignRight
+          color: QmlUtils.adjustOpacity(infoDialog.palette.text, 0.6)
+          text: qsTr("Category")
+        }
+
+        Label {
+          Layout.fillWidth: true
+          elide: Text.ElideRight
+          text: infoDialog.descriptor?.category ?? ""
+        }
+
+        Label {
+          Layout.alignment: Qt.AlignRight
+          color: QmlUtils.adjustOpacity(infoDialog.palette.text, 0.6)
+          text: qsTr("Location")
+        }
+
+        Label {
+          Layout.fillWidth: true
+          elide: Text.ElideMiddle
+          text: infoDialog.descriptor?.pathOrId ?? ""
+          visible: (infoDialog.descriptor?.pathOrId ?? "") !== ""
+        }
+      }
     }
   }
   component RoleData: QtObject {

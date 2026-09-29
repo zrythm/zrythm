@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+# A plugin with valid DSP but malformed data: the second port declares no
+# direction, so the host must refuse to load it. The valid control port
+# comes first so a partially-read port list still contains a control
+# entry.
+
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+
+<https://lv2.zrythm.org/test-plugins/broken>
+	a lv2:Plugin ;
+	doap:name "Broken" ;
+	lv2:port [
+		a lv2:InputPort ,
+			lv2:ControlPort ;
+		lv2:index 0 ;
+		lv2:symbol "gain" ;
+		lv2:name "Gain" ;
+		lv2:default 0.0 ;
+		lv2:minimum -90.0 ;
+		lv2:maximum 24.0
+	] , [
+		a lv2:AudioPort ;
+		lv2:index 1 ;
+		lv2:symbol "stuck" ;
+		lv2:name "Stuck"
+	] , [
+		a lv2:AudioPort ,
+			lv2:InputPort ;
+		lv2:index 2 ;
+		lv2:symbol "in" ;
+		lv2:name "In"
+	] , [
+		a lv2:AudioPort ,
+			lv2:OutputPort ;
+		lv2:index 3 ;
+		lv2:symbol "out" ;
+		lv2:name "Out"
+	] .

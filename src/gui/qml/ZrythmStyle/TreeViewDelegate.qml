@@ -16,7 +16,7 @@ T.TreeViewDelegate {
 
   font: ZrythmTheme.semiBoldTextFont
   highlighted: control.selected || control.current || ((control.treeView.selectionBehavior === TableView.SelectRows || control.treeView.selectionBehavior === TableView.SelectionDisabled) && control.row === control.treeView.currentRow)
-  implicitHeight: Math.max(indicator ? indicator.height : 0, implicitContentHeight) * 1.25
+  implicitHeight: ZrythmTheme.buttonHeight
   implicitWidth: leftMargin + __contentIndent + implicitContentWidth + rightPadding + rightMargin
   indentation: indicator ? indicator.width : 12
   leftMargin: 4
@@ -90,7 +90,7 @@ T.TreeViewDelegate {
       defaultColor: "#353637"
       height: 12
       rotation: control.expanded ? 90 : (control.mirrored ? 180 : 0)
-      source: "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/arrow-indicator.png"
+      source: "qrc:/qt/qml/Zrythm/icons/lucide/chevron-right.svg"
       width: 12
       x: (parent.width - width) / 2
       y: (parent.height - height) / 2

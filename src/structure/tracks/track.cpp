@@ -283,6 +283,19 @@ Track::init_cache_scheduler ()
         lanes_.get (), &TrackLaneList::laneObjectsNeedRecache,
         playable_content_cache_request_debouncer_.get (),
         &utils::PlaybackCacheScheduler::queueCacheRequest);
+
+      // Attaching or detaching a lane changes which clips the track
+      // plays back, independent of any clip content change, so lane
+      // row changes need a full rebuild
+      const auto queue_full_rebuild = [this] () {
+        playable_content_cache_request_debouncer_->queueCacheRequest ({});
+      };
+      QObject::connect (
+        lanes_.get (), &QAbstractListModel::rowsInserted,
+        playable_content_cache_request_debouncer_.get (), queue_full_rebuild);
+      QObject::connect (
+        lanes_.get (), &QAbstractListModel::rowsRemoved,
+        playable_content_cache_request_debouncer_.get (), queue_full_rebuild);
     }
 
   if (
@@ -352,7 +365,7 @@ Track::generate_basic_automation_tracks ()
   if (!automation_tracklist_)
     return;
 
-  std::vector<utils::QObjectUniquePtr<AutomationTrack>> ats;
+  std::vector<AutomationTrackUuidReference> ats;
 
   const auto gen = [&] (const dsp::ProcessorBase &processor) {
     generate_automation_tracks_for_processor (ats, processor);
@@ -370,9 +383,9 @@ Track::generate_basic_automation_tracks ()
 
   // insert the generated automation tracks
   auto * atl = automationTracklist ();
-  for (auto &at : ats)
+  for (const auto &at : ats)
     {
-      atl->add_automation_track (std::move (at));
+      atl->add_automation_track (at);
     }
 
   // mark first automation track as created & visible

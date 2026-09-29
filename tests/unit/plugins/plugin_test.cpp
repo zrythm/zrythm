@@ -85,9 +85,16 @@ public:
     return presets_;
   }
 
-  void apply_preset_impl (const PresetId &id) override
+  bool apply_preset_impl (const PresetId &id) override
   {
     applied_presets_.push_back (id);
+    if (report_backend_change_during_apply_)
+      {
+        // Simulates a plugin reporting a preset load and then failing
+        // the load it was asked to perform
+        update_selected_preset_from_backend (10);
+      }
+    return !fail_preset_apply_;
   }
 
   /** Simulates the plugin itself switching presets (e.g. from its own UI). */
@@ -115,6 +122,13 @@ public:
      QStringLiteral ("ext:1")                                   },
   };
   std::vector<PresetId> applied_presets_;
+
+  /** Makes apply_preset_impl report failure (simulates a refused load). */
+  bool fail_preset_apply_ = false;
+
+  /** Makes apply_preset_impl report a backend preset change before
+   * finishing. */
+  bool report_backend_change_during_apply_ = false;
 
   mutable int              save_count_ = 0;
   bool                     return_empty_state_ = false;
@@ -249,6 +263,19 @@ TEST_F (PluginTest, ConstructionAndBasicProperties)
   EXPECT_FALSE (plugin_->presetDirty ());
 }
 
+TEST_F (PluginTest, InstantiationErrorRetainedUntilSuccess)
+{
+  plugin_->trigger_instantiation_finished (false, QStringLiteral ("boom"));
+  EXPECT_EQ (
+    plugin_->instantiationStatus (), Plugin::InstantiationStatus::Failed);
+  EXPECT_EQ (plugin_->instantiationError (), QStringLiteral ("boom"));
+
+  plugin_->trigger_instantiation_finished (true, {});
+  EXPECT_EQ (
+    plugin_->instantiationStatus (), Plugin::InstantiationStatus::Successful);
+  EXPECT_TRUE (plugin_->instantiationError ().isEmpty ());
+}
+
 TEST_F (PluginTest, SetConfiguration)
 {
   // Create a plugin descriptor
@@ -300,6 +327,48 @@ TEST_F (PluginTest, PresetSelection)
   EXPECT_EQ (plugin_->presetIndex (), -1);
   EXPECT_EQ (spy.count (), 1);
   EXPECT_EQ (spy.takeFirst ().at (0).toInt (), -1);
+}
+
+TEST_F (PluginTest, FailedPresetApplyKeepsPreviousSelection)
+{
+  QSignalSpy spy (plugin_.get (), &Plugin::presetIndexChanged);
+
+  plugin_->setPresetIndex (0);
+  EXPECT_EQ (plugin_->presetIndex (), 0);
+  EXPECT_EQ (spy.count (), 1);
+  spy.clear ();
+
+  plugin_->fail_preset_apply_ = true;
+  plugin_->setPresetIndex (2);
+
+  // The failed preset was attempted but the selection snapped back to
+  // the previously applied one; the resolved index never changed, so
+  // no change signal fires
+  ASSERT_EQ (plugin_->applied_presets_.size (), 2);
+  EXPECT_EQ (std::get<int> (plugin_->applied_presets_.at (1)), 2);
+  EXPECT_EQ (plugin_->presetIndex (), 0);
+  EXPECT_EQ (spy.count (), 0);
+}
+
+TEST_F (PluginTest, FailedPresetApplyWithBackendReportRestoresSelection)
+{
+  QSignalSpy spy (plugin_.get (), &Plugin::presetIndexChanged);
+
+  plugin_->setPresetIndex (0);
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+  spy.clear ();
+
+  plugin_->fail_preset_apply_ = true;
+  plugin_->report_backend_change_during_apply_ = true;
+  plugin_->setPresetIndex (2);
+
+  // The backend report moved the selection to "Lead" (row 4) and
+  // emitted for it, but the failed apply snaps the selection back to
+  // the previously applied preset, with a corrective emission
+  EXPECT_EQ (plugin_->presetIndex (), 0);
+  ASSERT_EQ (spy.count (), 2);
+  EXPECT_EQ (spy.takeFirst ().at (0).toInt (), 4);
+  EXPECT_EQ (spy.takeFirst ().at (0).toInt (), 0);
 }
 
 TEST_F (PluginTest, PresetDirty)
@@ -621,7 +690,7 @@ TEST_F (PluginTest, OutOfRangePresetIndexInJsonIsRefused)
   j["preset"] = std::numeric_limits<int64_t>::max ();
 
   TestPlugin deserialized (*registry_);
-  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+  EXPECT_THROW (from_json (j, deserialized), utils::ZrythmException);
 }
 
 TEST_F (PluginTest, PresetDirtyWithoutSelectionInJsonIsDiscarded)
@@ -659,7 +728,7 @@ TEST_F (PluginTest, NegativePresetIndexInJsonIsRefused)
   j["preset"] = -5;
 
   TestPlugin deserialized (*registry_);
-  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+  EXPECT_THROW (from_json (j, deserialized), utils::ZrythmException);
 }
 
 TEST_F (PluginTest, NonIntNonStringPresetInJsonIsRefused)
@@ -679,8 +748,7 @@ TEST_F (PluginTest, NonIntNonStringPresetInJsonIsRefused)
     {
       j["preset"] = bad_value;
       TestPlugin deserialized (*registry_);
-      EXPECT_THROW (
-        from_json (j, deserialized), utils::exceptions::ZrythmException)
+      EXPECT_THROW (from_json (j, deserialized), utils::ZrythmException)
         << "preset value should be refused: " << bad_value.dump ();
     }
 }
@@ -699,7 +767,7 @@ TEST_F (PluginTest, NonBoolPresetDirtyInJsonIsRefused)
   j["presetDirty"] = 1;
 
   TestPlugin deserialized (*registry_);
-  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+  EXPECT_THROW (from_json (j, deserialized), utils::ZrythmException);
 }
 
 TEST_F (PluginTest, SelectionFollowsPresetListContentChanges)

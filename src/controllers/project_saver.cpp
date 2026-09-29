@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <exception>
+
 #include "utils/format_qt.h"
 #include <fmt/std.h>
 
@@ -10,6 +12,7 @@
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
+#include "utils/exceptions.h"
 #include "utils/format.h"
 #include "utils/io_utils.h"
 #include "utils/views.h"
@@ -39,10 +42,10 @@ ProjectSaver::make_project_dirs (const std::filesystem::path &project_directory)
         {
           utils::io::mkdir (dir);
         }
-      catch (ZrythmException &e)
+      catch (const ZrythmException &)
         {
-          throw ZrythmException (
-            fmt::format ("Failed to create directory {}", dir));
+          std::throw_with_nested (ZrythmException (
+            fmt::format ("Failed to create directory {}", dir)));
         }
     }
 }
@@ -168,11 +171,10 @@ ProjectSaver::get_existing_uncompressed_text (
     {
       compressed_pj = utils::io::read_file_contents (project_file_path);
     }
-  catch (const ZrythmException &e)
+  catch (const ZrythmException &)
     {
-      throw ZrythmException (format_qstr (
-        QObject::tr ("Unable to read file at {}: {}"), project_file_path,
-        e.what ()));
+      std::throw_with_nested (ZrythmException (format_qstr (
+        QObject::tr ("Unable to read file at {}"), project_file_path)));
     }
 
   /* decompress */
@@ -183,11 +185,11 @@ ProjectSaver::get_existing_uncompressed_text (
     {
       decompress (&text, &text_size, compressed_pj);
     }
-  catch (ZrythmException &e)
+  catch (const ZrythmException &)
     {
-      throw ZrythmException (format_qstr (
+      std::throw_with_nested (ZrythmException (format_qstr (
         QObject::tr ("Unable to decompress project file at {}"),
-        project_file_path));
+        project_file_path)));
     }
 
   /* make string null-terminated */
@@ -387,7 +389,7 @@ ProjectSaver::save (
       }
     catch (const ZrythmException &e)
       {
-        z_warning ("Validation failed: {}", e.what ());
+        utils::log_exception (e, "Validation failed");
       }
     z_debug ("time to validate: {}ms", timer.elapsed ());
     return json;
@@ -517,10 +519,9 @@ ProjectSaver::save (
         }
       catch (const std::exception &e)
         {
-          z_warning ("Project save failed: {}", e.what ());
+          utils::log_exception (e, "Project save failed");
           run_on_engine_thread (resume_engine);
-          promise.setException (
-            std::make_exception_ptr (ZrythmException ("Project save failed")));
+          promise.setException (std::current_exception ());
         }
     });
 }

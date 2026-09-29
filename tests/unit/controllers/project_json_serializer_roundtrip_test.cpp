@@ -263,9 +263,9 @@ TEST_F (ProjectSerializationTest, RoundTrip_ClipLauncherPreserved)
             << "Scene " << i << " name mismatch";
         }
 
-      if (scene1.contains ("clipSlots") && scene2.contains ("clipSlots"))
+      if (scene1.contains ("clipSlotIds") && scene2.contains ("clipSlotIds"))
         {
-          EXPECT_EQ (scene1["clipSlots"].size (), scene2["clipSlots"].size ())
+          EXPECT_EQ (scene1["clipSlotIds"].size (), scene2["clipSlotIds"].size ())
             << "Scene " << i << " clip slots count mismatch";
         }
     }

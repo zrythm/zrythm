@@ -512,7 +512,7 @@ TEST_F (FileImporterTest, ImportFileToClipSlot)
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
 
   // Clip slot should now have a clip
-  EXPECT_NE (clip_slot->clip (), nullptr);
+  EXPECT_NE (clip_slot.get ()->clip (), nullptr);
 }
 
 // TODO: unimplememented
@@ -540,7 +540,7 @@ TEST_F (FileImporterTest, ImportMidiFileToClipSlot)
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
 
   // Clip slot should now have a clip
-  EXPECT_NE (clip_slot->clip (), nullptr);
+  EXPECT_NE (clip_slot.get ()->clip (), nullptr);
 }
 #endif
 
@@ -567,7 +567,7 @@ TEST_F (FileImporterTest, ImportUnsupportedFileToClipSlot)
   EXPECT_EQ (undo_stack_->count (), initial_undo_count);
 
   // Clip slot should still be empty
-  EXPECT_EQ (clip_slot->clip (), nullptr);
+  EXPECT_EQ (clip_slot.get ()->clip (), nullptr);
 }
 
 // Test file type detection priority

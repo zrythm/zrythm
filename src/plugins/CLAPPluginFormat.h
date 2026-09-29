@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <algorithm>
+#include <cstdint>
+
 #include <juce_audio_processors_headless/juce_audio_processors_headless.h>
 
 namespace zrythm::plugins
@@ -13,18 +16,6 @@ class CLAPPluginFormat final : public juce::AudioPluginFormat
 public:
   CLAPPluginFormat () = default;
   ~CLAPPluginFormat () override;
-
-  /**
-   * @brief Used for hashing CLAP IDs
-   *
-   */
-  static auto get_hash_for_range (auto &&range) -> int
-  {
-    return static_cast<int> (std::ranges::fold_left (
-      range, uint32_t{ 0 }, [] (uint32_t acc, auto &&item) {
-        return (acc * 31) + static_cast<uint32_t> (item);
-      }));
-  };
 
   static juce::String getFormatName () { return "CLAP"; }
   juce::String        getName () const override { return getFormatName (); }

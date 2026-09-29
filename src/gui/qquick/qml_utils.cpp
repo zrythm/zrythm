@@ -12,6 +12,7 @@
 #include "structure/arrangement/automation_clip.h"
 #include "structure/arrangement/clip_renderer.h"
 #include "utils/io_utils.h"
+#include "utils/logger.h"
 #include "utils/math_utils.h"
 #include "utils/utf8_string.h"
 
@@ -197,6 +198,19 @@ void
 QmlUtils::copyToClipboard (const QString &text)
 {
   QGuiApplication::clipboard ()->setText (text);
+}
+
+void
+QmlUtils::revealInFileManager (const QString &path)
+{
+  const auto file =
+    juce::File{ utils::Utf8String::from_qstring (path).to_juce_string () };
+  if (!file.exists ())
+    {
+      z_warning ("Cannot reveal non-existing path: {}", path);
+      return;
+    }
+  file.revealToUser ();
 }
 
 QItemSelection

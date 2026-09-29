@@ -54,8 +54,6 @@ public:
 
   UuidType id () const { return UuidType (ref_.id ()); }
 
-  void set_id (const UuidType &id) { ref_.set_id (type_safe::get (id)); }
-
   T * get () const
   {
     auto * base = ref_.get ();

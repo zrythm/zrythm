@@ -7,6 +7,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/clip.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/typed_uuid_reference.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -15,7 +16,7 @@
 namespace zrythm::structure::scenes
 {
 
-class ClipSlot : public QObject
+class ClipSlot : public utils::UuidIdentifiableObject<ClipSlot>
 {
   Q_OBJECT
   Q_PROPERTY (
@@ -75,6 +76,10 @@ public:
   void          setState (ClipState state);
   Q_SIGNAL void stateChanged (ClipState state);
 
+  dsp::TimebaseProvider * timebaseProvider () const
+  {
+    return timebase_provider_;
+  }
   void setTimebaseProvider (dsp::TimebaseProvider * provider)
   {
     timebase_provider_ = provider;
@@ -91,6 +96,8 @@ private:
   QPointer<dsp::TimebaseProvider>                         timebase_provider_;
   std::atomic<ClipState> state_{ ClipState::Stopped };
 };
+
+using ClipSlotUuidReference = utils::TypedUuidReference<ClipSlot>;
 
 class ClipSlotList : public QAbstractListModel
 {
@@ -157,9 +164,15 @@ private:
   friend void to_json (nlohmann::json &j, const ClipSlotList &list);
   friend void from_json (const nlohmann::json &j, ClipSlotList &list);
 
+  /**
+   * @brief Sets the timebase provider of the slot at @p index to the
+   * one of the track at the same index.
+   */
+  void update_timebase_provider (size_t index);
+
 private:
   // These must be in the order of tracks in the tracklist.
-  std::vector<utils::QObjectUniquePtr<ClipSlot>> clip_slots_;
+  std::vector<ClipSlotUuidReference> clip_slots_;
 
   utils::IObjectRegistry        &registry_;
   const tracks::TrackCollection &track_collection_;

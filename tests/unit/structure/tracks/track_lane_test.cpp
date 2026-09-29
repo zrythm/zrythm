@@ -3,6 +3,7 @@
 
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track_lane.h"
+#include "structure/tracks/track_lane_list.h"
 #include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
@@ -23,10 +24,7 @@ protected:
   {
     registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    TrackLane::TrackLaneDependencies deps{
-      .registry_ = *registry_,
-      .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
-    };
+    TrackLane::TrackLaneDependencies deps{ .registry_ = *registry_ };
 
     midi_lane_ = std::make_unique<TrackLane> (deps);
     audio_lane_ = std::make_unique<TrackLane> (deps);
@@ -39,7 +37,6 @@ protected:
   }
 
   std::unique_ptr<utils::ObjectRegistry> registry_;
-  bool                                   soloed_lanes_exist_ = false;
   std::unique_ptr<TrackLane>             midi_lane_;
   std::unique_ptr<TrackLane>             audio_lane_;
 };
@@ -161,34 +158,40 @@ TEST_F (TrackLaneTest, SoloProperty)
 
 TEST_F (TrackLaneTest, EffectivelyMutedLogic)
 {
-  // Test 1: No soloed lanes, lane not muted
-  soloed_lanes_exist_ = false;
+  TrackLaneList list{ *registry_, nullptr };
+  auto *        lane = list.insertLane (0);
+  auto *        sibling = list.insertLane (1);
+
+  // No soloed lanes, lane not muted
+  lane->setMuted (false);
+  lane->setSoloed (false);
+  sibling->setSoloed (false);
+  EXPECT_FALSE (lane->effectivelyMuted ());
+
+  // No soloed lanes, lane muted
+  lane->setMuted (true);
+  EXPECT_TRUE (lane->effectivelyMuted ());
+
+  // A sibling lane is soloed, lane not soloed
+  lane->setMuted (false);
+  sibling->setSoloed (true);
+  EXPECT_TRUE (lane->effectivelyMuted ());
+
+  // A sibling lane is soloed, lane soloed
+  lane->setSoloed (true);
+  EXPECT_FALSE (lane->effectivelyMuted ());
+
+  // A sibling lane is soloed, lane soloed but muted
+  lane->setMuted (true);
+  EXPECT_TRUE (lane->effectivelyMuted ());
+
+  // A sibling lane is soloed, lane not muted but soloed
+  lane->setMuted (false);
+  EXPECT_FALSE (lane->effectivelyMuted ());
+
+  // A detached lane is never implicitly muted
   midi_lane_->setMuted (false);
   midi_lane_->setSoloed (false);
-  EXPECT_FALSE (midi_lane_->effectivelyMuted ());
-
-  // Test 2: No soloed lanes, lane muted
-  midi_lane_->setMuted (true);
-  EXPECT_TRUE (midi_lane_->effectivelyMuted ());
-
-  // Test 3: Soloed lanes exist, lane not soloed
-  soloed_lanes_exist_ = true;
-  midi_lane_->setMuted (false);
-  midi_lane_->setSoloed (false);
-  EXPECT_TRUE (midi_lane_->effectivelyMuted ());
-
-  // Test 4: Soloed lanes exist, lane soloed
-  midi_lane_->setSoloed (true);
-  EXPECT_FALSE (midi_lane_->effectivelyMuted ());
-
-  // Test 5: Soloed lanes exist, lane soloed but muted
-  midi_lane_->setMuted (true);
-  midi_lane_->setSoloed (true);
-  EXPECT_TRUE (midi_lane_->effectivelyMuted ());
-
-  // Test 6: Soloed lanes exist, lane not muted but soloed
-  midi_lane_->setMuted (false);
-  midi_lane_->setSoloed (true);
   EXPECT_FALSE (midi_lane_->effectivelyMuted ());
 }
 
@@ -272,11 +275,8 @@ TEST_F (TrackLaneTest, JsonSerializationRoundtrip)
   nlohmann::json j = *midi_lane_;
 
   // Create new lane from JSON
-  TrackLane::TrackLaneDependencies deps{
-    .registry_ = *registry_,
-    .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
-  };
-  TrackLane deserialized_lane (deps);
+  TrackLane::TrackLaneDependencies deps{ .registry_ = *registry_ };
+  TrackLane                        deserialized_lane (deps);
 
   // Deserialize from JSON
   from_json (j, deserialized_lane);
@@ -318,11 +318,8 @@ TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
   nlohmann::json j = *audio_lane_;
 
   // Create new lane from JSON
-  TrackLane::TrackLaneDependencies deps{
-    .registry_ = *registry_,
-    .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
-  };
-  TrackLane deserialized_lane (deps);
+  TrackLane::TrackLaneDependencies deps{ .registry_ = *registry_ };
+  TrackLane                        deserialized_lane (deps);
 
   // Deserialize from JSON
   from_json (j, deserialized_lane);
@@ -370,11 +367,8 @@ TEST_F (TrackLaneTest, EmptyLaneSerialization)
 
   nlohmann::json j = *midi_lane_;
 
-  TrackLane::TrackLaneDependencies deps{
-    .registry_ = *registry_,
-    .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
-  };
-  TrackLane deserialized_lane (deps);
+  TrackLane::TrackLaneDependencies deps{ .registry_ = *registry_ };
+  TrackLane                        deserialized_lane (deps);
 
   from_json (j, deserialized_lane);
 

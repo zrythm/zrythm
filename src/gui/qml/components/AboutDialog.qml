@@ -80,19 +80,19 @@ Dialog {
       Label {
         Layout.alignment: Qt.AlignHCenter
         font.pointSize: 9
-        text: qsTr("Platform: %1").arg(Qt.platform.pluginName)
+        text: "Platform: %1".arg(Qt.platform.pluginName)
       }
 
       Label {
         Layout.alignment: Qt.AlignHCenter
         font.pointSize: 9
-        text: qsTr("Qt %1 · %2 · %3").arg(QmlUtils.qtRuntimeVersion()).arg(QmlUtils.juceVersion()).arg(Config.BUILD_TYPE)
+        text: "Qt %1 · %2 · %3".arg(QmlUtils.qtRuntimeVersion()).arg(QmlUtils.juceVersion()).arg(Config.BUILD_TYPE)
       }
 
       Label {
         Layout.alignment: Qt.AlignHCenter
         font.pointSize: 9
-        text: qsTr("%1 (%2)").arg(QmlUtils.osDescription()).arg(QmlUtils.cpuArchitecture())
+        text: "%1 (%2)".arg(QmlUtils.osDescription()).arg(QmlUtils.cpuArchitecture())
       }
 
       Label {
@@ -134,12 +134,9 @@ Dialog {
 
         Button {
           flat: true
-          text: qsTr("Third Party Notices")
+          text: qsTr("Third-Party Licenses")
 
-          onClicked: stackView.push(licensePage, {
-            licenseTitle: "Third Party Notices",
-            licenseText: QmlUtils.readTextFileContent(":/qt/qml/Zrythm/licenses/attributions_sbom.txt")
-          })
+          onClicked: stackView.push(thirdPartyLicensesPage)
         }
 
         Button {
@@ -147,7 +144,7 @@ Dialog {
           text: qsTr("Copy System Info")
 
           onClicked: {
-            const installKind = Config.FLATPAK_BUILD ? qsTr("Flatpak") : (Config.IS_INSTALLER_VER ? qsTr("Official build") : qsTr("Local build"));
+            const installKind = Config.FLATPAK_BUILD ? "Flatpak" : (Config.IS_INSTALLER_VER ? "Official build" : "Local build");
             const info = "Zrythm v%1\nQt %2\n%3\nOS: %4 (%5)\nPlatform: %6\nBuild: %7 (%8)".arg(Config.VERSION_STRING_FULL_WITHOUT_V).arg(QmlUtils.qtRuntimeVersion()).arg(QmlUtils.juceVersion()).arg(QmlUtils.osDescription()).arg(QmlUtils.cpuArchitecture()).arg(Qt.platform.pluginName).arg(Config.BUILD_TYPE).arg(installKind);
             QmlUtils.copyToClipboard(info);
           }
@@ -194,7 +191,7 @@ Dialog {
 
             enabled: licenseTextArea.selectedText
             shortcut: StandardKey.Copy
-            text: qsTr("&Copy")
+            text: "&Copy"
 
             onTriggered: licenseTextArea.copy()
           }
@@ -204,7 +201,7 @@ Dialog {
 
             enabled: true
             shortcut: StandardKey.SelectAll
-            text: qsTr("Select All")
+            text: "Select All"
 
             onTriggered: licenseTextArea.selectAll()
           }
@@ -217,6 +214,14 @@ Dialog {
 
         onClicked: stackView.pop()
       }
+    }
+  }
+
+  Component {
+    id: thirdPartyLicensesPage
+
+    AboutThirdPartyLicensesPage {
+      stackView: stackView
     }
   }
 }

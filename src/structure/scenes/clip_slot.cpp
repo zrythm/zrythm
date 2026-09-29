@@ -1,15 +1,19 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "structure/arrangement/clip.h"
 #include "structure/scenes/clip_slot.h"
+#include "utils/exceptions.h"
+#include "utils/registry_utils.h"
 
 #include <nlohmann/json.hpp>
 
 namespace zrythm::structure::scenes
 {
 ClipSlot::ClipSlot (utils::IObjectRegistry &registry, QObject * parent)
-    : QObject (parent), registry_ (registry)
+    : utils::UuidIdentifiableObject<ClipSlot> (parent), registry_ (registry)
 {
 }
 
@@ -59,11 +63,9 @@ ClipSlotList::ClipSlotList (
   // Initialize clip slots to match existing tracks
   for (size_t i = 0; i < track_collection.track_count (); ++i)
     {
-      auto   slot = utils::make_qobject_unique<ClipSlot> (registry_, this);
-      auto * track = track_collection.get_track_at_index (i);
-      if (track != nullptr)
-        slot->setTimebaseProvider (track->timebaseProvider ());
-      clip_slots_.emplace_back (std::move (slot));
+      clip_slots_.emplace_back (
+        utils::create_object<ClipSlot> (registry_, registry_));
+      update_timebase_provider (i);
     }
 
   // Connect to track collection changes to keep clip slots synced
@@ -74,12 +76,10 @@ ClipSlotList::ClipSlotList (
       beginInsertRows (parentIndex, first, last);
       for (int i = first; i <= last; ++i)
         {
-          auto   slot = utils::make_qobject_unique<ClipSlot> (registry_, this);
-          auto * track =
-            track_collection_.get_track_at_index (static_cast<size_t> (i));
-          if (track != nullptr)
-            slot->setTimebaseProvider (track->timebaseProvider ());
-          clip_slots_.insert (clip_slots_.begin () + i, std::move (slot));
+          clip_slots_.insert (
+            clip_slots_.begin () + i,
+            utils::create_object<ClipSlot> (registry_, registry_));
+          update_timebase_provider (static_cast<size_t> (i));
         }
       endInsertRows ();
     });
@@ -94,7 +94,7 @@ ClipSlotList::ClipSlotList (
         sourceParent, sourceStart, sourceEnd, destinationParent, destinationRow);
 
       // Extract the range to move
-      std::vector<utils::QObjectUniquePtr<ClipSlot>> moved_slots;
+      std::vector<ClipSlotUuidReference> moved_slots;
       for (int i = sourceStart; i <= sourceEnd; ++i)
         {
           moved_slots.emplace_back (std::move (clip_slots_[i]));
@@ -137,6 +137,7 @@ ClipSlotList::ClipSlotList (
 void
 to_json (nlohmann::json &j, const ClipSlot &slot)
 {
+  to_json (j, static_cast<const ClipSlot::UuidIdentifiableObject &> (slot));
   if (slot.clip_ref_.has_value ())
     {
       j[ClipSlot::kClipIdKey] = slot.clip_ref_->id ();
@@ -155,30 +156,76 @@ from_json (const nlohmann::json &j, ClipSlot &slot)
 }
 
 void
-to_json (nlohmann::json &j, const ClipSlotList &list)
+ClipSlotList::update_timebase_provider (size_t index)
 {
-  j = nlohmann::json::array ();
-  for (const auto &slot : list.clip_slots_)
+  auto * track = track_collection_.get_track_at_index (index);
+  if (track != nullptr)
     {
-      nlohmann::json slot_json;
-      to_json (slot_json, *slot);
-      j.push_back (std::move (slot_json));
+      clip_slots_.at (index).get ()->setTimebaseProvider (
+        track->timebaseProvider ());
     }
 }
 
 void
+to_json (nlohmann::json &j, const ClipSlotList &list)
+{
+  j = list.clip_slots_;
+}
+void
 from_json (const nlohmann::json &j, ClipSlotList &list)
 {
-  // ClipSlotList is already sized to match track count
-  if (j.is_array ())
+  if (!j.is_array ())
     {
-      for (auto &&[json_slot, slot_ptr] : std::views::zip (j, list.clip_slots_))
+      return;
+    }
+
+  // A scene holds one slot per track
+  if (j.size () != list.track_collection_.track_count ())
+    {
+      throw ZrythmException (
+        fmt::format (
+          "scene has {} clip slots but the project has {} tracks", j.size (),
+          list.track_collection_.track_count ()));
+    }
+
+  // References are built before the model is touched, so a failure
+  // here leaves the list and its default-created slots as they were
+  std::vector<ClipSlotUuidReference> slot_refs;
+  slot_refs.reserve (j.size ());
+  for (const auto &slot_id_json : j)
+    {
+      const auto slot_id = slot_id_json.get<QUuid> ();
+      if (
+        qobject_cast<ClipSlot *> (list.registry_.find_by_raw_uuid (slot_id))
+        == nullptr)
         {
-          if (!json_slot.is_null () && !json_slot.empty ())
-            {
-              from_json (json_slot, *slot_ptr);
-            }
+          throw ZrythmException (
+            fmt::format (
+              "clip slot id {} does not reference a registered clip slot",
+              slot_id.toString ()));
         }
+      slot_refs.emplace_back (ClipSlot::Uuid{ slot_id }, list.registry_);
+    }
+
+  // Releasing the list's references deletes the default-created slots
+  // not referenced anywhere else
+  if (!list.clip_slots_.empty ())
+    {
+      list.beginRemoveRows (
+        QModelIndex (), 0, static_cast<int> (list.clip_slots_.size ()) - 1);
+      list.clip_slots_.clear ();
+      list.endRemoveRows ();
+    }
+
+  if (!slot_refs.empty ())
+    {
+      list.beginInsertRows (
+        QModelIndex (), 0, static_cast<int> (slot_refs.size () - 1));
+      list.clip_slots_ = std::move (slot_refs);
+      list.endInsertRows ();
+
+      for (size_t i = 0; i < list.clip_slots_.size (); ++i)
+        list.update_timebase_provider (i);
     }
 }
 

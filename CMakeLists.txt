@@ -197,8 +197,6 @@ set(ZRYTHM_PACKAGE_VERSION "${ZRYTHM_VERSION_STRING_FULL_WITHOUT_V}" CACHE STRIN
 option(ZRYTHM_PROFILING "Build with profiling (for gprof)" OFF)
 option(ZRYTHM_MANPAGE "Build and install manpage" ${OS_GNU})
 option(ZRYTHM_SHELL_COMPLETIONS "Build and install shell completions" ${UNIX})
-option(ZRYTHM_WITH_BUNDLED_THIRD_PARTY_ATTRIBUTIONS "Fetch third party attributions file and bundle it (for use by the Zrythm team)" OFF)
-option(ZRYTHM_WITH_JUCE_LV2_HOSTING "Include JUCE LV2 hosting module (doesn't build on MSVC)" ${UNIX})
 option(ZRYTHM_USER_MANUAL "Build and install user manual" OFF)
 cmake_dependent_option(ZRYTHM_STRICT_SPHINX_OPTS "Use strict sphinx options (for docs, fail on warnings)" OFF "ZRYTHM_USER_MANUAL" OFF)
 option(ZRYTHM_STRICT "Compile and link with strict flags (warnings as errors, etc.)" OFF)
@@ -378,28 +376,6 @@ endforeach()
 string(JOIN " " locales_str ${locales_list})
 message(STATUS "Locales: ${locales_str}")
 
-# Attributions SBOM
-set(attributions_sbom_filepath "${CMAKE_CURRENT_BINARY_DIR}/attributions_sbom.txt")
-if(NOT EXISTS "${attributions_sbom_filepath}")
-  if(ZRYTHM_WITH_BUNDLED_THIRD_PARTY_ATTRIBUTIONS)
-    file(DOWNLOAD
-      https://raw.githubusercontent.com/zrythm/zrythm-attribution-sbom/refs/heads/main/project-attribution-sbom.txt
-      "${attributions_sbom_filepath}"
-      STATUS download_status
-      TLS_VERIFY OFF
-      TIMEOUT 30
-    )
-    list(GET download_status 0 status_code)
-    list(GET download_status 1 error_message)
-    if(NOT status_code EQUAL 0)
-      message(WARNING "Download failed (${status_code}): ${error_message}")
-      message(FATAL_ERROR "Third party attributions SBOM not fetched")
-    endif()
-  else()
-    file(WRITE "${attributions_sbom_filepath}" "(No attributions included)")
-  endif()
-endif()
-
 # JUCE properties
 set_directory_properties(PROPERTIES
   JUCE_COMPANY_NAME "Zrythm"
@@ -412,6 +388,8 @@ set_directory_properties(PROPERTIES
 #==============================================================================
 
 check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
+
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 add_library(_zrythm_include_dirs INTERFACE)
 target_include_directories(_zrythm_include_dirs
@@ -851,16 +829,20 @@ add_subdirectory(ext)
 find_package(SndFile REQUIRED)
 set(HAVE_OPUS TRUE)
 
-# add_library(lv2_lib INTERFACE)
-# target_include_directories(lv2_lib
-  # INTERFACE ${juce_SOURCE_DIR}/modules/juce_audio_processors/format_types/LV2_SDK/lv2)
-# pkg_check_modules(LV2 lv2>=1.18.0 REQUIRED IMPORTED_TARGET)
-# add_library(zrythm::lv2 ALIAS PkgConfig::LV2)
-# pkg_check_modules(ZIX zix-0>=0.4.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(SERD serd-0>=0.30.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(SORD sord-0>=0.14.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(SRATOM sratom-0>=0.4.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
+# lilv (+ its lv2/serd/sord/sratom/zix chain, from Conan) for native LV2
+# plugin discovery/hosting
+find_package(lilv REQUIRED)
+# CMakeDeps exposes resdirs only per-config (e.g. lv2_RES_DIRS_DEBUG) -
+# map to the config in use so the LV2 spec bundles can be located
+string(TOUPPER "${CMAKE_BUILD_TYPE}" _lv2_build_type_upper)
+if(NOT DEFINED lv2_RES_DIRS AND DEFINED lv2_RES_DIRS_${_lv2_build_type_upper})
+  set(lv2_RES_DIRS "${lv2_RES_DIRS_${_lv2_build_type_upper}}")
+endif()
+unset(_lv2_build_type_upper)
+if(NOT DEFINED lv2_RES_DIRS)
+  message(FATAL_ERROR
+    "lv2_RES_DIRS not found: a single-config generator with CMAKE_BUILD_TYPE set is required for CMakeDeps' per-config variables")
+endif()
 
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)
 add_library(_zrythm_chromaprint_lib INTERFACE)
@@ -961,6 +943,23 @@ if(ZRYTHM_TRACY)
   find_package(Tracy REQUIRED)
   list(APPEND zrythm_link_libs Tracy::TracyClient)
 endif()
+
+# Qt ships the CanvasPainter C++ module without QML type info, which leaves
+# qmllint/qmlls unable to resolve the QML types that derive from
+# QCanvasPainterItem. Provide a supplemental module description under the
+# build dir and register that dir as an additional Qt package prefix so the
+# QML tooling picks it up as an import path.
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/qml/CanvasPainter")
+file(COPY
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/qml/typeinfo/CanvasPainter/qmldir"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/qml/typeinfo/CanvasPainter/plugins.qmltypes"
+  DESTINATION "${CMAKE_BINARY_DIR}/qml/CanvasPainter"
+)
+list(APPEND _qt_additional_packages_prefix_paths "${CMAKE_BINARY_DIR}")
+set(QT_ADDITIONAL_PACKAGES_PREFIX_PATH "${CMAKE_BINARY_DIR}")
+# Generate .qmlls.ini files next to the QML modules so the QML language
+# server can resolve the project's types from the build directory
+set(QT_QML_GENERATE_QMLLS_INI ON)
 
 find_package(Qt6 6.11
   COMPONENTS
@@ -1087,6 +1086,10 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 endif()
 
+# Generates attributions.json (bundled via QRC in src/gui) and sbom.cdx.json
+# from data/dependencies.toml at configure time.
+include(DependencyInventory)
+
 add_subdirectory(src)
 
 # below errors out on Xcode
@@ -1098,7 +1101,7 @@ if(NOT XCODE)
     QT_TRANSLATION_CATALOGS qtbase
   )
   set_property(TARGET zrythm PROPERTY QT_EXCLUDE_SOURCES_FROM_TRANSLATION
-    "${CMAKE_CURRENT_BINARY_DIR}/attributions_sbom.txt"
+    "${generated_attributions_json}"
     "${CMAKE_SOURCE_DIR}/ext/*"
     "${CMAKE_SOURCE_DIR}/.cache/CPM/*"
     "${CMAKE_SOURCE_DIR}/src/gui/resources/icons/*"
@@ -1108,7 +1111,6 @@ if(NOT XCODE)
 endif()
 
 # clang-format integration
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_custom_target(clang-format-check
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/run_clang_format.py --dry-run
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

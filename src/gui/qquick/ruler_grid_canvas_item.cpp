@@ -44,7 +44,7 @@ RulerGridCanvasItem::setTempoMap (dsp::TempoMapWrapper * map)
 }
 
 void
-RulerGridCanvasItem::setPxPerTick (qreal px)
+RulerGridCanvasItem::setPxPerTick (double px)
 {
   if (qFuzzyCompare (px_per_tick_, px))
     return;
@@ -54,7 +54,7 @@ RulerGridCanvasItem::setPxPerTick (qreal px)
 }
 
 void
-RulerGridCanvasItem::setScrollX (qreal x)
+RulerGridCanvasItem::setScrollX (double x)
 {
   if (qFuzzyCompare (scroll_x_, x))
     return;
@@ -64,7 +64,7 @@ RulerGridCanvasItem::setScrollX (qreal x)
 }
 
 void
-RulerGridCanvasItem::setScrollXPlusWidth (qreal w)
+RulerGridCanvasItem::setScrollXPlusWidth (double w)
 {
   if (qFuzzyCompare (scroll_x_plus_width_, w))
     return;
@@ -84,7 +84,7 @@ RulerGridCanvasItem::setTextColor (const QColor &color)
 }
 
 void
-RulerGridCanvasItem::setBarLineOpacity (qreal opacity)
+RulerGridCanvasItem::setBarLineOpacity (double opacity)
 {
   if (qFuzzyCompare (bar_line_opacity_, opacity))
     return;
@@ -94,7 +94,7 @@ RulerGridCanvasItem::setBarLineOpacity (qreal opacity)
 }
 
 void
-RulerGridCanvasItem::setBeatLineOpacity (qreal opacity)
+RulerGridCanvasItem::setBeatLineOpacity (double opacity)
 {
   if (qFuzzyCompare (beat_line_opacity_, opacity))
     return;
@@ -104,7 +104,7 @@ RulerGridCanvasItem::setBeatLineOpacity (qreal opacity)
 }
 
 void
-RulerGridCanvasItem::setSixteenthLineOpacity (qreal opacity)
+RulerGridCanvasItem::setSixteenthLineOpacity (double opacity)
 {
   if (qFuzzyCompare (sixteenth_line_opacity_, opacity))
     return;
@@ -114,7 +114,7 @@ RulerGridCanvasItem::setSixteenthLineOpacity (qreal opacity)
 }
 
 void
-RulerGridCanvasItem::setDetailMeasurePxThreshold (qreal threshold)
+RulerGridCanvasItem::setDetailMeasurePxThreshold (double threshold)
 {
   if (qFuzzyCompare (detail_measure_px_threshold_, threshold))
     return;
@@ -124,7 +124,7 @@ RulerGridCanvasItem::setDetailMeasurePxThreshold (qreal threshold)
 }
 
 void
-RulerGridCanvasItem::setDetailMeasureLabelPxThreshold (qreal threshold)
+RulerGridCanvasItem::setDetailMeasureLabelPxThreshold (double threshold)
 {
   if (qFuzzyCompare (detail_measure_label_px_threshold_, threshold))
     return;

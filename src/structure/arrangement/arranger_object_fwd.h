@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <utility>
+#include <variant>
+
 #include "utils/debug.h"
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
@@ -51,7 +54,8 @@ concept BoundedObject = ClipObject<T> || std::is_same_v<T, MidiNote>;
 template <typename T>
 concept EditorObject =
   std::is_same_v<T, MidiControlEvent> || std::is_same_v<T, MidiNote>
-  || std::is_same_v<T, AutomationPoint> || std::is_same_v<T, ChordObject>;
+  || std::is_same_v<T, AutomationPoint> || std::is_same_v<T, ChordObject>
+  || std::is_same_v<T, AudioSourceObject>;
 
 using ArrangerObjectVariant = std::variant<
   MidiNote,
@@ -69,6 +73,23 @@ using ArrangerObjectVariant = std::variant<
   MidiControlEvent>;
 using ArrangerObjectPtrVariant =
   utils::to_pointer_variant<ArrangerObjectVariant>;
+
+template <typename Variant, std::size_t... Is>
+consteval bool
+each_alternative_has_exactly_one_position_space (std::index_sequence<Is...>)
+{
+  return (
+    (TimelineObject<std::variant_alternative_t<Is, Variant>>
+     != EditorObject<std::variant_alternative_t<Is, Variant>>)
+    && ...);
+}
+
+// Every object type lives in exactly one position space (timeline or
+// clip-relative); operations that keep the two spaces apart rely on this
+static_assert (
+  each_alternative_has_exactly_one_position_space<ArrangerObjectVariant> (
+    std::make_index_sequence<std::variant_size_v<ArrangerObjectVariant>>{}),
+  "every arranger object type is a timeline or an editor object");
 
 using ArrangerObjectUuid = utils::UuidIdentifiableObject<ArrangerObject>::Uuid;
 

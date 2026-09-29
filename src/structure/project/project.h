@@ -25,11 +25,16 @@
 #include "utils/main_thread_dispatcher.h"
 
 #include <QTimer>
-
 namespace zrythm::dsp
 {
 class Fader;
 }
+
+namespace zrythm::plugins
+{
+class Lv2World;
+}
+
 namespace zrythm::utils
 {
 class AppSettings;
@@ -108,6 +113,7 @@ public:
     plugins::PluginHostWindowFactory                plugin_host_window_provider,
     dsp::Metronome                                 &metronome,
     dsp::Fader                                     &monitor_fader,
+    std::shared_ptr<plugins::Lv2World>              lv2_world = nullptr,
     QObject *                                       parent = nullptr);
   ~Project () override;
   Q_DISABLE_COPY_MOVE (Project)
@@ -158,7 +164,36 @@ public:
     return project_registry_;
   }
 
+  ProjectRegistry       &projectRegistry () { return project_registry_; }
+  const ProjectRegistry &projectRegistry () const { return project_registry_; }
+
   const auto &tempo_map () const { return tempo_map_; }
+
+  /**
+   * @brief Returns the persistent identity of this project instance.
+   *
+   * Persisted in the project file so reopening keeps it; a payload copied
+   * from a project records its identity as provenance (see
+   * ClipboardPayload::source_project_id()).
+   */
+  const QUuid &project_id () const { return project_id_; }
+
+  /**
+   * @brief Assigns a fresh project identity.
+   *
+   * The project keeps the identity of its current lineage; payloads
+   * copied under a previous identity carry that identity as their
+   * provenance.
+   */
+  void regenerate_project_id () { project_id_ = QUuid::createUuid (); }
+
+  /**
+   * @brief Sets the project identity to a previous value.
+   *
+   * The identity stays tied to the lineage of the file the project is
+   * bound to; see regenerate_project_id().
+   */
+  void set_project_id (const QUuid &id) { project_id_ = id; }
 
   void set_audio_input_selection_provider (AudioInputSelectionProvider provider)
   {
@@ -200,6 +235,7 @@ public:
 private:
   static constexpr auto kTempoMapKey = "tempoMap"sv;
   static constexpr auto kRegistryKey = "registry"sv;
+  static constexpr auto kProjectIdKey = "projectId"sv;
   static constexpr auto kTransportKey = "transport"sv;
   static constexpr auto kAudioPoolKey = "audioPool"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
@@ -218,6 +254,8 @@ private:
   plugins::PluginHostWindowFactory plugin_host_window_provider_;
 
   ProjectRegistry project_registry_;
+
+  QUuid project_id_{ QUuid::createUuid () };
 
   ProjectDirectoryPathProvider project_directory_path_provider_;
 
@@ -301,8 +339,16 @@ public:
   std::unique_ptr<structure::tracks::TrackFactory> track_factory_;
 
 private:
-  utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
-    tempo_object_manager_;
+  /**
+   * @brief Keep-alive reference to the project's tempo object manager.
+   *
+   * The manager is registered in the project registry (which owns it)
+   * under an identity-only category; undo commands reference it through
+   * the registry. Declared after project_registry_ so the reference is
+   * released before the registry is destroyed.
+   */
+  structure::arrangement::TempoObjectManagerUuidReference
+    tempo_object_manager_ref_;
 
   dsp::Fader     &monitor_fader_;
   dsp::Metronome &metronome_;

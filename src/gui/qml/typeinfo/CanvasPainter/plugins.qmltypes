@@ -1,0 +1,19 @@
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: FSFAP
+//
+// Supplemental QML type info for the Qt CanvasPainter module, which ships
+// without QML type registration. Used for QML tooling purposes only.
+
+import QtQuick.tooling 1.2
+
+Module {
+    dependencies: ["QtQuick 2.0"]
+    Component {
+        name: "QCanvasPainterItem"
+        prototype: "QQuickItem"
+        exports: ["CanvasPainter/QCanvasPainterItem 1.0"]
+        exportMetaObjectRevisions: [0]
+        isCreatable: false
+        isAbstract: false
+    }
+}

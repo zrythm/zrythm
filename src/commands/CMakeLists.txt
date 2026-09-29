@@ -5,11 +5,13 @@ qt_add_library(zrythm_commands_lib STATIC)
 
 target_sources(zrythm_commands_lib
   PRIVATE
+    arranger_object_owner_ref.cpp
     chord_pad_commands.cpp
     move_arranger_objects_command.cpp
     move_plugins_command.cpp
     move_tracks_command.cpp
     delete_tracks_command.cpp
+    delete_lane_command.cpp
     remove_plugins_command.cpp
     resize_arranger_objects_command.cpp
     set_clip_loop_points_command.cpp
@@ -34,12 +36,14 @@ target_sources(zrythm_commands_lib
       move_plugins_command.h
       move_tracks_command.h
       delete_tracks_command.h
+      delete_lane_command.h
       resize_arranger_objects_command.h
       relocate_arranger_object_command.h
       remove_arranger_object_command.h
       remove_plugins_command.h
       rename_track_command.h
       set_clip_loop_points_command.h
+      set_folder_parent_command.h
 )
 
 set_target_properties(zrythm_commands_lib PROPERTIES

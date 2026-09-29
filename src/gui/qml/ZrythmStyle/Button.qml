@@ -13,7 +13,7 @@ T.Button {
   property real styleHeight: ZrythmTheme.buttonHeight
 
   font: ZrythmTheme.buttonTextFont
-  horizontalPadding: padding + 2
+  horizontalPadding: 6
   hoverEnabled: true
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
@@ -25,12 +25,9 @@ T.Button {
   background: ButtonBackgroundRect {
     control: control
   }
-  contentItem: IconLabel {
-    readonly property color baseColor: control.highlighted ? control.palette.brightText : control.palette.buttonText
-    readonly property color colorAdjustedForChecked: control.checked ? control.palette.brightText : baseColor
-    readonly property color colorAdjustedForHoverOrFocusOrDown: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, false, false, control.down)
 
-    color: colorAdjustedForHoverOrFocusOrDown
+  contentItem: IconLabel {
+    color: ZrythmTheme.buttonContentColor(control)
     display: control.display
     font: control.font
     icon: control.icon
@@ -54,7 +51,7 @@ T.Button {
 
   icon {
     // height: 24
-    color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
+    color: ZrythmTheme.buttonContentColor(control)
     width: Math.max(control.styleHeight - padding * 2, textMetrics.height)
   }
 }

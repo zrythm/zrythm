@@ -89,7 +89,9 @@ TEST_F (AudioCallbackTest, ConstructorWithAllCallbacks)
   auto about_to_start_cb = create_mock_about_to_start_callback ();
   auto stopped_cb = create_mock_stopped_callback ();
 
-  AudioCallback audio_callback (process_cb, about_to_start_cb, stopped_cb);
+  AudioCallback audio_callback (
+    std::move (process_cb), std::move (about_to_start_cb),
+    std::move (stopped_cb));
 
   EXPECT_FALSE (process_cb_called_);
   EXPECT_FALSE (about_to_start_called_);
@@ -101,7 +103,8 @@ TEST_F (AudioCallbackTest, ConstructorWithOnlyProcessCallback)
   auto process_cb = create_mock_process_callback ();
 
   AudioCallback audio_callback (
-    process_cb, create_empty_about_to_start_cb (), create_empty_stopped_cb ());
+    std::move (process_cb), create_empty_about_to_start_cb (),
+    create_empty_stopped_cb ());
 
   EXPECT_FALSE (process_cb_called_);
 }
@@ -111,7 +114,8 @@ TEST_F (AudioCallbackTest, ProcessAudio)
   auto process_cb = create_mock_process_callback ();
 
   AudioCallback audio_callback (
-    process_cb, create_empty_about_to_start_cb (), create_empty_stopped_cb ());
+    std::move (process_cb), create_empty_about_to_start_cb (),
+    create_empty_stopped_cb ());
 
   constexpr int num_channels = 2;
   constexpr int num_samples = 256;
@@ -157,7 +161,8 @@ TEST_F (AudioCallbackTest, ProcessAudioZeroChannels)
   auto process_cb = create_mock_process_callback ();
 
   AudioCallback audio_callback (
-    process_cb, create_empty_about_to_start_cb (), create_empty_stopped_cb ());
+    std::move (process_cb), create_empty_about_to_start_cb (),
+    create_empty_stopped_cb ());
 
   const float * input_channels[] = { nullptr };
   float *       output_channels[] = { nullptr };
@@ -176,7 +181,8 @@ TEST_F (AudioCallbackTest, ProcessAudioMultipleCalls)
   auto process_cb = create_mock_process_callback ();
 
   AudioCallback audio_callback (
-    process_cb, create_empty_about_to_start_cb (), create_empty_stopped_cb ());
+    std::move (process_cb), create_empty_about_to_start_cb (),
+    create_empty_stopped_cb ());
 
   constexpr int num_channels = 1;
   constexpr int num_samples = 64;
@@ -201,7 +207,8 @@ TEST_F (AudioCallbackTest, AboutToStartWithCallback)
 {
   auto          about_to_start_cb = create_mock_about_to_start_callback ();
   AudioCallback audio_callback (
-    create_empty_process_cb (), about_to_start_cb, create_empty_stopped_cb ());
+    create_empty_process_cb (), std::move (about_to_start_cb),
+    create_empty_stopped_cb ());
 
   audio_callback.about_to_start ();
 
@@ -225,7 +232,8 @@ TEST_F (AudioCallbackTest, StoppedWithCallback)
   auto stopped_cb = create_mock_stopped_callback ();
 
   AudioCallback audio_callback (
-    create_empty_process_cb (), create_empty_about_to_start_cb (), stopped_cb);
+    create_empty_process_cb (), create_empty_about_to_start_cb (),
+    std::move (stopped_cb));
 
   audio_callback.stopped ();
 
@@ -268,7 +276,7 @@ TEST_F (AudioCallbackTest, ProcessCallbackModifiesOutput)
     };
 
   AudioCallback audio_callback (
-    modifying_process_cb, create_empty_about_to_start_cb (),
+    std::move (modifying_process_cb), create_empty_about_to_start_cb (),
     create_empty_stopped_cb ());
 
   constexpr int num_samples = 128;
@@ -299,7 +307,9 @@ TEST_F (AudioCallbackTest, CallbackOrderInRealScenario)
   auto about_to_start_cb = create_mock_about_to_start_callback ();
   auto stopped_cb = create_mock_stopped_callback ();
 
-  AudioCallback audio_callback (process_cb, about_to_start_cb, stopped_cb);
+  AudioCallback audio_callback (
+    std::move (process_cb), std::move (about_to_start_cb),
+    std::move (stopped_cb));
 
   audio_callback.about_to_start ();
   EXPECT_TRUE (about_to_start_called_);

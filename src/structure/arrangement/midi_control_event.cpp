@@ -126,7 +126,7 @@ void
 to_json (nlohmann::json &j, const MidiControlEvent &ev)
 {
   to_json (j, static_cast<const ArrangerObject &> (ev));
-  j[MidiControlEvent::kTypeKey] = static_cast<int> (ev.type_);
+  j[MidiControlEvent::kControlTypeKey] = static_cast<int> (ev.type_);
   j[MidiControlEvent::kChannelKey] = ev.channel_;
   j[MidiControlEvent::kControllerKey] = ev.controller_;
   j[MidiControlEvent::kValueKey] = ev.value_;
@@ -136,7 +136,7 @@ void
 from_json (const nlohmann::json &j, MidiControlEvent &ev)
 {
   from_json (j, static_cast<ArrangerObject &> (ev));
-  const auto type_int = j.at (MidiControlEvent::kTypeKey).get<int> ();
+  const auto type_int = j.at (MidiControlEvent::kControlTypeKey).get<int> ();
   if (
     type_int < 0
     || type_int > static_cast<int> (MidiControlEvent::EventType::ProgramChange))

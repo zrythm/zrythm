@@ -23,6 +23,7 @@
 #include "utils/qt.h"
 
 #include <QSignalSpy>
+#include <QTest>
 
 #include "helpers/mock_plugin_host_window.h"
 #include "helpers/project_fixture.h"
@@ -154,18 +155,18 @@ protected:
     const auto initial_count = mock_hw->process_call_count ();
     if (condition.has_value ())
       {
-        process_events_until_true (*condition);
+        ASSERT_TRUE (QTest::qWaitFor (*condition));
       }
     else
       {
         // Wait for JUCE timers and UI signals to fire (40ms period).
-        process_events_until_timeout ();
+        QTest::qWait (std::chrono::milliseconds (200));
       }
 
     // Ensure at least 1 cycle is processed before returning.
-    process_events_until_true ([mock_hw, initial_count] () {
+    ASSERT_TRUE (QTest::qWaitFor ([mock_hw, initial_count] () {
       return mock_hw->process_call_count () >= initial_count + 1;
-    });
+    }));
 
     project.engine ()->set_running (false);
     project.engine ()->deactivate ();
@@ -255,9 +256,7 @@ protected:
     importer->importPluginToNewTrack (&descriptor);
 
     // Wait for instantiation to complete
-    process_events_until_true ([&] () { return instantiation_finished; });
-    EXPECT_TRUE (instantiation_finished)
-      << "Plugin instantiation did not complete";
+    ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
     // === Step 1b: Capture original plugin state for later comparison ===
     auto &original_registry = original_bundle->project->get_registry ();
@@ -663,8 +662,9 @@ TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithVst3Plugin)
     plugins::PluginDescriptor::from_juce_description (*juce_desc);
   ASSERT_NE (descriptor, nullptr);
 
-  // 2 built-in (bypass + gain) + 2 plugin params (Level, CC Assign)
-  save_load_save_roundtrip_with_plugin (*descriptor, 4);
+  // 2 built-in (bypass + gain) + 4 plugin params (Level, CC Assign,
+  // Auto Report, UI Edit Mode)
+  save_load_save_roundtrip_with_plugin (*descriptor, 6);
 }
 
 /**
@@ -688,8 +688,8 @@ TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithClapPlugin)
     plugins::PluginDescriptor::from_juce_description (*juce_desc);
   ASSERT_NE (descriptor, nullptr);
 
-  // 2 built-in (bypass + gain) + 1 plugin param (Gain)
-  save_load_save_roundtrip_with_plugin (*descriptor, 3);
+  // 2 built-in (bypass + gain) + 2 plugin params (Level, Report Mode)
+  save_load_save_roundtrip_with_plugin (*descriptor, 4);
 }
 
 /**
@@ -750,8 +750,7 @@ TEST_F (
 
   importer->importPluginToNewTrack (&*descriptor);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
-  ASSERT_TRUE (instantiation_finished);
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   process_until_timeout (*bundle->project);
 
@@ -996,8 +995,7 @@ TEST_P (ProjectPluginUiRestoreTest, LoadWithVisibleUiRestoresEditorDeferred)
     std::move (handler), bundle->project.get ());
 
   importer->importPluginToNewTrack (&*descriptor);
-  process_events_until_true ([&] () { return instantiation_finished; });
-  ASSERT_TRUE (instantiation_finished);
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   auto &registry = bundle->project->get_registry ();
   ASSERT_EQ (registry.count_matching<plugins::Plugin> (), 1);
@@ -1044,7 +1042,7 @@ TEST_P (ProjectPluginUiRestoreTest, LoadWithVisibleUiRestoresEditorDeferred)
   // restore is queued so that project loading finishes first
   EXPECT_EQ (loaded_window_state->window, nullptr);
   EXPECT_FALSE (loaded_window_state->visible);
-  process_events_until_true ([&] { return loaded_window_state->visible; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return loaded_window_state->visible; }));
 }
 
 INSTANTIATE_TEST_SUITE_P (

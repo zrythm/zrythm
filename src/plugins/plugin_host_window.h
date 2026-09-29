@@ -11,6 +11,7 @@
 #include "utils/qt.h"
 
 #include <QObject>
+#include <QSize>
 #include <QTimer>
 #include <QtGui/qwindowdefs.h>
 
@@ -150,6 +151,25 @@ public:
    * To be used in natively hosted plugins.
    */
   virtual WId getEmbedWindowId () const = 0;
+
+  /**
+   * @brief Adopts a native view handle a plugin format received for
+   * this window's embed area and returns the view's size in physical
+   * pixels.
+   *
+   * Used by formats whose editor creation yields a known native view
+   * handle instead of a size query. An implementation hosts the view
+   * where its platform embedding model requires it (e.g. reparenting a
+   * toplevel view into the embed area and completing the handshake); a
+   * view that embeds itself into the parent handle it was given needs
+   * no such step and is only queried. Returns nullopt when the view is
+   * invalid or the windowing system provides no way to query it.
+   */
+  virtual std::optional<QSize> attachNativeView (quintptr native_view)
+  {
+    (void) native_view;
+    return std::nullopt;
+  }
 
   /**
    * @brief Returns the display scale factor of the window (1.0 = no scaling).

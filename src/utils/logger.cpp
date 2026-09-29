@@ -6,6 +6,7 @@
 #include "utils/debug.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
+#include "utils/rt_logger.h"
 #include "utils/threads.h"
 
 #include <QStandardPaths>
@@ -31,6 +32,10 @@ struct detail::SpdlogApi::Logger
 
 detail::SpdlogApi::~SpdlogApi ()
 {
+  // Parks the realtime log consumer so it cannot forward into the
+  // logger being destroyed
+  set_rt_log_consumer_paused (true);
+
   auto * p = logger_.exchange (nullptr, std::memory_order_acq_rel);
   delete p;
 }
@@ -227,6 +232,10 @@ detail::SpdlogApi::init (LoggerType type)
 
     logger_.store (impl, std::memory_order_release);
   });
+
+  // Started after logger_ is set so early realtime messages are forwarded
+  // rather than dropped
+  init_rt_logging ();
 }
 
 void
@@ -253,6 +262,14 @@ bool
 is_logging_initialized ()
 {
   return detail::log_api<>.logger_.load (std::memory_order_acquire) != nullptr;
+}
+
+bool
+should_log (LogLevel level) noexcept
+{
+  auto * l = detail::log_api<>.logger_.load (std::memory_order_acquire);
+  return (l != nullptr) && l->spd_logger
+         && l->spd_logger->should_log (to_spdlog_level (level));
 }
 
 std::vector<Utf8String>

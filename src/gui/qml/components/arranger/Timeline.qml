@@ -14,8 +14,21 @@ Arranger {
   id: root
 
   required property bool pinned
+  required property TempoObjectManager tempoObjectManager
   required property var timeline
   required property Tracklist tracklist
+  required property TrackSelectionModel trackSelectionModel
+
+  // Returns the topmost track of the track selection, used as the paste
+  // target for lane clips
+  function firstSelectedTrack(): Track {
+    let firstSelectedRow = null;
+    for (const selectedRow of root.trackSelectionModel.selectedRows(0)) {
+      if (firstSelectedRow === null || selectedRow.row < firstSelectedRow.row)
+        firstSelectedRow = selectedRow;
+    }
+    return firstSelectedRow !== null ? firstSelectedRow.data(TrackCollection.TrackPtrRole) : null;
+  }
 
   function beginObjectCreation(coordinates: point): ArrangerObject {
     const track = getTrackAtY(coordinates.y);
@@ -40,34 +53,17 @@ Arranger {
       return null;
     }
 
+    root.selectObjectsByUuidStrings([obj.uuidString]);
+
     if (isMoveOnlyObject) {
       root.creationMacroOpen = true;
       root.currentAction = Arranger.CreatingMoving;
-      if (objectType === ArrangerObject.Marker) {
-        const markerTrack = track as MarkerTrack;
-        root.selectSingleObject(markerTrack.markers, markerTrack.markers.rowCount() - 1);
-      } else {
-        const chordTrack = track as ChordTrack;
-        root.selectSingleObject(chordTrack.scaleObjects, chordTrack.scaleObjects.rowCount() - 1);
-      }
       CursorManager.setClosedHandCursor();
       return obj;
     }
 
     // Clips
     root.currentAction = Arranger.CreatingResizingR;
-    const automationTrack = getAutomationTrackAtY(coordinates.y);
-    if (automationTrack) {
-      const clipOwner = automationTrack.clips;
-      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-    } else if (track.type === Track.Chord) {
-      const clipOwner = (track as ChordTrack).chordClips;
-      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-    } else {
-      const trackLane = getTrackLaneAtY(coordinates.y) as TrackLane;
-      const clipOwner = trackLane ? trackLane.midiClips : track.lanes.getFirstLane().midiClips;
-      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-    }
     CursorManager.setResizeEndCursor();
     return obj;
   }
@@ -338,6 +334,18 @@ Arranger {
   }
 
   function moveTemporaryObjectsY(dy: real, prevY: real) {
+  }
+
+  // Pastes the clipboard's arranger objects onto the timeline so the
+  // earliest object lands at the playhead; lane clips are attached to the
+  // topmost selected track
+  function pasteAtPlayhead(): list<string> {
+    return root.selectionOperator.pasteObjectsOnTimeline(
+      root.firstSelectedTrack(),
+      root.tracklist.singletonTracks.markerTrack,
+      root.tracklist.singletonTracks.chordTrack,
+      root.tempoObjectManager,
+      root.transport.playhead.ticks);
   }
 
   editorSettings: timeline

@@ -3,7 +3,11 @@
 
 #include <algorithm>
 
+#include "utils/format_qt.h"
+
 #include "structure/tracks/automation_tracklist.h"
+#include "utils/exceptions.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::structure::tracks
 {
@@ -49,8 +53,31 @@ init_from (
   const AutomationTracklist &other,
   utils::ObjectCloneType     clone_type)
 {
-  // TODO
+  // Cloned automation tracks get a fresh registry identity, which only
+  // NewIdentity produces
+  assert (clone_type == utils::ObjectCloneType::NewIdentity);
   obj.automation_visible_ = other.automation_visible_;
+  obj.clear_holders ();
+  for (const auto &ath : other.automation_track_holders ())
+    {
+      const auto src_at = ath->automationTrack ();
+      auto       new_at_ref = utils::create_object<AutomationTrack> (
+        obj.dependencies_.registry_, obj.dependencies_.tempo_map_,
+        obj.dependencies_.registry_);
+      init_from (*new_at_ref.get (), *src_at, clone_type);
+
+      auto new_ath = utils::make_qobject_unique<AutomationTrackHolder> (
+        obj.dependencies_, std::move (new_at_ref));
+      new_ath->created_by_user_ = ath->created_by_user_;
+      new_ath->setHeight (ath->height ());
+      if (ath->visible ())
+        {
+          // setVisible() requires the holder to be created by the user
+          new_ath->setCreatedByUser (true);
+          new_ath->setVisible (true);
+        }
+      obj.add_automation_track (std::move (new_ath));
+    }
 }
 
 // ========================================================================
@@ -136,8 +163,7 @@ AutomationTracklist::hideAutomationTrack (
 // ========================================================================
 
 AutomationTrack *
-AutomationTracklist::add_automation_track (
-  utils::QObjectUniquePtr<AutomationTrack> &&at)
+AutomationTracklist::add_automation_track (AutomationTrackUuidReference at)
 {
   beginInsertRows (
     {}, static_cast<int> (automation_track_holders ().size ()),
@@ -147,6 +173,11 @@ AutomationTracklist::add_automation_track (
       dependencies_, std::move (at), this));
   auto &ath_ref = automation_track_holders ().back ();
   endInsertRows ();
+
+  if (auto * added_at = ath_ref->automationTrack ())
+    {
+      added_at->setTimebaseProvider (dependencies_.timebase_provider_);
+    }
 
   return ath_ref->automationTrack ();
 }
@@ -163,7 +194,25 @@ AutomationTracklist::add_automation_track (
   ath_ref->setParent (this);
   endInsertRows ();
 
+  if (auto * added_at = ath_ref->automationTrack ())
+    {
+      added_at->setTimebaseProvider (dependencies_.timebase_provider_);
+    }
+
   return ath_ref->automationTrack ();
+}
+
+void
+AutomationTracklist::clear_holders ()
+{
+  if (automation_tracks_.empty ())
+    {
+      return;
+    }
+  beginRemoveRows (
+    QModelIndex (), 0, static_cast<int> (automation_tracks_.size ()) - 1);
+  automation_tracks_.clear ();
+  endRemoveRows ();
 }
 
 void
@@ -390,7 +439,7 @@ AutomationTracklist::setAutomationVisible (const bool visible)
 void
 to_json (nlohmann::json &j, const AutomationTrackHolder &nfo)
 {
-  to_json (j, *nfo.automation_track_);
+  j[AutomationTrackHolder::kAutomationTrackIdKey] = nfo.automation_track_;
   j[AutomationTrackHolder::kCreatedByUserKey] = nfo.created_by_user_;
   j[AutomationTrackHolder::kVisible] = nfo.visible_;
   j[AutomationTrackHolder::kHeightKey] = nfo.height_;
@@ -399,12 +448,21 @@ to_json (nlohmann::json &j, const AutomationTrackHolder &nfo)
 void
 from_json (const nlohmann::json &j, AutomationTrackHolder &nfo)
 {
-  dsp::ProcessorParameterUuidReference param_ref{ nfo.dependencies_.registry_ };
-  j.at (AutomationTrack::kParameterKey).get_to (param_ref);
-  nfo.automation_track_ = utils::make_qobject_unique<AutomationTrack> (
-    nfo.dependencies_.tempo_map_, nfo.dependencies_.registry_, param_ref,
-    nfo.dependencies_.timebase_provider_);
-  from_json (j, *nfo.automation_track_);
+  const auto at_id =
+    j.at (AutomationTrackHolder::kAutomationTrackIdKey).get<QUuid> ();
+  if (
+    qobject_cast<AutomationTrack *> (
+      nfo.dependencies_.registry_.find_by_raw_uuid (at_id))
+    == nullptr)
+    {
+      throw utils::ZrythmException (
+        fmt::format (
+          "automation track id {} does not reference a registered automation track",
+          at_id.toString ()));
+    }
+  nfo.automation_track_ = AutomationTrackUuidReference{
+    AutomationTrack::Uuid{ at_id }, nfo.dependencies_.registry_
+  };
 
   j.at (AutomationTrackHolder::kCreatedByUserKey).get_to (nfo.created_by_user_);
   j.at (AutomationTrackHolder::kVisible).get_to (nfo.visible_);
@@ -421,15 +479,39 @@ to_json (nlohmann::json &j, const AutomationTracklist &ats)
 void
 from_json (const nlohmann::json &j, AutomationTracklist &ats)
 {
-  ats.automation_tracks_.clear ();
-  for (const auto &ath_json : j.at (AutomationTracklist::kAutomationTracksKey))
+  if (!j.is_object () || !j.contains (AutomationTracklist::kAutomationTracksKey))
     {
-      auto automation_track_holder =
-        utils::make_qobject_unique<AutomationTrackHolder> (ats.dependencies_);
-      from_json (ath_json, *automation_track_holder);
-      ats.add_automation_track (std::move (automation_track_holder));
+      return;
     }
-  j.at (AutomationTracklist::kAutomationVisibleKey)
-    .get_to (ats.automation_visible_);
+  const auto &entries = j.at (AutomationTracklist::kAutomationTracksKey);
+  if (!entries.is_array ())
+    {
+      return;
+    }
+
+  // Holders are built before the model is touched, so a failure here
+  // leaves the tracklist and its holders as they were
+  std::vector<utils::QObjectUniquePtr<AutomationTrackHolder>> holders;
+  holders.reserve (entries.size ());
+  for (const auto &ath_json : entries)
+    {
+      auto ath =
+        utils::make_qobject_unique<AutomationTrackHolder> (ats.dependencies_);
+      from_json (ath_json, *ath);
+      holders.push_back (std::move (ath));
+    }
+
+  ats.clear_holders ();
+  for (auto &ath : holders)
+    {
+      ats.add_automation_track (std::move (ath));
+    }
+
+  if (j.contains (AutomationTracklist::kAutomationVisibleKey))
+    {
+      j.at (AutomationTracklist::kAutomationVisibleKey)
+        .get_to (ats.automation_visible_);
+    }
 }
+
 }

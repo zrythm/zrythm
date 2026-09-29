@@ -18,7 +18,7 @@
 #include <boost/unordered/concurrent_flat_map_fwd.hpp>
 #include <nlohmann/json.hpp>
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 using namespace std::string_view_literals;
 
 inline void
@@ -49,7 +49,7 @@ namespace zrythm::utils::serialization
 static constexpr auto kSchemaVersionKey = "schemaVersion"sv;
 static constexpr auto kAppVersionKey = "appVersion"sv;
 static constexpr auto kDocumentTypeKey = "documentType"sv;
-static constexpr auto kVariantTypeKey = "type"sv;
+static constexpr auto kVariantTypeKey = "variantType"sv;
 static constexpr auto kVariantNonObjectValueKey = "nonObjectValue"sv;
 
 /**
@@ -144,7 +144,8 @@ template <StdVariant Variant>
 inline void
 variant_deserialize_data (const nlohmann::json &j, Variant &var)
 {
-  // Create a copy of j without the "type" field for value deserialization
+  // Create a copy of j without the "variantType" field for value
+  // deserialization
   nlohmann::json value_json = j;
   value_json.erase (zrythm::utils::serialization::kVariantTypeKey);
 

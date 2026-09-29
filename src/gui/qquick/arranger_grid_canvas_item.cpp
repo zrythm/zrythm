@@ -44,7 +44,7 @@ ArrangerGridCanvasItem::setTempoMap (dsp::TempoMapWrapper * map)
 }
 
 void
-ArrangerGridCanvasItem::setPxPerTick (qreal px)
+ArrangerGridCanvasItem::setPxPerTick (double px)
 {
   if (qFuzzyCompare (px_per_tick_, px))
     return;
@@ -54,7 +54,7 @@ ArrangerGridCanvasItem::setPxPerTick (qreal px)
 }
 
 void
-ArrangerGridCanvasItem::setScrollX (qreal x)
+ArrangerGridCanvasItem::setScrollX (double x)
 {
   if (qFuzzyCompare (scroll_x_, x))
     return;
@@ -64,7 +64,7 @@ ArrangerGridCanvasItem::setScrollX (qreal x)
 }
 
 void
-ArrangerGridCanvasItem::setScrollXPlusWidth (qreal w)
+ArrangerGridCanvasItem::setScrollXPlusWidth (double w)
 {
   if (qFuzzyCompare (scroll_x_plus_width_, w))
     return;
@@ -94,7 +94,7 @@ ArrangerGridCanvasItem::setBarShadeColor (const QColor &color)
 }
 
 void
-ArrangerGridCanvasItem::setBarLineOpacity (qreal opacity)
+ArrangerGridCanvasItem::setBarLineOpacity (double opacity)
 {
   if (qFuzzyCompare (bar_line_opacity_, opacity))
     return;
@@ -104,7 +104,7 @@ ArrangerGridCanvasItem::setBarLineOpacity (qreal opacity)
 }
 
 void
-ArrangerGridCanvasItem::setBeatLineOpacity (qreal opacity)
+ArrangerGridCanvasItem::setBeatLineOpacity (double opacity)
 {
   if (qFuzzyCompare (beat_line_opacity_, opacity))
     return;
@@ -114,7 +114,7 @@ ArrangerGridCanvasItem::setBeatLineOpacity (qreal opacity)
 }
 
 void
-ArrangerGridCanvasItem::setSixteenthLineOpacity (qreal opacity)
+ArrangerGridCanvasItem::setSixteenthLineOpacity (double opacity)
 {
   if (qFuzzyCompare (sixteenth_line_opacity_, opacity))
     return;
@@ -124,7 +124,7 @@ ArrangerGridCanvasItem::setSixteenthLineOpacity (qreal opacity)
 }
 
 void
-ArrangerGridCanvasItem::setDetailMeasurePxThreshold (qreal threshold)
+ArrangerGridCanvasItem::setDetailMeasurePxThreshold (double threshold)
 {
   if (qFuzzyCompare (detail_measure_px_threshold_, threshold))
     return;

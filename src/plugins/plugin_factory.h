@@ -58,6 +58,14 @@ public:
     plugins::PluginHostWindowFactory       top_level_window_provider_;
     utils::MainThreadClosureDispatcher    &main_thread_dispatcher_;
     PluginHostMainThreadCallbacks          main_thread_callbacks_{};
+
+    /**
+     * @brief The shared lilv world used by LV2 plugins.
+     *
+     * May be null when no LV2 world was provided; constructing an LV2
+     * plugin then throws std::logic_error.
+     */
+    std::shared_ptr<plugins::Lv2World> lv2_world_ = nullptr;
   };
 
   PluginFactory () = delete;
@@ -102,6 +110,15 @@ private:
           {
             return utils::create_object<PluginT> (
               dependencies_.registry, dependencies_.registry,
+              dependencies_.top_level_window_provider_);
+          }
+        else if constexpr (std::is_same_v<PluginT, plugins::Lv2Plugin>)
+          {
+            // Lv2Plugin's constructor throws on a null world
+            return utils::create_object<PluginT> (
+              dependencies_.registry, dependencies_.registry,
+              dependencies_.lv2_world_, dependencies_.sample_rate_provider_,
+              dependencies_.buffer_size_provider_,
               dependencies_.top_level_window_provider_);
           }
         else if constexpr (
@@ -181,6 +198,15 @@ public:
           return std::make_unique<PluginT> (
             dependencies_.registry, dependencies_.top_level_window_provider_);
         }
+      else if constexpr (std::is_same_v<PluginT, plugins::Lv2Plugin>)
+        {
+          // Lv2Plugin's constructor throws on a null world
+          return std::make_unique<PluginT> (
+            dependencies_.registry, dependencies_.lv2_world_,
+            dependencies_.sample_rate_provider_,
+            dependencies_.buffer_size_provider_,
+            dependencies_.top_level_window_provider_);
+        }
       else if constexpr (std::derived_from<PluginT, plugins::InternalPluginBase>)
         {
           return std::make_unique<PluginT> (dependencies_.registry);
@@ -222,6 +248,13 @@ public:
     if (protocol == plugins::Protocol::ProtocolType::VST3)
       {
         return get_builder<plugins::Vst3Plugin> ()
+          .with_setting (setting)
+          .with_instantiation_finished_options (instantiation_finish_options)
+          .build ();
+      }
+    if (protocol == plugins::Protocol::ProtocolType::LV2)
+      {
+        return get_builder<plugins::Lv2Plugin> ()
           .with_setting (setting)
           .with_instantiation_finished_options (instantiation_finish_options)
           .build ();

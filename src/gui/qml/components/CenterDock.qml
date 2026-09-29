@@ -25,12 +25,7 @@ ColumnLayout {
 
   spacing: 0
 
-  TrackCollectionOperator {
-    id: trackCollectionOperator
-
-    collection: root.project.tracklist.collection
-    undoStack: root.session.undoStack
-  }
+  readonly property TrackCollectionOperator trackCollectionOperator: root.session.trackCollectionOperator
 
   Connections {
     function onTracksMoved(rows) {
@@ -102,7 +97,7 @@ ColumnLayout {
           audioEngine: root.project.engine
           pinned: true
           portObservationManager: root.project.portObservationManager
-          trackCollectionOperator: trackCollectionOperator
+          trackCollectionOperator: root.trackCollectionOperator
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
           undoStack: root.session.undoStack
@@ -116,7 +111,7 @@ ColumnLayout {
           audioEngine: root.project.engine
           pinned: false
           portObservationManager: root.project.portObservationManager
-          trackCollectionOperator: trackCollectionOperator
+          trackCollectionOperator: root.trackCollectionOperator
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
           undoStack: root.session.undoStack
@@ -177,7 +172,8 @@ ColumnLayout {
         sourceComponent: ColumnLayout {
           id: timelinePane
 
-          readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+          readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
+          readonly property TimelineArrangerObjectsModel unifiedObjectsModel: root.session.timelineArrangerObjects
 
           spacing: 1
 
@@ -221,9 +217,10 @@ ColumnLayout {
               tempoMap: root.project.tempoMap
               tempoObjectManager: root.project.tempoObjectManager
               tool: root.session.uiState.tool
+              tracklist: root.project.tracklist
               transport: root.project.transport
               undoStack: root.session.undoStack
-              unifiedObjectsModel: unifiedObjectsModel
+              unifiedObjectsModel: timelinePane.unifiedObjectsModel
             }
           }
 
@@ -241,17 +238,14 @@ ColumnLayout {
             selectionOperator: timelinePane.selectionOperator
             snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap
+            tempoObjectManager: root.project.tempoObjectManager
             timeline: root.session.uiState.timeline
             tool: root.session.uiState.tool
             tracklist: root.project.tracklist
+            trackSelectionModel: root.trackSelectionModel
             transport: root.project.transport
             undoStack: root.session.undoStack
-            unifiedObjectsModel: unifiedObjectsModel
-          }
-
-          UnifiedProxyModel {
-            id: unifiedObjectsModel
-
+            unifiedObjectsModel: timelinePane.unifiedObjectsModel
           }
 
           ItemSelectionModel {
@@ -297,12 +291,14 @@ ColumnLayout {
             selectionOperator: timelinePane.selectionOperator
             snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap
+            tempoObjectManager: root.project.tempoObjectManager
             timeline: root.session.uiState.timeline
             tool: root.session.uiState.tool
             tracklist: root.project.tracklist
+            trackSelectionModel: root.trackSelectionModel
             transport: root.project.transport
             undoStack: root.session.undoStack
-            unifiedObjectsModel: unifiedObjectsModel
+            unifiedObjectsModel: timelinePane.unifiedObjectsModel
 
             arrangerContentHeight: Math.max(unpinnedTracklist.contentHeight, unpinnedTimelineArranger.height)
           }

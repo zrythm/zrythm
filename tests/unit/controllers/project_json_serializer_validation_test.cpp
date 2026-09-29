@@ -30,8 +30,7 @@ TEST_P (MissingRequiredFieldTest, TopLevelFieldMissing_Throws)
 {
   j_.erase (GetParam ());
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j_); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j_); }, utils::ZrythmException);
 }
 
 INSTANTIATE_TEST_SUITE_P (
@@ -59,14 +58,13 @@ TEST_P (MissingProjectDataFieldTest, ProjectDataFieldMissing_Throws)
 {
   j_["projectData"].erase (GetParam ());
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j_); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j_); }, utils::ZrythmException);
 }
 
 INSTANTIATE_TEST_SUITE_P (
   ProjectJsonSerializerValidationTest,
   MissingProjectDataFieldTest,
-  testing::Values ("tempoMap", "transport", "tracklist", "registry"),
+  testing::Values ("projectId", "tempoMap", "transport", "tracklist", "registry"),
   [] (const testing::TestParamInfo<std::string> &param_info) {
     return "Missing_" + param_info.param;
   });
@@ -82,8 +80,7 @@ TEST_P (MissingRegistryTest, RegistryMissing_Throws)
 {
   j_["projectData"]["registry"].erase (GetParam ());
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j_); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j_); }, utils::ZrythmException);
 }
 
 INSTANTIATE_TEST_SUITE_P (
@@ -111,8 +108,7 @@ TEST_P (MissingTracklistFieldTest, TracklistFieldMissing_Throws)
 {
   j_["projectData"]["tracklist"].erase (GetParam ());
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j_); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j_); }, utils::ZrythmException);
 }
 
 INSTANTIATE_TEST_SUITE_P (
@@ -138,8 +134,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonWrongDocumentType)
   j["documentType"] = "WrongDocumentType";
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidUuidFormat)
@@ -148,14 +143,13 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidUuidFormat)
 
   nlohmann::json track;
   track["id"] = "not-a-valid-uuid";
-  track["type"] = 2;
+  track["variantType"] = 2;
   track["name"] = "Bad Track";
 
   j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidColorFormat)
@@ -164,15 +158,14 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidColorFormat)
 
   nlohmann::json track;
   track["id"] = "550e8400-e29b-41d4-a716-446655440000";
-  track["type"] = 2;
+  track["variantType"] = 2;
   track["name"] = "Bad Color Track";
   track["color"] = "red";
 
   j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidTrackType)
@@ -181,14 +174,13 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidTrackType)
 
   nlohmann::json track;
   track["id"] = "550e8400-e29b-41d4-a716-446655440000";
-  track["type"] = 999;
+  track["variantType"] = 999;
   track["name"] = "Invalid Type Track";
 
   j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonEmpty)
@@ -196,8 +188,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonEmpty)
   nlohmann::json j = nlohmann::json::object ();
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonNotObject)
@@ -205,8 +196,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonNotObject)
   nlohmann::json j = "not an object";
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 // ============================================================================
@@ -236,7 +226,7 @@ TEST (ProjectJsonSerializerValidationTest, ValidateJson_UnicodeInTrackName)
 
   nlohmann::json track;
   track["id"] = "550e8400-e29b-41d4-a716-446655440000";
-  track["type"] = 2;
+  track["variantType"] = 2;
   track["name"] = "钢琴轨道 🎹";
   j["projectData"]["registry"]["tracks"].push_back (track);
 
@@ -417,7 +407,7 @@ TEST_F (
     {
       ProjectJsonSerializer::validate_json (j);
     }
-  catch (const utils::exceptions::ZrythmException &e)
+  catch (const utils::ZrythmException &e)
     {
       FAIL ()
         << "Full project with all content types should produce "

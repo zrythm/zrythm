@@ -32,6 +32,7 @@ target_sources(zrythm_utils_lib
     pcg_rand.cpp
     playback_cache_scheduler.cpp
     resampler.cpp
+    rt_logger.cpp
     rt_thread_id.cpp
     symap.cpp
     threads.cpp
@@ -41,6 +42,7 @@ target_sources(zrythm_utils_lib
     uuid_identifiable_object.cpp
     # vamp.cpp
     version.cpp
+    zip_utils.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
@@ -91,6 +93,7 @@ target_sources(zrythm_utils_lib
       ranges.h
       resampler.h
       ring_buffer.h
+      rt_logger.h
       rt_thread_id.h
       serialization.h
       utf8_string.h
@@ -111,6 +114,7 @@ target_sources(zrythm_utils_lib
       variant_helpers.h
       version.h
       views.h
+      zip_utils.h
 )
 
 set_target_properties(zrythm_utils_lib PROPERTIES

@@ -48,7 +48,7 @@ public:
 private:
   static constexpr auto kNameKey = "name"sv;
   static constexpr auto kColorKey = "color"sv;
-  static constexpr auto kClipSlotsKey = "clipSlots"sv;
+  static constexpr auto kClipSlotIdsKey = "clipSlotIds"sv;
   friend void           to_json (nlohmann::json &j, const Scene &scene);
   friend void           from_json (const nlohmann::json &j, Scene &scene);
 

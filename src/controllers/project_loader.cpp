@@ -7,6 +7,7 @@
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
 #include "plugins/plugin.h"
+#include "plugins/plugin_instantiation_wait.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
@@ -128,40 +129,7 @@ ProjectLoader::deserialize (
   // JUCE (VST3/AU) plugins instantiate asynchronously — deserialization
   // triggers the init but returns before it completes. If we don't wait,
   // the engine can start processing before buffers are allocated.
-  wait_for_plugin_instantiations (project);
+  plugins::wait_for_plugin_instantiations (project.get_registry ());
 }
 
-void
-ProjectLoader::wait_for_plugin_instantiations (
-  const structure::project::Project &project)
-{
-  const auto &registry = project.get_registry ();
-
-  const auto deadline =
-    std::chrono::steady_clock::now () + std::chrono::seconds (30);
-
-  bool has_pending = true;
-  while (has_pending)
-    {
-      has_pending = false;
-      registry.for_each_matching<plugins::Plugin> ([&] (const auto &plugin) {
-        if (
-          plugin.instantiationStatus ()
-          == plugins::Plugin::InstantiationStatus::Pending)
-          {
-            has_pending = true;
-          }
-      });
-      if (has_pending)
-        {
-          if (std::chrono::steady_clock::now () >= deadline)
-            {
-              z_warning (
-                "Timed out waiting for plugin instantiations after 30 seconds");
-              break;
-            }
-          QCoreApplication::processEvents (QEventLoop::ExcludeUserInputEvents);
-        }
-    }
-}
 }

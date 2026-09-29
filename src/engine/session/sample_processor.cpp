@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <exception>
 
 #include "dsp/chord_preset.h"
 #include "dsp/engine.h"
@@ -16,6 +17,7 @@
 #include "structure/project/project_graph_builder.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
+#include "utils/exceptions.h"
 #include "utils/float_ranges.h"
 #include "utils/io_utils.h"
 
@@ -381,7 +383,8 @@ SampleProcessor::queue_file_or_chord_preset (
         }
       catch (const ZrythmException &e)
         {
-          e.handle ("Failed to create/add audio clip for sample processor");
+          utils::log_exception (
+            e, "Failed to create/add audio clip for sample processor");
           return;
         }
     }
@@ -459,12 +462,11 @@ SampleProcessor::queue_file_or_chord_preset (
                       file_end_pos_ =
                         std::max (file_end_pos_, mr->get_end_position ());
                     }
-                  catch (const ZrythmException &e)
+                  catch (const ZrythmException &)
                     {
-                      throw ZrythmException (
-                        fmt::format (
-                          "Failed to create MIDI clip from file {}",
-                          file->abs_path_));
+                      std::throw_with_nested (ZrythmException (fmt::format (
+                        "Failed to create MIDI clip from file {}",
+                        file->abs_path_)));
                     }
                 }
               else if (chord_pset != nullptr)
@@ -521,16 +523,18 @@ SampleProcessor::queue_file_or_chord_preset (
                       file_end_pos_ =
                         std::max (file_end_pos_, mr->get_end_position ());
                     }
-                  catch (const ZrythmException &e)
+                  catch (const ZrythmException &)
                     {
-                      throw ZrythmException ("Failed to add clip to track");
+                      std::throw_with_nested (
+                        ZrythmException ("Failed to add clip to track"));
                     }
                 }
             }
         }
       catch (const ZrythmException &e)
         {
-          e.handle ("Failed to setup instrument for sample processor");
+          utils::log_exception (
+            e, "Failed to setup instrument for sample processor");
           return;
         }
     }

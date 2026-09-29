@@ -30,14 +30,14 @@ public:
     zrythm::dsp::ChordDescriptor * chord,
     zrythm::dsp::MusicalScale *    scale,
     int                            highlightMode,
-    qreal                          alphaScale);
+    double                         alphaScale);
 
   Q_INVOKABLE static QVariantList highlightColors (
     QColor                         base,
     zrythm::dsp::ChordDescriptor * chord,
     zrythm::dsp::MusicalScale *    scale,
     int                            highlightMode,
-    qreal                          alphaScale);
+    double                         alphaScale);
 };
 
 } // namespace zrythm::gui::qquick

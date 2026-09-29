@@ -55,7 +55,7 @@ FadeOverlayCanvasItem::setAudioClip (structure::arrangement::AudioClip * clip)
 }
 
 void
-FadeOverlayCanvasItem::setPxPerTick (qreal px)
+FadeOverlayCanvasItem::setPxPerTick (double px)
 {
   if (qFuzzyCompare (px_per_tick_, px))
     return;

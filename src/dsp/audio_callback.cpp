@@ -16,8 +16,8 @@ AudioCallback::AudioCallback (
   DeviceAboutToStartCallback device_about_to_start_cb,
   DeviceStoppedCallback      device_stopped_cb)
     : process_cb_ (std::move (process_cb)),
-      device_about_to_start_cb_ (device_about_to_start_cb),
-      device_stopped_cb_ (device_stopped_cb)
+      device_about_to_start_cb_ (std::move (device_about_to_start_cb)),
+      device_stopped_cb_ (std::move (device_stopped_cb))
 {
 }
 
@@ -39,18 +39,18 @@ AudioCallback::process_audio (
 void
 AudioCallback::about_to_start ()
 {
-  if (device_about_to_start_cb_.has_value ())
+  if (device_about_to_start_cb_)
     {
-      std::invoke (device_about_to_start_cb_.value ());
+      device_about_to_start_cb_ ();
     }
 }
 
 void
 AudioCallback::stopped ()
 {
-  if (device_stopped_cb_.has_value ())
+  if (device_stopped_cb_)
     {
-      std::invoke (device_stopped_cb_.value ());
+      device_stopped_cb_ ();
     }
 }
 

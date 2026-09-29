@@ -15,20 +15,21 @@ namespace zrythm::gui::qquick
 std::vector<int64_t>
 compute_frame_mapping (
   int                             canvas_width,
-  qreal                           reference_width,
-  qreal                           reference_x,
+  double                          reference_width,
+  double                          reference_x,
   std::function<int64_t (double)> content_fraction_to_frame)
 {
   if (canvas_width <= 0)
     return {};
 
-  const qreal eff_width = (reference_width > 0) ? reference_width : canvas_width;
+  const double eff_width =
+    (reference_width > 0) ? reference_width : canvas_width;
 
   std::vector<int64_t> frames (static_cast<size_t> (canvas_width) + 1);
   for (const auto px : std::views::iota (0, canvas_width + 1))
     {
       const double fraction =
-        static_cast<double> (static_cast<qreal> (px) + reference_x) / eff_width;
+        static_cast<double> (static_cast<double> (px) + reference_x) / eff_width;
       frames[static_cast<size_t> (px)] = content_fraction_to_frame (fraction);
     }
   return frames;
@@ -37,8 +38,8 @@ compute_frame_mapping (
 std::vector<int64_t>
 compute_linear_frame_mapping (
   int     canvas_width,
-  qreal   reference_width,
-  qreal   reference_x,
+  double  reference_width,
+  double  reference_x,
   int64_t total_frames)
 {
   return compute_frame_mapping (
@@ -50,8 +51,8 @@ compute_linear_frame_mapping (
 std::vector<int64_t>
 compute_timeline_frame_mapping (
   int                  canvas_width,
-  qreal                reference_width,
-  qreal                reference_x,
+  double               reference_width,
+  double               reference_x,
   const dsp::TempoMap &tempo_map,
   dsp::TimelineTick    clip_start_tick,
   double               timeline_tick_duration)

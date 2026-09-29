@@ -173,6 +173,7 @@ public:
    * formats have no "unselect", so implementations are not notified).
    * Re-selecting the current preset re-applies it, reverting the plugin's
    * state to the preset. Out-of-range indices are refused with a warning.
+   * When applying fails, the previously selected preset stays selected.
    */
   void setPresetIndex (int index);
 
@@ -390,6 +391,9 @@ public:
   }
   Q_SIGNAL void instantiationStatusChanged (InstantiationStatus status);
 
+  /** Empty while instantiation is pending or succeeded. */
+  QString instantiationError () const { return instantiation_error_; }
+
   /**
    * @brief To be emitted by implementations when instantiation finished.
    *
@@ -498,6 +502,29 @@ public:
 
 protected:
   /**
+   * @brief Hook called on the main thread for each plugin-reported value
+   * applied by flush_plugin_values().
+   *
+   * Lets format implementations forward the applied value to parts of the
+   * plugin that live outside the host parameter model (e.g. a separate
+   * VST3 edit controller). @p as_user_edit is true when the value was
+   * applied through the user-edit path (a gesture the plugin itself
+   * reported).
+   *
+   * Default: no-op.
+   *
+   * @param param The Zrythm parameter the value was applied to.
+   * @param normalized The applied normalized value.
+   * @param as_user_edit Whether the value applied as a user edit.
+   */
+  virtual void on_plugin_reported_value_applied (
+    dsp::ProcessorParameter &param,
+    float                    normalized,
+    bool                     as_user_edit)
+  {
+  }
+
+  /**
    * @brief Stores a plugin-reported value to be applied to the Zrythm
    * param on the next main thread flush.
    *
@@ -538,9 +565,10 @@ public:
    * dispatcher pump runs, so @p action may safely capture `this` or plugin
    * members.
    *
-   * Realtime-safe: no allocations or locks (the weak self-reference was
-   * primed at construction). When called on the main thread, the action
-   * runs synchronously, after any already-queued actions.
+   * Posting is wait-free from non-main threads (lock-free queue push). On
+   * the main thread, already-queued actions are drained and @p action then
+   * runs synchronously, so the call performs arbitrary main-thread work
+   * there.
    *
    * @return False if the action was dropped because the dispatcher queue
    * was full.
@@ -548,7 +576,7 @@ public:
   template <typename F>
     requires std::is_nothrow_move_constructible_v<std::decay_t<F>>
              && std::is_nothrow_copy_constructible_v<std::decay_t<F>>
-  bool post_main_thread_action (F &&action) noexcept [[clang::nonblocking]]
+  bool post_main_thread_action (F &&action) noexcept
   {
     assert (main_thread_dispatcher_ != nullptr);
     return main_thread_dispatcher_->post (
@@ -635,10 +663,13 @@ private:
   /**
    * @brief Applies a preset selection to the underlying plugin.
    *
-   * Receives the selected entry's durable identifier. The default
-   * implementation does nothing (no preset support).
+   * Receives the selected entry's durable identifier. Returns whether
+   * the preset was applied; when it returns false, setPresetIndex()
+   * restores the previously selected preset instead of keeping the
+   * failed one. The default implementation reports success (formats
+   * without preset support).
    */
-  virtual void apply_preset_impl (const PresetId &) { }
+  virtual bool apply_preset_impl (const PresetId &) { return true; }
 
   virtual void process_impl (
     dsp::graph::ProcessBlockInfo time_info,
@@ -842,13 +873,31 @@ protected:
        */
       std::atomic<float> pending_value{ -1.f };
 
+      /**
+       * Whether the plugin reported an open gesture for this parameter.
+       * Set on the thread that drains the plugin's output events; value
+       * reports inside an open gesture are applied as user edits.
+       */
+      std::atomic<bool> in_user_gesture{ false };
+
+      /**
+       * Whether the pending value, when applied at flush, is a user edit
+       * (it was reported inside an open plugin gesture). Set together
+       * with the pending value; consumed by the flush.
+       */
+      std::atomic<bool> pending_is_user_edit{ false };
+
       Entry () = default;
       Entry (const Entry &) = delete;
       Entry &operator= (const Entry &) = delete;
       Entry (Entry &&other) noexcept
           : last_from_plugin (
               other.last_from_plugin.load (std::memory_order_relaxed)),
-            pending_value (other.pending_value.load (std::memory_order_relaxed))
+            pending_value (other.pending_value.load (std::memory_order_relaxed)),
+            in_user_gesture (
+              other.in_user_gesture.load (std::memory_order_relaxed)),
+            pending_is_user_edit (
+              other.pending_is_user_edit.load (std::memory_order_relaxed))
       {
       }
       Entry &operator= (Entry &&other) noexcept
@@ -860,6 +909,12 @@ protected:
               std::memory_order_relaxed);
             pending_value.store (
               other.pending_value.load (std::memory_order_relaxed),
+              std::memory_order_relaxed);
+            in_user_gesture.store (
+              other.in_user_gesture.load (std::memory_order_relaxed),
+              std::memory_order_relaxed);
+            pending_is_user_edit.store (
+              other.pending_is_user_edit.load (std::memory_order_relaxed),
               std::memory_order_relaxed);
           }
         return *this;
@@ -931,6 +986,9 @@ private:
 
   InstantiationStatus instantiation_status_{ InstantiationStatus::Pending };
 
+  /** Error reported by the implementation when instantiation failed. */
+  QString instantiation_error_;
+
   /** Whether plugin UI is opened or not. */
   bool visible_ = false;
 
@@ -943,6 +1001,7 @@ private:
    */
   bool set_configuration_called_{};
 
+protected:
   /**
    * @brief Weak self-reference used to drop pending main thread actions
    * after the plugin is destroyed.
@@ -965,9 +1024,10 @@ class JucePlugin;
 class ClapPlugin;
 class Vst3Plugin;
 class FaustPlugin;
+class Lv2Plugin;
 
 using PluginVariant =
-  std::variant<JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin>;
+  std::variant<JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin, Lv2Plugin>;
 using PluginPtrVariant = utils::to_pointer_variant<PluginVariant>;
 
 using PluginUuidReference = utils::TypedUuidReference<Plugin>;

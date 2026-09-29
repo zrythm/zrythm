@@ -14,12 +14,12 @@ import "config.js" as Config
 ApplicationWindow {
   id: root
 
-  readonly property AlertManager alertManager: app?.alertManager ?? null
   readonly property ZrythmApplication app: GlobalState.application
   readonly property AppSettings appSettings: app?.appSettings ?? null
   property ProjectWindow currentProjectWindow: null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
   readonly property string pendingProjectPath: app?.pendingProjectFile ?? ""
+  readonly property NotificationCenter notificationCenter: app?.notificationCenter ?? null
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
   readonly property ProjectManager projectManager: app?.projectManager ?? null
@@ -31,7 +31,7 @@ ApplicationWindow {
       "appSettings": appSettings,
       "chordPresetManager": app.chordPresetManager,
       "controlRoom": app.controlRoom,
-      "alertManager": alertManager
+      "notificationCenter": notificationCenter
     }) as ProjectWindow;
     newWindow.closing.connect(function () {
       root.show();
@@ -62,6 +62,16 @@ ApplicationWindow {
 
   AboutDialog {
     id: aboutDialog
+  }
+
+  NotificationArea {
+    notificationCenter: root.notificationCenter
+
+    onCriticalNotification: (notification) => {
+      alertDialog.text = notification.title;
+      alertDialog.informativeText = notification.detail;
+      alertDialog.open();
+    }
   }
 
   LoadController {
@@ -221,9 +231,11 @@ ApplicationWindow {
       id: configPage
 
       NavigatablePage {
+        notificationCenter: root.notificationCenter
         title: qsTr("Configuration")
 
         footer: DialogButtonBox {
+          defaultButton: continueButton
           horizontalPadding: 10
           standardButtons: DialogButtonBox.Reset
 
@@ -232,8 +244,9 @@ ApplicationWindow {
           }
 
           Button {
+            id: continueButton
+
             DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
-            highlighted: true
             text: qsTr("Continue")
 
             onClicked: {
@@ -248,7 +261,7 @@ ApplicationWindow {
           anchors.fill: parent
           title: qsTr("Initial Configuration")
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: "Preferred language"
             title: "Language"
 
@@ -257,7 +270,7 @@ ApplicationWindow {
             }
           }
 
-          ZrythmActionRow {
+          ActionRow {
             subtitle: "Location to save user files"
             title: "User Path"
 
@@ -331,6 +344,10 @@ ApplicationWindow {
       id: projectSelectorPage
 
       NavigatablePage {
+        // Distinguishes this page when inspecting the StackView's current item
+        readonly property bool isProjectSelectorPage: true
+
+        notificationCenter: root.notificationCenter
         showBackButton: false
         title: qsTr("Open a Project")
 
@@ -384,20 +401,38 @@ ApplicationWindow {
           anchors.margins: 16
           model: recentProjects
 
-          delegate: ItemDelegate {
+          delegate: ActionRow {
             id: projectItem
 
+            required property string name
             required property string path
 
+            interactive: true
+            subtitle: projectItem.path
+            title: projectItem.name
             width: recentProjectsListView.width
 
-            contentItem: Label {
-              elide: Text.ElideMiddle
-              text: projectItem.path
-              verticalAlignment: Qt.AlignVCenter
-            }
+            onClicked: loadController.loadProject (projectItem.path)
 
-            onClicked: loadController.loadProject(projectItem.path)
+            resources: [
+              Action {
+                id: revealAction
+
+                text: qsTr ("Show in File Manager")
+
+                onTriggered: QmlUtils.revealInFileManager (projectItem.path)
+              },
+              Action {
+                id: removeAction
+
+                text: qsTr ("Remove From List")
+
+                onTriggered: recentProjectsListView.recentProjects.removeRecentProject (
+                  projectItem.path)
+              }
+            ]
+
+            overflowActions: [revealAction, removeAction]
           }
 
           Component.onCompleted: {
@@ -413,6 +448,7 @@ ApplicationWindow {
       NavigatablePage {
         id: createProjectPage
 
+        notificationCenter: root.notificationCenter
         title: qsTr("Create New Project")
 
         ColumnLayout {
@@ -471,6 +507,7 @@ ApplicationWindow {
       id: projectCreationProgressPage
 
       NavigatablePage {
+        notificationCenter: root.notificationCenter
         title: qsTr("Creating Project")
 
         ColumnLayout {
@@ -497,31 +534,20 @@ ApplicationWindow {
 
     Connections {
       function onProjectLoaded(session: ProjectSession) {
+        // ProjectManager already set the active session and updated the
+        // recent projects list before emitting this signal
         console.log("Project loaded: ", session.title);
-        root.projectManager.activeSession = session;
-        console.log("Opening project: ", root.projectManager.activeSession.title);
-        root.projectManager.recentProjects.addRecentProject(root.projectManager.activeSession.projectDirectory);
         root.openProjectWindow(session);
       }
 
       function onProjectLoadingFailed(errorMessage: string) {
         console.log("Project loading failed: ", errorMessage);
-        stack.push(projectSelectorPage);
-        root.alertManager.showAlert(qsTr("Project Loading Failed"), errorMessage);
+        if (!stack.currentItem?.isProjectSelectorPage) {
+          stack.push(projectSelectorPage);
+        }
       }
 
       target: root.projectManager
-    }
-
-    Connections {
-      function onAlertRequested(title, message) {
-        console.log("Alert requested: ", title, message);
-        alertDialog.text = title;
-        alertDialog.informativeText = message;
-        alertDialog.open();
-      }
-
-      target: root.alertManager
     }
 
     MessageDialog {
@@ -536,6 +562,7 @@ ApplicationWindow {
     id: navigatablePage
 
     // Public API
+    property NotificationCenter notificationCenter: null
     property alias rightActions: rightActionsRow.data
     property bool showBackButton: navigatablePage.StackView.view && navigatablePage.StackView.view.depth > 1
 
@@ -544,7 +571,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         ToolButton {
-          text: qsTr("‹")
+          text: "‹"
           visible: navigatablePage.showBackButton
 
           onClicked: navigatablePage.StackView.view.pop()
@@ -563,6 +590,10 @@ ApplicationWindow {
           id: rightActionsRow
 
           spacing: 4
+        }
+
+        NotificationCenterButton {
+          notificationCenter: navigatablePage.notificationCenter
         }
       }
     }

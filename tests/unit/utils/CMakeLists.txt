@@ -14,6 +14,7 @@ add_executable(zrythm_utils_unit_tests
   enum_utils_test.cpp
   directory_manager_test.cpp
   expandable_tick_range_test.cpp
+  exceptions_test.cpp
   float_ranges_test.cpp
   hash_test.cpp
   icloneable_test.cpp
@@ -30,6 +31,7 @@ add_executable(zrythm_utils_unit_tests
   raii_utils_test.cpp
   ranges_test.cpp
   ring_buffer_test.cpp
+  rt_logger_test.cpp
   string_test.cpp
   test_uuid_identifiable_qobjects.h
   units_test.cpp
@@ -40,6 +42,7 @@ add_executable(zrythm_utils_unit_tests
   variant_helpers_test.cpp
   version_test.cpp
   views_test.cpp
+  zip_utils_test.cpp
 )
 
 set_target_properties(zrythm_utils_unit_tests PROPERTIES

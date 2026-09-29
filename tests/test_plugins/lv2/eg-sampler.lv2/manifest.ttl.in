@@ -1,0 +1,12 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ui:   <http://lv2plug.in/ns/extensions/ui#> .
+
+<http://lv2plug.in/plugins/eg-sampler>
+	a lv2:Plugin ;
+	lv2:binary <sampler@CMAKE_SHARED_LIBRARY_SUFFIX@> ;
+	rdfs:seeAlso <sampler.ttl> .
+
+<http://lv2plug.in/plugins/eg-sampler#ui>
+	a ui:GtkUI ;
+	ui:binary <sampler_ui@CMAKE_SHARED_LIBRARY_SUFFIX@> .

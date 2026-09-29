@@ -41,3 +41,7 @@ fonttools
 
 # GitHub operations
 PyGithub
+
+# Dependency inventory tooling (SBOM + attributions)
+cyclonedx-python-lib
+pytest

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -84,7 +84,10 @@ public:
   enum ArrangerObjectListModelRoles
   {
     ArrangerObjectPtrRole = Qt::UserRole + 1,
-    ArrangerObjectUuidReferenceRole
+    ArrangerObjectUuidReferenceRole,
+    /** UUID of the row object as a brace-less string (the form
+     * selection/paste APIs return), for QML-side row lookups. */
+    ArrangerObjectUuidStringRole
   };
   Q_ENUM (ArrangerObjectListModelRoles)
 
@@ -112,6 +115,8 @@ public:
 
   QHash<int, QByteArray> roleNames () const override;
 
+  ~ArrangerObjectListModel () override { Q_EMIT aboutToBeDestroyed (); }
+
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override
   {
     if (parent.isValid ())
@@ -136,6 +141,16 @@ public:
     override;
 
   Q_SIGNAL void contentChanged (utils::ExpandableTickRange affectedRange);
+
+  /**
+   * @brief Emitted at the start of this model's destruction.
+   *
+   * Handlers run while the model's members are still valid.
+   * Observers that hold this model without owning it can use this to
+   * stop using it. Connections must be direct: a queued connection
+   * would deliver the signal after the destruction has completed.
+   */
+  Q_SIGNAL void aboutToBeDestroyed ();
 
 private:
   /**

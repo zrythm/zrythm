@@ -11,7 +11,7 @@
 
 #include <juce_audio_formats/juce_audio_formats.h>
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 namespace zrythm::utils::audio
 {

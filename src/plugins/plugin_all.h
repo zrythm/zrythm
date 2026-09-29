@@ -6,6 +6,7 @@
 #include "plugins/clap_plugin.h"
 #include "plugins/faust/faust_plugin.h"
 #include "plugins/juce_plugin.h"
+#include "plugins/lv2_plugin.h"
 #include "plugins/vst3_plugin.h"
 
 namespace zrythm::plugins
@@ -26,6 +27,10 @@ plugin_base_to_ptr_variant (Plugin * pl) -> PluginPtrVariant
   if (auto * vst3 = qobject_cast<Vst3Plugin *> (pl))
     {
       return vst3;
+    }
+  if (auto * lv2 = qobject_cast<Lv2Plugin *> (pl))
+    {
+      return lv2;
     }
   if (auto * juce = qobject_cast<JucePlugin *> (pl))
     {

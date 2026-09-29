@@ -9,7 +9,7 @@ if(ZRYTHM_TESTS)
   set_target_properties(zrythm_lv2apply PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
   target_link_libraries(zrythm_lv2apply PRIVATE
     SndFile::sndfile
-    PkgConfig::LILV
+    lilv::lilv
     zrythm_utils_lib
   )
 endif()

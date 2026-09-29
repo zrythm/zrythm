@@ -31,7 +31,7 @@ Arranger {
     }
     const startTicks = Math.max(0, dragStartCoordinates.x) / ruler.pxPerTick;
     const endTicks = Math.max(0, dragCurrentCoordinates.x) / ruler.pxPerTick;
-    selectionOperator.rampVelocities(root.clipEditor.clipObject as MidiClip, startTicks, velocityAtY(dragStartCoordinates.y), endTicks, velocityAtY(dragCurrentCoordinates.y));
+    selectionOperator.rampVelocities(root.arrangerSelectionModel, root.clipEditor.clipObject as MidiClip, startTicks, velocityAtY(dragStartCoordinates.y), endTicks, velocityAtY(dragCurrentCoordinates.y));
     return true;
   }
 
@@ -140,7 +140,7 @@ Arranger {
               onReleased: {
                 const delta = root.maxVelocityHeight > 0 ? Math.round(-root.dragState.dragDeltaY / root.maxVelocityHeight * 127) : 0;
                 if (delta !== 0)
-                  root.selectionOperator.changeVelocities(delta);
+                  root.selectionOperator.changeVelocities(root.arrangerSelectionModel, delta);
                 root.dragState.reset();
                 root.currentAction = Arranger.None;
               }

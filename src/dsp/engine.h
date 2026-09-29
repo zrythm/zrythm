@@ -251,9 +251,51 @@ public:
    */
   void panic_all ();
 
-  bool  activated () const { return state_ == State::Active; }
-  bool  running () const { return run_.load (); }
-  void  set_running (bool run) { run_.store (run); }
+  bool activated () const { return state_ == State::Active; }
+  bool running () const { return run_.load (); }
+  void set_running (bool run) { run_.store (run); }
+
+  /**
+   * @brief True while an offline render owns processing.
+   *
+   * While this is set, pause-gated mutations (state restores,
+   * reactivations) are refused: the engine is paused for the render,
+   * but the render thread still processes the same plugin instances.
+   */
+  bool offline_render_active () const { return offline_render_active_.load (); }
+
+  /**
+   * @brief Owns an engine handover to an offline render.
+   *
+   * The constructor pauses the engine and marks processing as owned
+   * by the render. finish() clears the mark, recalculates the graph
+   * and resumes the engine; it is idempotent and runs at most once,
+   * and the destructor calls it as a backstop when a future chain was
+   * torn down without any completion callback running.
+   *
+   * The render runs asynchronously: callers keep the session in a
+   * shared_ptr captured by the future's completion callbacks and call
+   * finish() from whichever callback runs.
+   */
+  class OfflineRenderSession
+  {
+  public:
+    explicit OfflineRenderSession (AudioEngine &engine);
+    ~OfflineRenderSession ();
+
+    void finish () noexcept;
+
+    OfflineRenderSession (const OfflineRenderSession &) = delete;
+    OfflineRenderSession &operator= (const OfflineRenderSession &) = delete;
+    OfflineRenderSession (OfflineRenderSession &&) = delete;
+    OfflineRenderSession &operator= (OfflineRenderSession &&) = delete;
+
+  private:
+    AudioEngine      &engine_;
+    EngineState       state_{};
+    std::atomic<bool> finished_{ false };
+  };
+
   auto &graph_dispatcher () { return graph_dispatcher_; }
 
   /**
@@ -382,6 +424,8 @@ private:
 
   std::atomic<State> state_{ State::Uninitialized };
   static_assert (decltype (state_)::is_always_lock_free);
+  /** @see offline_render_active() */
+  std::atomic<bool> offline_render_active_{ false };
 
   std::optional<dsp::AudioDeviceInfo> cached_device_info_;
 

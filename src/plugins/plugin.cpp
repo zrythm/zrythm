@@ -24,9 +24,11 @@ Plugin::Plugin (utils::IObjectRegistry &registry, QObject * parent)
       load_measurer_ (std::make_unique<juce::AudioProcessLoadMeasurer> ())
 {
   QObject::connect (
-    this, &Plugin::instantiationFinished, this, [this] (bool successful) {
+    this, &Plugin::instantiationFinished, this,
+    [this] (bool successful, const QString &error) {
       instantiation_status_ =
         successful ? InstantiationStatus::Successful : InstantiationStatus::Failed;
+      instantiation_error_ = successful ? QString{} : error;
       Q_EMIT instantiationStatusChanged (instantiation_status_);
     });
 
@@ -103,17 +105,35 @@ Plugin::setPresetIndex (int index)
     }
 
   const auto new_id = entries[static_cast<size_t> (index)].id;
-  const bool changed =
-    !selected_preset_id_.has_value () || *selected_preset_id_ != new_id;
+  const auto previous_id = selected_preset_id_;
 
   // Re-selecting the current preset re-applies it (revert to the preset's
   // state)
   selected_preset_id_ = new_id;
   // Pass an owned copy: implementations may refresh their entry list while
   // applying, which could mutate the selection state
-  apply_preset_impl (new_id);
-  set_preset_dirty (false);
-  if (changed)
+  const bool applied = apply_preset_impl (new_id);
+  if (applied)
+    {
+      set_preset_dirty (false);
+    }
+  else
+    {
+      // The failed preset must not stay selected; snap back to whatever
+      // was loaded before. A backend report received during the failed
+      // apply already moved the selection and emitted a change for a row
+      // that is no longer selected, so emit the restored selection
+      const bool selection_moved_during_apply = selected_preset_id_ != new_id;
+      selected_preset_id_ = previous_id;
+      if (selection_moved_during_apply)
+        {
+          Q_EMIT presetIndexChanged (presetIndex ());
+        }
+      return;
+    }
+
+  const bool selection_changed = previous_id != selected_preset_id_;
+  if (selection_changed)
     {
       // Re-resolve: applying may have rebuilt the entry list
       Q_EMIT presetIndexChanged (presetIndex ());
@@ -367,9 +387,12 @@ Plugin::custom_process_block (
 void
 Plugin::custom_release_resources ()
 {
+  // release_resources_impl reads param_sync_ (e.g. CLAP closes open
+  // user gestures found in the entries), so it must run before the
+  // entries are cleared
+  release_resources_impl ();
   param_sync_.entries.clear ();
   load_measurer_->reset ();
-  release_resources_impl ();
 }
 
 void
@@ -509,7 +532,16 @@ Plugin::flush_plugin_values ()
         {
           const auto &param_ref = get_parameters ()[i];
           auto *      param = param_ref.get ();
-          param->setBaseValue (val);
+          // A value reported inside an open plugin gesture is a user
+          // edit: apply it through the user-edit path (user-edit
+          // listeners) instead of the plain value sync
+          const auto as_user_edit = entry.pending_is_user_edit.exchange (
+            false, std::memory_order_acq_rel);
+          if (as_user_edit)
+            param->setBaseValueByUser (val);
+          else
+            param->setBaseValue (val);
+          on_plugin_reported_value_applied (*param, val, as_user_edit);
         }
     }
 }
@@ -529,7 +561,7 @@ Plugin::latencySamples () const
 void
 Plugin::notify_latency_changed () noexcept
 {
-  post_main_thread_action ([this] {
+  post_main_thread_action_deferred ([this] {
     if (main_thread_callbacks_.latency_recalc_)
       {
         main_thread_callbacks_.latency_recalc_ ();
@@ -581,7 +613,7 @@ from_json (const nlohmann::json &j, Plugin &p)
           if (
             preset_index < 0 || preset_index > std::numeric_limits<int>::max ())
             {
-              throw utils::exceptions::ZrythmException (
+              throw utils::ZrythmException (
                 fmt::format (
                   "Invalid preset index {} in project file", preset_index));
             }
@@ -594,7 +626,7 @@ from_json (const nlohmann::json &j, Plugin &p)
         }
       else
         {
-          throw utils::exceptions::ZrythmException (
+          throw utils::ZrythmException (
             fmt::format (
               "Invalid preset value in project file: expected integer or "
               "string, got {}",
@@ -606,7 +638,7 @@ from_json (const nlohmann::json &j, Plugin &p)
       const auto &dirty_val = j[Plugin::kPresetDirtyKey];
       if (!dirty_val.is_boolean ())
         {
-          throw utils::exceptions::ZrythmException (
+          throw utils::ZrythmException (
             fmt::format (
               "Invalid presetDirty value in project file: expected boolean, "
               "got {}",

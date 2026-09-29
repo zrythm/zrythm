@@ -14,25 +14,49 @@ import "../config.js" as Config
 ApplicationWindow {
   id: root
 
-  property Arranger activeArranger: null
-  required property AlertManager alertManager
+  // View context of the focused view (arranger, tracklist or plugin
+  // slot list); see components/ViewContext.qml
+  property ViewContext activeViewContext: null
   required property AppSettings appSettings
   required property ChordPresetManager chordPresetManager
   required property ControlRoom controlRoom
+  readonly property Action copyAction: Action {
+    id: copyAction
+
+    enabled: root.activeViewContext !== null && root.activeViewContext.canCopy
+    shortcut: StandardKey.Copy
+    text: qsTr("&Copy")
+
+    onTriggered: root.activeViewContext.copyRequested()
+  }
+  readonly property Action cutAction: Action {
+    id: cutAction
+
+    enabled: root.activeViewContext !== null && root.activeViewContext.canCopy
+    shortcut: StandardKey.Cut
+    text: qsTr("Cu&t")
+
+    onTriggered: root.activeViewContext.cutRequested()
+  }
   readonly property Action deleteAction: Action {
     id: deleteAction
 
-    enabled: root.activeArranger !== null
+    enabled: root.activeViewContext !== null && root.activeViewContext.canDelete
     shortcut: StandardKey.Delete
     text: qsTr("&Delete")
 
-    onTriggered: {
-      if (root.activeArranger) {
-        root.activeArranger.selectionOperator.deleteObjects();
-      }
-    }
+    onTriggered: root.activeViewContext.deleteRequested()
   }
   required property DeviceManager deviceManager
+  readonly property Action duplicateAction: Action {
+    id: duplicateAction
+
+    enabled: root.activeViewContext !== null && root.activeViewContext.canCopy
+    shortcut: "Ctrl+D"
+    text: qsTr("&Duplicate")
+
+    onTriggered: root.activeViewContext.duplicateRequested()
+  }
   readonly property Action fullScreenAction: Action {
     id: fullScreenAction
 
@@ -43,21 +67,18 @@ ApplicationWindow {
       root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
     }
   }
+  required property NotificationCenter notificationCenter
+  readonly property Action pasteAction: Action {
+    id: pasteAction
+
+    enabled: root.activeViewContext !== null && root.activeViewContext.canPaste
+    shortcut: StandardKey.Paste
+    text: qsTr("&Paste")
+
+    onTriggered: root.activeViewContext.pasteRequested()
+  }
   readonly property Project project: session.project
   required property ProjectSession session
-  readonly property Action toggleMuteAction: Action {
-    id: toggleMuteAction
-
-    enabled: root.activeArranger !== null
-    shortcut: "Shift+M"
-    text: qsTr("Toggle &Mute")
-
-    onTriggered: {
-      if (root.activeArranger) {
-        root.activeArranger.selectionOperator.toggleMute();
-      }
-    }
-  }
 
   function closeAndDestroy() {
     console.log("Closing and destroying project window");
@@ -76,15 +97,21 @@ ApplicationWindow {
 
     appSettings: root.appSettings
     controlRoom: root.controlRoom
+    notificationCenter: root.notificationCenter
     session: root.session
   }
   menuBar: MainMenuBar {
     id: mainMenuBar
 
     aboutDialog: aboutDialog
+    copyAction: root.copyAction
+    cutAction: root.cutAction
+    deleteAction: root.deleteAction
     deviceManager: root.deviceManager
+    duplicateAction: root.duplicateAction
     exportDialog: exportDialog
     loadController: loadController
+    pasteAction: root.pasteAction
     saveController: saveController
     session: root.session
   }
@@ -92,6 +119,23 @@ ApplicationWindow {
   Component.onCompleted: {
     console.log("ApplicationWindow created on platform", Qt.platform.os);
     project.engine.activate();
+  }
+
+  // Resolves the view context from focus: the nearest ancestor of the
+  // focused item that exposes a viewContext property. Focus moving to
+  // items without a context (menu bar, menus, buttons, text fields)
+  // keeps the last resolved context; the property clears automatically
+  // when the providing view is destroyed. Text inputs consume the
+  // standard edit shortcuts while focused.
+  onActiveFocusItemChanged: {
+    let item = activeFocusItem;
+    while (item !== null && item !== undefined) {
+      if (item.viewContext !== undefined) {
+        activeViewContext = item.viewContext;
+        return;
+      }
+      item = item.parent;
+    }
   }
   onClosing: {
     console.log("Closing project window...");
@@ -111,22 +155,51 @@ ApplicationWindow {
     target: KeyboardState
   }
 
-  Connections {
-    function onAlertRequested(title, message) {
-      console.log("Alert requested: ", title, message);
-      alertDialog.text = title;
-      alertDialog.informativeText = message;
+  NotificationArea {
+    notificationCenter: root.notificationCenter
+
+    onCriticalNotification: (notification) => {
+      alertDialog.text = notification.title;
+      alertDialog.informativeText = notification.detail;
       alertDialog.open();
     }
+  }
 
-    target: root.alertManager
+  Connections {
+    function onOperationRefused(reason) {
+      root.notificationCenter.postError(qsTr("Cannot Perform Operation"), reason);
+    }
+
+    function onPasteContentModified(summary) {
+      root.notificationCenter.postWarning(qsTr("Pasted Content Modified"), summary);
+    }
+
+    target: root.session.arrangerObjectSelectionOperator
+  }
+
+  Connections {
+    function onOperationRefused(reason) {
+      root.notificationCenter.postError(qsTr("Cannot Perform Operation"), reason);
+    }
+
+    target: root.session.pluginOperator
+  }
+
+  Connections {
+    function onOperationRefused(reason) {
+      root.notificationCenter.postError(qsTr("Cannot Perform Operation"), reason);
+    }
+
+    function onPasteContentModified(summary) {
+      root.notificationCenter.postWarning(qsTr("Pasted Content Modified"), summary);
+    }
+
+    target: root.session.trackCollectionOperator
   }
 
   Connections {
     function onInstantiationFailed(pluginName, error) {
-      alertDialog.text = qsTr("Plugin Instantiation Failed");
-      alertDialog.informativeText = qsTr("Failed to instantiate plugin %1:\n\n%2").arg(pluginName).arg(error);
-      alertDialog.open();
+      root.notificationCenter.postError(qsTr("Plugin Instantiation Failed"), qsTr("Failed to instantiate plugin %1:\n\n%2").arg(pluginName).arg(error));
     }
 
     target: root.session.pluginImporter
@@ -186,6 +259,7 @@ ApplicationWindow {
     id: exportDialog
 
     exportDirectory: root.session.projectDirectory + "/exports"
+    notificationCenter: root.notificationCenter
     session: root.session
   }
 
@@ -311,7 +385,14 @@ ApplicationWindow {
   SaveController {
     id: saveController
 
+    notificationCenter: root.notificationCenter
     session: root.session
+  }
+
+  PlaybackCacheActivityAggregator {
+    id: cacheActivityAggregator
+
+    collection: root.project.tracklist.collection
   }
 
   // Generic editor windows for plugins without a native UI
@@ -409,34 +490,25 @@ ApplicationWindow {
       }
     }
 
-    Rectangle {
-      id: botBar
+    StatusBar {
+      id: statusBar
 
       Layout.fillWidth: true
-      color: root.palette.window
-      implicitHeight: 24
 
-      PlaybackCacheActivityAggregator {
-        id: cacheActivityAggregator
-
-        collection: root.project.tracklist.collection
-      }
-
-      RowLayout {
-        anchors.fill: parent
-        anchors.rightMargin: ZrythmTheme.buttonPadding * 2
-        spacing: ZrythmTheme.buttonPadding * 2
-
-        Item {
-          Layout.fillWidth: true
+      leftItems: [
+        StatusBarText {
+          text: qsTr("%1 Hz · %2 samples").arg(root.project.engine.sampleRate.toLocaleString(Qt.locale(), "f", 0)).arg(root.project.engine.blockLength.toLocaleString(Qt.locale(), "f", 0))
+        },
+        StatusBarText {
+          text: qsTr("%1 tracks").arg(root.project.tracklist.collection.trackCount)
         }
-
-        Label {
-          font: root.font
+      ]
+      rightItems: [
+        StatusBarText {
           text: qsTr("Cache: %1 pending · %2 complete").arg(cacheActivityAggregator.cachePendingCount).arg(cacheActivityAggregator.cacheCompleteCount)
           visible: root.appSettings.showCacheActivity
         }
-      }
+      ]
     }
   }
 }

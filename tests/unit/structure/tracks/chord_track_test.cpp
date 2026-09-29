@@ -12,6 +12,8 @@
 #include "utils/object_registry.h"
 #include "utils/qt.h"
 
+#include <QTest>
+
 #include "helpers/in_memory_settings_backend.h"
 #include "helpers/scoped_qcoreapplication.h"
 
@@ -318,9 +320,9 @@ TEST_F (ChordTrackCacheTest, PreviewChordStartsAndAutoStopsOnTimeout)
     EXPECT_EQ (ons[2], 55);
   }
 
-  // Pump the event loop long enough for the C++-owned auto-stop timer to fire.
-  test_helpers::ScopedQCoreApplication::process_events_until_timeout (
-    std::chrono::milliseconds (60));
+  // The auto-stop timer fires asynchronously; the block below produces
+  // the note-offs once the preview has stopped
+  QTRY_VERIFY (!chord_track_->isPreviewing ());
 
   // The next block sends note-offs: the note-off is owned by ChordTrack, so no
   // QML Timer is required.

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -26,8 +26,10 @@ ProjectExporter::exportAudio (
     .sample_rate_ = project->engine ()->sample_rate (),
     .block_length_ = project->engine ()->block_length ()
   };
-  dsp::AudioEngine::EngineState state{};
-  project->engine ()->wait_for_pause (state, false, true);
+  // Pauses the engine and marks processing as owned by the render; the
+  // completion callbacks below release the handover
+  auto render_session = std::make_shared<dsp::AudioEngine::OfflineRenderSession> (
+    *project->engine ());
   structure::project::ProjectGraphBuilder builder (
     *project, project->metronome (), project->monitor_fader ());
   dsp::graph::Graph graph;
@@ -165,27 +167,20 @@ ProjectExporter::exportAudio (
       },
       graph_render_future);
 
-  const auto resume_engine = [engine = project->engine (), state] () {
-    // FIXME: this is needed because node caches are not per-graph and
-    // they were destroyed via the renderer.
-    engine->graph_dispatcher ().recalc_graph (false);
-    engine->resume (state);
-  };
-
-  // No matter what happens, we must resume the engine
+  // No matter what happens, we must release the engine handover
   combined_future
     .then (
       project->engine (),
-      [resume_engine] (QFuture<QStringList> result) { resume_engine (); })
+      [render_session] (QFuture<QStringList>) { render_session->finish (); })
     .onCanceled (
       project->engine (),
-      [resume_engine] () {
+      [render_session] () {
         z_debug ("Audio export canceled");
-        resume_engine ();
+        render_session->finish ();
       })
-    .onFailed (project->engine (), [resume_engine] () {
+    .onFailed (project->engine (), [render_session] () {
       z_warning ("Audio export failed");
-      resume_engine ();
+      render_session->finish ();
     });
 
   auto * future_qml_wrapper =

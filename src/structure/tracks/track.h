@@ -587,8 +587,8 @@ protected:
   init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type);
 
   void generate_automation_tracks_for_processor (
-    std::vector<utils::QObjectUniquePtr<AutomationTrack>> &ats,
-    const dsp::ProcessorBase                              &processor)
+    std::vector<AutomationTrackUuidReference> &ats,
+    const dsp::ProcessorBase                  &processor)
   {
     structure::tracks::generate_automation_tracks_for_processor (
       ats, processor, base_dependencies_.tempo_map_,

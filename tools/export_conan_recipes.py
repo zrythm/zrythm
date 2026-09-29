@@ -19,6 +19,12 @@ recipes = [
     ("ext/conan-center-index/recipes/libjpeg-turbo/all/conanfile.py", "3.1.4.1"),
     ("ext/conan-center-index/recipes/wayland/all/conanfile.py", "1.22.0"),
     ("ext/conan-center-index/recipes/xkbcommon/all/conanfile.py", "1.5.0"),
+    ("ext/conan-center-index/recipes/zix/all/conanfile.py", "0.8.2"),
+    ("ext/conan-center-index/recipes/lv2/all/conanfile.py", "1.18.10"),
+    ("ext/conan-center-index/recipes/serd/all/conanfile.py", "0.32.10"),
+    ("ext/conan-center-index/recipes/sord/all/conanfile.py", "0.16.22"),
+    ("ext/conan-center-index/recipes/sratom/all/conanfile.py", "0.6.22"),
+    ("ext/conan-center-index/recipes/lilv/all/conanfile.py", "0.28.0"),
 ]
 
 

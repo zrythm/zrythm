@@ -108,7 +108,7 @@ to_json (nlohmann::json &j, const Scene &scene)
       j[Scene::kColorKey] =
         zrythm::utils::to_std_string (scene.color_.name (QColor::HexRgb));
     }
-  j[Scene::kClipSlotsKey] = *scene.clip_slot_list_;
+  j[Scene::kClipSlotIdsKey] = *scene.clip_slot_list_;
 }
 
 void
@@ -124,9 +124,9 @@ from_json (const nlohmann::json &j, Scene &scene)
       scene.color_ = QColor (
         QString::fromStdString (j.at (Scene::kColorKey).get<std::string> ()));
     }
-  if (j.contains (Scene::kClipSlotsKey))
+  if (j.contains (Scene::kClipSlotIdsKey))
     {
-      j.at (Scene::kClipSlotsKey).get_to (*scene.clip_slot_list_);
+      j.at (Scene::kClipSlotIdsKey).get_to (*scene.clip_slot_list_);
     }
 }
 

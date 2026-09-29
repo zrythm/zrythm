@@ -3,53 +3,40 @@
 
 #pragma once
 
-#include <QEventLoop>
+#include <chrono>
+
+#include <QDeadlineTimer>
 #include <QFuture>
-#include <QFutureWatcher>
-#include <QTimer>
+#include <QTest>
 
 namespace zrythm::test_helpers
 {
 
 /**
+ * @brief Timeout used when waiting on QFutures (project save/load can be
+ * slow).
+ */
+inline constexpr std::chrono::milliseconds kFutureWaitTimeout{ 30'000 };
+
+/**
  * @brief Waits for a QFuture to complete while processing Qt events.
  *
- * This is necessary when the QFuture uses Qt continuations that need to run
- * on the main thread. Using waitForFinished() on the main thread would cause
- * a deadlock since it blocks the event loop.
+ * Uses QTest::qWaitFor() so the event loop keeps running: QFuture
+ * continuations queued on the main thread would deadlock if the caller
+ * blocked with waitForFinished().
  *
  * @param future The QFuture to wait for.
- * @param timeout_ms Maximum time to wait in milliseconds (default: 30 seconds).
+ * @param timeout Maximum time to wait.
  * @return true if the future completed, false if it timed out.
  */
 template <typename T>
 bool
-waitForFutureWithEvents (QFuture<T> &future, int timeout_ms = 30000)
+waitForFutureWithEvents (
+  QFuture<T>    &future,
+  QDeadlineTimer timeout = QDeadlineTimer (kFutureWaitTimeout))
 {
-  if (future.isFinished ())
-    return true;
-
-  QFutureWatcher<T> watcher;
-  QEventLoop        loop;
-  bool              timed_out = false;
-
-  QObject::connect (
-    &watcher, &QFutureWatcher<T>::finished, &loop, [&loop, &timed_out] () {
-      timed_out = false;
-      loop.quit ();
-    });
-
-  watcher.setFuture (future);
-
-  // Timeout to prevent infinite hang
-  QTimer::singleShot (timeout_ms, &loop, [&loop, &timed_out] () {
-    timed_out = true;
-    loop.quit ();
-  });
-
-  loop.exec ();
-
-  return !timed_out && future.isFinished ();
+  return QTest::qWaitFor (
+    [&future] () { return future.isFinished (); }, timeout);
 }
 
 } // namespace zrythm::test_helpers

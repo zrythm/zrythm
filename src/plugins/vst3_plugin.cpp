@@ -21,6 +21,7 @@
 #include "dsp/midi_event.h"
 #include "plugins/gl_context_utils.h"
 #include "plugins/host_window_units.h"
+#include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_run_loop.h"
 #include "plugins/plugin_transport_context.h"
 #include "plugins/vst3_channel_mapping.h"
@@ -31,6 +32,7 @@
 #include "utils/logger.h"
 #include "utils/math_utils.h"
 #include "utils/qt.h"
+#include "utils/rt_logger.h"
 #include "utils/serialization.h"
 #include "utils/views.h"
 
@@ -618,6 +620,14 @@ clear_plugin_context_if_current (Vst::IHostApplication * host_app)
  * (re)creation on load); the audio thread holds one realtime ScopedAccess
  * per process block.
  */
+/** A Zrythm parameter's VST3 identity, for plugin-reported changes. */
+struct Vst3ParamAdapter
+{
+  Vst::ParamID              id;
+  dsp::ProcessorParameter * zrythm_param = nullptr;
+  size_t                    param_index = 0;
+};
+
 struct Vst3RtParamMapping
 {
   /**
@@ -637,6 +647,11 @@ struct Vst3RtParamMapping
   Vst::UnitID                 program_change_unit_id_ = Vst::kRootUnitId;
 
   std::unordered_map<dsp::ProcessorParameter *, Vst::ParamID> zrythm_to_vst3_;
+
+  /** Reverse of zrythm_to_vst3_ (VST3 param id -> Zrythm parameter and
+   * param_sync_ index), for applying plugin-reported changes at process
+   * time. */
+  std::unordered_map<Vst::ParamID, Vst3ParamAdapter> vst3_to_zrythm_;
 };
 
 static void
@@ -657,13 +672,6 @@ public:
 private:
   Vst3Plugin             &owner_;
   PluginHostWindowFactory host_window_factory_;
-
-  struct Vst3ParamAdapter
-  {
-    Vst::ParamID              id;
-    dsp::ProcessorParameter * zrythm_param = nullptr;
-    size_t                    param_index = 0;
-  };
 
   VST3::Hosting::Module::Ptr            module_;
   std::unique_ptr<Vst::PlugProvider>    plug_provider_;
@@ -702,33 +710,28 @@ private:
   Vst3ParameterChanges output_param_changes_{};
 
   /**
-   * @brief Reports dropped items at a bounded rate (audio-thread safe).
-   *
-   * The drop is counted in @p counter and logged on the main thread at
-   * power-of-two counts, so a flood of drops cannot flood the log or the
-   * dispatcher.
+   * @brief Counts dropped items in @p counter and reports them at a
+   * bounded (power-of-two) rate; audio-thread safe.
    *
    * @param what Static string describing the dropped items, e.g.
    * "input event(s) (event list capacity exhausted)".
    */
-  void
-  note_drop (std::atomic<uint32_t> &counter, std::string_view what) noexcept
+  void log_drop (std::atomic<uint32_t> &counter, std::string_view what) noexcept
+    [[clang::nonblocking]]
   {
     const auto drops = counter.fetch_add (1, std::memory_order_relaxed) + 1;
     if (drops == 1 || (drops & (drops - 1)) == 0)
       {
-        owner_.post_main_thread_action ([this, drops, what] {
-          z_warning (
-            "VST3 plugin '{}': dropped {} {} so far", owner_.get_name (), drops,
-            what);
-        });
+        z_rt_warning (
+          "VST3 plugin '{}': dropped {} {} so far", owner_.node_name_view (),
+          drops, what);
       }
   }
 
   /** Per-parameter queue capacity exhausted (addPoint failed). */
-  void note_input_point_drop () noexcept
+  void log_input_point_drop () noexcept
   {
-    note_drop (
+    log_drop (
       input_point_drops_,
       "parameter change point(s) (per-parameter queue capacity exhausted)"sv);
   }
@@ -736,9 +739,9 @@ private:
   std::atomic<uint32_t> input_point_drops_{ 0 };
 
   /** Event list capacity exhausted (addEvent failed). */
-  void note_input_event_drop () noexcept
+  void log_input_event_drop () noexcept
   {
-    note_drop (
+    log_drop (
       input_event_drops_, "input event(s) (event list capacity exhausted)"sv);
   }
 
@@ -746,9 +749,9 @@ private:
 
   /** Events targeting an event input bus the plugin no longer has (stale
    * port topology after an IO change). */
-  void note_stale_bus_event_drop () noexcept
+  void log_stale_bus_event_drop () noexcept
   {
-    note_drop (
+    log_drop (
       stale_bus_event_drops_,
       "input event(s) (no such event bus on the plugin)"sv);
   }
@@ -765,9 +768,9 @@ private:
   std::atomic<int32_t> event_in_bus_count_{ 0 };
 
   /** Queue table capacity exhausted (addParameterData failed). */
-  void note_param_queue_drop () noexcept
+  void log_param_queue_drop () noexcept
   {
-    note_drop (
+    log_drop (
       param_queue_drops_,
       "parameter change queue(s) (queue table capacity exhausted)"sv);
   }
@@ -776,9 +779,9 @@ private:
 
   /** Preset selection whose program index no longer exists (the program
    * list shrank between selection and processing). */
-  void note_stale_program_drop () noexcept
+  void log_stale_program_drop () noexcept
   {
-    note_drop (
+    log_drop (
       stale_program_drops_,
       "preset selection(s) (program list shrank before the selection was applied)"sv);
   }
@@ -787,9 +790,9 @@ private:
 
   /** Preset selection dropped because the program-change parameter became
    * unavailable between selection and processing. */
-  void note_missing_program_param_drop () noexcept
+  void log_missing_program_param_drop () noexcept
   {
-    note_drop (
+    log_drop (
       missing_program_param_drops_,
       "preset selection(s) (program-change parameter became unavailable)"sv);
   }
@@ -797,9 +800,9 @@ private:
   std::atomic<uint32_t> missing_program_param_drops_{ 0 };
 
   /** Main-thread dispatcher queue full (controller notification dropped). */
-  void note_controller_notification_drop () noexcept
+  void log_controller_notification_drop () noexcept
   {
-    note_drop (
+    log_drop (
       controller_notification_drops_,
       "controller notification(s) (dispatcher queue full)"sv);
   }
@@ -807,9 +810,9 @@ private:
   std::atomic<uint32_t> controller_notification_drops_{ 0 };
 
   /** Gesture callback dropped (dispatcher queue full). */
-  void note_gesture_drop () noexcept
+  void log_gesture_drop () noexcept
   {
-    note_drop (
+    log_drop (
       gesture_drops_, "gesture notification(s) (dispatcher queue full)"sv);
   }
 
@@ -817,39 +820,42 @@ private:
 
   /** Preset-selection sync post dropped (dispatcher queue full); the
    * display is left stale until the next sync event. */
-  void note_preset_sync_drop () noexcept
+  void log_preset_sync_drop () noexcept
   {
-    note_drop (
+    log_drop (
       preset_sync_drops_, "preset selection sync(s) (dispatcher queue full)"sv);
   }
 
   std::atomic<uint32_t> preset_sync_drops_{ 0 };
 
   /**
-   * @brief Reports a dropped plugin output event (audio-thread safe).
-   *
-   * The event violated the output contract (see
-   * validate_vst3_output_event); the drop is counted and logged on the
-   * main thread at a bounded (power-of-two) rate.
+   * @brief Counts and reports an output event that violated the output
+   * contract (see validate_vst3_output_event); audio-thread safe.
    */
-  void note_invalid_output_event_drop (std::string_view violation) noexcept
+  void log_invalid_output_event_drop (std::string_view violation) noexcept
+    [[clang::nonblocking]]
   {
     const auto drops =
       invalid_output_event_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
     if (drops == 1 || (drops & (drops - 1)) == 0)
       {
-        owner_.post_main_thread_action ([this, drops, violation] {
-          z_warning (
-            "VST3 plugin '{}': dropped {} invalid output event(s) so far "
-            "(last: {})",
-            owner_.get_name (), drops, violation);
-        });
+        z_rt_warning (
+          "VST3 plugin '{}': dropped {} invalid output event(s) so far "
+          "(last: {})",
+          owner_.node_name_view (), drops, violation);
       }
   }
 
   std::atomic<uint32_t> invalid_output_event_drops_{ 0 };
   Vst::ProcessContext   process_context_{};
   std::unordered_map<Vst::ParamID, Vst3ParamAdapter> vst3_params_;
+
+  /**
+   * True when the edit controller is a separate object from the
+   * component (dual-component VST3). Only separate controllers keep
+   * their own copy of the parameter state and need explicit sync.
+   */
+  bool controller_is_separate_ = false;
 
   /**
    * Realtime-published param routing state. farbot's destructor spins until
@@ -1277,12 +1283,11 @@ Vst3Plugin::load_plugin (
     }
 
   // Find the class matching the scanned unique ID (a 32-bit hash of the
-  // TUID string), falling back to name matching for projects saved before
-  // the native scanner existed
+  // TUID string); when several classes of the module hash to the same
+  // value, the class name disambiguates
   const auto &class_infos = module->getFactory ().classInfos ();
   const auto  matches_hash = [plugin_unique_id] (const auto &ci) {
-    return Vst3PluginFormat::get_hash_for_range (ci.ID ().toString ())
-           == plugin_unique_id;
+    return get_hash_for_range (ci.ID ().toString ()) == plugin_unique_id;
   };
   const auto matches_name = [this] (const auto &ci) {
     return ci.name () == get_name ().str ();
@@ -1346,6 +1351,11 @@ Vst3Plugin::load_plugin (
   pimpl_->component_ = pimpl_->plug_provider_->getComponentPtr ();
   pimpl_->controller_ = pimpl_->plug_provider_->getControllerPtr ();
   pimpl_->processor_ = U::cast<Vst::IAudioProcessor> (pimpl_->component_);
+  // A component that implements IEditController shares its state with
+  // the controller; anything else is a dual-component plugin whose
+  // controller keeps separate state
+  pimpl_->controller_is_separate_ =
+    U::cast<Vst::IEditController> (pimpl_->component_) == nullptr;
   if (
     pimpl_->component_ == nullptr || pimpl_->controller_ == nullptr
     || pimpl_->processor_ == nullptr)
@@ -1393,8 +1403,17 @@ Vst3Plugin::load_plugin (
       if (param_index >= param_sync_.entries.size ())
         return;
       const auto normalized = static_cast<float> (value);
+      auto      &entry = param_sync_.entries[param_index];
+      // performEdit inside an open gesture is a user edit: the value
+      // coalesces into the pending slot and applies through the
+      // user-edit path at the next flush. Per-report deferred actions
+      // would flood the shared main-thread dispatcher at drag event
+      // rates
+      entry.pending_is_user_edit.store (
+        entry.in_user_gesture.load (std::memory_order_relaxed),
+        std::memory_order_release);
       set_param_pending_from_plugin (param_index, normalized);
-      param_sync_.entries[param_index].last_from_plugin = normalized;
+      entry.last_from_plugin = normalized;
     },
     [this] (int32 flags) {
       // restartComponent may arrive on the audio thread (kLatencyChanged
@@ -1570,32 +1589,76 @@ Vst3Plugin::load_plugin (
       post_main_thread_action_deferred (handler);
     },
     [this] (Vst::ParamID id, bool begin) {
-      if (!begin)
-        return;
-      // beginEdit may arrive on any thread; the handler touches
-      // main-thread state, so it is marshalled over
-      if (
-        !post_main_thread_action_deferred ([this, id] {
-          if (pimpl_->controller_ == nullptr)
-            return;
-          // A gesture from the plugin's own UI means the user is editing:
-          // the selected preset's state is being modified. The
-          // program-change param itself is excluded: it represents preset
-          // selection, which is re-synced separately via
-          // kParamValuesChanged. Note that plugins that emit per-parameter
-          // gestures while applying a program also mark the preset dirty:
-          // VST3 provides no transaction boundary that would let us
-          // attribute those edits to the program change. The comparison can
-          // also briefly lag a plugin-side program-param change until the
+      // Gesture events may arrive on any thread; everything below either
+      // posts to the main thread or touches atomics
+      const auto program_param_id =
+        pimpl_->program_change_param_id_any_thread_.load (
+          std::memory_order_relaxed);
+      const bool is_program_param =
+        program_param_id != Vst::kNoParamId && id == program_param_id;
+      const auto it = pimpl_->vst3_params_.find (id);
+      if (is_program_param || it == pimpl_->vst3_params_.end ())
+        {
+          // The program-change parameter is not a Zrythm parameter: a
+          // gesture on it only feeds the preset-dirty heuristic. Note
+          // that plugins that emit per-parameter gestures while applying
+          // a program also mark the preset dirty: VST3 provides no
+          // transaction boundary that would let us attribute those edits
+          // to the program change. The comparison can also briefly lag a
+          // plugin-side program-param change until the
           // kMidiCCAssignmentChanged handler refreshes the main-thread
           // copy; the consequence is heuristic-only (the dirty flag)
-          if (
-            id
-            != pimpl_->program_change_param_id_main_.value_or (Vst::kNoParamId))
-            set_preset_dirty (true);
-        }))
+          if (begin && is_program_param)
+            {
+              if (!post_main_thread_action_deferred ([this] {
+                    if (pimpl_->controller_ == nullptr)
+                      return;
+                    set_preset_dirty (true);
+                  }))
+                {
+                  pimpl_->log_gesture_drop ();
+                }
+            }
+          return;
+        }
+      const auto param_index = it->second.param_index;
+      if (param_index >= param_sync_.entries.size ())
         {
-          pimpl_->note_gesture_drop ();
+          pimpl_->log_gesture_drop ();
+          return;
+        }
+      auto &entry = param_sync_.entries[param_index];
+      if (begin == entry.in_user_gesture.load (std::memory_order_relaxed))
+        {
+          // beginEdit while a gesture is already open, or endEdit
+          // without a preceding beginEdit
+          pimpl_->log_gesture_drop ();
+          return;
+        }
+      auto * param = get_parameters ()[param_index].get ();
+      if (param == nullptr)
+        {
+          pimpl_->log_gesture_drop ();
+          return;
+        }
+      entry.in_user_gesture.store (begin, std::memory_order_relaxed);
+      if (!post_main_thread_action_deferred ([this, param, begin] {
+            if (begin)
+              {
+                if (pimpl_->controller_ != nullptr)
+                  set_preset_dirty (true);
+                param->beginUserGesture ();
+              }
+            else
+              {
+                param->endUserGesture ();
+              }
+          }))
+        {
+          // The main-thread gesture state would diverge from the flag;
+          // revert the flag so later events stay consistent
+          entry.in_user_gesture.store (!begin, std::memory_order_relaxed);
+          pimpl_->log_gesture_drop ();
         }
     },
     [this] {
@@ -2249,8 +2312,7 @@ Vst3Plugin::create_parameters_from_vst3_controller ()
         }
 
       pimpl_->vst3_params_.emplace (
-        info.id,
-        Vst3PluginImpl::Vst3ParamAdapter{ info.id, zrythm_param, param_index });
+        info.id, Vst3ParamAdapter{ info.id, zrythm_param, param_index });
       new_mapping.emplace_back (zrythm_param, info.id);
     }
 
@@ -2260,6 +2322,9 @@ Vst3Plugin::create_parameters_from_vst3_controller ()
     rt_mapping->zrythm_to_vst3_.clear ();
     for (const auto &[zrythm_param, vst3_id] : new_mapping)
       rt_mapping->zrythm_to_vst3_.emplace (zrythm_param, vst3_id);
+    rt_mapping->vst3_to_zrythm_.clear ();
+    for (const auto &[param_id, adapter] : pimpl_->vst3_params_)
+      rt_mapping->vst3_to_zrythm_.emplace (param_id, adapter);
   }
 
   refresh_program_change_param_state ();
@@ -2406,7 +2471,7 @@ Vst3Plugin::rebuild_preset_list ()
     }
 }
 
-void
+bool
 Vst3Plugin::apply_preset_impl (const PresetId &id)
 {
   // VST3 presets are program indices; string ids belong to other formats
@@ -2416,7 +2481,7 @@ Vst3Plugin::apply_preset_impl (const PresetId &id)
       z_warning (
         "VST3 plugin '{}': refusing to apply non-index preset id",
         get_node_name ());
-      return;
+      return false;
     }
   if (
     !pimpl_->program_change_param_id_main_.has_value ()
@@ -2426,18 +2491,19 @@ Vst3Plugin::apply_preset_impl (const PresetId &id)
         "VST3 plugin '{}': preset {} selected but the plugin has no "
         "program-change parameter",
         get_node_name (), *index);
-      return;
+      return false;
     }
   if (*index > pimpl_->program_change_step_count_main_)
     {
       z_warning (
         "VST3 plugin '{}': refusing out-of-range program {} ({} steps)",
         get_node_name (), *index, pimpl_->program_change_step_count_main_);
-      return;
+      return false;
     }
 
   // Consumed at process time (see process_impl)
   pimpl_->pending_program_index_.store (*index, std::memory_order_release);
+  return true;
 }
 
 void
@@ -2459,8 +2525,53 @@ Vst3Plugin::notify_controller_param_value (
           pimpl_->controller_host_editing_->endEditFromHost (param_id);
       }))
     {
-      pimpl_->note_controller_notification_drop ();
+      pimpl_->log_controller_notification_drop ();
     }
+}
+
+void
+Vst3Plugin::notify_controller_reported_value (
+  uint32_t param_id_u,
+  double   normalized_value) noexcept [[clang::nonblocking]]
+{
+  // Bare setParamNormalized without the host-editing wrapper: this is a
+  // state sync of a processor-reported value, not a host-initiated edit.
+  // Deferred like notify_controller_param_value().
+  const auto param_id = static_cast<Vst::ParamID> (param_id_u);
+  const auto value = normalized_value;
+  if (!post_main_thread_action_deferred ([this, param_id, value] {
+        if (pimpl_->controller_ == nullptr)
+          return;
+        pimpl_->controller_->setParamNormalized (param_id, value);
+      }))
+    {
+      pimpl_->log_controller_notification_drop ();
+    }
+}
+
+void
+Vst3Plugin::on_plugin_reported_value_applied (
+  dsp::ProcessorParameter &param,
+  float                    normalized,
+  bool                     as_user_edit)
+{
+  if (!pimpl_->controller_is_separate_ || as_user_edit)
+    return;
+
+  const auto it =
+    std::ranges::find_if (pimpl_->vst3_params_, [&param] (const auto &entry) {
+      return entry.second.zrythm_param == &param;
+    });
+  if (it == pimpl_->vst3_params_.end ())
+    {
+      z_warning (
+        "VST3 plugin '{}': applied report for a parameter without a VST3 "
+        "mapping",
+        get_node_name ());
+      return;
+    }
+  notify_controller_reported_value (
+    static_cast<uint32_t> (it->first), static_cast<double> (normalized));
 }
 
 void
@@ -2551,6 +2662,26 @@ Vst3Plugin::prepare_plugin_for_processing (
 void
 Vst3Plugin::release_resources_impl ()
 {
+  // Close open plugin-UI gestures regardless of the processing state: a
+  // gesture reported without endEdit would leave its parameter with an
+  // open user gesture (automation suppressed indefinitely). Releasing
+  // resources is the definitive end of any plugin-reported gesture
+  const auto params = get_parameters ();
+  const auto count = std::min (params.size (), param_sync_.entries.size ());
+  for (const auto i : std::views::iota (size_t{ 0 }, count))
+    {
+      auto &entry = param_sync_.entries[i];
+      if (!entry.in_user_gesture.exchange (false, std::memory_order_relaxed))
+        continue;
+      auto * param = params[i].get ();
+      if (param != nullptr && !post_main_thread_action_deferred ([param] {
+            param->endUserGesture ();
+          }))
+        {
+          z_warning ("VST3: failed to close open user gesture on release");
+        }
+    }
+
   if (!pimpl_->processing_active_)
     return;
 
@@ -2606,7 +2737,7 @@ Vst3Plugin::process_impl (
       if (bus_index >= impl.event_in_bus_count_.load (std::memory_order_acquire))
         {
           if (chunk_events.begin () != chunk_events.end ())
-            impl.note_stale_bus_event_drop ();
+            impl.log_stale_bus_event_drop ();
           continue;
         }
       for (const auto &ev : chunk_events)
@@ -2629,7 +2760,7 @@ Vst3Plugin::process_impl (
               vst_ev.data.bytes =
                 reinterpret_cast<const uint8_t *> (ev_data.data ());
               if (impl.input_events_.addEvent (vst_ev) != kResultOk)
-                pimpl_->note_input_event_drop ();
+                pimpl_->log_input_event_drop ();
               continue;
             }
 
@@ -2679,16 +2810,16 @@ Vst3Plugin::process_impl (
                               static_cast<int> (program));
                           }))
                         {
-                          pimpl_->note_preset_sync_drop ();
+                          pimpl_->log_preset_sync_drop ();
                         }
                     }
                   else if (queue == nullptr)
                     {
-                      pimpl_->note_param_queue_drop ();
+                      pimpl_->log_param_queue_drop ();
                     }
                   else
                     {
-                      pimpl_->note_input_point_drop ();
+                      pimpl_->log_input_point_drop ();
                     }
                 }
               continue;
@@ -2711,7 +2842,7 @@ Vst3Plugin::process_impl (
                 static_cast<float> (ev_data[2]) / 127.f;
               vst_ev.polyPressure.noteId = -1;
               if (impl.input_events_.addEvent (vst_ev) != kResultOk)
-                pimpl_->note_input_event_drop ();
+                pimpl_->log_input_event_drop ();
               continue;
             }
 
@@ -2750,7 +2881,7 @@ Vst3Plugin::process_impl (
                     param_id, queue_index);
                   if (queue == nullptr)
                     {
-                      pimpl_->note_param_queue_drop ();
+                      pimpl_->log_param_queue_drop ();
                       continue;
                     }
                   int32 point_index = 0;
@@ -2758,7 +2889,7 @@ Vst3Plugin::process_impl (
                     queue->addPoint (sample_offset, ctrl_value, point_index)
                     != kResultTrue)
                     {
-                      pimpl_->note_input_point_drop ();
+                      pimpl_->log_input_point_drop ();
                     }
                 }
               continue;
@@ -2795,7 +2926,7 @@ Vst3Plugin::process_impl (
               vst_ev.noteOff.noteId = -1;
             }
           if (impl.input_events_.addEvent (vst_ev) != kResultOk)
-            pimpl_->note_input_event_drop ();
+            pimpl_->log_input_event_drop ();
         }
     }
 
@@ -2843,14 +2974,14 @@ Vst3Plugin::process_impl (
         impl.input_param_changes_.addParameterData (it->second, queue_index);
       if (queue == nullptr)
         {
-          pimpl_->note_param_queue_drop ();
+          pimpl_->log_param_queue_drop ();
           continue;
         }
       int32 point_index = 0;
       if (
         queue->addPoint (0, change.modulated_value, point_index) != kResultTrue)
         {
-          pimpl_->note_input_point_drop ();
+          pimpl_->log_input_point_drop ();
         }
 
       // Also notify the edit controller on the main thread, or a
@@ -2883,12 +3014,12 @@ Vst3Plugin::process_impl (
                   // selection was pending; leaving it queued would apply a
                   // stale program if the parameter returned with a
                   // different list
-                  pimpl_->note_missing_program_param_drop ();
+                  pimpl_->log_missing_program_param_drop ();
                 }
               else
                 {
                   // The program list shrank after the selection was made
-                  pimpl_->note_stale_program_drop ();
+                  pimpl_->log_stale_program_drop ();
                 }
               // The selection state was already committed host-side: re-sync
               // the display with the program the plugin actually holds
@@ -2899,7 +3030,7 @@ Vst3Plugin::process_impl (
                     adopt_current_program_from_controller ();
                   }))
                 {
-                  pimpl_->note_preset_sync_drop ();
+                  pimpl_->log_preset_sync_drop ();
                 }
               break;
             }
@@ -2944,8 +3075,7 @@ Vst3Plugin::process_impl (
   impl.process_data_.processMode = Vst::ProcessModes::kRealtime;
   impl.process_data_.inputParameterChanges = &impl.input_param_changes_;
   // Output queues are provided per the IParameterChanges contract; their
-  // contents (plugin-reported parameter/latency outputs) are not consumed
-  // yet
+  // contents are applied to the host parameter model after processing
   impl.process_data_.outputParameterChanges = &impl.output_param_changes_;
   impl.process_data_.inputEvents = &impl.input_events_;
   impl.process_data_.outputEvents = &impl.output_events_;
@@ -2986,6 +3116,36 @@ Vst3Plugin::process_impl (
     impl.processor_->process (impl.process_data_);
   }
 
+  // Apply parameter changes the plugin reported during processing. Values
+  // arrive normalized and the last point per parameter wins (block-rate
+  // automation). The pending + feedback-guard path matches the performEdit
+  // handler, so applied values are not echoed back to the plugin on a
+  // later block
+  const auto report_count = impl.output_param_changes_.getParameterCount ();
+  for (const auto i : std::views::iota (0, report_count))
+    {
+      auto * queue = impl.output_param_changes_.getParameterData (i);
+      if (queue == nullptr)
+        continue;
+      const auto point_count = queue->getPointCount ();
+      if (point_count <= 0)
+        continue;
+      const auto it =
+        rt_mapping->vst3_to_zrythm_.find (queue->getParameterId ());
+      if (it == rt_mapping->vst3_to_zrythm_.end ())
+        continue;
+      const auto &adapter = it->second;
+      if (adapter.param_index >= param_sync_.entries.size ())
+        continue;
+      int32           sample_offset = 0;
+      Vst::ParamValue value = 0.;
+      if (queue->getPoint (point_count - 1, sample_offset, value) != kResultTrue)
+        continue;
+      const auto normalized = static_cast<float> (value);
+      set_param_pending_from_plugin (adapter.param_index, normalized);
+      param_sync_.entries[adapter.param_index].last_from_plugin = normalized;
+    }
+
   // Drain output events into the MIDI output ports (note on/off only),
   // routed by the event's bus index
   if (!midi_out_ports_.empty ())
@@ -3000,7 +3160,7 @@ Vst3Plugin::process_impl (
           if (
             const auto violation = validate_vst3_output_event (vst_ev, nframes))
             {
-              impl.note_invalid_output_event_drop (*violation);
+              impl.log_invalid_output_event_drop (*violation);
               continue;
             }
 
@@ -3008,7 +3168,7 @@ Vst3Plugin::process_impl (
             vst_ev.busIndex < 0
             || static_cast<size_t> (vst_ev.busIndex) >= midi_out_ports_.size ())
             {
-              impl.note_invalid_output_event_drop ("bus index out of range"sv);
+              impl.log_invalid_output_event_drop ("bus index out of range"sv);
               continue;
             }
           auto * midi_out_port =

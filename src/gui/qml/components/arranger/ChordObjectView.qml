@@ -25,8 +25,6 @@ ArrangerObjectBaseView {
 
   Rectangle {
     anchors.fill: parent
-    border.color: Qt.darker(root.objectColor, 1.3)
-    border.width: root.isSelected ? 2 : 0
     color: root.objectColor
     radius: ZrythmTheme.toolButtonRadius
   }

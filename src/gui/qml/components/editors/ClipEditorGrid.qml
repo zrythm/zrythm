@@ -127,6 +127,7 @@ GridLayout {
         midiClip: root.clipObject as MidiClip
         midiEditor: root.clipEditor.midiEditor
         session: root.session
+        unifiedObjectsModel: root.session.editorArrangerObjects
       }
     }
 
@@ -152,6 +153,7 @@ GridLayout {
         automationEditor: root.clipEditor.automationEditor
         clipEditor: root.clipEditor
         session: root.session
+        unifiedObjectsModel: root.session.editorArrangerObjects
       }
     }
 
@@ -164,6 +166,7 @@ GridLayout {
         chordClip: root.clipObject as ChordClip
         clipEditor: root.clipEditor
         session: root.session
+        unifiedObjectsModel: root.session.editorArrangerObjects
       }
     }
   }

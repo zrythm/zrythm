@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // zrythm color variant (accent | accent lighter | accent darker):
 // F79616 | FFA533 | D68A0C
@@ -7,12 +7,14 @@
 pragma Singleton
 
 import QtQuick
+import QtQuick.Templates as T
 
 QtObject {
   id: root
 
   readonly property real animationDuration: 200
   readonly property int animationEasingType: Easing.OutExpo
+  property color alternateBackgroundColor: darkMode ? "#0F0F0F" : "#D9D9D9"
   readonly property font arrangerObjectBoldTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 11,
@@ -39,7 +41,7 @@ QtObject {
   readonly property color clipContentColor: Qt.rgba(colorPalette.highlightedText.r, colorPalette.highlightedText.g, colorPalette.highlightedText.b, 0.85)
   readonly property Palette colorPalette: Palette {
     accent: root.primaryColor
-    alternateBase: root.getColorBlendedTowardsContrast(root.buttonBackgroundColor)
+    alternateBase: root.alternateBackgroundColor
     base: root.buttonBackgroundColor // background color for text editor controls and item views
     brightText: root.pageColor
     button: root.buttonBackgroundColor
@@ -65,7 +67,8 @@ QtObject {
   readonly property var darkOnlyThemeColors: [zrythmColor, jonquilYellowColor, springGreen, munsellRed]
   readonly property real disabledOpacityFactor: 0.7
   readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
-  readonly property color electricPurple: "#A654F7"
+  readonly   property color electricPurple: "#A654F7"
+  property color errorColor: darkMode ? "#FF4747" : "#A30015"
   readonly property font fadedTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 11,
@@ -78,7 +81,13 @@ QtObject {
   readonly property color jonquilYellowColor: "#FFD100"
   readonly property var lightOnlyThemeColors: [gunmetalColor]
   readonly property real lightenFactor: 1.3 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
-  readonly property color munsellRed: "#FF0040"
+  readonly   property color munsellRed: "#FF0040"
+  // Notification surfaces: the severity hue at a fixed lightness per mode
+  // (see DESIGN.md, Notifications); info uses a neutral surface
+  property color notificationSurfaceErrorColor: darkMode ? "#421C19" : "#FFCFCA"
+  property color notificationSurfaceInfoColor: darkMode ? "#292929" : "#DEDEDE"
+  property color notificationSurfaceSuccessColor: darkMode ? "#003229" : "#B4ECDE"
+  property color notificationSurfaceWarningColor: darkMode ? "#332800" : "#ECDEB1"
   readonly property font normalTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 12,
@@ -122,6 +131,7 @@ QtObject {
   property color pageColor: darkMode ? "#161616" : "#E3E3E3"
   property color placeholderTextColor: darkMode ? Qt.rgba(1, 1, 1, 0.5) : Qt.rgba(0, 0, 0, 0.5)
   property color primaryColor: zrythmColor
+
   readonly property PropertyAnimation propertyAnimation: PropertyAnimation {
     duration: root.animationDuration
     easing.type: root.animationEasingType
@@ -140,10 +150,18 @@ QtObject {
     })
   readonly property color soloGreenColor: "#009B86"
   readonly property color springGreen: "#40FFA0"
+  readonly property color successColor: darkMode ? "#009B86" : "#006456"
+  readonly property color superorangeColor: "#FF5500"
   property color textColor: darkMode ? "#E3E3E3" : "#161616" // used in contrast with pageColor
+  readonly property font trackNameTextFont: ({
+      "family": root.fontFamily,
+      "pixelSize": 12,
+      "weight": Font.Medium
+    })
   readonly property real textFieldRadius: 4
   readonly property real toolButtonRadius: 6
   readonly property int toolTipDelay: 700
+  property color warningColor: darkMode ? "#FFD100" : "#675300"
   readonly property font xSmallTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 9,
@@ -163,6 +181,20 @@ QtObject {
       return root.getStrongerColor(arg);
     else if (hovered || focused)
       return root.getColorBlendedTowardsContrast(arg);
+  }
+
+  // Text and icon ink for buttons: hovered and keyboard-focused text
+  // stays unchanged, pressed text strengthens (DESIGN.md "State
+  // derivation rules"); checked and highlighted take their fill's
+  // polarity.
+  function buttonContentColor(control: T.Button): color {
+    const baseColor = control.checked
+      ? root.polarityTextColor(control.palette.accent)
+      : control.highlighted ? control.palette.brightText
+      : (control.flat && !control.down)
+        ? (control.visualFocus ? control.palette.highlight : control.palette.windowText)
+        : control.palette.buttonText;
+    return root.adjustColorForHoverOrVisualFocusOrDown(baseColor, false, false, control.down);
   }
 
   // Makes dark colors lighter and light colors darker by the lighten factor.
@@ -187,11 +219,22 @@ QtObject {
 
   // Makes dark colors darker and light colors lighter by the down enhancement factor.
   function getStrongerColor(arg: color): color {
-    return root.isColorDark(arg) ? arg.darker(root.downEnhancementFactor) : arg.lighter(root.downEnhancementFactor);
+    if (root.isColorDark(arg))
+      return arg.darker(root.downEnhancementFactor);
+    const lightened = arg.lighter(root.downEnhancementFactor);
+    // lighter() clamps at maximum brightness, in which case darkening is
+    // used to strengthen the color
+    return lightened == arg ? arg.darker(root.downEnhancementFactor) : lightened;
   }
 
   function isColorDark(arg: color): bool {
     return arg.hslLightness < 0.5;
+  }
+
+  // The ink polarity that passes contrast against the given fill:
+  // #161616 on light fills, light ink on dark ones.
+  function polarityTextColor(fill: color): color {
+    return isColorDark(fill) ? (root.darkMode ? root.textColor : root.pageColor) : "#161616";
   }
 
   function toggleDarkMode(): void {

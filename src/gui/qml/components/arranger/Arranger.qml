@@ -55,6 +55,7 @@ Item {
 
   property alias arrangerContentHeight: arrangerContent.height
   required property ItemSelectionModel arrangerSelectionModel
+
   // Audition tool: playhead position and rolling state saved on press and
   // restored on release
   property double auditionSavedPlayheadTicks: 0
@@ -117,9 +118,30 @@ Item {
   required property Transport transport
   required property UndoStack undoStack
   required property UnifiedProxyModel unifiedObjectsModel
+  readonly property ViewContext viewContext: ViewContext {
+    canCopy: true
+    canPaste: root.selectionOperator.canPasteObjects
+    canDelete: true
+
+    onCopyRequested: root.selectionOperator.copyObjects(root.arrangerSelectionModel)
+    onCutRequested: root.selectionOperator.cutObjects(root.arrangerSelectionModel)
+    onPasteRequested: root.selectObjectsByUuidStrings(root.pasteAtPlayhead())
+    onDuplicateRequested: root.selectObjectsByUuidStrings(root.selectionOperator.duplicateObjects(root.arrangerSelectionModel))
+    onDeleteRequested: root.selectionOperator.deleteObjects(root.arrangerSelectionModel)
+  }
   // Whether the clicked object was already selected at press time (Ctrl+click only).
   // Used to defer deselection to mouse release so that Ctrl+drag always has a valid target.
   property bool wasClickedObjectSelectedOnPress: false
+
+  // Shift+M toggles mute of the selected objects. Handled here rather
+  // than as a window action: it applies only while an arranger has
+  // focus, and key events bubble here from anywhere inside it
+  Keys.onPressed: (event) => {
+    if (event.key === Qt.Key_M && event.modifiers === Qt.ShiftModifier) {
+      root.selectionOperator.toggleMute(root.arrangerSelectionModel);
+      event.accepted = true;
+    }
+  }
 
   // Emitted when a drop occurs on the arranger canvas. Subclasses can handle
   // this for type-specific drops (e.g. chord pad → chord editor).
@@ -354,6 +376,45 @@ Item {
     root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
   }
 
+  // Selects the objects identified by @p uuidStrings (e.g. the return
+  // value of a paste or duplicate), in the given order
+  function selectObjectsByUuidStrings(uuidStrings: list<string>) {
+    root.arrangerSelectionModel.clear();
+    let firstUnifiedIndex = null;
+    for (const uuidString of uuidStrings) {
+      const unifiedIndex = root.unifiedIndexForUuidString(uuidString);
+      if (unifiedIndex !== null) {
+        root.arrangerSelectionModel.select(unifiedIndex, ItemSelectionModel.Select);
+        if (firstUnifiedIndex === null)
+          firstUnifiedIndex = unifiedIndex;
+      }
+    }
+    if (firstUnifiedIndex !== null)
+      root.arrangerSelectionModel.setCurrentIndex(firstUnifiedIndex, ItemSelectionModel.NoUpdate);
+  }
+
+  function unifiedIndexForUuidString(uuidString: string): var {
+    const numRows = root.unifiedObjectsModel.rowCount();
+    for (let row = 0; row < numRows; row++) {
+      const unifiedIndex = root.unifiedObjectsModel.index(row, 0);
+      const rowUuidString = root.unifiedObjectsModel.data(unifiedIndex, ArrangerObjectListModel.ArrangerObjectUuidStringRole);
+      if (rowUuidString !== undefined && rowUuidString === uuidString)
+        return unifiedIndex;
+    }
+    return null;
+  }
+
+  // Pastes the clipboard contents at the playhead and returns the pasted
+  // objects' UUID strings. Editor arrangers (which set clipContext) paste
+  // into the edited clip; the timeline arranger overrides this function
+  function pasteAtPlayhead(): list<string> {
+    if (root.clipContext !== null) {
+      const localTicks = root.transport.playhead.ticks - root.clipContext.position.ticks;
+      return root.selectionOperator.pasteObjectsIntoClip(root.clipContext, Math.max(0, localTicks));
+    }
+    return [];
+  }
+
   function shouldResizeBeLoopResize(object: ArrangerObjectBaseView, fromStart: bool): bool {
     // Note: should probably check all selected objects if loopable
     const isObjectHoveredInBottomHalf = root.hoveredObject.hoveredPoint.y > ((root.hoveredObject.height * 2) / 3);
@@ -580,55 +641,55 @@ Item {
       Item {
         id: arrangerContent
 
-        readonly property var appWindow: ApplicationWindow.window
-        property bool arrangerIsActive: activeFocus
-
         height: root.enableYScroll ? 600 : flickable.height
         width: root.ruler.contentWidth
-
-        onActiveFocusChanged: {
-          console.debug("active focus", activeFocus, root);
-        }
-        onArrangerIsActiveChanged: {
-          appWindow.activeArranger = arrangerIsActive ? root : null;
-        }
 
         Menu {
           id: arrangerContextMenu
 
           property bool showTimebaseMenu: false
 
-          onAboutToHide: {
-            arrangerContent.arrangerIsActive = Qt.binding(function () {
-              return arrangerContent.activeFocus;
-            });
-          }
           onAboutToShow: {
-            arrangerContent.arrangerIsActive = true;
-            arrangerContextMenu.showTimebaseMenu = root.selectionOperator && root.selectionOperator.selectionHasTimebaseProviders();
+            arrangerContextMenu.showTimebaseMenu = root.selectionOperator && root.selectionOperator.selectionHasTimebaseProviders(root.arrangerSelectionModel);
+          }
+
+          MenuItem {
+            text: qsTr("Cut")
+
+            onTriggered: root.viewContext.cutRequested()
           }
 
           MenuItem {
             text: qsTr("Copy")
 
-            onTriggered: {}
+            onTriggered: root.viewContext.copyRequested()
           }
 
           MenuItem {
             text: qsTr("Paste")
 
-            onTriggered: {}
+            onTriggered: root.viewContext.pasteRequested()
           }
 
           MenuItem {
-            action: arrangerContent.appWindow.deleteAction
+            text: qsTr("Duplicate")
+
+            onTriggered: root.viewContext.duplicateRequested()
+          }
+
+          MenuItem {
+            text: qsTr("Delete")
+
+            onTriggered: root.viewContext.deleteRequested()
           }
 
           MenuSeparator {
           }
 
           MenuItem {
-            action: arrangerContent.appWindow.toggleMuteAction
+            text: qsTr("Toggle &Mute")
+
+            onTriggered: root.selectionOperator.toggleMute(root.arrangerSelectionModel)
           }
 
           MenuSeparator {
@@ -642,19 +703,19 @@ Item {
             MenuItem {
               text: qsTr("Inherit from Track")
 
-              onTriggered: root.selectionOperator.clearTimebaseOverride()
+              onTriggered: root.selectionOperator.clearTimebaseOverride(root.arrangerSelectionModel)
             }
 
             MenuItem {
               text: qsTr("Musical")
 
-              onTriggered: root.selectionOperator.setTimebaseOverride(0)
+              onTriggered: root.selectionOperator.setTimebaseOverride(root.arrangerSelectionModel, 0)
             }
 
             MenuItem {
               text: qsTr("Absolute")
 
-              onTriggered: root.selectionOperator.setTimebaseOverride(1)
+              onTriggered: root.selectionOperator.setTimebaseOverride(root.arrangerSelectionModel, 1)
             }
           }
         }
@@ -697,7 +758,6 @@ Item {
               }
             }
             onDropped: drop => {
-              console.debug("Drop on arranger at coordinates", drop.x, drop.y);
               root.canvasDrop(drop);
             }
             onPositionChanged:
@@ -837,7 +897,7 @@ Item {
           // Moves the selected objects by the given amount of ticks.
           function moveSelectionsX(ticksToMove: real) {
             if (root.selectionOperator) {
-              const success = root.selectionOperator.moveByTicks(ticksToMove);
+              const success = root.selectionOperator.moveByTicks(root.arrangerSelectionModel, ticksToMove);
               if (!success) {
                 console.warn("Failed to move selections - validation failed");
               }
@@ -875,7 +935,6 @@ Item {
             CursorManager.unsetCursor();
           }
           onDoubleClicked: mouse => {
-            console.debug("doubleClicked", action);
             if (mouse.button === Qt.LeftButton) {
               if (root.tool.effectiveToolValue === ArrangerTool.Audition) {
                 // Audition tool: every click auditions (press starts
@@ -1006,7 +1065,7 @@ Item {
                   if (obj.fadeRange) {
                     delta = startTicks - obj.fadeRange.startOffset.ticks;
                   }
-                  root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
+                  root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
                 } else {
                   // Bounds/LoopPoints: visual transform on real delegates
                   root.dragState.isLoopResize = (resizeType === ArrangerObjectSelectionOperator.LoopPoints);
@@ -1048,7 +1107,7 @@ Item {
                     if (obj.fadeRange) {
                       delta = endTicks - obj.fadeRange.endOffset.ticks;
                     }
-                    root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
+                    root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
                   } else {
                     // Bounds/LoopPoints: visual transform on real delegates
                     root.dragState.isLoopResize = (resizeType === ArrangerObjectSelectionOperator.LoopPoints);
@@ -1071,7 +1130,6 @@ Item {
           onPressed: mouse => {
             startCoordinates = Qt.point(mouse.x, mouse.y);
             currentCoordinates = startCoordinates;
-            console.debug("press inside arranger", startCoordinates, "start ticks:", currentTimelineTicks);
             arrangerContent.forceActiveFocus();
             if (action === Arranger.None) {
               if (mouse.button === Qt.MiddleButton) {
@@ -1093,7 +1151,7 @@ Item {
                   // cursor line.
                   if (root.hoveredObject) {
                     root.hoveredObject.requestSelection(mouse);
-                    root.selectionOperator.cutObjectsAt(currentCutTicks);
+                    root.selectionOperator.cutObjectsAt(root.arrangerSelectionModel, currentCutTicks);
                   } else {
                     root.selectionOperator.cutAllObjectsAt(currentCutTicks, root.clipContext);
                   }
@@ -1226,7 +1284,7 @@ Item {
                 if (action === Arranger.MovingCopy) {
                   root.undoStack.beginMacro(qsTr("Copy Objects"));
                   // This creates new object clones at the original positions, and the following move operations move the original objects
-                  root.selectionOperator.cloneObjects();
+                  root.selectionOperator.cloneObjects(root.arrangerSelectionModel);
                 } else if (action === Arranger.MovingLink) {
                   // TODO: Link operation is not yet implemented on the C++ side
                   // (ArrangerObjectSelectionOperator has no linkObjects() method).
@@ -1256,12 +1314,10 @@ Item {
                   resizeType = ArrangerObjectSelectionOperator.LoopPoints;
 
                 if (Math.abs(currentResizeDeltaTicks) > 0.001)
-                  root.selectionOperator.resizeObjects(resizeType, direction, currentResizeDeltaTicks);
+                  root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, direction, currentResizeDeltaTicks);
                 // Fades resize: already handled by direct manipulation
               }
-              console.debug("released after action");
             } else {
-              console.debug("released without action");
               if (root.hoveredObject === null) {
                 root.arrangerSelectionModel.clear();
               }

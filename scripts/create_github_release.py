@@ -29,10 +29,10 @@ from github import Auth, Github
 
 GITHUB_REPO = "zrythm/zrythm"
 S3_PREFIXES = [
-    "packages/windows",
-    "packages/windows-arm64ec",
-    "packages/macos-universal",
-    "packages/gnu-linux-cpack",
+    "packages/windows/",
+    "packages/windows-arm64ec/",
+    "packages/macos-universal/",
+    "packages/gnu-linux-cpack/",
 ]
 
 
@@ -59,7 +59,8 @@ def get_changelog(version: str) -> str:
 def fetch_s3_binaries(bucket: str, tag: str, dest: Path):
     version_no_v = tag.lstrip("v")
     s3 = boto3.client("s3")
-    downloaded = []
+    downloaded: list[Path] = []
+    seen_filenames: set[str] = set()
     for prefix in S3_PREFIXES:
         paginator = s3.get_paginator("list_objects_v2")
         for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
@@ -68,10 +69,13 @@ def fetch_s3_binaries(bucket: str, tag: str, dest: Path):
                 filename = Path(key).name
                 if version_no_v not in filename:
                     continue
-                if prefix == "packages/gnu-linux-cpack" and not filename.endswith(
+                if prefix == "packages/gnu-linux-cpack/" and not filename.endswith(
                     ".AppImage"
                 ):
                     continue
+                if filename in seen_filenames:
+                    continue
+                seen_filenames.add(filename)
                 dest_path = dest / filename
                 print(f"  Downloading {filename}")
                 s3.download_file(bucket, key, str(dest_path))

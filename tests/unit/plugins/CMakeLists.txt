@@ -8,11 +8,17 @@ add_executable(zrythm_plugins_unit_tests
   faust_synth_voice_test.cpp
   host_window_units_test.cpp
   juce_plugin_test.cpp
+  lv2_discovery_test.cpp
+  lv2_plugin_test.cpp
+  lv2_ui_event_ring_test.cpp
+  lv2_urid_map_test.cpp
+  lv2_worker_queue_test.cpp
   plugin_test.cpp
   plugin_descriptor_test.cpp
   plugin_descriptor_list_test.cpp
   plugin_factory_test.cpp
   plugin_group_test.cpp
+  plugin_instantiation_wait_test.cpp
   plugin_parameter_list_model_test.cpp
   plugin_preset_list_model_test.cpp
   plugin_protocol_test.cpp

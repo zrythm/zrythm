@@ -1,22 +1,34 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <array>
+#include <fstream>
 #include <string_view>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "dsp/fork_join_executor.h"
 #include "dsp/midi_event.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
+#include "plugins/clap_preset_discovery.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "utils/audio.h"
+#include "utils/io_utils.h"
+#include "utils/logger.h"
 #include "utils/object_registry.h"
+#include "utils/rt_logger.h"
+#include "utils/utf8_string.h"
 #include "utils/views.h"
 
 #include <QCoreApplication>
+#include <QDir>
+#include <QSignalSpy>
+#include <QTemporaryDir>
+#include <QTest>
 
 #include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
@@ -411,10 +423,10 @@ TEST_F (ClapPluginTest, CrossThreadGuiRequestsAreDeliveredOnMainThread)
     plugin_->guiRequestResize (640, 480);
   });
 
-  process_events_until_true ([this] {
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
     return window_state_->visible && window_state_->width == 640
            && window_state_->height == 480;
-  });
+  }));
 }
 
 TEST_F (ClapPluginTest, RequestRestartKeepsPluginProcessing)
@@ -443,7 +455,9 @@ TEST_F (ClapPluginTest, RequestCallbackIsDeliveredOnMainThread)
   // maximal clap-helpers checking aborts on wrong-thread delivery)
   std::jthread requester ([this] { plugin_->requestCallback (); });
 
-  process_events_until_true ([this] { return window_state_->width == 640; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return window_state_->width == 640;
+  }));
 }
 
 // Note events emitted on the plugin's note output port must be forwarded to
@@ -618,6 +632,161 @@ TEST_F (ClapPluginTest, LatencyReportedDuringActivateIsHandled)
   EXPECT_EQ (plugin_->get_single_playback_latency (), units::samples (256u));
 }
 
+// Parameter reports wrapped in plugin gestures are user edits: the value
+// applies through the user-edit path (preset dirty, user-edit listeners)
+// and gesture begin/end reach the parameter, without echoing the applied
+// value back to the plugin
+TEST_F (ClapPluginTest, ProcessingTimeUserGestureEditsAreAttributed)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("Report Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  // Must stay in sync with kReportedLevel in test_gain_clap.cpp
+  constexpr float reported_level = 0.25f;
+
+  QSignalSpy edited_spy (
+    level_param, &dsp::ProcessorParameter::baseValueEditedByUser);
+  QSignalSpy gesture_started_spy (
+    level_param, &dsp::ProcessorParameter::userGestureStarted);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Baseline: with reporting off, plugin value sync is not a user edit
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), 0.5f, 1e-6f);
+  EXPECT_EQ (edited_spy.count (), 0);
+  EXPECT_EQ (gesture_started_spy.count (), 0);
+  EXPECT_EQ (gesture_finished_spy.count (), 0);
+
+  // Gesture mode: each processed block reports gesture begin, a Level
+  // change to 0.25, and gesture end
+  mode_param->setBaseValue (0.5f);
+  process_blocks (2);
+  pump_main_thread ();
+  plugin_->flush_plugin_values ();
+
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+  EXPECT_GE (edited_spy.count (), 1);
+  EXPECT_GE (gesture_started_spy.count (), 1);
+  EXPECT_GE (gesture_finished_spy.count (), 1);
+
+  // The host must not send the applied value back to the plugin as a
+  // host-initiated change. The fixture counts Level events received
+  // through the input event list; while the feedback guard holds, that
+  // count stays constant after the value is applied
+  const auto read_input_count = [this] {
+    return static_cast<int> (
+      read_plugin_state_json (*plugin_).value ("levelInputCount", 0.0));
+  };
+  const auto count_after_apply = read_input_count ();
+  process_blocks (2);
+  pump_main_thread ();
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+  EXPECT_EQ (read_input_count (), count_after_apply);
+}
+
+// A plain (non-gesture) report pending when a gesture-wrapped report
+// applies must not overwrite the applied user edit at the next flush
+TEST_F (ClapPluginTest, StalePendingValueDoesNotRevertGestureEdit)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("Report Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  // Must stay in sync with kReportedLevel in test_gain_clap.cpp; the
+  // plain report uses a different value (kPlainReportedLevel) so a revert
+  // is observable
+  constexpr float gesture_reported_level = 0.25f;
+
+  // Plain mode: a plain report parks a pending value that is not
+  // flushed
+  mode_param->setBaseValue (0.25f);
+  process_blocks (1);
+
+  // Gesture mode: the gesture-wrapped report parks a user-edit pending
+  // value, then the flush applies it
+  mode_param->setBaseValue (0.5f);
+  process_blocks (2);
+  pump_main_thread ();
+  plugin_->flush_plugin_values ();
+
+  EXPECT_NEAR (level_param->baseValue (), gesture_reported_level, 1e-6f);
+}
+
+// Gesture-wrapped reports coalesce into the pending slot: only the
+// latest value applies at each flush, with a single user-edit emission,
+// regardless of how many reports arrived in between
+TEST_F (ClapPluginTest, GestureReportsCoalesceIntoOneUserEditPerFlush)
+{
+  // Must stay in sync with kReportedLevel in test_gain_clap.cpp (the
+  // sweep mode alternates between that and kReportedLevel + 0.05)
+  constexpr float sweep_low_level = 0.25f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("Report Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy edited_spy (
+    level_param, &dsp::ProcessorParameter::baseValueEditedByUser);
+
+  // Sweep mode: each processed block reports gesture begin, a Level
+  // change alternating between 0.25 and 0.3, and gesture end
+  level_param->setBaseValue (0.5f);
+  mode_param->setBaseValue (1.0f);
+  process_blocks (3);
+  pump_main_thread ();
+  plugin_->flush_plugin_values ();
+
+  // The three reports coalesce into the last one; a per-report user
+  // edit would emit one user-edit signal per value change
+  EXPECT_NEAR (level_param->baseValue (), sweep_low_level, 1e-6f);
+  EXPECT_EQ (edited_spy.count (), 1);
+}
+
+// A gesture left open when the plugin is deactivated is closed so the
+// parameter does not stay in user-gesture mode (automation suppressed)
+TEST_F (ClapPluginTest, OpenGestureIsClosedOnReleaseResources)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("Report Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy gesture_started_spy (
+    level_param, &dsp::ProcessorParameter::userGestureStarted);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Open-gesture mode reports one gesture begin and no gesture end
+  mode_param->setBaseValue (0.75f);
+  process_blocks (2);
+  pump_main_thread ();
+
+  EXPECT_EQ (gesture_started_spy.count (), 1);
+  EXPECT_EQ (gesture_finished_spy.count (), 0);
+
+  // Releasing resources deactivates the plugin and must close the open
+  // gesture; the deferred end lands on the next dispatcher pump
+  plugin_->release_resources ();
+  pump_main_thread ();
+  EXPECT_EQ (gesture_finished_spy.count (), 1);
+}
+
 // Ports carry the plugin's stable audio port ids, and the first enumerated
 // port of each flow is the main one
 TEST_F (ClapPluginTest, LoadAssignsStableIdsAndMainPurpose)
@@ -651,7 +820,9 @@ TEST_F (ClapPluginTest, RescanNamesSyncsLabelsWithoutGraphRecalc)
 
   // The rename arrives via the plugin's main-thread callback; the
   // names-only rescan's deferred reconciliation runs in one pause
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
 
   EXPECT_EQ (attached_audio_ports (false).at (0)->get_label (), u8"Renamed Out");
   EXPECT_EQ (graph_recalc_calls_, 0);
@@ -691,7 +862,9 @@ TEST_F (ClapPluginTest, RescanListWithNewBusCreatesPort)
 
   // The restart and the deferred rescan reconciliation each pause
   // processing once
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 2);
@@ -733,7 +906,9 @@ TEST_F (ClapPluginTest, RescanListWithNewInputBusFeedsSilenceUntilReconciled)
   process_blocks (1);
 
   // The restart and the deferred rescan reconciliation each pause once
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   // 0.5 is the fixture's identifying level for output bus 0; the sentinel
   // means it saw nonzero input on the port-less bus
@@ -759,7 +934,9 @@ TEST_F (ClapPluginTest, RescanListWithRemovedBusDetachesPort)
   ASSERT_NE (grow, nullptr);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs_after_grow = attached_audio_ports (false);
   ASSERT_EQ (audio_outs_after_grow.size (), 2);
@@ -769,7 +946,9 @@ TEST_F (ClapPluginTest, RescanListWithRemovedBusDetachesPort)
   ASSERT_NE (shrink, nullptr);
   shrink->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 4; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 4;
+  }));
 
   EXPECT_EQ (attached_audio_ports (false).size (), 1);
   const auto all_outs = all_audio_ports (false);
@@ -789,13 +968,17 @@ TEST_F (ClapPluginTest, RescanListWithReaddedBusReattachesPort)
   ASSERT_NE (grow, nullptr);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   auto * shrink = find_param_by_label ("Shrink Output");
   ASSERT_NE (shrink, nullptr);
   shrink->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 4; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 4;
+  }));
 
   // The toggles are one-shot: reset the host-side value so the second fire
   // registers as a change
@@ -803,7 +986,9 @@ TEST_F (ClapPluginTest, RescanListWithReaddedBusReattachesPort)
   process_blocks (1);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 6; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 6;
+  }));
 
   const auto all_outs = all_audio_ports (false);
   ASSERT_EQ (all_outs.size (), 2);
@@ -836,7 +1021,9 @@ TEST_F (ClapPluginTest, RescanChannelCountGrowsPortSafely)
   ASSERT_NE (widen, nullptr);
   widen->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 1);
@@ -873,7 +1060,9 @@ TEST_F (ClapPluginTest, RescanLeavesPortBuffersPreparedBeforeResume)
   ASSERT_NE (widen, nullptr);
   widen->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 1);
@@ -979,7 +1168,9 @@ TEST_F (ClapPluginTest, RescanListWithReorderedBusesKeepsRouting)
   ASSERT_NE (grow, nullptr);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 2);
@@ -997,7 +1188,9 @@ TEST_F (ClapPluginTest, RescanListWithReorderedBusesKeepsRouting)
   ASSERT_NE (swap, nullptr);
   swap->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 4; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 4;
+  }));
 
   // Bus 0 (value 0.5) is now the bus with stable id 1 and vice versa
   process_blocks (1);
@@ -1213,5 +1406,260 @@ INSTANTIATE_TEST_SUITE_P (
     "Test Synth"sv,
     // MIDI dialect only
     "Test Synth MIDI"sv));
+
+TEST_F (ClapPluginTest, LogExtensionFromProcessIsDeliveredAsync)
+{
+  utils::init_logging (utils::LoggerType::Test);
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+  process_blocks (2);
+
+  ASSERT_TRUE (utils::drain_rt_log (std::chrono::milliseconds{ 2000 }));
+
+  const auto entries = utils::get_last_log_entries (1000);
+  EXPECT_TRUE (std::ranges::any_of (entries, [] (const utils::Utf8String &entry) {
+    return entry.str ().find ("rt-log from process block") != std::string::npos;
+  }));
+  EXPECT_TRUE (std::ranges::any_of (entries, [] (const utils::Utf8String &entry) {
+    return entry.str ().find ("[rt thread ") != std::string::npos;
+  }));
+}
+
+// ============================================================================
+// Preset discovery and loading (Test Presets fixture)
+// ============================================================================
+
+namespace
+{
+
+/**
+ * @brief Owns the fixture preset directory and its environment
+ * variable.
+ *
+ * Clears ZRYTHM_TEST_PRESET_DIR on destruction so no stale directory
+ * (already deleted by QTemporaryDir) can affect later tests.
+ */
+struct ClapPresetDirEnv
+{
+  std::unique_ptr<QTemporaryDir> dir;
+
+  explicit ClapPresetDirEnv (std::unique_ptr<QTemporaryDir> d)
+      : dir (std::move (d))
+  {
+  }
+  ~ClapPresetDirEnv () { qunsetenv ("ZRYTHM_TEST_PRESET_DIR"); }
+
+  bool is_valid () const { return dir != nullptr && dir->isValid (); }
+};
+
+/** Writes the fixture preset files into a fresh temp dir and points the
+ * fixture's preset-discovery provider at it. */
+[[nodiscard]] ClapPresetDirEnv
+setup_clap_preset_dir ()
+{
+  // Each test crawls a different directory; drop any cached result for
+  // this fixture from an earlier test
+  clap_preset_discovery::clear_preset_cache ();
+
+  auto dir = utils::io::make_tmp_dir ("ClapPresetDiscovery");
+
+  {
+    std::ofstream file (
+      utils::Utf8String::from_qstring (dir->filePath ("pack-a.zpreset"))
+        .to_path ());
+    file
+      << R"({"presets":[)"
+      << R"({"name":"File One","key":"file-one","level":0.3},)"
+      << R"({"name":"File Two","key":"file-two","level":0.35},)"
+      << R"({"name":"Other Target","key":"other","level":0.4,"pluginId":"org.other.thing"})"
+      << R"(]})";
+  }
+  // Same format but a non-matching extension: the crawl must skip it
+  {
+    std::ofstream file (
+      utils::Utf8String::from_qstring (dir->filePath ("notes.txt")).to_path ());
+    file << R"({"presets":[{"name":"Not A Preset","key":"txt","level":0.9}]})";
+  }
+
+  qputenv (
+    "ZRYTHM_TEST_PRESET_DIR", QDir (dir->path ()).absolutePath ().toUtf8 ());
+  return ClapPresetDirEnv (std::move (dir));
+}
+
+int
+clap_preset_row_by_name (const ClapPlugin &plugin, std::string_view name)
+{
+  const auto entries = plugin.presetEntries ();
+  const auto it = std::ranges::find_if (entries, [name] (const auto &entry) {
+    return utils::Utf8String::from_qstring (entry.name) == name;
+  });
+  return it != entries.end ()
+           ? static_cast<int> (std::distance (entries.begin (), it))
+           : -1;
+}
+
+} // namespace
+
+TEST_F (ClapPluginTest, PresetDiscoveryListsAndFiltersPresets)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  const auto entries = plugin_->presetEntries ();
+  ASSERT_EQ (entries.size (), 9u);
+
+  const std::pair<std::string_view, std::string_view> expected[] = {
+    { "Embedded A",             "Embedded"      },
+    { "Embedded B",             "Embedded"      },
+    { "Embedded Broken",        "Embedded"      },
+    { "Embedded Broken Hijack", "Embedded"      },
+    { "Embedded Ghost",         "Embedded"      },
+    { "Embedded Hijack",        "Embedded"      },
+    { "Embedded No Id",         "Embedded"      },
+    { "File One",               "Factory Files" },
+    { "File Two",               "Factory Files" },
+  };
+  for (size_t i = 0; i < std::size (expected); ++i)
+    {
+      EXPECT_TRUE (
+        utils::Utf8String::from_qstring (entries[i].name) == expected[i].first)
+        << "entry " << i;
+      EXPECT_TRUE (
+        utils::Utf8String::from_qstring (entries[i].group) == expected[i].second)
+        << "entry " << i;
+      EXPECT_NE (std::get_if<QString> (&entries[i].id), nullptr)
+        << "entry " << i;
+    }
+}
+
+TEST_F (ClapPluginTest, PresetApplyFromFileAndEmbeddedLocations)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+  install_direct_paused_processing ();
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+  EXPECT_NEAR (level->baseValue (), 1.0f, 1e-4f);
+
+  const auto file_one = clap_preset_row_by_name (*plugin_, "File One");
+  ASSERT_GE (file_one, 0);
+  plugin_->setPresetIndex (file_one);
+  EXPECT_NEAR (level->baseValue (), 0.3f, 1e-4f);
+  EXPECT_EQ (plugin_->presetIndex (), file_one);
+
+  const auto embedded_a = clap_preset_row_by_name (*plugin_, "Embedded A");
+  ASSERT_GE (embedded_a, 0);
+  plugin_->setPresetIndex (embedded_a);
+  EXPECT_NEAR (level->baseValue (), 0.1f, 1e-4f);
+  EXPECT_EQ (plugin_->presetIndex (), embedded_a);
+
+  // Preset loads run inside the host's paused-processing scope
+  EXPECT_GT (paused_processing_calls_, 0);
+}
+
+TEST_F (ClapPluginTest, PresetLoadFailureLeavesParameterUnchanged)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  const auto embedded_b = clap_preset_row_by_name (*plugin_, "Embedded B");
+  ASSERT_GE (embedded_b, 0);
+  plugin_->setPresetIndex (embedded_b);
+  EXPECT_NEAR (level->baseValue (), 0.2f, 1e-4f);
+
+  const auto broken = clap_preset_row_by_name (*plugin_, "Embedded Broken");
+  ASSERT_GE (broken, 0);
+  plugin_->setPresetIndex (broken);
+  EXPECT_NEAR (level->baseValue (), 0.2f, 1e-4f)
+    << "a refused preset load must not change parameter values";
+  EXPECT_EQ (plugin_->presetIndex (), embedded_b)
+    << "a refused preset load must not stay selected";
+}
+
+TEST_F (ClapPluginTest, PluginInitiatedPresetLoadSyncsSelection)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  // The hijack preset applies embedded-b's value and reports
+  // embedded-b as loaded, like a plugin switching presets from its own
+  // browser: the loaded notification must move the selection to the
+  // reported preset
+  const auto hijack = clap_preset_row_by_name (*plugin_, "Embedded Hijack");
+  ASSERT_GE (hijack, 0);
+  plugin_->setPresetIndex (hijack);
+
+  const auto embedded_b = clap_preset_row_by_name (*plugin_, "Embedded B");
+  ASSERT_GE (embedded_b, 0);
+  EXPECT_EQ (plugin_->presetIndex (), embedded_b)
+    << "the loaded notification must move the selection to the reported "
+       "preset";
+  EXPECT_NEAR (level->baseValue (), 0.2f, 1e-4f);
+}
+
+TEST_F (ClapPluginTest, PluginReportedPresetOutsideListClearsSelection)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  // The ghost preset applies its level but reports a load key that is
+  // not in the preset list: the selection follows the plugin and
+  // resolves to no listed preset
+  const auto ghost = clap_preset_row_by_name (*plugin_, "Embedded Ghost");
+  ASSERT_GE (ghost, 0);
+  plugin_->setPresetIndex (ghost);
+  EXPECT_NEAR (level->baseValue (), 0.25f, 1e-4f);
+  EXPECT_EQ (plugin_->presetIndex (), -1);
+}
+
+TEST_F (ClapPluginTest, FailedPresetLoadWithBackendReportRestoresSelection)
+{
+  const auto preset_dir = setup_clap_preset_dir ();
+  ASSERT_TRUE (preset_dir.is_valid ());
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Presets"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  const auto embedded_a = clap_preset_row_by_name (*plugin_, "Embedded A");
+  ASSERT_GE (embedded_a, 0);
+  plugin_->setPresetIndex (embedded_a);
+  ASSERT_EQ (plugin_->presetIndex (), embedded_a);
+
+  // The broken-hijack preset reports embedded-b as loaded and then
+  // fails the load: the report briefly moves the selection, but the
+  // failure must restore the previously applied preset
+  const auto broken_hijack =
+    clap_preset_row_by_name (*plugin_, "Embedded Broken Hijack");
+  ASSERT_GE (broken_hijack, 0);
+  plugin_->setPresetIndex (broken_hijack);
+
+  EXPECT_EQ (plugin_->presetIndex (), embedded_a)
+    << "a failed load must not leave the selection on the reported or "
+       "failed preset";
+  EXPECT_NEAR (level->baseValue (), 0.1f, 1e-4f)
+    << "the failed load must not change parameter values";
+}
 
 } // namespace zrythm::plugins

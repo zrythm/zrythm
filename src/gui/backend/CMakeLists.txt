@@ -7,8 +7,6 @@ target_sources(zrythm_gui_lib
     action_controller.cpp
     chord_preset_manager.h
     chord_preset_manager.cpp
-    alert_manager.h
-    alert_manager.cpp
     cursor_manager.h
     cursor_manager.cpp
     curve_preset.h
@@ -18,6 +16,12 @@ target_sources(zrythm_gui_lib
     file_system_model.h
     file_system_model.cpp
     global_state.h
+    notification.h
+    notification.cpp
+    notification_center.h
+    notification_center.cpp
+    notification_model.h
+    notification_model.cpp
     plugin_collections.h
     plugin_collections.cpp
     plugin_manager.h
@@ -50,6 +54,10 @@ target_sources(zrythm_gui_lib
     ui.cpp
     unified_proxy_model.h
     unified_proxy_model.cpp
+    editor_arranger_objects_model.h
+    editor_arranger_objects_model.cpp
+    timeline_arranger_objects_model.h
+    timeline_arranger_objects_model.cpp
     x11_plugin_host_window.h
     x11_plugin_host_window.cpp
     zrythm_application.h

@@ -9,11 +9,15 @@
 #include "actions/file_importer.h"
 #include "actions/plugin_importer.h"
 #include "actions/plugin_operator.h"
+#include "actions/track_collection_operator.h"
 #include "actions/track_creator.h"
 #include "actions/uuid_property_operator.h"
+#include "controllers/clipboard.h"
 #include "controllers/recording_coordinator.h"
 #include "controllers/recording_materializer.h"
 #include "controllers/transport_controller.h"
+#include "gui/backend/editor_arranger_objects_model.h"
+#include "gui/backend/timeline_arranger_objects_model.h"
 #include "gui/qquick/generic_plugin_ui_controller.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
 #include "structure/project/project.h"
@@ -53,12 +57,24 @@ class ProjectSession : public QObject
       FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::gui::TimelineArrangerObjectsModel * timelineArrangerObjects READ
+      timelineArrangerObjects CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::EditorArrangerObjectsModel * editorArrangerObjects READ
+      editorArrangerObjects CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
       arrangerObjectCreator CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::ClipOperator * clipOperator READ clipOperator CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::actions::ArrangerObjectSelectionOperator * arrangerObjectSelectionOperator
+      READ arrangerObjectSelectionOperator CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::actions::TrackCreator * trackCreator READ trackCreator CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::actions::TrackCollectionOperator * trackCollectionOperator READ
+      trackCollectionOperator CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::PluginImporter * pluginImporter READ pluginImporter
       CONSTANT FINAL)
@@ -79,12 +95,15 @@ class ProjectSession : public QObject
   Q_PROPERTY (
     QString projectDirectory READ projectDirectory WRITE setProjectDirectory
       NOTIFY projectDirectoryChanged FINAL)
+  Q_PROPERTY (
+    zrythm::controllers::Clipboard * clipboard READ clipboard CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
 public:
   ProjectSession (
     utils::AppSettings                                    &app_settings,
+    controllers::Clipboard                                &clipboard,
     utils::QObjectUniquePtr<structure::project::Project> &&project);
 
   ~ProjectSession () override;
@@ -94,22 +113,35 @@ public:
   QString                       projectDirectory () const;
   void                          setProjectDirectory (const QString &directory);
   structure::project::Project * project () const;
-  structure::project::ProjectUiState *     uiState () const;
-  undo::UndoStack *                        undoStack () const;
-  zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator () const;
-  zrythm::actions::ClipOperator *          clipOperator () const;
-  zrythm::actions::TrackCreator *          trackCreator () const;
-  actions::PluginImporter *                pluginImporter () const;
-  actions::PluginOperator *                pluginOperator () const;
-  qquick::GenericPluginUiController *      genericPluginUiController () const;
-  actions::FileImporter *                  fileImporter () const;
-  actions::UuidPropertyOperator *          uuidPropertyOperator () const;
-  controllers::TransportController *       transportController () const;
-  controllers::RecordingCoordinator *      recordingCoordinator () const;
+  structure::project::ProjectUiState *       uiState () const;
+  undo::UndoStack *                          undoStack () const;
+  TimelineArrangerObjectsModel *             timelineArrangerObjects () const;
+  EditorArrangerObjectsModel *               editorArrangerObjects () const;
+  zrythm::actions::ArrangerObjectCreator *   arrangerObjectCreator () const;
+  zrythm::actions::ClipOperator *            clipOperator () const;
+  zrythm::actions::TrackCreator *            trackCreator () const;
+  zrythm::actions::TrackCollectionOperator * trackCollectionOperator () const;
+  actions::PluginImporter *                  pluginImporter () const;
+  actions::PluginOperator *                  pluginOperator () const;
+  qquick::GenericPluginUiController *        genericPluginUiController () const;
+  actions::FileImporter *                    fileImporter () const;
+  actions::UuidPropertyOperator *            uuidPropertyOperator () const;
+  controllers::TransportController *         transportController () const;
+  controllers::RecordingCoordinator *        recordingCoordinator () const;
 
-  Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
-              createArrangerObjectSelectionOperator (
-                QItemSelectionModel * selectionModel) const;
+  /**
+   * @brief Returns the application-wide object clipboard.
+   */
+  controllers::Clipboard * clipboard () const { return &clipboard_; }
+
+  /**
+   * @brief Returns the session's arranger object selection operator.
+   *
+   * Selection-based operations take the caller's selection model as an
+   * argument, so the operator holds no per-view state.
+   */
+  zrythm::actions::ArrangerObjectSelectionOperator *
+  arrangerObjectSelectionOperator () const;
 
   /**
    * @brief Saves the project to the current project directory.
@@ -159,6 +191,15 @@ private:
 
   utils::AppSettings &app_settings_;
 
+  // Application-wide object clipboard (shared across project sessions)
+  controllers::Clipboard &clipboard_;
+
+  // True while a Save As is running: overlapping calls are refused so
+  // each save's identity restore only ever sees its own lineage.
+  // UI-thread only (saveAs runs there and the finished handler is
+  // queued back to this thread)
+  bool save_as_in_flight_ = false;
+
   // Project title and directory
   utils::Utf8String     title_;
   std::filesystem::path project_directory_;
@@ -172,6 +213,11 @@ private:
   // Undo/redo history
   utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
 
+  // Unified arranger object models (timeline-wide and open-clip)
+  utils::QObjectUniquePtr<TimelineArrangerObjectsModel>
+    timeline_arranger_objects_;
+  utils::QObjectUniquePtr<EditorArrangerObjectsModel> editor_arranger_objects_;
+
   // Quantize options for MIDI editing
   std::unique_ptr<old_dsp::QuantizeOptions> quantize_opts_editor_;
   std::unique_ptr<old_dsp::QuantizeOptions> quantize_opts_timeline_;
@@ -180,7 +226,11 @@ private:
   utils::QObjectUniquePtr<actions::ArrangerObjectCreator>
                                                  arranger_object_creator_;
   utils::QObjectUniquePtr<actions::ClipOperator> clip_operator_;
+  utils::QObjectUniquePtr<actions::ArrangerObjectSelectionOperator>
+    arranger_object_selection_operator_;
   utils::QObjectUniquePtr<actions::TrackCreator> track_creator_;
+  utils::QObjectUniquePtr<actions::TrackCollectionOperator>
+    track_collection_operator_;
   utils::QObjectUniquePtr<qquick::GenericPluginUiController>
     generic_plugin_ui_controller_;
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;

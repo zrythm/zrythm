@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 
 using namespace zrythm;
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 TEST (IoTest, PathSeparator)
 {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <atomic>
@@ -9,6 +9,7 @@
 #include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/exceptions.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
@@ -17,6 +18,7 @@
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::scenes
 {
@@ -338,6 +340,77 @@ TEST_F (ClipSlotListTest, OutOfBoundsAccess)
   auto outOfBoundsData =
     clip_slot_list_->data (outOfBoundsIndex, ClipSlotList::ClipSlotPtrRole);
   EXPECT_FALSE (outOfBoundsData.isValid ());
+}
+
+// Deserialization attaches the registered slots the JSON references and
+// deletes the list's default-created slots (they leave the registry).
+TEST_F (ClipSlotListTest, FromJsonAttachesRegisteredSlots)
+{
+  nlohmann::json j;
+  to_json (j, *clip_slot_list_);
+
+  auto loaded =
+    std::make_unique<ClipSlotList> (*registry_, *track_collection_, nullptr);
+  std::vector<ClipSlot::Uuid> default_slot_ids;
+  for (const auto &slot_ref : loaded->clip_slots ())
+    default_slot_ids.push_back (slot_ref.id ());
+
+  from_json (j, *loaded);
+
+  ASSERT_EQ (loaded->rowCount (), 3);
+  for (size_t i = 0; i < loaded->clip_slots ().size (); ++i)
+    {
+      EXPECT_EQ (
+        loaded->clip_slots ()[i].id (), clip_slot_list_->clip_slots ()[i].id ());
+    }
+  for (const auto &default_id : default_slot_ids)
+    {
+      EXPECT_FALSE (utils::contains (*registry_, default_id));
+    }
+}
+
+// Attached slots must follow the timebase of the track at their index.
+TEST_F (ClipSlotListTest, FromJsonKeepsTimebaseProviders)
+{
+  nlohmann::json j;
+  to_json (j, *clip_slot_list_);
+
+  auto loaded =
+    std::make_unique<ClipSlotList> (*registry_, *track_collection_, nullptr);
+  from_json (j, *loaded);
+
+  for (size_t i = 0; i < loaded->clip_slots ().size (); ++i)
+    {
+      EXPECT_EQ (
+        loaded->clip_slots ()[i].get ()->timebaseProvider (),
+        track_collection_->get_track_at_index (i)->timebaseProvider ());
+    }
+}
+
+// A scene with a slot count that differs from the track count is
+// rejected at load time.
+TEST_F (ClipSlotListTest, FromJsonRefusesSlotCountMismatch)
+{
+  nlohmann::json j;
+  to_json (j, *clip_slot_list_);
+  j.erase (j.begin () + 2, j.end ());
+
+  auto loaded =
+    std::make_unique<ClipSlotList> (*registry_, *track_collection_, nullptr);
+  EXPECT_THROW ({ from_json (j, *loaded); }, utils::ZrythmException);
+}
+
+// A clipSlotIds entry that does not reference a clip slot is rejected
+// at load time.
+TEST_F (ClipSlotListTest, FromJsonRefusesNonSlotId)
+{
+  nlohmann::json j;
+  to_json (j, *clip_slot_list_);
+  j[1] = type_safe::get (track_collection_->get_track_at_index (1)->get_uuid ());
+
+  auto loaded =
+    std::make_unique<ClipSlotList> (*registry_, *track_collection_, nullptr);
+  EXPECT_THROW ({ from_json (j, *loaded); }, utils::ZrythmException);
 }
 
 }

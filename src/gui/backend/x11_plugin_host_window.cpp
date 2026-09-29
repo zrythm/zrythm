@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "gui/backend/offscreen_qml_scene.h"
 #include "gui/backend/preset_popup_controller.h"
 #include "gui/backend/x11_plugin_host_window.h"
@@ -77,6 +79,24 @@ public:
    * appeared yet.
    */
   void complete_native_embedding (Display &dpy, int attempts_remaining);
+
+  /**
+   * @brief Sends the XEmbed handshake to @p client and starts tracking it
+   * as the embedded client window.
+   *
+   * @return False when an X error hit the (foreign) client window during
+   * the handshake.
+   */
+  bool finish_embedding (Display &dpy, ::Window client);
+
+  /**
+   * @brief Resizes the window so the embed area matches the embedded
+   * client's new physical size.
+   *
+   * Sizes that match the current logical view size are ignored, so no
+   * feedback loop can arise: nothing here resizes the client itself.
+   */
+  void adopt_client_size (unsigned width_px, unsigned height_px);
 
   /** Header strip height in physical pixels. */
   int header_height_px () const
@@ -878,6 +898,13 @@ private:
         z_warning ("X11PluginHostWindow: could not open X display");
         return;
       }
+    // Process-wide X error logging: log every X error (with the erroring
+    // connection's display string and resource id) and swallow it so a
+    // plugin UI cannot abort the process. The handler runs on whichever
+    // thread made the failing Xlib call, which may be a plugin's own
+    // thread, and is best-effort: any later XSetErrorHandler call by a
+    // library or plugin replaces it for the whole process
+    XSetErrorHandler (&log_x_error);
     wm_delete_ = XInternAtom (dpy_.get (), "WM_DELETE_WINDOW", False);
 
     // Watch for X resource changes (e.g., Xft.dpi) on the root window
@@ -918,6 +945,22 @@ private:
     connect (notifier_.get (), &QSocketNotifier::activated, this, [this] {
       drain_events ();
     });
+  }
+
+  static int log_x_error (Display * dpy, XErrorEvent * ev)
+  {
+    std::array<char, 256> text{};
+    XGetErrorText (
+      dpy, ev->error_code, text.data (), static_cast<int> (text.size ()));
+    z_warning (
+      "X11 error {} ({}) on display '{}' (resource {:#x}, request {}.{}, "
+      "serial {})",
+      ev->error_code, text.data (), dpy != nullptr ? XDisplayString (dpy) : "?",
+      ev->resourceid, ev->request_code, ev->minor_code, ev->serial);
+    // Xlib's default error handler aborts the process; a misbehaving
+    // plugin UI must not be able to take the application down, so errors
+    // are logged and swallowed (guarded calls use ScopedXErrorTrap)
+    return 0;
   }
 
   static Display * open_display ()
@@ -1254,20 +1297,32 @@ X11PluginHostWindow::Impl::complete_native_embedding (
       return;
     }
 
+  if (!finish_embedding (dpy, *embedded_client_))
+    {
+      embedded_client_.reset ();
+      q_ptr_.setVisible (false);
+      Q_EMIT q_ptr_.embeddingFailed ();
+      // Listeners may queue the window's destruction - do not touch
+      // members from here on
+    }
+}
+
+bool
+X11PluginHostWindow::Impl::finish_embedding (Display &dpy, ::Window client)
+{
   if (xembed_atom_ == None)
     xembed_atom_ = XInternAtom (&dpy, "_XEMBED", False);
 
   // The client window is foreign and may vanish mid-handshake
-  const ScopedXErrorTrap trap (dpy, *embedded_client_);
+  const ScopedXErrorTrap trap (dpy, client);
 
   // EMBEDDED_NOTIFY: data1 = embedder window, data2 = protocol version (0 is
   // the only version)
   send_xembed_message (
-    dpy, xembed_atom_, *embedded_client_, kEmbeddedNotify, 0,
+    dpy, xembed_atom_, client, kEmbeddedNotify, 0,
     static_cast<long> (embed_win_), 0);
-  send_xembed_message (dpy, xembed_atom_, *embedded_client_, kWindowActivate);
-  send_xembed_message (
-    dpy, xembed_atom_, *embedded_client_, kFocusIn, kFocusCurrent);
+  send_xembed_message (dpy, xembed_atom_, client, kWindowActivate);
+  send_xembed_message (dpy, xembed_atom_, client, kFocusIn, kFocusCurrent);
   XSync (&dpy, False);
 
   if (trap.error_code () != Success)
@@ -1275,28 +1330,49 @@ X11PluginHostWindow::Impl::complete_native_embedding (
       z_warning (
         "X11PluginHostWindow: X error {} during embedding handshake",
         trap.error_code ());
-      embedded_client_.reset ();
-      q_ptr_.setVisible (false);
-      Q_EMIT q_ptr_.embeddingFailed ();
-      // Listeners may queue the window's destruction - do not touch
-      // members from here on
-      return;
+      return false;
     }
 
-  // The client window is foreign and may be destroyed or reparented away
-  // by the plugin at any time: stop focus forwarding when that happens,
-  // or requests on the dead window would raise X errors that abort the
-  // process (SubstructureNotifyMask is selected on the embed area, so its
-  // children's DestroyNotify/ReparentNotify are dispatched under the
-  // client's own window ID)
-  X11DisplayManager::instance ().register_window (
-    *embedded_client_, [this] (const XEvent &ev) {
-      if (ev.type != DestroyNotify && ev.type != ReparentNotify)
-        return;
-      z_debug ("X11PluginHostWindow: embedded client window went away");
-      X11DisplayManager::instance ().unregister_window (ev.xany.window);
-      embedded_client_.reset ();
-    });
+  // The client geometry vs the embed area at handshake completion (both
+  // in physical pixels)
+  {
+    ::Window root_ret{};
+    int      client_x = 0;
+    int      client_y = 0;
+    unsigned client_w = 0;
+    unsigned client_h = 0;
+    unsigned border_w = 0;
+    unsigned depth_ret = 0;
+    XGetGeometry (
+      &dpy, client, &root_ret, &client_x, &client_y, &client_w, &client_h,
+      &border_w, &depth_ret);
+    z_debug (
+      "X11PluginHostWindow: embedded client {:#x} ({}x{} at +{}+{}), embed "
+      "area {}x{} physical",
+      client, client_w, client_h, client_x, client_y, physical_view_width (),
+      physical_view_height ());
+  }
+  return true;
+}
+
+void
+X11PluginHostWindow::Impl::adopt_client_size (
+  unsigned width_px,
+  unsigned height_px)
+{
+  const auto width_logical = std::max (
+    1,
+    static_cast<int> (
+      std::lround (static_cast<float> (width_px) / scale_factor_)));
+  const auto height_logical = std::max (
+    1,
+    static_cast<int> (
+      std::lround (static_cast<float> (height_px) / scale_factor_)));
+  if (
+    width_logical == view_width_logical_
+    && height_logical == view_height_logical_)
+    return;
+  q_ptr_.setSize (width_logical, height_logical);
 }
 
 X11PluginHostWindow::X11PluginHostWindow (plugins::Plugin &plugin)
@@ -1349,6 +1425,12 @@ X11PluginHostWindow::X11PluginHostWindow (plugins::Plugin &plugin)
   XSelectInput (dpy, pimpl_->embed_win_, SubstructureNotifyMask);
   XMapWindow (dpy, pimpl_->header_win_);
   XMapWindow (dpy, pimpl_->embed_win_);
+
+  z_debug (
+    "X11PluginHostWindow: windows on display '{}' (platform '{}'): "
+    "toplevel={:#x} header={:#x} embed={:#x}",
+    XDisplayString (dpy), QGuiApplication::platformName (), pimpl_->win_,
+    pimpl_->header_win_, pimpl_->embed_win_);
 
   pimpl_->header_->set_device_pixel_ratio (pimpl_->scale_factor_);
   pimpl_->header_->resize (
@@ -1540,6 +1622,35 @@ X11PluginHostWindow::X11PluginHostWindow (plugins::Plugin &plugin)
   // XEmbed client->embedder requests (focus management) are addressed to
   // the embed area, the client window's parent
   mgr.register_window (pimpl_->embed_win_, [this] (const XEvent &ev) {
+    // A ConfigureNotify for the embedded client is the client resizing
+    // itself (e.g. the UI recomputing its size without notifying the host
+    // through ui:resize): the embed area follows
+    if (
+      ev.type == ConfigureNotify && pimpl_->embedded_client_.has_value ()
+      && ev.xconfigure.window == *pimpl_->embedded_client_
+      && ev.xconfigure.width > 0 && ev.xconfigure.height > 0)
+      {
+        pimpl_->adopt_client_size (ev.xconfigure.width, ev.xconfigure.height);
+        return;
+      }
+    // The embedded client is foreign and may be destroyed or reparented
+    // away by the plugin at any time: the embedding ends there, so
+    // focus forwarding and later attachments stop using the window. A
+    // reparent whose new parent is the embed area is an adoption (the
+    // host's own or the client's own), not an ending
+    if (pimpl_->embedded_client_.has_value ())
+      {
+        const ::Window client = *pimpl_->embedded_client_;
+        if (
+          (ev.type == DestroyNotify && ev.xdestroywindow.window == client)
+          || (ev.type == ReparentNotify && ev.xreparent.window == client
+              && ev.xreparent.parent != pimpl_->embed_win_))
+          {
+            z_debug ("X11PluginHostWindow: embedded client window went away");
+            pimpl_->embedded_client_.reset ();
+            return;
+          }
+      }
     if (
       ev.type != ClientMessage || pimpl_->xembed_atom_ == None
       || static_cast<Atom> (ev.xclient.message_type) != pimpl_->xembed_atom_
@@ -1589,7 +1700,6 @@ X11PluginHostWindow::~X11PluginHostWindow ()
       mgr.unregister_window (pimpl_->embed_win_);
       if (pimpl_->embedded_client_.has_value ())
         {
-          mgr.unregister_window (*pimpl_->embedded_client_);
           // The plugin owns its editor window and can outlive this
           // window (its teardown runs after ours): hand it back to the
           // root window so the recursive destroy below does not kill it
@@ -1742,6 +1852,76 @@ X11PluginHostWindow::completeNativeEmbedding ()
   pimpl_->complete_native_embedding (*dpy, kEmbeddingRetryAttempts);
 }
 
+std::optional<QSize>
+X11PluginHostWindow::attachNativeView (quintptr native_view)
+{
+  auto * dpy = X11DisplayManager::instance ().display ();
+  if (dpy == nullptr || pimpl_->win_ == 0 || native_view == 0)
+    return std::nullopt;
+
+  const auto view = static_cast<::Window> (native_view);
+  if (pimpl_->embedded_client_.has_value ())
+    {
+      if (*pimpl_->embedded_client_ != view)
+        {
+          z_warning (
+            "X11PluginHostWindow: refusing to attach view {:#x} while "
+            "{:#x} is embedded",
+            view, *pimpl_->embedded_client_);
+        }
+      return std::nullopt;
+    }
+
+  // The view is a foreign window and may vanish at any point. UIs
+  // normally create it as a child of the embed area; those that created a
+  // toplevel are reparented here. The trap must end before
+  // finish_embedding() installs its own
+  unsigned view_width = 0;
+  unsigned view_height = 0;
+  bool     view_usable = false;
+  {
+    const ScopedXErrorTrap trap (*dpy, view);
+    ::Window               root = 0;
+    ::Window               parent = 0;
+    ::Window *             children = nullptr;
+    unsigned int           children_count = 0;
+    const auto             queried =
+      XQueryTree (dpy, view, &root, &parent, &children, &children_count);
+    if (children != nullptr)
+      XFree (children);
+    if (queried != 0 && parent != pimpl_->embed_win_)
+      XReparentWindow (dpy, view, pimpl_->embed_win_, 0, 0);
+    ::Window root_ret{};
+    int      view_x = 0;
+    int      view_y = 0;
+    unsigned border_w = 0;
+    unsigned depth_ret = 0;
+    view_usable =
+      queried != 0
+      && XGetGeometry (
+           dpy, view, &root_ret, &view_x, &view_y, &view_width, &view_height,
+           &border_w, &depth_ret)
+           != 0
+      && view_width > 0 && view_height > 0 && trap.error_code () == Success;
+  }
+  if (!view_usable)
+    {
+      z_warning (
+        "X11PluginHostWindow: could not adopt the plugin view {:#x}", view);
+      return std::nullopt;
+    }
+
+  pimpl_->embedded_client_ = view;
+  if (!pimpl_->finish_embedding (*dpy, view))
+    {
+      pimpl_->embedded_client_.reset ();
+      setVisible (false);
+      Q_EMIT embeddingFailed ();
+      return std::nullopt;
+    }
+  return QSize (static_cast<int> (view_width), static_cast<int> (view_height));
+}
+
 } // namespace zrythm::gui
 
 #else // !__linux__
@@ -1800,6 +1980,11 @@ X11PluginHostWindow::contentScaleFactor () const
 void
 X11PluginHostWindow::completeNativeEmbedding ()
 {
+}
+std::optional<QSize>
+X11PluginHostWindow::attachNativeView (quintptr)
+{
+  return std::nullopt;
 }
 
 } // namespace zrythm::gui

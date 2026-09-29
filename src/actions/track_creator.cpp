@@ -23,7 +23,8 @@ TrackCreator::addEmptyTrackFromType (
   {
     auto * track = track_ref.get ();
     track->setName (
-      get_unique_name_for_track (track->get_uuid (), track->get_name ())
+      track_collection_
+        .get_unique_name_for_track (track->get_uuid (), track->get_name ())
         .to_qstring ());
   }
 
@@ -43,35 +44,5 @@ TrackCreator::addEmptyTrackFromType (
   }
 
   return QVariant::fromValue (track_ref.get ());
-}
-
-utils::Utf8String
-TrackCreator::get_unique_name_for_track (
-  const structure::tracks::Track::Uuid &track_to_skip,
-  const utils::Utf8String              &name) const
-{
-  const auto name_is_unique = [&] (const utils::Utf8String &name_to_check) {
-    return !std::ranges::any_of (
-      track_collection_.tracks (), [&] (const auto &ref) {
-        return ref.id () != track_to_skip
-               && ref.get ()->get_name () == name_to_check;
-      });
-  };
-
-  auto new_name = name;
-  while (!name_is_unique (new_name))
-    {
-      auto [ending_num, name_without_num] = new_name.get_int_after_last_space ();
-      if (ending_num == -1)
-        {
-          new_name += u8" 1";
-        }
-      else
-        {
-          new_name = utils::Utf8String::from_utf8_encoded_string (
-            fmt::format ("{} {}", name_without_num, ending_num + 1));
-        }
-    }
-  return new_name;
 }
 } // namespace zrythm::actions

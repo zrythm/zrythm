@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -6,6 +6,7 @@
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/tempo_object.h"
 #include "structure/arrangement/time_signature_object.h"
+#include "utils/typed_uuid_reference.h"
 #include "utils/uuid_identifiable_object.h"
 
 namespace zrythm::structure::arrangement
@@ -72,5 +73,8 @@ private:
   friend void to_json (nlohmann::json &j, const TempoObjectManager &manager);
   friend void from_json (const nlohmann::json &j, TempoObjectManager &manager);
 };
+
+using TempoObjectManagerUuidReference =
+  utils::TypedUuidReference<TempoObjectManager>;
 
 } // namespace zrythm::structure::arrangement

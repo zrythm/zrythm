@@ -10,26 +10,34 @@ import ZrythmStyle 1.0
 T.MenuItem {
   id: control
 
+  readonly property string shortcutDisplayText: ShortcutUtils.displayText(control.action !== null ? control.action.shortcut : "")
+
   font: ZrythmTheme.semiBoldTextFont
-  icon.color: ZrythmTheme.colorPalette.windowText
+  icon.color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
   icon.width: ZrythmTheme.buttonHeight - 2 * control.padding
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
   // icon.height: 24
+  leftPadding: 8
   opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
   padding: ZrythmTheme.buttonPadding
+  rightPadding: 8
   spacing: ZrythmTheme.buttonPadding
 
   arrow: ColorImage {
-    color: ZrythmTheme.colorPalette.windowText
+    color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
     defaultColor: "#353637"
     mirror: control.mirrored
-    source: control.subMenu ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/arrow-indicator.png" : ""
+    source: control.subMenu ? "qrc:/qt/qml/Zrythm/icons/lucide/chevron-right.svg" : ""
     sourceSize.height: control.icon.width - 4
     sourceSize.width: control.icon.width - 4
     visible: control.subMenu
     x: control.mirrored ? control.leftPadding : control.width - width - control.rightPadding
     y: control.topPadding + (control.availableHeight - height) / 2
+
+    Behavior on color {
+      animation: ZrythmTheme.propertyAnimation
+    }
   }
   background: Rectangle {
     readonly property color baseColor: control.highlighted ? ZrythmTheme.colorPalette.highlight : ZrythmTheme.colorPalette.button
@@ -39,6 +47,7 @@ T.MenuItem {
     height: control.height - 2
     implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 200
+    radius: ZrythmTheme.textFieldRadius
     width: control.width - 2
     x: 1
     y: 1
@@ -47,29 +56,67 @@ T.MenuItem {
       animation: ZrythmTheme.propertyAnimation
     }
   }
-  contentItem: IconLabel {
+  contentItem: Item {
     readonly property real arrowPadding: control.subMenu && control.arrow ? control.arrow.width + control.spacing : 0
     readonly property real indicatorPadding: control.checkable && control.indicator ? control.indicator.width + control.spacing : 0
 
-    alignment: Qt.AlignLeft
-    color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
-    display: control.display
-    font: control.font
-    icon: control.icon
-    leftPadding: !control.mirrored ? indicatorPadding : arrowPadding
-    mirrored: control.mirrored
-    rightPadding: control.mirrored ? indicatorPadding : arrowPadding
-    spacing: control.spacing
-    text: control.text
+    implicitHeight: Math.max(iconLabel.implicitHeight, shortcutLabel.implicitHeight)
+    implicitWidth: iconLabel.implicitWidth + (shortcutLabel.visible ? control.spacing + shortcutLabel.implicitWidth : 0)
+
+    IconLabel {
+      id: iconLabel
+
+      alignment: Qt.AlignLeft
+      color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
+      display: control.display
+      font: control.font
+      icon: control.icon
+      leftPadding: !control.mirrored ? parent.indicatorPadding : parent.arrowPadding
+      mirrored: control.mirrored
+      rightPadding: control.mirrored ? parent.indicatorPadding : parent.arrowPadding
+      spacing: control.spacing
+      text: control.text
+
+      Behavior on color {
+        animation: ZrythmTheme.propertyAnimation
+      }
+    }
+
+    Text {
+      id: shortcutLabel
+
+      anchors.left: control.mirrored ? parent.left : undefined
+      anchors.leftMargin: control.mirrored ? parent.arrowPadding : 0
+      anchors.right: !control.mirrored ? parent.right : undefined
+      anchors.rightMargin: !control.mirrored ? parent.arrowPadding : 0
+      anchors.verticalCenter: parent.verticalCenter
+      color: Qt.alpha(control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText, 0.62)
+      font: ZrythmTheme.fadedTextFont
+
+      // Reserve a minimum gap between the label and the shortcut
+      leftPadding: control.mirrored ? 0 : 16
+      rightPadding: control.mirrored ? 16 : 0
+      text: control.shortcutDisplayText
+      verticalAlignment: Text.AlignVCenter
+      visible: control.shortcutDisplayText !== ""
+
+      Behavior on color {
+        animation: ZrythmTheme.propertyAnimation
+      }
+    }
   }
   indicator: ColorImage {
-    color: ZrythmTheme.colorPalette.windowText
+    color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
     defaultColor: "#353637"
-    source: control.checkable ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/check.png" : ""
+    source: control.checkable ? "qrc:/qt/qml/Zrythm/icons/noto-glyphs/check.svg" : ""
     sourceSize.height: control.icon.width
     sourceSize.width: control.icon.width
     visible: control.checked
     x: control.mirrored ? control.width - width - control.rightPadding : control.leftPadding
     y: control.topPadding + (control.availableHeight - height) / 2
+
+    Behavior on color {
+      animation: ZrythmTheme.propertyAnimation
+    }
   }
 }

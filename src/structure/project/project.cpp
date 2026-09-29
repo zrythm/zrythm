@@ -33,6 +33,7 @@ Project::Project (
   plugins::PluginHostWindowFactory                plugin_host_window_provider,
   dsp::Metronome                                 &metronome,
   dsp::Fader                                     &monitor_fader,
+  std::shared_ptr<plugins::Lv2World>              lv2_world,
   QObject *                                       parent)
     : QObject (parent), app_settings_ (app_settings),
       tempo_map_ (hw_interface.get_device_info ().sample_rate),
@@ -140,14 +141,16 @@ Project::Project (
             .top_level_window_provider_ = plugin_host_window_provider_,
             .main_thread_dispatcher_ = main_thread_dispatcher_,
             .main_thread_callbacks_ = main_thread_callbacks_,
+            .lv2_world_ = std::move (lv2_world),
           },
           this)),
       track_factory_ (std::make_unique<structure::tracks::TrackFactory> ([this] () {
         return get_final_track_dependencies ();
       })),
-      tempo_object_manager_ (
-        utils::make_qobject_unique<
-          structure::arrangement::TempoObjectManager> (project_registry_, this)),
+      tempo_object_manager_ref_ (
+        utils::create_object<structure::arrangement::TempoObjectManager> (
+          project_registry_,
+          project_registry_)),
       monitor_fader_ (monitor_fader), metronome_ (metronome),
       port_observation_manager_ (
         utils::make_qobject_unique<
@@ -179,22 +182,39 @@ Project::Project (
           return juce_hw ? juce_hw->get_device_audio_workgroup () : std::nullopt;
         }())
 {
+  project_registry_.set_deserialization_dependencies (
+    {
+      *track_factory_,
+      *arranger_object_factory_,
+      *plugin_factory_,
+      *tempo_map_wrapper_,
+    });
+
   audio_engine_->set_monitor_out_source (monitor_fader_.get_stereo_out_port ());
 
-  // Flush plugin-reported parameter values to Zrythm params for all
-  // plugins on a single shared timer. This also visits plugins not
-  // currently in the project (e.g. held by the undo stack), which is a
-  // no-op for them: pending values can only be stored while the plugin is
-  // prepared (entries are bounds-checked against live params and cleared
-  // on release)
-  // TODO: the registry grows with undo history, so this iteration gets
-  // slower over a session — eventually iterate only the plugins of tracks
-  // currently in the project instead (needs a tracklist->plugins accessor)
+  // Flush plugin-reported parameter values to Zrythm params on a
+  // single shared timer, visiting the plugins of the tracks currently
+  // in the project. Plugins that leave the tracklist (slot removal,
+  // track deletion) are flushed when they are removed instead
   plugin_param_flush_timer_ = utils::make_qobject_unique<QTimer> (this);
   QObject::connect (
     plugin_param_flush_timer_.get (), &QTimer::timeout, this, [this] {
-      project_registry_.for_each_matching<plugins::Plugin> (
-        [] (plugins::Plugin &plugin) { plugin.flush_plugin_values (); });
+      std::vector<plugins::PluginUuidReference> plugin_refs;
+      for (const auto &track_ref : tracklist_->collection ()->tracks ())
+        {
+          auto * track = track_ref.get ();
+          if (track == nullptr)
+            continue;
+          plugin_refs.clear ();
+          track->collect_plugins (plugin_refs);
+          for (const auto &plugin_ref : plugin_refs)
+            {
+              if (auto * plugin = plugin_ref.get (); plugin != nullptr)
+                {
+                  plugin->flush_plugin_values ();
+                }
+            }
+        }
     });
   plugin_param_flush_timer_->start (std::chrono::milliseconds{ 20 });
 
@@ -242,17 +262,18 @@ Project::Project (
   // Sync changes from tempo-related arranger objects to the tempo map. The
   // sync logic lives on TempoObjectManager (the tempo authority); Project only
   // wires the signal and asserts the engine is stopped.
+  auto *     tempo_object_manager = tempo_object_manager_ref_.get ();
   const auto rebuild_tempo_map = [this] () {
     // This must never be called while the engine is running
     assert (!audio_engine_->running ());
-    tempo_object_manager_->sync_to_tempo_map (*tempo_map_wrapper_);
+    tempo_object_manager_ref_.get ()->sync_to_tempo_map (*tempo_map_wrapper_);
   };
   QObject::connect (
-    tempo_object_manager_->tempoObjects (),
+    tempo_object_manager->tempoObjects (),
     &structure::arrangement::ArrangerObjectListModel::contentChanged,
     tempo_map_wrapper_.get (), rebuild_tempo_map);
   QObject::connect (
-    tempo_object_manager_->timeSignatureObjects (),
+    tempo_object_manager->timeSignatureObjects (),
     &structure::arrangement::ArrangerObjectListModel::contentChanged,
     tempo_map_wrapper_.get (), rebuild_tempo_map);
 }
@@ -492,12 +513,13 @@ Project::getTempoMap () const
 structure::arrangement::TempoObjectManager *
 Project::tempoObjectManager () const
 {
-  return tempo_object_manager_.get ();
+  return tempo_object_manager_ref_.get ();
 }
 
 void
 to_json (nlohmann::json &j, const Project &project)
 {
+  j[Project::kProjectIdKey] = project.project_id_;
   j[Project::kTempoMapKey] = project.tempo_map_;
   j[Project::kTransportKey] = project.transport_;
   j[Project::kAudioPoolKey] = project.pool_;
@@ -505,7 +527,7 @@ to_json (nlohmann::json &j, const Project &project)
   // j[Project::kClipLinkGroupManagerKey] =
   // project.clip_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
-  j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
+  j[Project::kTempoObjectManagerKey] = *project.tempo_object_manager_ref_.get ();
   j[Project::kClipLauncherKey] = project.clip_launcher_;
 
   j[Project::kRegistryKey] = project.project_registry_;
@@ -514,14 +536,25 @@ to_json (nlohmann::json &j, const Project &project)
 void
 from_json (const nlohmann::json &j, Project &project)
 {
+  try
+    {
+      j.at (Project::kProjectIdKey).get_to (project.project_id_);
+    }
+  catch (const nlohmann::json::exception &)
+    {
+      throw std::runtime_error (
+        "project file has no projectId: it was saved by an older version "
+        "of Zrythm and cannot be loaded");
+    }
+  if (project.project_id_.isNull ())
+    {
+      throw std::runtime_error (
+        "project file has a malformed projectId: it was saved by an "
+        "older version of Zrythm and cannot be loaded");
+    }
+
   j.at (Project::kTempoMapKey).get_to (project.tempo_map_);
 
-  project.project_registry_.set_deserialization_dependencies (
-    {
-      *project.track_factory_,
-      *project.arranger_object_factory_,
-      *project.plugin_factory_,
-    });
   j.at (Project::kRegistryKey).get_to (project.project_registry_);
 
   // Transport is required
@@ -547,7 +580,7 @@ from_json (const nlohmann::json &j, Project &project)
   if (j.contains (Project::kTempoObjectManagerKey))
     {
       j.at (Project::kTempoObjectManagerKey)
-        .get_to (*project.tempo_object_manager_);
+        .get_to (*project.tempo_object_manager_ref_.get ());
     }
   if (j.contains (Project::kClipLauncherKey))
     {

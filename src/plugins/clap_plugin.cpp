@@ -53,9 +53,11 @@
 #include "dsp/midi_event.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
+#include "plugins/clap_preset_discovery.h"
 #include "plugins/clap_speaker_arrangement.h"
 #include "plugins/gl_context_utils.h"
 #include "plugins/host_window_units.h"
+#include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_library.h"
 #include "plugins/plugin_run_loop.h"
 #include "plugins/plugin_transport_context.h"
@@ -64,6 +66,7 @@
 #include "utils/qt.h"
 #include "utils/raii_utils.h"
 #include "utils/registry_utils.h"
+#include "utils/rt_logger.h"
 #include "utils/serialization.h"
 #include "utils/views.h"
 
@@ -165,27 +168,25 @@ public:
   void param_flush_on_main_thread () [[clang::blocking]];
 
   /**
-   * @brief Reports a dropped plugin output event (audio-thread safe).
-   *
-   * The event violated the output contract (out-of-range port index or
-   * note fields); the drop is counted and logged on the main thread at a
-   * bounded (power-of-two) rate.
+   * @brief Counts and reports an output event that violated the output
+   * contract (out-of-range port index or note fields); audio-thread
+   * safe.
    */
-  void note_invalid_output_event_drop (std::string_view violation) noexcept
+  void log_invalid_output_event_drop (std::string_view violation) noexcept
+    [[clang::nonblocking]]
   {
     const auto drops =
       invalid_output_event_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
     if (drops == 1 || (drops & (drops - 1)) == 0)
       {
-        owner_.post_main_thread_action ([this, drops, violation] {
-          z_warning (
-            "CLAP plugin '{}': dropped {} invalid output event(s) so far "
-            "(last: {})",
-            owner_.get_name (), drops, violation);
-        });
+        z_rt_warning (
+          "CLAP plugin '{}': dropped {} invalid output event(s) so far "
+          "(last: {})",
+          owner_.node_name_view (), drops, violation);
       }
   }
 
+  /** Drop counter for log_invalid_output_event_drop(). */
   std::atomic<uint32_t> invalid_output_event_drops_{ 0 };
 
   /**
@@ -934,9 +935,9 @@ ClapPlugin::guiRequestResize (uint32_t width, uint32_t height) noexcept
 {
   if (width == 0 || height == 0)
     {
-      z_warning (
+      z_rt_warning (
         "CLAP plugin '{}' requested an invalid GUI resize to {}x{}; refusing",
-        get_name (), width, height);
+        get_descriptor ().name_.view (), width, height);
       return false;
     }
   // Deferred: resizing the host window calls gui.set_size() back on the
@@ -1066,10 +1067,10 @@ ClapPlugin::threadPoolRequestExec (uint32_t numTasks) noexcept
       if (!pimpl_->thread_pool_misuse_warning_emitted_)
         {
           pimpl_->thread_pool_misuse_warning_emitted_ = true;
-          z_warning (
+          z_rt_warning (
             "CLAP plugin '{}' called thread-pool request_exec without "
             "providing the thread-pool extension",
-            get_node_name ());
+            node_name_view ());
         }
       return false;
     }
@@ -1154,7 +1155,27 @@ ClapPlugin::presetLoadLoaded (
   assert (is_main_thread);
   z_info (
     "CLAP preset loaded: location_kind={} location='{}' load_key='{}'",
-    locationKind, location, loadKey);
+    locationKind, location != nullptr ? location : "<null>",
+    loadKey != nullptr ? loadKey : "<null>");
+
+  const auto id = clap_preset_discovery::encode_preset_id (
+    { locationKind, location != nullptr ? location : "",
+      loadKey != nullptr ? loadKey : "" });
+  const auto known =
+    std::ranges::any_of (preset_entries_, [&id] (const PresetEntry &entry) {
+      return entry.id == PresetId{ id };
+    });
+  if (!known)
+    {
+      // The plugin loaded a preset our list does not contain: keep the
+      // selection honest by storing the unlisted id, which resolves to
+      // no listed preset
+      z_info (
+        "CLAP plugin '{}': loaded preset is not in the preset list; "
+        "selection follows the plugin",
+        get_name ());
+    }
+  update_selected_preset_from_backend (id);
 }
 
 void
@@ -1169,7 +1190,9 @@ ClapPlugin::presetLoadOnError (
   z_warning (
     "CLAP preset load error: location_kind={} location='{}' load_key='{}' "
     "os_error={} msg='{}'",
-    locationKind, location, loadKey, osError, msg);
+    locationKind, location != nullptr ? location : "<null>",
+    loadKey != nullptr ? loadKey : "<null>", osError,
+    msg != nullptr ? msg : "<null>");
 }
 
 void
@@ -1272,6 +1295,27 @@ void
 ClapPlugin::release_resources_impl ()
 {
   assert (is_main_thread);
+
+  // Close open user gestures regardless of the activation state: a
+  // main-thread param flush while inactive can also carry gesture
+  // events, so the sweep must not sit behind the active-only section.
+  // Releasing resources is the definitive end of any plugin-reported
+  // gesture
+  const auto params = get_parameters ();
+  const auto count = std::min (params.size (), param_sync_.entries.size ());
+  for (const auto i : std::views::iota (size_t{ 0 }, count))
+    {
+      auto &entry = param_sync_.entries[i];
+      if (!entry.in_user_gesture.exchange (false, std::memory_order_relaxed))
+        continue;
+      auto * param = params[i].get ();
+      if (param != nullptr && !post_main_thread_action_deferred ([param] {
+            param->endUserGesture ();
+          }))
+        {
+          z_warning ("CLAP: failed to close open user gesture on release");
+        }
+    }
 
   if (!pimpl_->is_plugin_active ())
     return;
@@ -1593,9 +1637,7 @@ ClapPlugin::load_plugin (
           pimpl_->pluginFactory_, i);
         if (cur_desc == nullptr || cur_desc->id == nullptr)
           continue;
-        if (
-          CLAPPluginFormat::get_hash_for_range (std::string (cur_desc->id))
-          == plugin_unique_id)
+        if (get_hash_for_range (std::string (cur_desc->id)) == plugin_unique_id)
           {
             return cur_desc;
           }
@@ -1675,6 +1717,8 @@ ClapPlugin::load_plugin (
 
   Q_EMIT hasNativeUiChanged ();
 
+  rebuild_preset_list (path, desc->id);
+
   return true;
 }
 
@@ -1689,6 +1733,8 @@ ClapPlugin::unload_current_plugin ()
     *param_maps = ClapPluginImpl::ParamMaps{};
   }
   pimpl_->param_count_ = 0;
+
+  clear_preset_list ();
 
   Q_EMIT pluginLoadedChanged (false);
   Q_EMIT hasNativeUiChanged ();
@@ -1988,7 +2034,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
       // Event times must lie within the processed block
       if (block_length.has_value () && units::samples (h->time) >= *block_length)
         {
-          note_invalid_output_event_drop ("event time out of range"sv);
+          log_invalid_output_event_drop ("event time out of range"sv);
           continue;
         }
       switch (h->type)
@@ -1999,7 +2045,18 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               reinterpret_cast<const clap_event_param_value *> (h); // NOLINT
             auto it = maps.by_id_.find (ev->param_id);
             if (it == maps.by_id_.end ())
-              break;
+              {
+                // Reports can arrive before the param maps are built
+                // (e.g. values emitted during state restore at project
+                // load); once the maps exist, an unmapped id means the
+                // plugin reports a parameter that was never adopted
+                if (!maps.by_id_.empty ())
+                  {
+                    log_invalid_output_event_drop (
+                      "param value for unknown param"sv);
+                  }
+                break;
+              }
 
             const auto &adapter = it->second;
             auto *      zrythm_param = adapter.zrythm_param;
@@ -2017,8 +2074,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
                 // the plugin's own parameter reporting
                 if (!owner_.param_sync_.entries.empty ())
                   {
-                    note_invalid_output_event_drop (
-                      "param index out of range"sv);
+                    log_invalid_output_event_drop ("param index out of range"sv);
                   }
                 break;
               }
@@ -2027,8 +2083,81 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               range.convertTo0To1 (static_cast<float> (ev->value));
 
             auto &entry = owner_.param_sync_.entries[param_index];
+            // Value reports inside an open gesture are user edits: the
+            // value coalesces into the pending slot and applies through
+            // the user-edit path at the next flush. Per-report deferred
+            // actions would flood the shared main-thread dispatcher at
+            // drag event rates
+            entry.pending_is_user_edit.store (
+              entry.in_user_gesture.load (std::memory_order_relaxed),
+              std::memory_order_release);
             owner_.set_param_pending_from_plugin (param_index, normalized);
             entry.last_from_plugin = normalized;
+            break;
+          }
+        case CLAP_EVENT_PARAM_GESTURE_BEGIN:
+        case CLAP_EVENT_PARAM_GESTURE_END:
+          {
+            const auto * ev =
+              reinterpret_cast<const clap_event_param_gesture *> (h); // NOLINT
+            auto it = maps.by_id_.find (ev->param_id);
+            if (it == maps.by_id_.end ())
+              {
+                // Same tolerance as param value events: gesture events
+                // can arrive before the param maps are built
+                if (!maps.by_id_.empty ())
+                  {
+                    log_invalid_output_event_drop (
+                      "gesture for unknown param"sv);
+                  }
+                break;
+              }
+
+            const auto &adapter = it->second;
+            auto *      zrythm_param = adapter.zrythm_param;
+            if (zrythm_param == nullptr)
+              break;
+
+            const size_t param_index = adapter.param_index;
+            if (param_index >= owner_.param_sync_.entries.size ())
+              {
+                // Gesture events can arrive before param_sync_ is
+                // prepared (e.g. while the plugin emits parameter
+                // changes during state restore at project load), like
+                // param value events; those are safe to drop
+                if (!owner_.param_sync_.entries.empty ())
+                  {
+                    log_invalid_output_event_drop (
+                      "gesture param index out of range"sv);
+                  }
+                break;
+              }
+
+            auto      &entry = owner_.param_sync_.entries[param_index];
+            const bool begin = h->type == CLAP_EVENT_PARAM_GESTURE_BEGIN;
+            if (begin == entry.in_user_gesture.load (std::memory_order_relaxed))
+              {
+                // BEGIN while a gesture is already open, or END without
+                // a preceding BEGIN
+                log_invalid_output_event_drop ("unbalanced gesture event"sv);
+                break;
+              }
+            entry.in_user_gesture.store (begin, std::memory_order_relaxed);
+            if (
+              !owner_.post_main_thread_action_deferred (
+                [param = zrythm_param, begin] {
+                  if (begin)
+                    param->beginUserGesture ();
+                  else
+                    param->endUserGesture ();
+                }))
+              {
+                // The main-thread gesture state would diverge from the
+                // flag; revert the flag so later events stay consistent
+                entry.in_user_gesture.store (!begin, std::memory_order_relaxed);
+                log_invalid_output_event_drop (
+                  "gesture notification dropped (dispatcher queue full)"sv);
+              }
             break;
           }
         case CLAP_EVENT_NOTE_ON:
@@ -2043,8 +2172,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               || static_cast<size_t> (ev->port_index)
                    >= owner_.midi_out_ports_.size ())
               {
-                note_invalid_output_event_drop (
-                  "note port index out of range"sv);
+                log_invalid_output_event_drop ("note port index out of range"sv);
                 break;
               }
             // Plugin-supplied fields are forwarded as raw MIDI bytes, so
@@ -2054,7 +2182,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               ev->channel < 0 || ev->channel > 15 || ev->key < 0
               || ev->key > 127 || !(ev->velocity >= 0.0 && ev->velocity <= 1.0))
               {
-                note_invalid_output_event_drop ("note field out of range"sv);
+                log_invalid_output_event_drop ("note field out of range"sv);
                 break;
               }
 
@@ -2081,7 +2209,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
                     time);
             if (
               !midi_out_port->buffer_.push_back (midi_ev.time_, midi_ev.data ()))
-              note_invalid_output_event_drop ("MIDI output buffer overflow"sv);
+              log_invalid_output_event_drop ("MIDI output buffer overflow"sv);
             break;
           }
         case CLAP_EVENT_MIDI:
@@ -2092,8 +2220,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               static_cast<size_t> (ev->port_index)
               >= owner_.midi_out_ports_.size ())
               {
-                note_invalid_output_event_drop (
-                  "MIDI port index out of range"sv);
+                log_invalid_output_event_drop ("MIDI port index out of range"sv);
                 break;
               }
 
@@ -2106,7 +2233,7 @@ ClapPlugin::ClapPluginImpl::handle_plugin_output_events (
               + event_time_offset;
             if (!midi_out_port->buffer_.push_back (
                   time, std::span<const midi_byte_t> (ev->data, 3)))
-              note_invalid_output_event_drop ("MIDI output buffer overflow"sv);
+              log_invalid_output_event_drop ("MIDI output buffer overflow"sv);
             break;
           }
         default:
@@ -2168,14 +2295,17 @@ ClapPlugin::logLog (clap_log_severity severity, const char * message)
   switch (severity)
     {
     case CLAP_LOG_DEBUG:
-      z_debug ("{}", message);
+      z_rt_debug ("{}", message);
       break;
     case CLAP_LOG_INFO:
-      z_info ("{}", message);
+      z_rt_info ("{}", message);
       break;
     case CLAP_LOG_WARNING:
-      z_warning ("{}", message);
+      z_rt_warning ("{}", message);
       break;
+    // ERROR, FATAL and HOST_MISBEHAVING stay synchronous: z_error's
+    // backtrace is only meaningful on the plugin's calling thread, and a
+    // fatal report means the process is going down
     case CLAP_LOG_FATAL:
       z_error ("[fatal CLAP error] {}", message);
       break;
@@ -2183,7 +2313,7 @@ ClapPlugin::logLog (clap_log_severity severity, const char * message)
       z_error ("[CLAP host misbehaving] {}", message);
       break;
     case CLAP_LOG_PLUGIN_MISBEHAVING:
-      z_warning ("[CLAP plugin misbehaving] {}", message);
+      z_rt_warning ("[CLAP plugin misbehaving] {}", message);
       break;
     case CLAP_LOG_ERROR:
     default:
@@ -3654,6 +3784,113 @@ ClapPlugin::sync_param_values_from_plugin ()
         }
     }
   z_debug ("CLAP: get_value updated {} params", updated);
+}
+
+void
+ClapPlugin::rebuild_preset_list (
+  const std::filesystem::path &library_path,
+  std::string_view             plugin_id)
+{
+  assert (is_main_thread);
+  z_return_if_fail (pimpl_->pluginEntry_ != nullptr);
+
+  auto entries = clap_preset_discovery::collect_presets_cached (
+    library_path, *pimpl_->pluginEntry_, plugin_id);
+
+  const bool changed = entries != preset_entries_;
+  preset_entries_ = std::move (entries);
+  if (changed)
+    {
+      z_debug (
+        "CLAP plugin '{}': discovered {} preset(s)", get_name (),
+        preset_entries_.size ());
+      notify_presets_rebuilt ();
+    }
+}
+
+void
+ClapPlugin::clear_preset_list ()
+{
+  if (preset_entries_.empty ())
+    return;
+
+  preset_entries_.clear ();
+  notify_presets_rebuilt ();
+}
+
+bool
+ClapPlugin::apply_preset_impl (const PresetId &id)
+{
+  assert (is_main_thread);
+
+  const auto * id_str = std::get_if<QString> (&id);
+  if (id_str == nullptr)
+    {
+      z_warning ("CLAP plugin '{}': preset id is not a string", get_name ());
+      return false;
+    }
+
+  const auto preset_location = clap_preset_discovery::decode_preset_id (*id_str);
+  if (!preset_location.has_value ())
+    {
+      z_warning (
+        "CLAP plugin '{}': invalid preset id '{}'", get_name (), *id_str);
+      return false;
+    }
+
+  if (pimpl_ == nullptr || pimpl_->plugin_ == nullptr)
+    {
+      z_warning ("CLAP plugin '{}': plugin not loaded", get_name ());
+      return false;
+    }
+  if (!pimpl_->plugin_->canUsePresetLoad ())
+    {
+      z_warning (
+        "CLAP plugin '{}': does not implement {}", get_name (),
+        CLAP_EXT_PRESET_LOAD);
+      return false;
+    }
+
+  bool       applied = false;
+  const auto load = [&] () {
+    applied = pimpl_->plugin_->presetLoadFromLocation (
+      preset_location->kind,
+      preset_location->location.empty ()
+        ? nullptr
+        : preset_location->location.c_str (),
+      preset_location->load_key.empty ()
+        ? nullptr
+        : preset_location->load_key.c_str ());
+  };
+  if (main_thread_callbacks_.with_paused_processing_)
+    {
+      main_thread_callbacks_.with_paused_processing_ (load);
+    }
+  else
+    {
+      load ();
+    }
+
+  if (!applied)
+    {
+      z_warning (
+        "CLAP plugin '{}': preset load failed for location '{}' key '{}'",
+        get_name (), preset_location->location, preset_location->load_key);
+      return false;
+    }
+
+  // Presets change parameter values like a state load: resolve deferred
+  // updates and read the values back
+  if (pimpl_->is_plugin_active ())
+    {
+      pimpl_->scheduleParamFlush_.store (true, std::memory_order_release);
+      sync_param_values_from_plugin ();
+    }
+  else
+    {
+      flush_and_sync_params_when_inactive ();
+    }
+  return true;
 }
 
 void

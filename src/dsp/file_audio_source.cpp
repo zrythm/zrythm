@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cassert>
+#include <exception>
 #include <limits>
 #include <mutex>
 #include <utility>
@@ -22,7 +23,7 @@
 
 #include <fmt/format.h>
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 namespace zrythm::dsp
 {
@@ -80,10 +81,10 @@ FileAudioSource::init_from_file (
     {
       md = file.read_metadata ();
     }
-  catch (ZrythmException &e)
+  catch (const ZrythmException &)
     {
-      throw ZrythmException (
-        fmt::format ("Failed to read metadata from file '{}'", full_path));
+      std::throw_with_nested (ZrythmException (
+        fmt::format ("Failed to read metadata from file '{}'", full_path)));
     }
   bit_depth_ = utils::audio::bit_depth_int_to_enum (md.bit_depth);
   bpm_ = units::bpm (md.bpm);
@@ -94,10 +95,10 @@ FileAudioSource::init_from_file (
       file.read_full (ch_frames_, samplerate_.in (units::sample_rate));
       convert_mono_to_stereo ();
     }
-  catch (ZrythmException &e)
+  catch (const ZrythmException &)
     {
-      throw ZrythmException (
-        fmt::format ("Failed to read frames from file '{}'", full_path));
+      std::throw_with_nested (ZrythmException (
+        fmt::format ("Failed to read frames from file '{}'", full_path)));
     }
 
   name_ = utils::Utf8String::from_path (

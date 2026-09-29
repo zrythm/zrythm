@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -83,6 +83,20 @@ public:
   };
   Q_ENUM (DeviceGroupType)
 
+  /**
+   * @brief Returns the device-group category @p descriptor belongs to:
+   * instruments, MIDI modifiers, or audio (everything else).
+   */
+  static DeviceGroupType
+  group_type_for_descriptor (const PluginDescriptor &descriptor)
+  {
+    if (descriptor.isInstrument ())
+      return DeviceGroupType::Instrument;
+    if (descriptor.isMidiModifier ())
+      return DeviceGroupType::MIDI;
+    return DeviceGroupType::Audio;
+  }
+
   PluginGroup (
     utils::IObjectRegistry &registry,
     DeviceGroupType         type,
@@ -99,9 +113,15 @@ public:
   void          setName (const QString &name);
   Q_SIGNAL void nameChanged (const QString &name);
 
+  /** Device-group category this group was created for. */
+  DeviceGroupType type () const { return type_; }
+
   enum DeviceGroupListModelRoles
   {
     DeviceGroupPtrRole = Qt::UserRole + 1,
+    /** UUID of the row's plugin as a brace-less string (empty for
+     * nested-group rows), for QML-side row lookups. */
+    PluginUuidStringRole,
   };
   Q_ENUM (DeviceGroupListModelRoles)
 

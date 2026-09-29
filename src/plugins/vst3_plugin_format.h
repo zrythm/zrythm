@@ -22,20 +22,6 @@ public:
   Vst3PluginFormat () = default;
   ~Vst3PluginFormat () override;
 
-  /**
-   * @brief Returns a stable ID for a VST3 class ID (TUID) string.
-   *
-   * Used for PluginDescription::uniqueId, and by Vst3Plugin to find the
-   * matching class inside a module.
-   */
-  static auto get_hash_for_range (auto &&range) -> int
-  {
-    return static_cast<int> (std::ranges::fold_left (
-      range, uint32_t{ 0 }, [] (uint32_t acc, auto &&item) {
-        return (acc * 31) + static_cast<uint32_t> (item);
-      }));
-  };
-
   static juce::String getFormatName () { return "VST3"; }
   juce::String        getName () const override { return getFormatName (); }
   bool                canScanForPlugins () const override { return true; }

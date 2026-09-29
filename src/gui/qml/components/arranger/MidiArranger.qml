@@ -64,7 +64,7 @@ Arranger {
     const delta = currentPitch - prevPitch;
     console.debug("moving selections by", delta, "pitch");
     if (root.selectionOperator) {
-      const success = root.selectionOperator.moveNotesByPitch(delta);
+      const success = root.selectionOperator.moveNotesByPitch(root.arrangerSelectionModel, delta);
       if (!success) {
         console.warn("Failed to move selections - validation failed");
       }

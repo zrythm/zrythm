@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: FSFAP
+
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://lv2.zrythm.org/test-instrument/presets/init>
+    a pset:Preset ;
+    rdfs:label "Init" ;
+    lv2:port [
+        lv2:symbol "test" ;
+        pset:value 0.75
+    ] .

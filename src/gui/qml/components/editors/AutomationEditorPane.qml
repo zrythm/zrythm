@@ -14,8 +14,9 @@ GridLayout {
   required property AutomationEditor automationEditor
   required property ClipEditor clipEditor
   readonly property Project project: session.project
-  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
   required property ProjectSession session
+  required property EditorArrangerObjectsModel unifiedObjectsModel
 
   columnSpacing: 0
   columns: 3
@@ -70,10 +71,6 @@ GridLayout {
     Layout.fillHeight: true
   }
 
-  UnifiedProxyModel {
-    id: unifiedObjectsModel
-  }
-
   ItemSelectionModel {
     id: arrangerSelectionModel
 
@@ -104,6 +101,6 @@ GridLayout {
     tool: root.session.uiState.tool
     transport: root.project.transport
     undoStack: root.session.undoStack
-    unifiedObjectsModel: unifiedObjectsModel
+    unifiedObjectsModel: root.unifiedObjectsModel
   }
 }

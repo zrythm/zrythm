@@ -22,10 +22,11 @@ class ClipCanvasItemBase : public QCanvasPainterItem
   Q_OBJECT
 
   Q_PROPERTY (
-    qreal referenceWidth READ referenceWidth WRITE setReferenceWidth NOTIFY
+    double referenceWidth READ referenceWidth WRITE setReferenceWidth NOTIFY
       referenceWidthChanged)
   Q_PROPERTY (
-    qreal referenceX READ referenceX WRITE setReferenceX NOTIFY referenceXChanged)
+    double referenceX READ referenceX WRITE setReferenceX NOTIFY
+      referenceXChanged)
   Q_PROPERTY (
     bool loopPreview READ loopPreview WRITE setLoopPreview NOTIFY
       loopPreviewChanged)
@@ -40,8 +41,8 @@ public:
     setAlphaBlending (true);
   }
 
-  qreal referenceWidth () const { return reference_width_; }
-  void  setReferenceWidth (qreal w)
+  double referenceWidth () const { return reference_width_; }
+  void   setReferenceWidth (double w)
   {
     if (qFuzzyCompare (reference_width_, w))
       return;
@@ -50,8 +51,8 @@ public:
     update ();
   }
 
-  qreal referenceX () const { return reference_x_; }
-  void  setReferenceX (qreal x)
+  double referenceX () const { return reference_x_; }
+  void   setReferenceX (double x)
   {
     if (qFuzzyCompare (reference_x_, x))
       return;
@@ -61,7 +62,7 @@ public:
   }
 
   /// Returns referenceWidth if set (> 0), otherwise the actual width().
-  qreal effectiveReferenceWidth () const
+  double effectiveReferenceWidth () const
   {
     return (reference_width_ > 0) ? reference_width_ : width ();
   }
@@ -85,9 +86,9 @@ Q_SIGNALS:
   void loopPreviewChanged ();
 
 private:
-  qreal reference_width_ = 0;
-  qreal reference_x_ = 0;
-  bool  loop_preview_ = false;
+  double reference_width_ = 0;
+  double reference_x_ = 0;
+  bool   loop_preview_ = false;
 };
 
 } // namespace zrythm::gui::qquick

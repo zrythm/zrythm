@@ -22,9 +22,10 @@ GridLayout {
   required property MidiClip midiClip
   required property MidiEditor midiEditor
   readonly property Project project: session.project
-  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
   required property ProjectSession session
   readonly property Track track: root.project.tracklist.getTrackForTimelineObject(root.midiClip)
+  required property EditorArrangerObjectsModel unifiedObjectsModel
 
   function _updateActiveChordAndScale() {
     if (root.chordTrack) {
@@ -164,10 +165,6 @@ GridLayout {
     }
   }
 
-  UnifiedProxyModel {
-    id: unifiedObjectsModel
-  }
-
   // Shared between MidiArranger and VelocityArranger so velocity bars react
   // to note drags (and vice versa) in real time.
   ArrangerDragState {
@@ -206,7 +203,7 @@ GridLayout {
     tool: root.session.uiState.tool
     transport: root.project.transport
     undoStack: root.session.undoStack
-    unifiedObjectsModel: unifiedObjectsModel
+    unifiedObjectsModel: root.unifiedObjectsModel
   }
 
   Rectangle {
@@ -221,6 +218,7 @@ GridLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     arrangerSelectionModel: arrangerSelectionModel
+    clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
     dragState: editorDragState
     midiEditor: root.midiEditor
@@ -232,6 +230,6 @@ GridLayout {
     tool: root.session.uiState.tool
     transport: root.project.transport
     undoStack: root.session.undoStack
-    unifiedObjectsModel: unifiedObjectsModel
+    unifiedObjectsModel: root.unifiedObjectsModel
   }
 }

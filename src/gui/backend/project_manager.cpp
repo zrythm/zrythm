@@ -12,6 +12,7 @@
 #include "gui/backend/qt_plugin_host_window.h"
 #include "gui/backend/x11_plugin_host_window.h"
 #include "gui/backend/zrythm_application.h"
+#include "plugins/plugin.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/directory_manager.h"
@@ -30,7 +31,8 @@ ProjectManager::ProjectManager (
   utils::AppSettings &app_settings,
   QObject *           parent)
     : QObject (parent), app_settings_ (app_settings),
-      recent_projects_model_ (new RecentProjectsModel (app_settings, this))
+      recent_projects_model_ (new RecentProjectsModel (app_settings, this)),
+      clipboard_ (utils::make_qobject_unique<controllers::Clipboard> (this))
 {
   z_debug ("Initializing project manager...");
   init_templates ();
@@ -206,9 +208,10 @@ ProjectManager::create_default (
             return create_window_for_plugin (plugin);
           },
           *zapp->controlRoom ()->metronome (),
-          *zapp->controlRoom ()->monitorFader ());
+          *zapp->controlRoom ()->monitorFader (),
+          zapp->pluginManager ()->get_lv2_world ());
         project_session = utils::make_qobject_unique<ProjectSession> (
-          app_settings_, std::move (prj));
+          app_settings_, *clipboard_, std::move (prj));
       }
       project_session->setTitle (name.to_qstring ());
       project_session->project ()->add_default_tracks ();
@@ -282,6 +285,9 @@ ProjectManager::createNewProject (
         auto * session = session_unique_ptr.release ();
         session->setParent (this);
         session->setProjectDirectory (
+          utils::Utf8String::from_path (project_dir_path).to_qstring ());
+        // Add to recent projects
+        recent_projects_model_->addRecentProject (
           utils::Utf8String::from_path (project_dir_path).to_qstring ());
         setActiveSession (session);
         session->project ()->engine ()->graph_dispatcher ().recalc_graph (false);
@@ -414,7 +420,8 @@ ProjectManager::loadProject (const QString &filepath)
                 return create_window_for_plugin (plugin);
               },
               *zapp->controlRoom ()->metronome (),
-              *zapp->controlRoom ()->monitorFader ());
+              *zapp->controlRoom ()->monitorFader (),
+              zapp->pluginManager ()->get_lv2_world ());
 
             report_progress_and_repaint (
               kStageDeserialize, tr ("Deserializing project data..."));
@@ -422,7 +429,7 @@ ProjectManager::loadProject (const QString &filepath)
               return;
 
             auto project_session = utils::make_qobject_unique<ProjectSession> (
-              app_settings_, std::move (prj));
+              app_settings_, *clipboard_, std::move (prj));
 
             // Deserialize JSON into Project, ProjectUiState, and UndoStack
             controllers::ProjectLoader::deserialize (
@@ -483,6 +490,8 @@ ProjectManager::loadProject (const QString &filepath)
             // Emit success signal
             Q_EMIT projectLoaded (session);
 
+            report_plugins_failed_to_load (*session->project ());
+
             report_progress (kStageDone, tr ("Project loaded"));
             promise.addResult (
               utils::Utf8String::from_path (project_dir).to_qstring ());
@@ -517,10 +526,42 @@ ProjectManager::loadProject (const QString &filepath)
   return wrapper;
 }
 
+void
+ProjectManager::report_plugins_failed_to_load (
+  structure::project::Project &project)
+{
+  QStringList failures;
+  project.get_registry ().for_each_matching<plugins::Plugin> (
+    [&failures] (const plugins::Plugin &plugin) {
+      if (
+        plugin.instantiationStatus ()
+        != plugins::Plugin::InstantiationStatus::Failed)
+        return;
+      const auto error =
+        plugin.instantiationError ().isEmpty ()
+          ? tr ("unknown error")
+          : plugin.instantiationError ();
+      failures.append (
+        u"%1: %2"_s.arg (plugin.get_name ().to_qstring ()).arg (error));
+    });
+  if (!failures.isEmpty ())
+    {
+      Q_EMIT pluginsFailedToLoad (
+        tr ("%n plugin(s) failed to load", nullptr, failures.size ()),
+        failures.join (u'\n'));
+    }
+}
+
 ProjectSession *
 ProjectManager::activeSession () const
 {
   return active_session_.get ();
+}
+
+controllers::Clipboard *
+ProjectManager::clipboard () const
+{
+  return clipboard_.get ();
 }
 
 void

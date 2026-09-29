@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -15,12 +15,24 @@ ProgressDialog {
     root.future.cancel();
   }
 
+  // The dialog tracks progress only, so every outcome closes it
+  function closeIfAutoClose() {
+    if (root.autoClose) {
+      root.close();
+    }
+  }
+
   Connections {
-    function onFinished() {
-      console.log("Progress finished");
-      if (root.autoClose) {
-        root.close();
-      }
+    function onCanceled() {
+      root.closeIfAutoClose();
+    }
+
+    function onFailed(errorString: string) {
+      root.closeIfAutoClose();
+    }
+
+    function onSucceeded() {
+      root.closeIfAutoClose();
     }
 
     target: root.future

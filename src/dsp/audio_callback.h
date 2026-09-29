@@ -3,22 +3,20 @@
 
 #pragma once
 
-#include <functional>
-#include <optional>
-
 #include "dsp/iaudio_callback.h"
+#include "utils/inplace_function.h"
 
 namespace zrythm::dsp
 {
 class AudioCallback : public IAudioCallback
 {
 public:
-  using EngineProcessCallback = std::function<void (
+  using EngineProcessCallback = utils::InplaceFunction<void (
     std::span<const float * const> inputChannels,
     std::span<float * const>       outputChannels,
     units::sample_u32_t            numSamples)>;
-  using DeviceAboutToStartCallback = std::function<void ()>;
-  using DeviceStoppedCallback = std::function<void ()>;
+  using DeviceAboutToStartCallback = utils::InplaceFunction<void ()>;
+  using DeviceStoppedCallback = utils::InplaceFunction<void ()>;
 
   AudioCallback (
     EngineProcessCallback      process_cb,
@@ -35,8 +33,8 @@ public:
   void error (std::string_view error_message) override;
 
 private:
-  EngineProcessCallback                     process_cb_;
-  std::optional<DeviceAboutToStartCallback> device_about_to_start_cb_;
-  std::optional<DeviceStoppedCallback>      device_stopped_cb_;
+  EngineProcessCallback      process_cb_;
+  DeviceAboutToStartCallback device_about_to_start_cb_;
+  DeviceStoppedCallback      device_stopped_cb_;
 };
 } // namespace zrythm::dsp

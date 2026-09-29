@@ -37,7 +37,7 @@
 namespace zrythm::dsp::graph
 {
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 using namespace std::chrono_literals;
 

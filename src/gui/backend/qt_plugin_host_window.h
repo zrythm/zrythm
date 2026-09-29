@@ -4,8 +4,11 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include "plugins/plugin_host_window.h"
+
+#include <QSize>
 
 namespace zrythm::gui
 {
@@ -39,6 +42,8 @@ public:
   void  setVisible (bool shouldBeVisible) override;
   WId   getEmbedWindowId () const override;
   float contentScaleFactor () const override;
+
+  std::optional<QSize> attachNativeView (quintptr native_view) override;
 
 private:
   /** Emits embedSizeChanged() when the embed area resizes. */

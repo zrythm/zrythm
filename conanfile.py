@@ -51,7 +51,11 @@ class Zrythm(ConanFile):
         self.requires("tracy/[>=0.13.1 <1]")
         self.requires("xxhash/0.8.3")
         self.requires("mpmcqueue/1.0")
-        if self.settings.os == "Linux":
+        # lilv + its lv2/serd/sord/sratom/zix chain for native LV2
+        # plugin discovery/hosting
+        self.requires("lilv/0.28.0")
+
+        if self.settings.os in ["Linux", "FreeBSD"]:
             self.requires("freetype/[>=2.14]")
             self.requires("fontconfig/[>=2.15]")
 
@@ -296,6 +300,19 @@ class Zrythm(ConanFile):
             with open(user_presets_path, "w") as f:
                 f.write(json.dumps(user_presets, indent=2))
             self.output.info("CMakeUserPresets.json generated with Conan environment")
+
+        # Conan-tier SBOM fragment consumed by tools/generate_sbom.py and
+        # tools/generate_attributions.py. Keep this the only call site: the
+        # upstream API is experimental.
+        from conan.tools.sbom import cyclonedx_1_6
+
+        fragment = cyclonedx_1_6(self, name=f"zrythm/{self.version}")
+        fragment_path = os.path.join(
+            self.generators_folder, "zrythm-conan-sbom.cdx.json"
+        )
+        with open(fragment_path, "w") as f:
+            json.dump(fragment, f, indent=2)
+        self.output.info(f"Conan SBOM fragment written to {fragment_path}")
 
     def validate(self):
         check_min_cppstd(self, "23")

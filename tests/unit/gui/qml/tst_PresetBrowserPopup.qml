@@ -8,15 +8,8 @@ import QmlTests
 TestCase {
   id: test
 
-  function findItem(item, name) {
-    if (item.objectName === name)
-      return item;
-    for (let i = 0; i < item.children.length; i++) {
-      const found = findItem(item.children[i], name);
-      if (found)
-        return found;
-    }
-    return null;
+  FindItem {
+    id: findItem
   }
 
   function makeBrowser(extraProps) {
@@ -46,7 +39,7 @@ TestCase {
     keyClick(Qt.Key_Down);
     tryVerify(() => fakePlugin.presetIndex === 1);
 
-    const cancelButton = findItem(ctx.browser, "cancelButton");
+    const cancelButton = findItem.byName(ctx.browser, "cancelButton");
     verify(cancelButton);
     mouseClick(cancelButton);
     compare(fakePlugin.revertCount, 1);
@@ -109,7 +102,7 @@ TestCase {
     fakePlugin.reset();
     const ctx = makeBrowser();
     tryCompare(ctx.browser, "count", 4);
-    const emptyLabel = findItem(ctx.browser, "emptyStateLabel");
+    const emptyLabel = findItem.byName(ctx.browser, "emptyStateLabel");
     verify(emptyLabel);
     verify(!emptyLabel.visible);
 
@@ -328,7 +321,7 @@ TestCase {
     keyClick(Qt.Key_Down);
     tryVerify(() => fakePlugin.presetIndex === 1);
 
-    const okButton = findItem(ctx.browser, "okButton");
+    const okButton = findItem.byName(ctx.browser, "okButton");
     verify(okButton);
     mouseClick(okButton);
     compare(activatedSpy.count, 1);

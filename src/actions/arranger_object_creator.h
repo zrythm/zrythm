@@ -3,9 +3,11 @@
 
 #pragma once
 
+#include <exception>
 #include <utility>
 
 #include "commands/add_arranger_object_command.h"
+#include "commands/arranger_object_owner_ref.h"
 #include "dsp/snap_grid.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
@@ -14,6 +16,7 @@
 #include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_all.h"
 #include "undo/undo_stack.h"
+#include "utils/logger.h"
 
 namespace zrythm::actions
 {
@@ -216,8 +219,10 @@ public:
 private:
   /**
    * @brief Used for MIDI/Audio clips.
+   *
+   * @return Whether the attach command was pushed.
    */
-  void add_laned_object (
+  bool add_laned_object (
     structure::tracks::Track                           &track,
     structure::tracks::TrackLane                       &lane,
     structure::arrangement::ArrangerObjectUuidReference obj_ref);
@@ -243,10 +248,37 @@ private:
   {
     auto obj_ref =
       arranger_object_factory_.create_editor_object<ChildT> (startTicks, value);
-    undo_stack_.push (
-      new commands::AddArrangerObjectCommand<ChildT> (clip, obj_ref));
+    if (!push_add_command<ChildT> (clip, obj_ref))
+      return nullptr;
     auto obj = obj_ref.template get_object_as<ChildT> ();
     return obj;
+  }
+
+  /**
+   * @brief Constructs and pushes the add command attaching @p obj_ref
+   * to @p owner.
+   *
+   * @return Whether the command was pushed. A construction failure
+   * (owner not registered, or owner/object type mismatch) is logged
+   * and leaves the undo stack unchanged.
+   */
+  template <typename ObjectT, typename OwnerT>
+  bool push_add_command (
+    OwnerT                                                    &owner,
+    const structure::arrangement::ArrangerObjectUuidReference &obj_ref)
+  {
+    try
+      {
+        undo_stack_.push (new commands::AddArrangerObjectCommand<ObjectT> (
+          commands::make_owner_ref (owner, arranger_object_factory_.registry ()),
+          obj_ref));
+        return true;
+      }
+    catch (const std::exception &e)
+      {
+        z_error ("Failed to attach object to its owner: {}", e.what ());
+        return false;
+      }
   }
 
 private:

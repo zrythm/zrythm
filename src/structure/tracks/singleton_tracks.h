@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "structure/tracks/track.h"
+#include <memory>
+
+#include <QObject>
 
 namespace zrythm::structure::tracks
 {
@@ -34,48 +36,18 @@ class SingletonTracks : public QObject
   QML_UNCREATABLE ("")
 
 public:
-  SingletonTracks (QObject * parent = nullptr) : QObject (parent) { }
+  explicit SingletonTracks (QObject * parent = nullptr);
+  ~SingletonTracks () override;
 
-  ChordTrack *     chordTrack () const { return chord_track_; }
-  ModulatorTrack * modulatorTrack () const { return modulator_track_; }
-  MasterTrack *    masterTrack () const { return master_track_; }
-  MarkerTrack *    markerTrack () const { return marker_track_; }
+  ChordTrack *     chordTrack () const;
+  ModulatorTrack * modulatorTrack () const;
+  MasterTrack *    masterTrack () const;
+  MarkerTrack *    markerTrack () const;
 
-  void setChordTrack (ChordTrack * track)
-  {
-    if (chord_track_ != track)
-      {
-        chord_track_ = track;
-        Q_EMIT chordTrackChanged ();
-      }
-  }
-
-  void setModulatorTrack (ModulatorTrack * track)
-  {
-    if (modulator_track_ != track)
-      {
-        modulator_track_ = track;
-        Q_EMIT modulatorTrackChanged ();
-      }
-  }
-
-  void setMasterTrack (MasterTrack * track)
-  {
-    if (master_track_ != track)
-      {
-        master_track_ = track;
-        Q_EMIT masterTrackChanged ();
-      }
-  }
-
-  void setMarkerTrack (MarkerTrack * track)
-  {
-    if (marker_track_ != track)
-      {
-        marker_track_ = track;
-        Q_EMIT markerTrackChanged ();
-      }
-  }
+  void setChordTrack (ChordTrack * track);
+  void setModulatorTrack (ModulatorTrack * track);
+  void setMasterTrack (MasterTrack * track);
+  void setMarkerTrack (MarkerTrack * track);
 
 Q_SIGNALS:
   void chordTrackChanged ();
@@ -84,9 +56,8 @@ Q_SIGNALS:
   void markerTrackChanged ();
 
 private:
-  QPointer<ChordTrack>     chord_track_;
-  QPointer<ModulatorTrack> modulator_track_;
-  QPointer<MasterTrack>    master_track_;
-  QPointer<MarkerTrack>    marker_track_;
+  class Impl;
+
+  std::unique_ptr<Impl> impl_;
 };
 }

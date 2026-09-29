@@ -67,7 +67,7 @@ public:
   utils::QObjectUniquePtr<QLocalSocket> socket_;
 
   std::unique_ptr<DirectoryManager>                     dir_manager_;
-  utils::QObjectUniquePtr<AlertManager>                 alert_manager_;
+  utils::QObjectUniquePtr<NotificationCenter>           notification_center_;
   utils::QObjectUniquePtr<TranslationManager>           translation_manager_;
   utils::QObjectUniquePtr<ProjectManager>               project_manager_;
   utils::QObjectUniquePtr<FileSystemModel>              file_system_model_;
@@ -187,9 +187,26 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   impl_->juce_dispatch_timer_->start (0);
 #endif
 
-  impl_->alert_manager_ = utils::make_qobject_unique<AlertManager> (this);
+  impl_->notification_center_ =
+    utils::make_qobject_unique<NotificationCenter> (this);
   impl_->project_manager_ =
     utils::make_qobject_unique<ProjectManager> (*impl_->app_settings_, this);
+
+  // The connection context makes the posts run on the GUI thread (the
+  // loading-failure signal is also emitted from worker threads)
+  QObject::connect (
+    impl_->project_manager_.get (), &ProjectManager::projectLoadingFailed,
+    impl_->notification_center_.get (),
+    [center = impl_->notification_center_.get ()] (const QString &message) {
+      center->postCritical (tr ("Project Loading Failed"), message);
+    });
+  QObject::connect (
+    impl_->project_manager_.get (), &ProjectManager::pluginsFailedToLoad,
+    impl_->notification_center_.get (),
+    [center = impl_->notification_center_.get ()] (
+      const QString &title, const QString &detail) {
+      center->postWarning (title, detail);
+    });
   impl_->translation_manager_ = utils::make_qobject_unique<TranslationManager> (
     *impl_->app_settings_, this);
   impl_->file_system_model_ = utils::make_qobject_unique<FileSystemModel> (this);
@@ -377,7 +394,27 @@ ZrythmApplication::setup_device_manager ()
           z_warning ("Failed to write device setup file: {}", filepath);
         }
     });
-  impl_->device_manager_->initialize (2, 2, true);
+  // The signal is emitted from the audio device thread, so the
+  // connection context makes the post run on the GUI thread
+  QObject::connect (
+    impl_->device_manager_.get (), &gui::backend::DeviceManager::errorOccurred,
+    impl_->notification_center_.get (),
+    [center = impl_->notification_center_.get ()] (const QString &message) {
+      center->postError (tr ("Audio Device Error"), message);
+    });
+
+  try
+    {
+      impl_->device_manager_->initialize (2, 2, true);
+    }
+  catch (const utils::ZrythmException &e)
+    {
+      // Posting before the UI exists is safe: the notification area
+      // presents unpresented critical notifications on creation
+      impl_->notification_center_->postCritical (
+        tr ("Audio Device Initialization Failed"),
+        e.what_string ().to_qstring ());
+    }
 
   // Create hardware audio interface wrapper
   impl_->hw_audio_interface_ =
@@ -726,10 +763,10 @@ ZrythmApplication::pluginManager () const
   return impl_->plugin_manager_.get ();
 }
 
-zrythm::gui::AlertManager *
-ZrythmApplication::alertManager () const
+zrythm::gui::NotificationCenter *
+ZrythmApplication::notificationCenter () const
 {
-  return impl_->alert_manager_.get ();
+  return impl_->notification_center_.get ();
 }
 
 zrythm::gui::TranslationManager *

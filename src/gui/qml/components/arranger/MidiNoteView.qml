@@ -15,6 +15,7 @@ ArrangerObjectBaseView {
   property int highlightMode: 0
   property MidiNote midiNote: root.arrangerObject as MidiNote
   property color noteHighlightColor: "transparent"
+  selectionCornerRadius: 2
 
   function _updateHighlight() {
     if (root.highlightMode === 0 || !root.midiNote) {

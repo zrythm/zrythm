@@ -554,9 +554,9 @@ TEST_F (MovePluginsCommandTest, MovePluginWithSingleAutomationTrack)
     u8"Test Param");
   plugin->add_parameter (param_ref);
 
-  auto at = utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-    tempo_map_wrapper_, registry_, param_ref);
-  source_atl_->add_automation_track (std::move (at));
+  auto at = utils::create_object<structure::tracks::AutomationTrack> (
+    registry_, tempo_map_wrapper_, registry_, param_ref);
+  source_atl_->add_automation_track (at);
   ASSERT_EQ (source_atl_->rowCount (), 1);
   ASSERT_EQ (target_atl_->rowCount (), 0);
 
@@ -605,14 +605,14 @@ TEST_F (MovePluginsCommandTest, MovePluginWithMultipleAutomationTracks)
   plugin->add_parameter (param2);
 
   source_atl_->add_automation_track (
-    utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, registry_, param0));
+    utils::create_object<structure::tracks::AutomationTrack> (
+      registry_, tempo_map_wrapper_, registry_, param0));
   source_atl_->add_automation_track (
-    utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, registry_, param1));
+    utils::create_object<structure::tracks::AutomationTrack> (
+      registry_, tempo_map_wrapper_, registry_, param1));
   source_atl_->add_automation_track (
-    utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, registry_, param2));
+    utils::create_object<structure::tracks::AutomationTrack> (
+      registry_, tempo_map_wrapper_, registry_, param2));
   ASSERT_EQ (source_atl_->rowCount (), 3);
 
   MovePluginsCommand cmd (

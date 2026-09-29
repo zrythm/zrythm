@@ -1,26 +1,23 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
 // SPDX-License-Identifier: GPL-3.0-only
+
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
-import ZrythmStyle 1.0
+import ZrythmStyle
 
 T.Menu {
-  // header: Item {
-  //     height: ZrythmTheme.buttonRadius
-  // }
-  // footer: Item {
-  //     height: ZrythmTheme.buttonRadius
-  // }
-
   id: control
 
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
   margins: 0
   overlap: 1
+  padding: 4
+
   // popupType: Qt.platform.os === "windows" ? Popup.Window : Popup.Native // auto-fallbacks to Window, then normal (Native crashes on Windows)
 
   T.Overlay.modal: Rectangle {
@@ -31,7 +28,6 @@ T.Menu {
   }
   background: PopupBackgroundRect {
     implicitWidth: 200
-    radius: 0
   }
   contentItem: ListView {
     clip: true

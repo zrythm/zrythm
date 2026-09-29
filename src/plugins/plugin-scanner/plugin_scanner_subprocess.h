@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -41,6 +41,8 @@
 
 #include "zrythm-config.h"
 
+#include <optional>
+
 #include <juce_audio_processors/juce_audio_processors.h>
 
 namespace zrythm::plugins::scanner
@@ -78,7 +80,14 @@ private:
   void suspended () override;
   void resumed () override;
 
-  juce::OwnedArray<juce::PluginDescription>
+  /**
+   * @brief Scans the identifier contained in the given message.
+   *
+   * @return The scan results (possibly empty when the identifier contains no
+   * plugins), or nullopt if the scan could not run on the current thread and
+   * must be retried on the message thread.
+   */
+  std::optional<juce::OwnedArray<juce::PluginDescription>>
        do_scan (const juce::MemoryBlock &block);
   void send_results (const juce::OwnedArray<juce::PluginDescription> &results);
 

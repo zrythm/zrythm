@@ -82,7 +82,7 @@ Arranger {
     const delta = currentValue - prevValue;
     console.debug("moving selections by", delta, "value");
     if (root.selectionOperator) {
-      const success = root.selectionOperator.moveAutomationPointsByDelta(delta);
+      const success = root.selectionOperator.moveAutomationPointsByDelta(root.arrangerSelectionModel, delta);
       if (!success) {
         console.warn("Failed to move selections - validation failed");
       }

@@ -15,11 +15,11 @@ namespace zrythm::gui::qquick
 namespace
 {
 
-constexpr std::array<qreal, 4> kRotations = {
+constexpr std::array<double, 4> kRotations = {
   0.0, 210.0 / 360.0, 120.0 / 360.0, 330.0 / 360.0
 };
 
-constexpr std::array<qreal, 4> kBaseAlphas = { 0.6, 0.65, 0.65, 0.75 };
+constexpr std::array<double, 4> kBaseAlphas = { 0.6, 0.65, 0.65, 0.75 };
 
 using zrythm::dsp::ChordDescriptor;
 using zrythm::dsp::MusicalNote;
@@ -54,13 +54,13 @@ levelForNote (
 }
 
 QColor
-colorForLevel (const QColor &base, int level, qreal alpha)
+colorForLevel (const QColor &base, int level, double alpha)
 {
   const QColor hsv = base.toHsv ();
-  qreal        h = hsv.hueF ();
+  double       h = hsv.hueF ();
   if (h < 0.0)
     h = 0.0;
-  qreal rotatedH = std::fmod (h + kRotations[level], 1.0);
+  double rotatedH = std::fmod (h + kRotations[level], 1.0);
   if (rotatedH < 0.0)
     rotatedH += 1.0;
   QColor out;
@@ -78,7 +78,7 @@ ChordHighlighter::highlightColorForNote (
   ChordDescriptor * chord,
   MusicalScale *    scale,
   int               highlightMode,
-  qreal             alphaScale)
+  double            alphaScale)
 {
   const int level = levelForNote (note, chord, scale, highlightMode);
   if (level < 0)
@@ -92,7 +92,7 @@ ChordHighlighter::highlightColors (
   ChordDescriptor * chord,
   MusicalScale *    scale,
   int               highlightMode,
-  qreal             alphaScale)
+  double            alphaScale)
 {
   QVariantList result;
   result.reserve (12);

@@ -11,6 +11,7 @@
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 #include "utils/registry_utils.h"
+#include "utils/rt_logger.h"
 #include "utils/serialization.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
@@ -99,12 +100,18 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
   const double sample_rate = sample_rate_provider_ ().in (units::sample_rate);
   const int    buffer_size = buffer_size_provider_ ().in<int> (units::samples);
 
-  // Create plugin instance asynchronously
+  // Create plugin instance asynchronously. The plugin may be destroyed
+  // before the creation finishes (e.g. a refused paste deletes the
+  // imported plugin): the guard makes this callback a no-op in that
+  // case, as the destruction nulls it
   create_plugin_instance_async_func_ (
     *plugin_desc, sample_rate, buffer_size,
-    [this, generateNewPluginPortsAndParams] (
+    [this, generateNewPluginPortsAndParams, guard = self_guard_] (
       std::unique_ptr<juce::AudioPluginInstance> instance,
       const juce::String                        &error) {
+      if (guard == nullptr)
+        return;
+
       plugin_loading_ = false;
 
       if (!instance)
@@ -510,7 +517,7 @@ JucePlugin::process_impl (
             || ev.samplePosition >= nframes.in<int> (units::samples))
             [[unlikely]]
             {
-              note_invalid_output_event_drop ("event position out of range"sv);
+              log_invalid_output_event_drop ("event position out of range"sv);
               continue;
             }
           // JUCE reports chunk-relative positions; the MIDI port buffer
@@ -558,18 +565,16 @@ JucePlugin::sync_changed_params_to_juce () noexcept
 }
 
 void
-JucePlugin::note_invalid_output_event_drop (std::string_view violation) noexcept
+JucePlugin::log_invalid_output_event_drop (std::string_view violation) noexcept
 {
   const auto drops =
     invalid_output_event_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
   if (drops == 1 || (drops & (drops - 1)) == 0)
     {
-      post_main_thread_action ([this, drops, violation] {
-        z_warning (
-          "JUCE plugin '{}': dropped {} invalid output event(s) so far "
-          "(last: {})",
-          get_name (), drops, violation);
-      });
+      z_rt_warning (
+        "JUCE plugin '{}': dropped {} invalid output event(s) so far "
+        "(last: {})",
+        node_name_view (), drops, violation);
     }
 }
 
@@ -610,7 +615,7 @@ JucePlugin::JuceParamListener::parameterValueChanged (
           // own parameter reporting
           if (!parent_.param_sync_.entries.empty ())
             {
-              parent_.note_invalid_output_event_drop (
+              parent_.log_invalid_output_event_drop (
                 "param index out of range"sv);
             }
           return;

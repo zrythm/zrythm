@@ -42,6 +42,8 @@ endfunction()
 add_library(zrythm_test_helpers_lib STATIC)
 
 target_sources(zrythm_test_helpers_lib
+  PRIVATE
+    helpers/scoped_juce_qapplication.cpp
   PUBLIC
     FILE_SET HEADERS
     FILES
@@ -89,10 +91,6 @@ set_target_properties(zrythm_test_helpers_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
-set(test_lv2_plugins)
-set(test_lv2_plugin_libs)
-add_subdirectory(lv2plugins)
-
 add_subdirectory(unit)
 add_subdirectory(benchmarks)
 
@@ -104,7 +102,9 @@ add_subdirectory(test_plugins)
 # on Windows with SMTG_CUSTOM_BINARY_LOCATION they are directly at VST3/.
 get_target_property(vst3_pkg_path test_gain_vst3 SMTG_PLUGIN_PACKAGE_PATH)
 get_filename_component(vst3_search_path "${vst3_pkg_path}" DIRECTORY)
-# One bundle per VST3 fixture (1 plugin class per bundle)
+# One plugin per VST3 fixture bundle: each bundle exposes one audio
+# module class (the scan drops non-plugin classes, e.g. the dual
+# fixture's controller class)
 list(LENGTH zrythm_test_vst3_fixture_targets vst3_plugins_count)
 # One bundle per CLAP fixture, except the synth bundle which contains both
 # note dialect variants of the synth (2 plugins)
@@ -116,6 +116,17 @@ target_compile_definitions(zrythm_test_helpers_lib
     TEST_CLAP_SEARCH_PATHS="${CMAKE_CURRENT_BINARY_DIR}/test_plugins/CLAP/$<CONFIG>"
     TEST_VST3_PLUGINS_COUNT=${vst3_plugins_count}
     TEST_CLAP_PLUGINS_COUNT=${clap_plugins_count}
+)
+target_compile_definitions(zrythm_test_helpers_lib
+  PUBLIC
+    TEST_LV2_SEARCH_PATHS="${CMAKE_CURRENT_BINARY_DIR}/test_plugins/lv2/$<CONFIG>"
+    # eg-amp, eg-enum, eg-fifths, eg-sampler, sigabrt, state-files,
+    # test-instrument and broken contain 1 plugin each; eg-amp also holds
+    # the float-window amp (2 plugins); pos-probe contains 2; plumbing
+    # contains 23; test-instrument.preset contains only a preset (no
+    # plugins)
+    TEST_LV2_BUNDLES_COUNT=11
+    TEST_LV2_PLUGINS_COUNT=34
 )
 
 # Ensure test plugins are built before running tests

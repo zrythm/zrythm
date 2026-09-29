@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -37,7 +37,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include "zrythm-config.h"
+
 #include "plugins/CLAPPluginFormat.h"
+#include "plugins/lv2_plugin_format.h"
+#include "plugins/lv2_world.h"
 #include "plugins/vst3_plugin_format.h"
 
 #include "plugin_scanner_subprocess.h"
@@ -67,9 +71,9 @@ PluginScannerSubprocess::handleMessageFromCoordinator (
 
   const std::lock_guard<std::mutex> lock (mutex);
 
-  if (const auto results = do_scan (mb); !results.isEmpty ())
+  if (const auto results = do_scan (mb))
     {
-      send_results (results);
+      send_results (*results);
     }
   else
     {
@@ -95,17 +99,18 @@ PluginScannerSubprocess::handleAsyncUpdate ()
       if (pending_blocks_.empty ())
         return;
 
-      if (
-        const auto results = do_scan (pending_blocks_.front ());
-        !results.isEmpty ())
+      // this runs on the message thread, so the scan always produces a
+      // definitive result here - which must be sent even when empty
+      if (const auto results = do_scan (pending_blocks_.front ()))
         {
-          send_results (results);
+          send_results (*results);
         }
+
       pending_blocks_.pop ();
     }
 }
 
-juce::OwnedArray<juce::PluginDescription>
+std::optional<juce::OwnedArray<juce::PluginDescription>>
 PluginScannerSubprocess::do_scan (const juce::MemoryBlock &block)
 {
   juce::MemoryInputStream stream{ block, false };
@@ -126,16 +131,19 @@ PluginScannerSubprocess::do_scan (const juce::MemoryBlock &block)
     return nullptr;
   }();
 
+  if (matchingFormat == nullptr)
+    return juce::OwnedArray<juce::PluginDescription>{};
+
+  if (
+    !juce::MessageManager::getInstance ()->isThisTheMessageThread ()
+    && !matchingFormat->requiresUnblockedMessageThreadDuringCreation (pd))
+    return std::nullopt;
+
   juce::OwnedArray<juce::PluginDescription> results;
 
-  if (matchingFormat != nullptr
-        && (juce::MessageManager::getInstance()->isThisTheMessageThread()
-            || matchingFormat->requiresUnblockedMessageThreadDuringCreation(pd)))
-    {
-      juce::Logger::writeToLog (
-        "DEBUG: Attempting to find all types for identifier: " + identifier);
-      matchingFormat->findAllTypesForFile (results, identifier);
-    }
+  juce::Logger::writeToLog (
+    "DEBUG: Attempting to find all types for identifier: " + identifier);
+  matchingFormat->findAllTypesForFile (results, identifier);
 
   juce::Logger::writeToLog (
     "Found " + juce::String (results.size ())
@@ -168,6 +176,10 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
   juce::addDefaultFormatsToManager (format_manager_);
   format_manager_.addFormat (std::make_unique<plugins::CLAPPluginFormat> ());
   format_manager_.addFormat (std::make_unique<plugins::Vst3PluginFormat> ());
+  format_manager_.addFormat (
+    std::make_unique<plugins::Lv2PluginFormat> (
+      std::make_shared<plugins::Lv2World> (
+        plugins::Lv2PluginFormat::get_spec_bundles_dir ())));
   for (auto * format : format_manager_.getFormats ())
     {
       juce::Logger::writeToLog ("Found format: " + format->getName ());

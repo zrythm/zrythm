@@ -42,6 +42,7 @@ set(vst3_fixture_extra_sources
 )
 
 set(vst3_fixtures
+  test_dual_vst3
   test_gain_vst3
   test_gui_vst3
   test_latency_vst3
@@ -92,6 +93,12 @@ smtg_add_vst3plugin(test_gui_vst3
   PACKAGE_NAME "Test GUI"
   SOURCES_LIST test_gui_vst3.cpp ${vst3_fixture_extra_sources}
 )
+# Dual-component fixture: separate processor and edit controller
+# classes (JUCE 8 architecture). No single-component base needed
+smtg_add_vst3plugin(test_dual_vst3
+  PACKAGE_NAME "Test Dual Gain"
+  SOURCES_LIST test_dual_vst3.cpp
+)
 
 foreach(vst3_fixture ${vst3_fixtures})
   # Sanitizers (when enabled) let violations inside the fixture be caught;
@@ -116,6 +123,7 @@ set(clap_fixtures
   test_rescan_misuse_clap
   test_restart_clap
   test_synth_clap
+  test_presets_clap
   test_thread_pool_clap
 )
 # Exported so the parent scope can derive the plugin count for test compile
@@ -138,10 +146,20 @@ foreach(clap_fixture ${clap_fixtures})
   )
 endforeach()
 
+# LV2 fixture bundles are placed here (<root>/<name>.lv2), like the VST3
+# and CLAP fixtures get their own directories under this build dir
+# Keep this lowercase to match the lv2/ subdirectory name: on
+# case-insensitive filesystems a differently-cased bundle root would
+# collapse into the subdirectory's build dir and lilv would report the
+# paths with the first-created spelling
+set(ZRYTHM_LV2_FIXTURE_ROOT ${CMAKE_CURRENT_BINARY_DIR}/lv2)
+add_subdirectory(lv2)
+
 add_custom_target(zrythm_test_plugins
   DEPENDS
     ${vst3_fixtures}
     ${clap_fixtures}
+    ${zrythm_test_lv2_fixture_targets}
     validator
 )
 

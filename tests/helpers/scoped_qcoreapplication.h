@@ -3,13 +3,11 @@
 
 #pragma once
 
-#include <cassert>
 #include <chrono>
-#include <functional>
 #include <memory>
 
 #include <QCoreApplication>
-#include <QElapsedTimer>
+#include <QTest>
 
 namespace zrythm::test_helpers
 {
@@ -25,40 +23,14 @@ class ScopedQCoreApplication
 public:
   ScopedQCoreApplication ()
   {
+    // Central knob for the QTest::qWaitFor()/QTRY_* timeout. Matches Qt's
+    // own 5s default; stored explicitly so there is one place to tune it
+    // (individual calls can still pass their own timeout).
+    QTest::defaultTryTimeout.store (
+      std::chrono::seconds (5), std::memory_order_relaxed);
     int     argc = 0;
     char ** argv = nullptr;
     app_ = std::make_unique<QCoreApplication> (argc, argv);
-  }
-
-  /**
-   * @brief Processes QCoreApplication events until @p cond returns true.
-   *
-   * Causes an assertion failure on timeout.
-   */
-  static void process_events_until_true (
-    const std::function<bool ()> &cond,
-    unsigned int                  max_calls = 100)
-  {
-    for (unsigned int i = 0; i < max_calls && !cond (); ++i)
-      {
-        QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
-      }
-    if (!cond ())
-      {
-        throw std::runtime_error (
-          "process_events_until_true: condition failed after timeout");
-      }
-  }
-
-  static void process_events_until_timeout (
-    std::chrono::milliseconds time = std::chrono::milliseconds (200))
-  {
-    QElapsedTimer timer;
-    timer.start ();
-    while (timer.durationElapsed () < time)
-      {
-        QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
-      }
   }
 
 private:

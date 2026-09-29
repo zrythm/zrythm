@@ -33,6 +33,7 @@ Control {
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
+  required property ViewContext viewContext
 
   signal dropTargetChanged(int index)
   signal dropTargetFolderChanged(var track, int index)
@@ -66,8 +67,58 @@ Control {
         }
       }
       const selCount = selectedIndexes.length;
+      // Copyability follows deletability (both exclude the singleton
+      // track types)
+      cutMenuItem.text = selCount > 1 ? qsTr("Cut %1 Tracks").arg(selCount) : qsTr("Cut Track");
+      cutMenuItem.enabled = !anyUndeletable && selCount > 0;
+      copyMenuItem.text = selCount > 1 ? qsTr("Copy %1 Tracks").arg(selCount) : qsTr("Copy Track");
+      copyMenuItem.enabled = !anyUndeletable && selCount > 0;
+      pasteMenuItem.enabled = root.trackCollectionOperator.canPasteTracks;
+      duplicateMenuItem.text = selCount > 1 ? qsTr("Duplicate %1 Tracks").arg(selCount) : qsTr("Duplicate Track");
+      duplicateMenuItem.enabled = !anyUndeletable && selCount > 0;
       deleteMenuItem.text = selCount > 1 ? qsTr("Delete %1 Tracks").arg(selCount) : qsTr("Delete Track");
       deleteMenuItem.enabled = !anyUndeletable && selCount > 0;
+    }
+
+    MenuItem {
+      id: cutMenuItem
+
+      text: qsTr("Cut Track")
+
+      onTriggered: {
+        root.viewContext.cutRequested();
+      }
+    }
+
+    MenuItem {
+      id: copyMenuItem
+
+      text: qsTr("Copy Track")
+
+      onTriggered: {
+        root.viewContext.copyRequested();
+      }
+    }
+
+    MenuItem {
+      id: pasteMenuItem
+
+      text: qsTr("Paste Tracks")
+
+      onTriggered: root.viewContext.pasteRequested()
+    }
+
+    MenuItem {
+      id: duplicateMenuItem
+
+      text: qsTr("Duplicate Track")
+
+      onTriggered: {
+        root.viewContext.duplicateRequested();
+      }
+    }
+
+    MenuSeparator {
     }
 
     MenuItem {
@@ -75,16 +126,7 @@ Control {
 
       text: qsTr("Delete Track")
 
-      onTriggered: {
-        const selectedIndexes = root.trackSelectionModel.selectedIndexes;
-        let tracksToDelete = [];
-        for (const idx of selectedIndexes) {
-          const t = idx.data(TrackCollection.TrackPtrRole);
-          if (t !== null && t.isDeletable)
-            tracksToDelete.push(t);
-        }
-        root.trackCollectionOperator.deleteTracks(tracksToDelete);
-      }
+      onTriggered: root.viewContext.deleteRequested()
     }
   }
   background: Rectangle {
@@ -208,7 +250,7 @@ Control {
             const trackContentEnd = lv.contentHeight - footerH;
             const cursorContentY = lvPoint.y + lv.contentY;
             if (cursorContentY >= trackContentEnd - 10) {
-              const pastEndIndex = root.tracklist.isTrackPinned(root.track) ? root.tracklist.pinnedTracksCutoff : root.tracklist.collection.trackCount();
+              const pastEndIndex = root.tracklist.isTrackPinned(root.track) ? root.tracklist.pinnedTracksCutoff : root.tracklist.collection.trackCount;
               root.dropTargetChanged(pastEndIndex);
             }
           }
@@ -326,10 +368,22 @@ Control {
               delegate: ItemDelegate {
                 id: laneDelegate
 
+                required property int index
                 required property TrackLane trackLane
 
                 height: trackLane.height
                 width: ListView.view.width
+
+                ContextMenu.menu: Menu {
+                  MenuItem {
+                    enabled: laneDelegate.index < lanesListView.count - 1
+                    text: qsTr("Delete Lane")
+
+                    onTriggered: {
+                      root.trackCollectionOperator.deleteLane(laneDelegate.trackLane);
+                    }
+                  }
+                }
 
                 RowLayout {
                   spacing: 2
@@ -424,7 +478,6 @@ Control {
       }
     }
   }
-
 
   SelectionTracker {
     id: selectionTracker

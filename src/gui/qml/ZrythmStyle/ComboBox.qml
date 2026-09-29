@@ -53,13 +53,16 @@ T.ComboBox {
     verticalAlignment: Text.AlignVCenter
 
     background: Rectangle {
-      border.color: parent && parent.activeFocus ? control.palette.highlight : control.palette.button
+      border.color: parent && parent.activeFocus ? control.palette.highlight : control.palette.mid
       border.width: parent && parent.activeFocus ? 2 : 1
       color: control.palette.base
+      radius: ZrythmTheme.textFieldRadius
       visible: control.enabled && control.editable && !control.flat
     }
   }
   delegate: ItemDelegate {
+    id: comboDelegate
+
     required property int index
     required property var model
 
@@ -68,6 +71,17 @@ T.ComboBox {
     hoverEnabled: control.hoverEnabled
     text: model[control.textRole]
     width: ListView.view.width - 2
+
+    ColorImage {
+      color: comboDelegate.highlighted ? control.palette.highlightedText : control.palette.text
+      height: 12
+      source: "qrc:/qt/qml/Zrythm/icons/noto-glyphs/check.svg"
+      visible: comboDelegate.index === control.currentIndex
+      width: 12
+      anchors.right: parent.right
+      anchors.rightMargin: 6
+      anchors.verticalCenter: parent.verticalCenter
+    }
   }
   indicator: ColorImage {
     readonly property real additionalPadding: 4
@@ -101,10 +115,10 @@ T.ComboBox {
       T.ScrollIndicator.vertical: ScrollIndicator {
       }
       footer: Item {
-        height: ZrythmTheme.buttonRadius
+        height: ZrythmTheme.buttonPadding
       }
       header: Item {
-        height: ZrythmTheme.buttonRadius
+        height: ZrythmTheme.buttonPadding
       }
     }
     enter: Transition {

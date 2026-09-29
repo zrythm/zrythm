@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/add_clip_to_clip_slot_command.h"
@@ -44,9 +44,11 @@ protected:
     auto clip_ref = clip_builder.build_in_registry ();
     test_clip_ref = clip_ref;
 
-    // Create a clip slot
-    clip_slot =
-      std::make_unique<structure::scenes::ClipSlot> (object_registry, nullptr);
+    // Create a registered clip slot and keep it alive through the
+    // fixture's reference
+    clip_slot_ref = utils::create_object<structure::scenes::ClipSlot> (
+      object_registry, object_registry);
+    clip_slot = clip_slot_ref.get ();
   }
 
   std::unique_ptr<dsp::TempoMap>        tempo_map;
@@ -57,13 +59,14 @@ protected:
   structure::arrangement::ArrangerObjectUuidReference            test_clip_ref{
     object_registry
   };
-  std::unique_ptr<structure::scenes::ClipSlot> clip_slot;
+  structure::scenes::ClipSlotUuidReference clip_slot_ref{ object_registry };
+  structure::scenes::ClipSlot *            clip_slot = nullptr;
 };
 
 // Test initial state after construction
 TEST_F (AddClipToClipSlotCommandTest, InitialState)
 {
-  AddClipToClipSlotCommand command (*clip_slot, test_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
 
   // Initially, the clip slot should not have a clip
   EXPECT_EQ (clip_slot->clip (), nullptr);
@@ -72,7 +75,7 @@ TEST_F (AddClipToClipSlotCommandTest, InitialState)
 // Test redo operation sets clip in clip slot
 TEST_F (AddClipToClipSlotCommandTest, RedoSetsClip)
 {
-  AddClipToClipSlotCommand command (*clip_slot, test_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
 
   command.redo ();
 
@@ -84,7 +87,7 @@ TEST_F (AddClipToClipSlotCommandTest, RedoSetsClip)
 // Test undo operation clears clip from clip slot
 TEST_F (AddClipToClipSlotCommandTest, UndoClearsClip)
 {
-  AddClipToClipSlotCommand command (*clip_slot, test_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
 
   // First set the clip
   command.redo ();
@@ -99,7 +102,7 @@ TEST_F (AddClipToClipSlotCommandTest, UndoClearsClip)
 // Test multiple undo/redo cycles
 TEST_F (AddClipToClipSlotCommandTest, MultipleUndoRedoCycles)
 {
-  AddClipToClipSlotCommand command (*clip_slot, test_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
 
   // First cycle
   command.redo ();
@@ -121,7 +124,7 @@ TEST_F (AddClipToClipSlotCommandTest, MultipleUndoRedoCycles)
 // Test command text
 TEST_F (AddClipToClipSlotCommandTest, CommandText)
 {
-  AddClipToClipSlotCommand command (*clip_slot, test_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
 
   // The command should have the text "Add Clip"
   EXPECT_EQ (command.text (), QString ("Add Clip"));
@@ -133,16 +136,18 @@ TEST_F (AddClipToClipSlotCommandTest, DifferentClipTypes)
   // Test with MidiClip
   auto midi_builder = factory->get_builder<structure::arrangement::MidiClip> ();
   auto midi_clip_ref = midi_builder.build_in_registry ();
-  structure::scenes::ClipSlot midi_clip_slot (object_registry, nullptr);
+  auto midi_slot_ref = utils::create_object<structure::scenes::ClipSlot> (
+    object_registry, object_registry);
+  auto * midi_clip_slot = midi_slot_ref.get ();
 
-  AddClipToClipSlotCommand midi_command (midi_clip_slot, midi_clip_ref);
+  AddClipToClipSlotCommand midi_command (midi_slot_ref, midi_clip_ref);
 
   midi_command.redo ();
-  EXPECT_NE (midi_clip_slot.clip (), nullptr);
-  EXPECT_EQ (midi_clip_slot.clip (), midi_clip_ref.get ());
+  EXPECT_NE (midi_clip_slot->clip (), nullptr);
+  EXPECT_EQ (midi_clip_slot->clip (), midi_clip_ref.get ());
 
   midi_command.undo ();
-  EXPECT_EQ (midi_clip_slot.clip (), nullptr);
+  EXPECT_EQ (midi_clip_slot->clip (), nullptr);
 }
 
 // Test replacing existing clip
@@ -156,7 +161,7 @@ TEST_F (AddClipToClipSlotCommandTest, ReplaceExistingClip)
   EXPECT_EQ (clip_slot->clip (), initial_clip_ref.get ());
 
   // Create command with new clip
-  AddClipToClipSlotCommand command (*clip_slot, test_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
 
   // Redo should replace the existing clip
   command.redo ();
@@ -181,7 +186,7 @@ TEST_F (AddClipToClipSlotCommandTest, ClipSlotWithExistingClip)
   auto new_clip_ref = new_builder.build_in_registry ();
 
   // Create command to add new clip
-  AddClipToClipSlotCommand command (*clip_slot, new_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, new_clip_ref);
 
   // Redo should replace the existing clip
   command.redo ();
@@ -196,13 +201,13 @@ TEST_F (AddClipToClipSlotCommandTest, ClipSlotWithExistingClip)
 // Test that clearClip signal is emitted on undo
 TEST_F (AddClipToClipSlotCommandTest, ClearClipSignalOnUndo)
 {
-  AddClipToClipSlotCommand command (*clip_slot, test_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
 
   // Track signal emissions
   bool clip_changed_emitted = false;
   QObject::connect (
-    clip_slot.get (), &structure::scenes::ClipSlot::clipObjectChanged,
-    clip_slot.get (), [&] (structure::arrangement::ArrangerObject * clip) {
+    clip_slot, &structure::scenes::ClipSlot::clipObjectChanged, clip_slot,
+    [&] (structure::arrangement::ArrangerObject * clip) {
       clip_changed_emitted = true;
     });
 
@@ -225,12 +230,29 @@ TEST_F (AddClipToClipSlotCommandTest, UndoRestoresPreviousClip)
   clip_slot->setClip (initial_clip_ref.get ());
   ASSERT_EQ (clip_slot->clip (), initial_clip_ref.get ());
 
-  AddClipToClipSlotCommand command (*clip_slot, test_clip_ref);
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
   command.redo ();
   EXPECT_EQ (clip_slot->clip (), test_clip_ref.get ());
 
   command.undo ();
   EXPECT_EQ (clip_slot->clip (), initial_clip_ref.get ());
+}
+
+// The command's slot reference must keep the slot alive while the
+// command is on the undo stack, even when the owning list drops it.
+TEST_F (AddClipToClipSlotCommandTest, CommandKeepsSlotAliveForUndo)
+{
+  AddClipToClipSlotCommand command (clip_slot_ref, test_clip_ref);
+  command.redo ();
+  auto * slot_ptr = clip_slot;
+
+  // Release the fixture's reference the way an owning list would
+  clip_slot_ref = utils::create_object<structure::scenes::ClipSlot> (
+    object_registry, object_registry);
+  clip_slot = clip_slot_ref.get ();
+
+  command.undo ();
+  EXPECT_EQ (slot_ptr->clip (), nullptr);
 }
 
 } // namespace zrythm::commands

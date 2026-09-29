@@ -449,11 +449,27 @@ public:
 
   // ========================================================================
 
+  /**
+   * @brief Sets the automation value provider invoked by process_block().
+   *
+   * @pre The audio engine is paused: the provider is read and invoked on
+   * the processing thread without synchronization.
+   */
   void set_automation_provider (AutomationValueProvider provider)
   {
     automation_value_provider_ = provider;
   }
+
+  /**
+   * @brief Unsets the automation value provider.
+   *
+   * @pre The audio engine is paused (see set_automation_provider()).
+   */
   void unset_automation_provider () { automation_value_provider_.reset (); }
+  bool hasAutomationProvider () const
+  {
+    return automation_value_provider_.has_value ();
+  }
 
   PortUuidReference get_modulation_input_port_ref () const
   {
@@ -486,6 +502,10 @@ public:
 
   const auto &get_unique_id () const { return unique_id_; }
 
+  /** Serialization key of the modulation source port reference; null when
+   * the parameter is not modulated. */
+  static constexpr auto kModulationSourcePortIdKey = "modulationSourcePortId"sv;
+
 private:
   // Serialization keys
   static constexpr auto kUniqueIdKey = "uniqueId"sv;
@@ -497,7 +517,6 @@ private:
   static constexpr auto kAutomatableKey = "automatable"sv;
   static constexpr auto kHiddenKey = "hidden"sv;
   static constexpr auto kBaseValueKey = "baseValue"sv;
-  static constexpr auto kModulationSourcePortIdKey = "modulationSourcePortId"sv;
   friend void to_json (nlohmann::json &j, const ProcessorParameter &p);
   friend void from_json (const nlohmann::json &j, ProcessorParameter &p);
 

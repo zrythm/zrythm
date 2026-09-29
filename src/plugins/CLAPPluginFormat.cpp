@@ -36,6 +36,7 @@
 #include "utils/format_qt.h"
 
 #include "plugins/CLAPPluginFormat.h"
+#include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_library.h"
 #include "utils/format_juce.h"
 #include "utils/logger.h"
@@ -69,8 +70,7 @@ createPluginDescription (
   description.descriptiveName = clapDesc->description;
   description.pluginFormatName = "CLAP";
 
-  description.uniqueId =
-    CLAPPluginFormat::get_hash_for_range (std::string (clapDesc->id));
+  description.uniqueId = get_hash_for_range (std::string (clapDesc->id));
 
   description.version = clapDesc->version;
   juce::StringArray features_strings{ clapDesc->features };

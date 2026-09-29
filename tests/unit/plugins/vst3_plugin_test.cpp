@@ -15,6 +15,9 @@
 #include "utils/object_registry.h"
 #include "utils/views.h"
 
+#include <QSignalSpy>
+#include <QTest>
+
 #include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
 #include "helpers/test_plugin_finder.h"
@@ -804,7 +807,331 @@ TEST_F (Vst3PluginTest, HostParamChangesReachEditController)
     const auto state = read_controller_state_json (*plugin_);
     return state.value ("controllerEditCount", 0);
   };
-  process_events_until_true ([&] { return read_edit_count () >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return read_edit_count () >= 1; }));
+}
+
+// A plugin that changes a parameter from within process() reports it
+// through the output parameter queue; the host must apply it to the
+// parameter model (pending value + flush) without feeding it back to the
+// plugin on the next block. The fixture reports a fixed normalized Level
+// value on every block while its "Auto Report" toggle is on
+TEST_F (Vst3PluginTest, ProcessingTimeParamChangesReachHost)
+{
+  // Must stay in sync with kReportedLevel in test_gain_vst3.cpp
+  constexpr float reported_level = 0.25f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+
+  // Baseline: host-set values stay as they are while nothing is reported
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), 0.5f, 1e-6f);
+
+  // Arming the toggle reaches the plugin through the normal input path;
+  // from the next block on, the reported value becomes the base value
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+
+  // The host must not send the applied value back to the plugin as a
+  // host-initiated change. The fixture counts Level points received
+  // through the input queue; while the feedback guard holds, that count
+  // stays constant after the value is applied
+  const auto read_input_count = [this] () -> int {
+    const auto state = read_controller_state_json (*plugin_);
+    return state.value ("levelInputCount", 0);
+  };
+  const auto count_after_apply = read_input_count ();
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+  EXPECT_EQ (read_input_count (), count_after_apply);
+}
+
+// Parameter edits reported by the plugin's own UI (beginEdit/performEdit/
+// endEdit on the component handler) are user edits: the value applies
+// through the user-edit path (user-edit listeners, gesture begin/end)
+// without echoing the applied value back to the plugin. The fixture
+// reports a full UI edit of Level when its "UI Edit Mode" param is set
+// to step 1
+TEST_F (Vst3PluginTest, PluginUiEditsAreAttributedAsUserEdits)
+{
+  // Must stay in sync with kUiEditedLevel in test_gain_vst3.cpp
+  constexpr float ui_edited_level = 0.75f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("UI Edit Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy edited_spy (
+    level_param, &dsp::ProcessorParameter::baseValueEditedByUser);
+  QSignalSpy gesture_started_spy (
+    level_param, &dsp::ProcessorParameter::userGestureStarted);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Baseline: host-set values stay as they are while no UI edit is
+  // reported
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), 0.5f, 1e-6f);
+  EXPECT_EQ (edited_spy.count (), 0);
+  EXPECT_EQ (gesture_started_spy.count (), 0);
+  EXPECT_EQ (gesture_finished_spy.count (), 0);
+
+  // Step 1: the fixture's edit controller reports beginEdit, a Level
+  // edit to 0.75, and endEdit; the value applies as a user edit at the
+  // next flush
+  mode_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return gesture_started_spy.count () >= 1 && gesture_finished_spy.count () >= 1;
+  }));
+  plugin_->flush_plugin_values ();
+
+  EXPECT_NEAR (level_param->baseValue (), ui_edited_level, 1e-6f);
+  EXPECT_GE (edited_spy.count (), 1);
+  EXPECT_GE (gesture_started_spy.count (), 1);
+  EXPECT_GE (gesture_finished_spy.count (), 1);
+
+  // The host must not send the applied value back to the plugin as a
+  // host-initiated change. The fixture counts Level points received
+  // through the input queue; while the feedback guard holds, that count
+  // stays constant after the value is applied
+  const auto read_input_count = [this] () -> int {
+    const auto state = read_controller_state_json (*plugin_);
+    return state.value ("levelInputCount", 0);
+  };
+  const auto count_after_apply = read_input_count ();
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), ui_edited_level, 1e-6f);
+  EXPECT_EQ (read_input_count (), count_after_apply);
+}
+
+// A plain (pending) report that predates a plugin-UI edit must not
+// overwrite the applied user edit at the next flush. The fixture's
+// "Auto Report" toggle arms the plain report and "UI Edit Mode" step 1
+// applies the user edit
+TEST_F (Vst3PluginTest, StalePendingValueDoesNotRevertUiEdit)
+{
+  // Must stay in sync with kReportedLevel/kUiEditedLevel in
+  // test_gain_vst3.cpp; the two values differ so a revert is observable
+  constexpr float reported_level = 0.25f;
+  constexpr float ui_edited_level = 0.75f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+  auto * mode_param = find_param_by_label ("UI Edit Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy edited_spy (
+    level_param, &dsp::ProcessorParameter::baseValueEditedByUser);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Arm the plain report, let it run for a block, then stop reporting
+  // before the flush that would apply it: the pending value survives
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  auto_report->setBaseValue (0.0f);
+  process_blocks (1);
+
+  // The UI edit parks a user-edit pending value that overwrites the
+  // stale one; the flush applies it as a user edit
+  mode_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return gesture_finished_spy.count () >= 1;
+  }));
+  plugin_->flush_plugin_values ();
+
+  EXPECT_NEAR (level_param->baseValue (), ui_edited_level, 1e-6f);
+  EXPECT_NE (level_param->baseValue (), reported_level);
+}
+
+// Processor-reported values must reach the edit controller of a
+// dual-component plugin: the controller keeps its own state and its UI
+// shows stale values without the notification. The dual fixture counts
+// controller-side setParamNormalized calls for Level in its structured
+// state
+TEST_F (Vst3PluginTest, ProcessingTimeParamChangesReachDualEditController)
+{
+  // Must stay in sync with kReportedLevel in test_dual_vst3.cpp
+  constexpr float reported_level = 0.25f;
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Dual Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+
+  const auto read_sync_count = [this] () -> int {
+    return read_controller_state_json (*plugin_).value (
+      "controllerSyncCount", 0);
+  };
+  const auto read_last_synced = [this] () -> double {
+    return read_controller_state_json (*plugin_).value (
+      "controllerLastSyncedLevel", -1.0);
+  };
+
+  // A host-initiated edit reaches the controller through the wrapped
+  // notify; wait for it to land so later count deltas are attributable
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return read_sync_count () >= 1; }));
+  const auto baseline_sync_count = read_sync_count ();
+
+  // Arming the toggle reaches the processor through the normal input
+  // path; from the next block on, the plugin reports a Level change
+  // from inside processing
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), reported_level, 1e-6f);
+
+  // The flushed value also reaches the separate controller
+  EXPECT_TRUE (QTest::qWaitFor ([&] {
+    return read_sync_count () >= baseline_sync_count + 1;
+  }));
+  EXPECT_NEAR (read_last_synced (), reported_level, 1e-6);
+}
+
+// The controller sync of processor-reported values is a plain
+// setParamNormalized without the begin/endEditFromHost wrapper (that
+// wrapper marks host-initiated edits). The fixture counts
+// beginEditFromHost calls in its structured state
+TEST_F (Vst3PluginTest, ProcessingTimeSyncIsBareOnDualController)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Dual Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+
+  const auto read_sync_count = [this] () -> int {
+    return read_controller_state_json (*plugin_).value (
+      "controllerSyncCount", 0);
+  };
+  const auto read_wrap_count = [this] () -> int {
+    return read_controller_state_json (*plugin_).value ("hostEditWrapCount", 0);
+  };
+
+  // Wait for the wrapped notify of the host-initiated edit to land so
+  // later deltas are attributable
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return read_wrap_count () >= 1; }));
+  const auto baseline_wrap_count = read_wrap_count ();
+  const auto baseline_sync_count = read_sync_count ();
+
+  // Processor-reported syncs grow the sync count without touching the
+  // host-edit wrap count
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_TRUE (QTest::qWaitFor ([&] {
+    return read_sync_count () >= baseline_sync_count + 1;
+  }));
+  EXPECT_EQ (read_wrap_count (), baseline_wrap_count);
+
+  // A host-initiated edit after the syncs still uses the wrapper
+  level_param->setBaseValue (0.7f);
+  process_blocks (1);
+  EXPECT_TRUE (QTest::qWaitFor ([&] {
+    return read_wrap_count () >= baseline_wrap_count + 1;
+  }));
+}
+
+// Single-component plugins share state between processor and
+// controller: processor-reported values must not produce controller
+// setParamNormalized notifications for them. The single-component
+// fixture counts controller-side setParamNormalized calls for Level in
+// its structured state
+TEST_F (Vst3PluginTest, ProcessingTimeReportsDoNotNotifySingleComponent)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * auto_report = find_param_by_label ("Auto Report");
+  ASSERT_NE (auto_report, nullptr);
+
+  const auto read_edit_count = [this] () -> int {
+    return read_controller_state_json (*plugin_).value (
+      "controllerEditCount", 0);
+  };
+
+  // Baseline: the wrapped notify of a host-initiated edit landed
+  level_param->setBaseValue (0.5f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return read_edit_count () >= 1; }));
+  const auto baseline_edit_count = read_edit_count ();
+
+  // Reported values apply to the host parameter model while the
+  // controller count stays at the baseline: the sync after the flush
+  // must land before the next host-initiated edit is counted, so the
+  // final count pins the total
+  auto_report->setBaseValue (1.0f);
+  process_blocks (2);
+  plugin_->flush_plugin_values ();
+  EXPECT_NEAR (level_param->baseValue (), 0.25f, 1e-6f);
+
+  level_param->setBaseValue (0.6f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return read_edit_count () == baseline_edit_count + 1;
+  }));
+}
+
+// A plugin that reports beginEdit without a matching endEdit leaves its
+// parameter with an open user gesture (automation suppressed
+// indefinitely); releasing resources is the definitive end of the
+// gesture. The fixture's "UI Edit Mode" step 2 reports the gesture pair
+// without the end
+TEST_F (Vst3PluginTest, OpenUiGestureIsClosedOnRelease)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  auto * level_param = find_param_by_label ("Level");
+  ASSERT_NE (level_param, nullptr);
+  auto * mode_param = find_param_by_label ("UI Edit Mode");
+  ASSERT_NE (mode_param, nullptr);
+
+  QSignalSpy gesture_started_spy (
+    level_param, &dsp::ProcessorParameter::userGestureStarted);
+  QSignalSpy gesture_finished_spy (
+    level_param, &dsp::ProcessorParameter::userGestureFinished);
+
+  // Step 2: beginEdit and performEdit without endEdit
+  mode_param->setBaseValue (1.0f);
+  process_blocks (1);
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return gesture_started_spy.count () >= 1;
+  }));
+  EXPECT_EQ (gesture_finished_spy.count (), 0);
+
+  plugin_->release_resources ();
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
+    return gesture_finished_spy.count () >= 1;
+  }));
 }
 
 // A plugin that changes its MIDI-CC mapping at runtime (MIDI learn) reports
@@ -847,14 +1174,14 @@ TEST_F (Vst3PluginTest, MidiCcAssignmentChangeRebuildsMapping)
   // later main-thread pass
   cc_assign->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([&] {
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
     const auto cc =
       dsp::midi_event::make_control_change (0, 7, 64, units::samples (0u));
     midi_in->buffer_.push_back (cc.time_, cc.data ());
     process_blocks (1);
     const auto gain = read_gain ();
     return gain >= 0.0 && gain < 0.6;
-  });
+  }));
   EXPECT_NEAR (read_gain (), 64.0 / 127.0, 1e-9);
 }
 
@@ -873,7 +1200,9 @@ TEST_F (Vst3PluginTest, IoChangeDeactivatesBeforeReactivatingBuses)
   process_blocks (1);
 
   // The restart request is handled asynchronously on the main thread
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
   process_blocks (1);
 
   const auto state = read_controller_state_json (*plugin_);
@@ -909,7 +1238,9 @@ TEST_F (Vst3PluginTest, ReloadComponentRecreatesInstance)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
   process_blocks (1);
 
   EXPECT_EQ (
@@ -985,7 +1316,9 @@ TEST_F (Vst3PluginTest, IoChangeWithNewBusCreatesPort)
   process_blocks (1);
 
   // The restart request is handled asynchronously on the main thread
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 2);
@@ -1006,7 +1339,9 @@ TEST_F (Vst3PluginTest, IoChangeWithRemovedBusDetachesPort)
   ASSERT_NE (grow, nullptr);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
 
   const auto audio_outs_after_grow = attached_audio_ports (false);
   ASSERT_EQ (audio_outs_after_grow.size (), 2);
@@ -1016,7 +1351,9 @@ TEST_F (Vst3PluginTest, IoChangeWithRemovedBusDetachesPort)
   ASSERT_NE (shrink, nullptr);
   shrink->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   EXPECT_EQ (attached_audio_ports (false).size (), 1);
   const auto all_outs = all_audio_ports (false);
@@ -1061,7 +1398,9 @@ TEST_F (Vst3PluginTest, IoChangeLeavesPortBuffersPreparedBeforeResume)
   ASSERT_NE (trigger, nullptr);
   trigger->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
 
   EXPECT_EQ (attached_audio_ports (false).size (), 2);
 }
@@ -1139,7 +1478,9 @@ TEST_F (Vst3PluginTest, PluginInitiatedProgramChangeUpdatesSelection)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return plugin_->presetIndex () == 2;
+  }));
   EXPECT_FALSE (plugin_->presetDirty ());
 }
 
@@ -1158,7 +1499,9 @@ TEST_F (Vst3PluginTest, PluginInitiatedProgramChangeViaGestureUpdatesSelection)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return plugin_->presetIndex () == 2;
+  }));
   EXPECT_FALSE (plugin_->presetDirty ());
 }
 
@@ -1177,9 +1520,9 @@ TEST_F (Vst3PluginTest, ProgramListContentChangeRefreshesPresetNames)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] {
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
     return plugin_->presetEntries ()[0].name == QStringLiteral ("Init (User)");
-  });
+  }));
   // The rest of the list is untouched
   EXPECT_EQ (plugin_->presetEntries ()[1].name, QStringLiteral ("Bright"));
   EXPECT_EQ (plugin_->presetEntries ()[2].name, QStringLiteral ("Warm"));
@@ -1205,7 +1548,9 @@ TEST_F (Vst3PluginTest, MidiProgramChangeUpdatesSelection)
   midi_in->buffer_.push_back (units::samples (0u), raw);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return plugin_->presetIndex () == 2;
+  }));
 }
 
 // Same, but the fixture's controller-side reflection of the program change
@@ -1235,7 +1580,9 @@ TEST_F (Vst3PluginTest, MidiProgramChangeUpdatesSelectionWithoutPluginFeedback)
   midi_in->buffer_.push_back (units::samples (0u), raw);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return plugin_->presetIndex () == 2;
+  }));
   EXPECT_FALSE (plugin_->presetDirty ());
 }
 
@@ -1253,7 +1600,7 @@ TEST_F (Vst3PluginTest, PluginUiGestureMarksPresetDirty)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetDirty (); });
+  ASSERT_TRUE (QTest::qWaitFor ([this] { return plugin_->presetDirty (); }));
 
   // Re-selecting the current preset re-applies it and clears the dirty flag
   plugin_->setPresetIndex (0);
@@ -1319,10 +1666,10 @@ TEST_F (Vst3PluginTest, PresetAuditionRevertRestoresStateAndSelection)
   // drives in production)
   plugin_->setPresetIndex (1);
   process_blocks (1);
-  process_events_until_true ([&] {
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
     plugin_->flush_plugin_values ();
     return level->baseValue () == 0.75f;
-  });
+  }));
   ASSERT_EQ (plugin_->presetIndex (), 1);
 
   // Reverting restores the state captured at session begin
@@ -1350,10 +1697,10 @@ TEST_F (Vst3PluginTest, PresetAuditionCommitKeepsAppliedState)
 
   auto * level = find_param_by_label ("Level");
   ASSERT_NE (level, nullptr);
-  process_events_until_true ([&] {
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
     plugin_->flush_plugin_values ();
     return level->baseValue () == 0.75f;
-  });
+  }));
 }
 
 TEST_F (Vst3PluginTest, PresetAuditionRevertRestoresDirtyFlag)
@@ -1366,10 +1713,10 @@ TEST_F (Vst3PluginTest, PresetAuditionRevertRestoresDirtyFlag)
   // Select program 1, then diverge from it with a user edit
   plugin_->setPresetIndex (1);
   process_blocks (1);
-  process_events_until_true ([&] {
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
     plugin_->flush_plugin_values ();
     return level->baseValue () == 0.75f;
-  });
+  }));
   level->setBaseValueByUser (0.1f);
   process_blocks (1);
   ASSERT_TRUE (plugin_->presetDirty ());

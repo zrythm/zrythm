@@ -105,6 +105,16 @@ init_logging (LoggerType type);
 bool
 is_logging_initialized ();
 
+/**
+ * @brief Returns whether a message of @p level would be forwarded by the
+ * active logger.
+ *
+ * Realtime-safe: only an atomic level read. Returns false before
+ * init_logging() has run.
+ */
+bool
+should_log (LogLevel level) noexcept [[clang::nonblocking]];
+
 std::vector<Utf8String>
 get_last_log_entries (size_t count);
 

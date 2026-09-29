@@ -4,9 +4,11 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include "plugins/plugin_host_window.h"
 
+#include <QSize>
 #include <QtGlobal>
 
 namespace zrythm::gui
@@ -50,6 +52,8 @@ public:
    * XEMBED_WINDOW_ACTIVATE and XEMBED_FOCUS_IN.
    */
   void completeNativeEmbedding () override;
+
+  std::optional<QSize> attachNativeView (quintptr native_view) override;
 
   void  setSizeAndCenter (int width, int height) override;
   void  setSize (int width, int height) override;

@@ -169,7 +169,6 @@ configure:gnu/linux:
     - >-
       cmake --preset default
       -DZRYTHM_USER_MANUAL=OFF
-      -DZRYTHM_WITH_LIBDW=OFF
       -DZRYTHM_UNITY_BUILD=ON
       $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
   parallel:
@@ -295,6 +294,14 @@ check:reuse:
   script:
     - reuse lint
 
+check:tools:
+  extends: .gnu-linux-template
+  stage: check
+  needs: []
+  script:
+    - python3 -m pytest tools/tests -q
+    - python3 tools/check_dependencies.py
+
 check:exif:
   extends: .gnu-linux-template
   stage: check
@@ -324,14 +331,7 @@ check:qmllint:
             HOST_PROFILE: gcc_debug
   script:
     - (cmake --build conanbuild/Debug --config Debug --target all_qmllint 2>&1 || true) | tee qmllint_output.txt
-    - |
-      WARNING_COUNT=$(grep 'Warning: ' qmllint_output.txt | grep "${CI_PROJECT_DIR}/src/gui/qml/" | grep -v 'ZrythmStyle' | grep -v 'not found on type "QObject"' | grep -v 'not found on type "QQuickItem"' | grep -v 'Type "QColor" of property "color" not found' | wc -l)
-      echo "QML lint warning count (filtered): ${WARNING_COUNT}"
-      if [ "${WARNING_COUNT}" -gt 31 ]; then
-        echo "Error: QML lint warning count (${WARNING_COUNT}) exceeds threshold (31)"
-        # exit 1 # temporarily disabled
-      fi
-      echo "QML lint check passed"
+    - python3 tools/check_qmllint.py qmllint_output.txt
 
 check:clang-tidy:
   rules:
@@ -488,6 +488,7 @@ build:gnu/linux:
     - job: check:exif
     - job: check:reuse
     - job: check:clang-format
+    - job: check:tools
   timeout: 2h # a lot of tools are run here
   script:
     - cmake --build conanbuild/${BUILD_TYPE} --config ${BUILD_TYPE} --parallel --target all all_verify_interface_header_sets
@@ -514,6 +515,29 @@ build:gnu/linux:
     reports:
       junit: conanbuild/${BUILD_TYPE}/test_results/*.xml
   coverage: '/Percentage Coverage:\s+(\d+\.\d+)%$/'
+
+# CycloneDX SBOM for the GNU/Linux release build, generated from the Conan
+# fragment emitted during configure. Independent of build:gnu/linux so the
+# SBOM is published even when the build fails.
+sbom:gnu/linux:
+  extends: .gnu-linux-template
+  stage: build
+  needs:
+    - job: configure:gnu/linux
+      artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: Release
+            HOST_PROFILE: gcc_release
+  script:
+    - >-
+      python3 tools/generate_sbom.py --manifest data/dependencies.toml
+      --conan-fragment conanbuild/Release/generators/zrythm-conan-sbom.cdx.json
+      --version-file VERSION.txt --output sbom.cdx.json
+  artifacts:
+    paths:
+      - sbom.cdx.json
+    expire_in: 1 day
 
 build:mac-arm:
   extends: .mac-arm-template

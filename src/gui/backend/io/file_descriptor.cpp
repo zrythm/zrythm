@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023-2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/format_qt.h"
@@ -167,9 +167,10 @@ FileDescriptor::should_autoplay () const
               autoplay = false;
             }
         }
-      catch (const utils::exceptions::ZrythmException &e)
+      catch (const utils::ZrythmException &e)
         {
-          e.handle (fmt::format ("Error reading metadata from {}", abs_path_));
+          utils::log_exception (
+            e, fmt::format ("Error reading metadata from {}", abs_path_));
           return false;
         }
     }
@@ -200,7 +201,7 @@ FileDescriptor::get_info_text_for_label () const
             metadata.bit_rate / 1000, (metadata.bit_rate % 1000) / 100,
             metadata.bit_depth));
         }
-      catch (const utils::exceptions::ZrythmException &e)
+      catch (const utils::ZrythmException &e)
         {
           z_warning (
             "Error reading metadata from {}: {}",
