@@ -8,6 +8,79 @@ All notable changes to this project will be documented in this file.
 
 For changes prior to v2.0.0, see [CHANGELOG-old.v1.md](CHANGELOG-old.v1.md).
 
+## [v2.0.0-alpha.4] - 2026-09-29
+
+### Added
+- Native LV2 plugin hosting replacing the JUCE wrapper: metadata-only
+  discovery via lilv that never loads plugin binaries during
+  scanning, host transport and MIDI delivered as atom sequences,
+  worker extension hosting, pset presets, default states and
+  patch:writable parameters exposed as automatable parameters, and
+  self-contained state blobs that embed files created through
+  state:makePath
+- Native LV2 plugin UIs (X11) hosted in real windows on GNU/Linux,
+  embedded under Wayland via XWayland, following the UI's own size
+  and resize requests
+- CLAP preset discovery and loading driven by each plugin's own
+  preset-discovery providers
+- Undoable clipboard operations (copy, cut, paste, duplicate) for
+  arranger objects, tracks and plugins (#5172): shortcuts, menu
+  items and Delete follow the focused view, pasted tracks keep
+  their folder nesting and output routing, editor arrangers paste
+  into the edited clip at the playhead, and payloads sync with the
+  OS clipboard so selections can be pasted across projects and
+  instances
+- Notification center replacing modal alerts (#5324): toasts that
+  coalesce repeated occurrences and can carry an action supplied by
+  the producer, a bell badging unacknowledged warnings and errors,
+  and a history popover with relative timestamps
+- Status bar showing the audio engine's sample rate, buffer size
+  and the project's track count
+- Undoable lane deletion from the lane context menu; laned tracks
+  keep a trailing empty lane for placing new clips (#5172)
+- Plugin browser favorites, persisted per plugin, with a favorites
+  filter and a plugin info dialog; browser rows show vendor
+  subtitles with show-in-file-manager and import actions
+- Third-party licenses page in the About dialog listing every
+  shipped component with its copyright and license texts
+- Menu items showing their shortcut right-aligned
+
+### Changed
+- The UI follows a new design system specification: dialogs render
+  as native windows with emphasized default buttons activated by
+  Return from anywhere, menus and combo popups share spacing and
+  typography rules with animated color transitions, selected
+  arranger objects draw a text-colored outline, and recording and
+  error states use distinct shades of red
+- The Greeter's recent projects list uses two-line rows with
+  show-in-file-manager and remove-from-list actions
+- Update translations (Swedish, Czech, Spanish, French, Russian,
+  Ukrainian and more)
+
+### Fixed
+- Parameter edits made in plugin UIs (VST3, CLAP) are
+  attributed as user edits: they mark the selected preset dirty and
+  coalesce into one undo step instead of flooding the undo history
+- VST3 parameters reported by the plugin during processing not
+  reaching the host parameter model, separate edit controllers not
+  being notified of applied values, and dual-component plugins
+  appearing twice in scans
+- Crashes in dlopened pango-based plugin UIs (e.g. avldrums) caused
+  by internally bundled harfbuzz/freetype copies shadowing the
+  system libraries
+- Scans of bundles containing no plugins (e.g. preset-only
+  bundles) timing out and blacklisting the scanned path
+- The Greeter re-showing the last alert when a project closes, and
+  its page stack growing on repeated load failures (#5324)
+- The audio engine accepting deactivation during an offline render,
+  leaving the render thread processing without a device callback
+- Periodic plugin parameter flushes slowing down over a session as
+  the undo history accumulated removed plugins
+
+### Removed
+- JUCE LV2 hosting and the vendored LV2 headers, replaced by the
+  native lilv-based hosting
+
 ## [v2.0.0-alpha.3] - 2026-09-03
 
 ### Added
