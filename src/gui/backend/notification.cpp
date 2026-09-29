@@ -4,6 +4,8 @@
 #include <exception>
 #include <type_traits>
 
+#include "utils/format_qt.h"
+
 #include "gui/backend/notification.h"
 #include "utils/logger.h"
 
