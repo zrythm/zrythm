@@ -172,6 +172,22 @@ TestCase {
   }
 
   Component {
+    id: unequalLabelsDialogComponent
+
+    Dialog {
+      footer: DialogButtonBox {
+        Button {
+          text: qsTr("OK")
+        }
+
+        Button {
+          text: qsTr("A Much Longer Label")
+        }
+      }
+    }
+  }
+
+  Component {
     id: dialogComponent
 
     Dialog {
@@ -456,6 +472,24 @@ TestCase {
     const tallButton = buttonWithText(box, "Tall");
     verify(tallButton.height > 24);
     tryCompare(okButton, "height", tallButton.height);
+  }
+
+  function test_unequal_labels_still_share_equally() {
+    // a content-sized dialog must grow to fit the widest label in
+    // every slot instead of flooring the wider button at its label
+    const dialog = createTemporaryObject(unequalLabelsDialogComponent, test);
+    verify(dialog);
+    dialog.open();
+    tryVerify(() => dialog.visible);
+    const box = dialog.footer;
+    tryVerify(() => box.count === 2);
+    verify(waitForItemPolished(box));
+    const shortButton = buttonWithText(box, "OK");
+    const longButton = buttonWithText(box, "A Much Longer Label");
+    verify(shortButton);
+    verify(longButton);
+    compare(longButton.implicitWidth > shortButton.implicitWidth, true);
+    tryCompare(shortButton, "width", longButton.width);
   }
 
   function test_return_activates_the_default_button() {

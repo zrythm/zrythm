@@ -12,8 +12,17 @@ T.DialogButtonBox {
 
   alignment: Qt.AlignRight
   buttonLayout: T.DialogButtonBox.MacLayout
+  // The row fills with equal shares, so the implicit width must fit
+  // the widest label in every slot (Qt applies this clause for its
+  // default alignment; AlignRight skips it).
+  readonly property real equalShareContentWidth: {
+    let widest = 0;
+    for (let i = 0; i < count; ++i)
+      widest = Math.max(widest, itemAt(i).implicitWidth);
+    return count > 0 ? widest * count + spacing * (count - 1) : 0;
+  }
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
-  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+  implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, equalShareContentWidth + leftPadding + rightPadding)
   padding: 12
   spacing: 8
 
