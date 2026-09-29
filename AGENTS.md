@@ -198,6 +198,7 @@ Some Conan recipes carry local patches in the [`ext/conan-center-index`](ext/con
 - Main branch: `master`, PR target: `master`
 - Note: This branch is under major refactoring (see README.md warning)
 - **Release notes / change summaries:** When summarizing changes between releases or writing release notes/announcement posts, read [CHANGELOG.md](CHANGELOG.md) first — it is the curated, grouped source of truth. Use `git log` only to fill in gaps, since the raw log includes noise (translation merges, formatting, etc.)
+- **`Fixed`/`Changed` changelog entries must describe behavior that shipped in the previous release:** a bug introduced and fixed within the same unreleased cycle never affected users, so it must not appear under `Fixed` (fold it into the `Added`/`Changed` entry for that feature instead). When in doubt, verify the fixed code existed at the previous release tag (e.g. `git show v<previous-tag>:<file>` or `git tag --contains <commit>`)
 
 ### GitLab Interaction
 
