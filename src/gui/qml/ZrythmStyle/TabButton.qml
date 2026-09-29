@@ -10,7 +10,7 @@ import ZrythmStyle
 T.TabButton {
   id: control
 
-  readonly property color iconLabelColor: control.checked ? control.palette.brightText : control.palette.buttonText
+  readonly property color iconLabelColor: control.checked ? ZrythmTheme.polarityTextColor(control.palette.highlight) : control.palette.buttonText
 
   font: ZrythmTheme.semiBoldTextFont
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)

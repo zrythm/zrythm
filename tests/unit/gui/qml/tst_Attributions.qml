@@ -17,15 +17,8 @@ TestCase {
 
   name: "Attributions"
 
-  function _findItemByObjectName(item, name) {
-    if (item.objectName === name)
-      return item;
-    for (let i = 0; i < item.children.length; i++) {
-      const found = _findItemByObjectName(item.children[i], name);
-      if (found !== null)
-        return found;
-    }
-    return null;
+  FindItem {
+    id: findItem
   }
 
   function test_attributions_resource_parses() {
@@ -71,9 +64,9 @@ TestCase {
       stackView: stackView
     });
     verify(page);
-    const searchField = _findItemByObjectName(page, "searchField");
+    const searchField = findItem.byName(page, "searchField");
     verify(searchField);
-    const listView = _findItemByObjectName(page, "licensesListView");
+    const listView = findItem.byName(page, "licensesListView");
     verify(listView);
     const data = JSON.parse(QmlUtils.readTextFileContent(":/qt/qml/Zrythm/licenses/attributions.json"));
     tryCompare(listView, "count", data.components.length);
@@ -98,7 +91,7 @@ TestCase {
     page.width = 400;
     page.height = 400;
     stackView.push(page);
-    const listView = _findItemByObjectName(page, "licensesListView");
+    const listView = findItem.byName(page, "licensesListView");
     verify(listView);
     tryVerify(() => listView.count > 0);
     tryVerify(() => listView.itemAtIndex(0) !== null);
@@ -107,7 +100,7 @@ TestCase {
     verify(Array.isArray(comp.licenseFiles), "detail data must carry a real array");
     page.openComponent(comp);
     tryCompare(stackView, "depth", 2);
-    const textArea = _findItemByObjectName(stackView.currentItem, "licenseTextArea");
+    const textArea = findItem.byName(stackView.currentItem, "licenseTextArea");
     verify(textArea);
     tryVerify(() => textArea.text.length > 100);
     verify(!textArea.text.includes("License text not bundled"),
@@ -134,7 +127,7 @@ TestCase {
     _showTestCaseItem();
     stackView.push(page);
     tryVerify(() => page.visible);
-    const listView = _findItemByObjectName(page, "licensesListView");
+    const listView = findItem.byName(page, "licensesListView");
     verify(listView);
     const data = JSON.parse(QmlUtils.readTextFileContent(":/qt/qml/Zrythm/licenses/attributions.json"));
     tryCompare(listView, "count", data.components.length);

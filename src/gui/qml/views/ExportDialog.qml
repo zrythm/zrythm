@@ -41,16 +41,20 @@ Dialog {
   implicitWidth: 600
   modal: true
   popupType: Popup.Window
+  standardButtons: Dialog.Cancel
   title: qsTr("Export As...")
 
   // Dialog buttons
   footer: DialogButtonBox {
     Layout.fillWidth: true
-    standardButtons: Dialog.Cancel
+    defaultButton: exportButton
 
+    // Apply keeps the dialog open so the progress dialog (declared
+    // inside this dialog) stays alive while the export runs.
     Button {
+      id: exportButton
+
       DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
-      highlighted: true
       text: qsTr("Export")
     }
   }

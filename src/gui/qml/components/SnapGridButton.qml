@@ -59,20 +59,14 @@ Button {
     focus: true
     height: 500
     modal: true
+    standardButtons: DialogButtonBox.Close
     width: 400
     popupType: Popup.Window
+    title: qsTr("Snap/Grid Settings")
 
     ColumnLayout {
       anchors.fill: parent
       spacing: 10
-
-      // Header
-      Label {
-        Layout.alignment: Qt.AlignHCenter
-        font.bold: true
-        font.pixelSize: 16
-        text: qsTr("Snap/Grid Settings")
-      }
 
       // Position Snap section
       GroupBox {
@@ -331,14 +325,6 @@ Button {
             }
           }
         }
-      }
-
-      // Close button
-      Button {
-        Layout.alignment: Qt.AlignHCenter
-        text: qsTr("Close")
-
-        onClicked: snapDialog.close()
       }
     }
   }

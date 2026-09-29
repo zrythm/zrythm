@@ -7,6 +7,7 @@
 pragma Singleton
 
 import QtQuick
+import QtQuick.Templates as T
 
 QtObject {
   id: root
@@ -130,6 +131,7 @@ QtObject {
   property color pageColor: darkMode ? "#161616" : "#E3E3E3"
   property color placeholderTextColor: darkMode ? Qt.rgba(1, 1, 1, 0.5) : Qt.rgba(0, 0, 0, 0.5)
   property color primaryColor: zrythmColor
+
   readonly property PropertyAnimation propertyAnimation: PropertyAnimation {
     duration: root.animationDuration
     easing.type: root.animationEasingType
@@ -181,6 +183,20 @@ QtObject {
       return root.getColorBlendedTowardsContrast(arg);
   }
 
+  // Text and icon ink for buttons: hovered and keyboard-focused text
+  // stays unchanged, pressed text strengthens (DESIGN.md "State
+  // derivation rules"); checked and highlighted take their fill's
+  // polarity.
+  function buttonContentColor(control: T.Button): color {
+    const baseColor = control.checked
+      ? root.polarityTextColor(control.palette.accent)
+      : control.highlighted ? control.palette.brightText
+      : (control.flat && !control.down)
+        ? (control.visualFocus ? control.palette.highlight : control.palette.windowText)
+        : control.palette.buttonText;
+    return root.adjustColorForHoverOrVisualFocusOrDown(baseColor, false, false, control.down);
+  }
+
   // Makes dark colors lighter and light colors darker by the lighten factor.
   function getColorBlendedTowardsContrast(arg: color): color {
     return getColorBlendedTowardsContrastByFactor(arg, root.lightenFactor);
@@ -213,6 +229,12 @@ QtObject {
 
   function isColorDark(arg: color): bool {
     return arg.hslLightness < 0.5;
+  }
+
+  // The ink polarity that passes contrast against the given fill:
+  // #161616 on light fills, light ink on dark ones.
+  function polarityTextColor(fill: color): color {
+    return isColorDark(fill) ? (root.darkMode ? root.textColor : root.pageColor) : "#161616";
   }
 
   function toggleDarkMode(): void {

@@ -24,17 +24,51 @@ T.Dialog {
   padding: 12
 
   T.Overlay.modal: Rectangle {
-    color: Color.transparent(control.palette.shadow, 0.5)
+    Behavior on opacity {
+      animation: ZrythmTheme.propertyAnimation
+    }
+    color: Color.transparent("black", 0.35)
   }
   T.Overlay.modeless: Rectangle {
     color: Color.transparent(control.palette.shadow, 0.12)
   }
 
-  // Dialogs render as native windows (popupType: Window), so the OS
-  // provides the title bar, frame and shadow; the background is the
-  // flat client area inside that frame.
+  // The flat client fill inside the dialog frame. Most app dialogs open
+  // as native windows (the platform provides the title bar and frame);
+  // in-scene dialogs render the same fill.
   background: Rectangle {
     color: control.palette.window
+  }
+
+  // Return and Enter activate the default button from anywhere in the
+  // dialog; multi-line editors keep Return for newlines. The button
+  // box's own key handlers only see the footer subtree.
+  Shortcut {
+    autoRepeat: false
+    context: Qt.WindowShortcut
+    enabled: {
+      if (!control.visible)
+        return false;
+
+      const box = control.footer as DialogButtonBox;
+      if (!box?.defaultButton || !box.defaultButton.enabled)
+        return false;
+
+      const contentItem = control.contentItem;
+      if (!contentItem)
+        return false;
+
+      const focusItem = contentItem.Window.activeFocusItem;
+      return !(focusItem instanceof T.TextArea)
+        && !(focusItem instanceof TextEdit);
+    }
+    sequences: ["Return", "Enter"]
+
+    onActivated: {
+      const box = control.footer as DialogButtonBox;
+      if (box?.defaultButton?.enabled)
+        box.defaultButton.clicked();
+    }
   }
 
   footer: DialogButtonBox {
@@ -42,9 +76,43 @@ T.Dialog {
   }
   header: Label {
     elide: Label.ElideRight
-    font.bold: true
+    font: ZrythmTheme.semiBoldTextFont
     padding: 12
     text: control.title
     visible: parent?.parent === Overlay.overlay && control.title
+  }
+
+  onOpened: {
+    // Focus the first text field so typing starts immediately; dialogs
+    // without one keep focus on the default button. A dialog with
+    // neither — a destructive accept leaves no default — focuses its
+    // content, keeping focus off the button row.
+    const field = findFirstTextField(contentItem);
+    if (field) {
+      field.forceActiveFocus();
+      return;
+    }
+
+    const box = footer as DialogButtonBox;
+    if (!box?.defaultButton)
+      contentItem.forceActiveFocus();
+  }
+
+  function findFirstTextField(item) {
+    for (let i = 0; i < item.children.length; ++i) {
+      const child = item.children[i];
+      // Skip whole branches, not just leaf matches — a hidden container
+      // can hold a field whose own visible flag is still true.
+      if (!child.visible || !child.enabled)
+        continue;
+
+      if (child.text !== undefined && child.cursorPosition !== undefined)
+        return child;
+
+      const nested = findFirstTextField(child);
+      if (nested)
+        return nested;
+    }
+    return null;
   }
 }

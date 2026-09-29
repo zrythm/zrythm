@@ -235,6 +235,7 @@ ApplicationWindow {
         title: qsTr("Configuration")
 
         footer: DialogButtonBox {
+          defaultButton: continueButton
           horizontalPadding: 10
           standardButtons: DialogButtonBox.Reset
 
@@ -243,8 +244,9 @@ ApplicationWindow {
           }
 
           Button {
+            id: continueButton
+
             DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
-            highlighted: true
             text: qsTr("Continue")
 
             onClicked: {

@@ -41,7 +41,7 @@ T.RoundButton {
     }
   }
   contentItem: IconLabel {
-    color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
+    color: ZrythmTheme.buttonContentColor(control)
     display: control.display
     font: control.font
     icon: control.icon
@@ -59,7 +59,7 @@ T.RoundButton {
 
   icon {
     // height: 24
-    color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
+    color: ZrythmTheme.buttonContentColor(control)
     // console.log("text metrics height: " + textMetrics.height);
 
     width: Math.max(control.styleHeight - padding * 2, textMetrics.height)

@@ -278,7 +278,7 @@ State colors derive programmatically from the base fill:
 | Default | base token | none (see per-component) | `textColor` |
 | Hovered / visual focus | blend toward contrast × 1.3 — dark colors get **lighter**, light colors get **darker** | none | unchanged |
 | Pressed (down) | stronger × 1.3 — dark colors get **darker**, light colors get **lighter** | 2 px `highlight` (accent) where the component draws a focus border | text also strengthened |
-| Toggled / checked | `accent` fill | none | `brightText` (page color) |
+| Toggled / checked | `accent` fill | none | polarity text against the fill |
 | Disabled | unchanged | unchanged | 70 % opacity |
 | Window inactive | unchanged | unchanged | 85 % opacity (60 % if also disabled) |
 
@@ -392,7 +392,7 @@ text inset, drop shadow.
 | Hovered | ≈ `#414141` | unchanged |
 | Pressed | ≈ `#262626` + 2 px accent border | strengthened |
 | Keyboard focus | ≈ `#414141` + 2 px accent border | unchanged |
-| Toggled (checked) | accent `#FFAE00` | dark (`brightText` `#161616`) |
+| Toggled (checked) | accent `#FFAE00` | `#161616` — the fill-text polarity against the accent |
 | **Emphasized** (`highlighted`) | near-white `#E3E3E3` (`dark` role) | dark `#161616` |
 | **Destructive** | base button fill at rest, error fill when toggled | adjusted error hue at rest, polarity text when toggled |
 
@@ -475,17 +475,19 @@ leading edge of a `semiBoldTextFont` heading with the message in
 `normalTextFont` spanning the full content width beneath the glyph.
 Alerts are 360 px wide.
 
-**Buttons** sit in a trailing-aligned row, mirrored in RTL: accept in the
+**Buttons** fill the row: each takes an equal share (8 px apart), never
+less than its own label; the arrangement mirrors in RTL: accept in the
 trailing slot, cancel next to it, further actions leading. The accept
-button is the dialog's default — Return activates it — and renders in
-the Emphasized variant; destructive actions render in the Destructive
-variant and are never the default, so when the accept action is
-destructive, the safe action takes the default. Escape activates
-cancel; a dialog without one dismisses, activating no button. Initial
-focus goes to the first text field if present, else the default button;
-dialogs take focus on appearance. While a modal dialog is open, the
-parent window paints a black @ 35 % scrim that fades with the standard
-transition.
+button is the dialog's default — Return and Enter activate it from
+anywhere in the dialog — and renders in the Emphasized variant. Reject
+and destructive actions never take the default: when the accept action
+is destructive, the dialog has no default and keeps focus off the
+button row — Return activates nothing and Escape still cancels; a
+dialog without a cancel dismisses, activating no button. Initial
+focus goes to the first text-entry field if present, else the default
+button; dialogs take focus on appearance. While a modal dialog is open, the
+parent window paints a black @ 35 % scrim that fades in with the
+standard transition.
 
 ### Progress bar
 
