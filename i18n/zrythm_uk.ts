@@ -247,7 +247,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ChordEditorPane.qml" line="96"/>
         <source>Zoom In</source>
-        <translation type="unfinished"></translation>
+        <translation>Збільшити</translation>
     </message>
 </context>
 <context>
@@ -270,7 +270,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Транспонувати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>
@@ -330,7 +330,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="113"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Кастом</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="117"/>
@@ -418,7 +418,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="73"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>масштаб</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="77"/>
@@ -1200,17 +1200,17 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="76"/>
         <source>Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Ліва панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="87"/>
         <source>Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Нижня панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="98"/>
         <source>Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Права панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="110"/>
@@ -4064,7 +4064,7 @@ Support this project at {}
     <message>
         <location filename="../src/controllers/recording_materializer.cpp" line="180"/>
         <source>Record</source>
-        <translation type="unfinished"></translation>
+        <translation>запис</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_creator.cpp" line="333"/>
@@ -4110,7 +4110,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/RecordSplitButton.qml" line="25"/>
         <source>Record</source>
-        <translation type="unfinished"></translation>
+        <translation>запис</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/RecordSplitButton.qml" line="38"/>
@@ -4622,7 +4622,7 @@ Support this project at {}
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="206"/>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="355"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Жодного</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="262"/>

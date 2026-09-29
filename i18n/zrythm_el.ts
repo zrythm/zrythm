@@ -263,7 +263,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Μετατόπιση</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>
@@ -1177,17 +1177,17 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="76"/>
         <source>Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Αριστερό πάνελ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="87"/>
         <source>Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Κάτω πάνελ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="98"/>
         <source>Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Δεξί πάνελ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="110"/>

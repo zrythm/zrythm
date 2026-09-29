@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation>Kies alles</translation>
+        <translation>Selecteer alle</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
@@ -55,12 +55,12 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="605"/>
         <source>Copy</source>
-        <translation>Kopiëren</translation>
+        <translation>Kopieer</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="611"/>
         <source>Paste</source>
-        <translation>Plakken</translation>
+        <translation>Plak</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="632"/>
@@ -70,17 +70,17 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="636"/>
         <source>Inherit from Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Erf van spoor</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="642"/>
         <source>Musical</source>
-        <translation type="unfinished"></translation>
+        <translation>Muzikaal</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="648"/>
         <source>Absolute</source>
-        <translation type="unfinished"></translation>
+        <translation>Absoluut</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="927"/>
@@ -96,13 +96,13 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="1220"/>
         <source>Copy Objects</source>
-        <translation>Objecten kopiëren</translation>
+        <translation>Kopieer Objecten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="1228"/>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="1230"/>
         <source>Move Objects</source>
-        <translation>Verplaats Object</translation>
+        <translation>Verplaats Objecten</translation>
     </message>
 </context>
 <context>
@@ -117,7 +117,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
         <source>Zoom In</source>
-        <translation>Inzoomen</translation>
+        <translation>Zoom In</translation>
     </message>
 </context>
 <context>
@@ -189,7 +189,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="43"/>
         <source>Select a clip from the timeline</source>
-        <translation>Selecteer een clip van tijdlijn</translation>
+        <translation>Selecteer een clip van de tijdlijn</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="45"/>

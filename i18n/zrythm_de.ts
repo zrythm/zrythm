@@ -270,7 +270,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Transponieren</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>

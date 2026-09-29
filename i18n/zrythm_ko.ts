@@ -407,7 +407,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="73"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>음계</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="77"/>

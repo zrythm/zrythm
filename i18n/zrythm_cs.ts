@@ -138,14 +138,14 @@
     <name>inc/schemas/gui/backend/arranger_object.h:58</name>
     <message>
         <source>Midi Note</source>
-        <translation type="unfinished">Midi poznámka</translation>
+        <translation>MIDI nota</translation>
     </message>
 </context>
 <context>
     <name>inc/gui/backend/arranger_object.h:105</name>
     <message>
         <source>Midi Note</source>
-        <translation type="unfinished">Midi poznámka</translation>
+        <translation>MIDI nota</translation>
     </message>
 </context>
 <context>
@@ -166,14 +166,14 @@
     <name>inc/schemas/gui/backend/arranger_object.h:62</name>
     <message>
         <source>Scale Object</source>
-        <translation>Škálovat objekt</translation>
+        <translation>Objekt stupnice</translation>
     </message>
 </context>
 <context>
     <name>inc/gui/backend/arranger_object.h:109</name>
     <message>
         <source>Scale Object</source>
-        <translation>Škálovat objekt</translation>
+        <translation>Objekt stupnice</translation>
     </message>
 </context>
 <context>
@@ -215,28 +215,28 @@
     <name>inc/schemas/gui/backend/arranger_object.h:68</name>
     <message>
         <source>Velocity</source>
-        <translation>Rychlost</translation>
+        <translation>Dynamika úhozu</translation>
     </message>
 </context>
 <context>
     <name>inc/gui/backend/arranger_object.h:115</name>
     <message>
         <source>Velocity</source>
-        <translation>Rychlost</translation>
+        <translation>Dynamika úhozu</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/event_viewer.c:675</name>
     <message>
         <source>Velocity</source>
-        <translation>Rychlost</translation>
+        <translation>Dynamika úhozu</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/midi_editor_space.ui:82</name>
     <message>
         <source>Velocity</source>
-        <translation>Rychlost</translation>
+        <translation>Dynamika úhozu</translation>
     </message>
 </context>
 <context>
@@ -604,42 +604,42 @@
     <name>inc/audio/audio_function.h:71</name>
     <message>
         <source>Normalize peak</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalizovat podle špičky</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:72</name>
     <message>
         <source>Normalize RMS</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalizovat podle RMS</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:73</name>
     <message>
         <source>Normalize LUFS</source>
-        <translation type="unfinished"></translation>
+        <translation>Normalizovat podle LUFS</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:74</name>
     <message>
         <source>Linear fade in</source>
-        <translation type="unfinished"></translation>
+        <translation>Lineární náběh</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:76</name>
     <message>
         <source>Linear fade out</source>
-        <translation type="unfinished"></translation>
+        <translation>Lineární doběh</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:78</name>
     <message>
         <source>Nudge left</source>
-        <translation type="unfinished"></translation>
+        <translation>Posunout o krok doleva</translation>
     </message>
 </context>
 <context>
@@ -653,7 +653,7 @@
     <name>inc/audio/audio_function.h:79</name>
     <message>
         <source>Nudge right</source>
-        <translation type="unfinished"></translation>
+        <translation>Posunout o krok doprava</translation>
     </message>
 </context>
 <context>
@@ -667,70 +667,70 @@
     <name>inc/audio/audio_function.h:80</name>
     <message>
         <source>Reverse</source>
-        <translation type="unfinished"></translation>
+        <translation>Obrátit</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:81</name>
     <message>
         <source>External program</source>
-        <translation type="unfinished"></translation>
+        <translation>Externí program</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:82</name>
     <message>
         <source>Guile script</source>
-        <translation type="unfinished"></translation>
+        <translation>Skript Guile</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:83</name>
     <message>
         <source>Custom plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastní plugin</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/audio_function.h:84</name>
     <message>
         <source>Invalid</source>
-        <translation type="unfinished"></translation>
+        <translation>Neplatná</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/transport.h:73</name>
     <message>
         <source>1 bar</source>
-        <translation type="unfinished"></translation>
+        <translation>1 takt</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/transport.h:74</name>
     <message>
         <source>2 bars</source>
-        <translation type="unfinished"></translation>
+        <translation>2 takty</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/transport.h:75</name>
     <message>
         <source>4 bars</source>
-        <translation type="unfinished"></translation>
+        <translation>4 takty</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/track.h:194</name>
     <message>
         <source>Instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>Nástroj</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track_properties_expander.c:132</name>
     <message>
         <source>Instrument</source>
-        <translation type="unfinished"></translation>
+        <translation>Nástroj</translation>
     </message>
 </context>
 <context>
@@ -751,7 +751,7 @@
     <name>inc/audio/track.h:195</name>
     <message>
         <source>Audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvuk</translation>
     </message>
 </context>
 <context>
@@ -786,7 +786,7 @@
     <name>inc/audio/track.h:196</name>
     <message>
         <source>Master</source>
-        <translation type="unfinished"></translation>
+        <translation>Master</translation>
     </message>
 </context>
 <context>
@@ -807,14 +807,14 @@
     <name>inc/audio/track.h:197</name>
     <message>
         <source>Chord</source>
-        <translation type="unfinished"></translation>
+        <translation>Akord</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/event_viewer.c:724</name>
     <message>
         <source>Chord</source>
-        <translation type="unfinished"></translation>
+        <translation>Akord</translation>
     </message>
 </context>
 <context>
@@ -842,77 +842,77 @@
     <name>src/audio/tempo_track.c:124</name>
     <message>
         <source>Tempo</source>
-        <translation type="unfinished"></translation>
+        <translation>Tempo</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/track.h:200</name>
     <message>
         <source>Modulator</source>
-        <translation type="unfinished"></translation>
+        <translation>Modulátor</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/track.h:201</name>
     <message>
         <source>Audio FX</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvukové efekty</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/track.h:202</name>
     <message>
         <source>Audio Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvuková skupina</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/track.h:203</name>
     <message>
         <source>MIDI</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI</translation>
     </message>
 </context>
 <context>
     <name>src/audio/region.c:506</name>
     <message>
         <source>MIDI</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/file_browser_filters.ui:17</name>
     <message>
         <source>MIDI</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/track.h:204</name>
     <message>
         <source>MIDI FX</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI efekty</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/track.h:205</name>
     <message>
         <source>MIDI Group</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI skupina</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/track.h:206</name>
     <message>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Složka</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/curve.h:120</name>
     <message>
         <source>Logarithmic</source>
-        <translation type="unfinished"></translation>
+        <translation>Logaritmická</translation>
     </message>
 </context>
 <context>
@@ -1024,7 +1024,7 @@
     <name>inc/audio/midi_function.h:56</name>
     <message>
         <source>Crescendo</source>
-        <translation type="unfinished"></translation>
+        <translation>Crescendo</translation>
     </message>
 </context>
 <context>
@@ -1038,7 +1038,7 @@
     <name>inc/audio/midi_function.h:57</name>
     <message>
         <source>Flam</source>
-        <translation type="unfinished"></translation>
+        <translation>Příraz</translation>
     </message>
 </context>
 <context>
@@ -1052,35 +1052,35 @@
     <name>inc/audio/midi_function.h:58</name>
     <message>
         <source>Flip H</source>
-        <translation type="unfinished"></translation>
+        <translation>Převrátit vodorovně</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/automation_function.h:50</name>
     <message>
         <source>Flip H</source>
-        <translation type="unfinished"></translation>
+        <translation>Převrátit vodorovně</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/midi_function.h:59</name>
     <message>
         <source>Flip V</source>
-        <translation type="unfinished"></translation>
+        <translation>Převrátit svisle</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/automation_function.h:51</name>
     <message>
         <source>Flip V</source>
-        <translation type="unfinished"></translation>
+        <translation>Převrátit svisle</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/midi_function.h:60</name>
     <message>
         <source>Legato</source>
-        <translation type="unfinished"></translation>
+        <translation>Legato</translation>
     </message>
 </context>
 <context>
@@ -1094,7 +1094,7 @@
     <name>inc/audio/midi_function.h:61</name>
     <message>
         <source>Portato</source>
-        <translation type="unfinished"></translation>
+        <translation>Portato</translation>
     </message>
 </context>
 <context>
@@ -1108,7 +1108,7 @@
     <name>inc/audio/midi_function.h:62</name>
     <message>
         <source>Staccato</source>
-        <translation type="unfinished"></translation>
+        <translation>Staccato</translation>
     </message>
 </context>
 <context>
@@ -1122,14 +1122,14 @@
     <name>inc/audio/midi_function.h:63</name>
     <message>
         <source>Strum</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozložený úhoz</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/editor_toolbar.ui:152</name>
     <message>
         <source>Strum</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozložený úhoz</translation>
     </message>
 </context>
 <context>
@@ -1157,28 +1157,28 @@
     <name>inc/audio/pan.h:52</name>
     <message>
         <source>0dB</source>
-        <translation type="unfinished"></translation>
+        <translation>0 dB</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/pan.h:53</name>
     <message>
         <source>-3dB</source>
-        <translation type="unfinished"></translation>
+        <translation>-3 dB</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/pan.h:54</name>
     <message>
         <source>-6dB</source>
-        <translation type="unfinished"></translation>
+        <translation>-6 dB</translation>
     </message>
 </context>
 <context>
     <name>inc/audio/pan.h:76</name>
     <message>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Lineární</translation>
     </message>
 </context>
 <context>
@@ -1199,7 +1199,7 @@
     <name>inc/audio/pan.h:77</name>
     <message>
         <source>Square Root</source>
-        <translation type="unfinished"></translation>
+        <translation>Druhá odmocnina</translation>
     </message>
 </context>
 <context>
@@ -1213,7 +1213,7 @@
     <name>inc/audio/pan.h:78</name>
     <message>
         <source>Sine</source>
-        <translation type="unfinished"></translation>
+        <translation>Sinus</translation>
     </message>
 </context>
 <context>
@@ -1913,7 +1913,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>src/gui/widgets/dialogs/track_icon_chooser_dialog.c:167</name>
     <message>
         <source>_Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>_Zrušit</translation>
     </message>
 </context>
 <context>
@@ -1962,7 +1962,7 @@ If the UI does not load, please try instantiating the plugin in full-bridged mod
     <name>resources/ui/quantize_dialog.ui:149</name>
     <message>
         <source>_Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>_Zrušit</translation>
     </message>
 </context>
 <context>
@@ -2217,7 +2217,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/editor_ruler.c:289</name>
     <message>
         <source>Failed to edit position</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se upravit pozici</translation>
     </message>
 </context>
 <context>
@@ -2266,7 +2266,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1281</name>
     <message>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Přidat</translation>
     </message>
 </context>
 <context>
@@ -2427,7 +2427,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track_properties_expander.c:109</name>
     <message>
         <source>Track Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Název stopy</translation>
     </message>
 </context>
 <context>
@@ -2441,14 +2441,14 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track_properties_expander.c:121</name>
     <message>
         <source>Direct Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Přímý výstup</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track_properties_expander.c:146</name>
     <message>
         <source>Track Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastnosti stopy</translation>
     </message>
 </context>
 <context>
@@ -2588,7 +2588,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1202</name>
     <message>
         <source>Solo</source>
-        <translation type="unfinished"></translation>
+        <translation>Sólo</translation>
     </message>
 </context>
 <context>
@@ -2637,7 +2637,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1235</name>
     <message>
         <source>Listen</source>
-        <translation type="unfinished"></translation>
+        <translation>Poslech</translation>
     </message>
 </context>
 <context>
@@ -2665,7 +2665,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1231</name>
     <message>
         <source>Unlisten</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout poslech</translation>
     </message>
 </context>
 <context>
@@ -2718,7 +2718,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1887</name>
     <message>
         <source>Disable</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout</translation>
     </message>
 </context>
 <context>
@@ -2739,7 +2739,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1895</name>
     <message>
         <source>Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout</translation>
     </message>
 </context>
 <context>
@@ -3030,7 +3030,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>resources/ui/chord_selector_window.ui:478</name>
     <message>
         <source>Visibility</source>
-        <translation type="unfinished"></translation>
+        <translation>Viditelnost</translation>
     </message>
 </context>
 <context>
@@ -3128,7 +3128,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:89</name>
     <message>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -3266,21 +3266,21 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/digital_meter.c:410</name>
     <message>
         <source>normal</source>
-        <translation type="unfinished"></translation>
+        <translation>běžná</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/digital_meter.c:413</name>
     <message>
         <source>dotted</source>
-        <translation type="unfinished"></translation>
+        <translation>s tečkou</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/digital_meter.c:416</name>
     <message>
         <source>triplet</source>
-        <translation type="unfinished"></translation>
+        <translation>triolová</translation>
     </message>
 </context>
 <context>
@@ -3301,7 +3301,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/digital_meter.c:1257</name>
     <message>
         <source>Tempo/BPM</source>
-        <translation type="unfinished"></translation>
+        <translation>Tempo/BPM</translation>
     </message>
 </context>
 <context>
@@ -3350,7 +3350,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/digital_meter.c:1301</name>
     <message>
         <source>Time Signature - Beats per bar / Beat unit</source>
-        <translation type="unfinished"></translation>
+        <translation>Taktové označení - počet dob v taktu / notová hodnota doby</translation>
     </message>
 </context>
 <context>
@@ -3385,35 +3385,35 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/actions/actions.c:3344</name>
     <message>
         <source>Failed to create track</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se vytvořit stopu</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/drag_dest_box.c:376</name>
     <message>
         <source>Failed to create plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se vytvořit plugin</translation>
     </message>
 </context>
 <context>
     <name>src/audio/audio_function.c:151</name>
     <message>
         <source>Failed to create plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se vytvořit plugin</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/drag_dest_box.c:416</name>
     <message>
         <source>Failed to move or copy plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se přesunout nebo zkopírovat plugin</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/drag_dest_box.c:454</name>
     <message>
         <source>Failed to move or copy track</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se přesunout nebo zkopírovat stopu</translation>
     </message>
 </context>
 <context>
@@ -3518,14 +3518,14 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/channel_slot.c:736</name>
     <message>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/port_selector_popover.ui:60</name>
     <message>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin</translation>
     </message>
 </context>
 <context>
@@ -3630,7 +3630,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1639</name>
     <message>
         <source>Marker name</source>
-        <translation type="unfinished"></translation>
+        <translation>Název značky</translation>
     </message>
 </context>
 <context>
@@ -3896,28 +3896,28 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/piano_roll_keys.c:188</name>
     <message>
         <source>bass</source>
-        <translation type="unfinished"></translation>
+        <translation>bas</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/piano_roll_keys.c:210</name>
     <message>
         <source>both</source>
-        <translation type="unfinished"></translation>
+        <translation>obojí</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/piano_roll_keys.c:228</name>
     <message>
         <source>scale</source>
-        <translation type="unfinished"></translation>
+        <translation>stupnice</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/piano_roll_keys.c:246</name>
     <message>
         <source>chord</source>
-        <translation type="unfinished"></translation>
+        <translation>akord</translation>
     </message>
 </context>
 <context>
@@ -4106,7 +4106,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/bot_bar.c:532</name>
     <message>
         <source>Rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Vzorkovací frekvence</translation>
     </message>
 </context>
 <context>
@@ -4169,14 +4169,14 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/audio/marker_track.c:78</name>
     <message>
         <source>start</source>
-        <translation type="unfinished"></translation>
+        <translation>začátek</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:62</name>
     <message>
         <source>start</source>
-        <translation type="unfinished"></translation>
+        <translation>začátek</translation>
     </message>
 </context>
 <context>
@@ -4190,14 +4190,14 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/audio/marker_track.c:85</name>
     <message>
         <source>end</source>
-        <translation type="unfinished"></translation>
+        <translation>konec</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:70</name>
     <message>
         <source>end</source>
-        <translation type="unfinished"></translation>
+        <translation>konec</translation>
     </message>
 </context>
 <context>
@@ -4253,56 +4253,56 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/transport_controls.c:409</name>
     <message>
         <source>Punch in/out</source>
-        <translation type="unfinished"></translation>
+        <translation>Punch in/out</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/transport_controls.c:412</name>
     <message>
         <source>Start on MIDI input</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit při MIDI vstupu</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/transport_controls.c:415</name>
     <message>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Možnosti</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/transport_controls.c:420</name>
     <message>
         <source>Overwrite events</source>
-        <translation type="unfinished"></translation>
+        <translation>Přepisovat události</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/transport_controls.c:423</name>
     <message>
         <source>Merge events</source>
-        <translation type="unfinished"></translation>
+        <translation>Slučovat události</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/transport_controls.c:426</name>
     <message>
         <source>Create takes</source>
-        <translation type="unfinished"></translation>
+        <translation>Vytvářet záběry</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/transport_controls.c:429</name>
     <message>
         <source>Create takes (mute previous)</source>
-        <translation type="unfinished"></translation>
+        <translation>Vytvářet záběry (ztlumit předchozí)</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/transport_controls.c:432</name>
     <message>
         <source>Recording mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Režim nahrávání</translation>
     </message>
 </context>
 <context>
@@ -4316,14 +4316,14 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/transport_controls.c:449</name>
     <message>
         <source>Preroll</source>
-        <translation type="unfinished"></translation>
+        <translation>Předběh</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/transport_controls.c:488</name>
     <message>
         <source>Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrávat</translation>
     </message>
 </context>
 <context>
@@ -4337,7 +4337,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/transport_controls.c:489</name>
     <message>
         <source>Record options</source>
-        <translation type="unfinished"></translation>
+        <translation>Možnosti nahrávání</translation>
     </message>
 </context>
 <context>
@@ -4365,7 +4365,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/timeline_arranger.c:1128</name>
     <message>
         <source>Detect BPM</source>
-        <translation type="unfinished"></translation>
+        <translation>Zjistit tempo v BPM</translation>
     </message>
 </context>
 <context>
@@ -4407,7 +4407,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1748</name>
     <message>
         <source>Quick bounce</source>
-        <translation type="unfinished"></translation>
+        <translation>Rychlý převod na zvuk</translation>
     </message>
 </context>
 <context>
@@ -4421,7 +4421,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/track.c:1755</name>
     <message>
         <source>Bounce...</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést na zvuk...</translation>
     </message>
 </context>
 <context>
@@ -4484,7 +4484,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>resources/gtk/help-overlay.ui:39</name>
     <message>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení</translation>
     </message>
 </context>
 <context>
@@ -4554,7 +4554,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/help_toolbar.c:42</name>
     <message>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Podpořte nás</translation>
     </message>
 </context>
 <context>
@@ -4720,28 +4720,28 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>src/gui/widgets/right_dock_edge.c:133</name>
     <message>
         <source>File Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Prohlížeč souborů</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/file_browser_window.c:38</name>
     <message>
         <source>File Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Prohlížeč souborů</translation>
     </message>
 </context>
 <context>
     <name>src/utils/gtk.c:1250</name>
     <message>
         <source>File Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Prohlížeč souborů</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/right_dock_edge.c:168</name>
     <message>
         <source>Monitor Section</source>
-        <translation type="unfinished"></translation>
+        <translation>Monitorovací sekce</translation>
     </message>
 </context>
 <context>
@@ -4790,7 +4790,7 @@ If the plugin does not load, please try instantiating the plugin in full-bridged
     <name>resources/ui/chord_selector_window.ui:157</name>
     <message>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ</translation>
     </message>
 </context>
 <context>
@@ -5004,7 +5004,7 @@ Changes:
     <name>src/gui/widgets/snap_grid.c:62</name>
     <message>
         <source>%s - Last object</source>
-        <translation type="unfinished"></translation>
+        <translation>%s - Poslední objekt</translation>
     </message>
 </context>
 <context>
@@ -5046,7 +5046,7 @@ Changes:
     <name>src/gui/widgets/track.c:1240</name>
     <message>
         <source>Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Odposlech</translation>
     </message>
 </context>
 <context>
@@ -5214,7 +5214,7 @@ Changes:
     <name>src/gui/widgets/folder_channel.c:162</name>
     <message>
         <source>Failed to move or copy track(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se přesunout nebo zkopírovat stopy</translation>
     </message>
 </context>
 <context>
@@ -5305,7 +5305,7 @@ Changes:
     <name>src/gui/widgets/ruler.c:1627</name>
     <message>
         <source>Display</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazení</translation>
     </message>
 </context>
 <context>
@@ -5333,7 +5333,7 @@ Changes:
     <name>src/gui/widgets/scale_selector_window.c:74</name>
     <message>
         <source>Failed to edit scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se upravit stupnici</translation>
     </message>
 </context>
 <context>
@@ -5900,21 +5900,21 @@ Changes:
     <name>src/gui/widgets/track.c:1209</name>
     <message>
         <source>Hide instrument UI</source>
-        <translation type="unfinished"></translation>
+        <translation>Skrýt rozhraní nástroje</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1213</name>
     <message>
         <source>Show instrument UI</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit rozhraní nástroje</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1244</name>
     <message>
         <source>Mono compatibility</source>
-        <translation type="unfinished"></translation>
+        <translation>Kompatibilita s mono</translation>
     </message>
 </context>
 <context>
@@ -5928,49 +5928,49 @@ Changes:
     <name>src/gui/widgets/track.c:1250</name>
     <message>
         <source>Disarm</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrušit připravení k nahrávání</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1254</name>
     <message>
         <source>Arm for recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Připravit k nahrávání</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1261</name>
     <message>
         <source>Hide lanes</source>
-        <translation type="unfinished"></translation>
+        <translation>Skrýt vrstvy</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1265</name>
     <message>
         <source>Show lanes</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit vrstvy</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1272</name>
     <message>
         <source>Hide automation</source>
-        <translation type="unfinished"></translation>
+        <translation>Skrýt automatizaci</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1276</name>
     <message>
         <source>Show automation</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit automatizaci</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1285</name>
     <message>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Odebrat</translation>
     </message>
 </context>
 <context>
@@ -5984,28 +5984,28 @@ Changes:
     <name>src/gui/widgets/track.c:1289</name>
     <message>
         <source>Freeze/unfreeze</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmrazit/rozmrazit</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1293</name>
     <message>
         <source>Lock/unlock</source>
-        <translation type="unfinished"></translation>
+        <translation>Zamknout/odemknout</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1297</name>
     <message>
         <source>Fold</source>
-        <translation type="unfinished"></translation>
+        <translation>Sbalit</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1301</name>
     <message>
         <source>Unfold</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozbalit</translation>
     </message>
 </context>
 <context>
@@ -6047,28 +6047,28 @@ Changes:
     <name>src/gui/widgets/track.c:1909</name>
     <message>
         <source>Rename lane...</source>
-        <translation type="unfinished"></translation>
+        <translation>Přejmenovat vrstvu...</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1927</name>
     <message>
         <source>Passthrough input</source>
-        <translation type="unfinished"></translation>
+        <translation>Propouštět vstup beze změny</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1937</name>
     <message>
         <source>MIDI Channel %d</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI kanál %d</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/track.c:1957</name>
     <message>
         <source>MIDI Channel %d</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI kanál %d</translation>
     </message>
 </context>
 <context>
@@ -6180,14 +6180,14 @@ Changes:
     <name>src/gui/widgets/dialogs/quantize_dialog.c:135</name>
     <message>
         <source>note length</source>
-        <translation type="unfinished"></translation>
+        <translation>délka noty</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/quantize_dialog.c:144</name>
     <message>
         <source>note type</source>
-        <translation type="unfinished"></translation>
+        <translation>typ noty</translation>
     </message>
 </context>
 <context>
@@ -6292,28 +6292,28 @@ Changes:
     <name>src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:85</name>
     <message>
         <source>Enter group name</source>
-        <translation type="unfinished"></translation>
+        <translation>Zadat název skupiny</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:94</name>
     <message>
         <source>Group name</source>
-        <translation type="unfinished"></translation>
+        <translation>Název skupiny</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:97</name>
     <message>
         <source>New Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Nová skupina</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:103</name>
     <message>
         <source>Move tracks under group</source>
-        <translation type="unfinished"></translation>
+        <translation>Přesunout stopy pod skupinu</translation>
     </message>
 </context>
 <context>
@@ -6644,14 +6644,14 @@ Changes:
     <name>src/gui/widgets/dialogs/track_icon_chooser_dialog.c:158</name>
     <message>
         <source>%s icon</source>
-        <translation type="unfinished"></translation>
+        <translation>Ikona stopy %s</translation>
     </message>
 </context>
 <context>
     <name>src/gui/widgets/dialogs/track_icon_chooser_dialog.c:169</name>
     <message>
         <source>_Select</source>
-        <translation type="unfinished"></translation>
+        <translation>_Vybrat</translation>
     </message>
 </context>
 <context>
@@ -7023,7 +7023,7 @@ Changes:
     <name>src/audio/chord_track.c:59</name>
     <message>
         <source>Chords</source>
-        <translation type="unfinished"></translation>
+        <translation>Akordy</translation>
     </message>
 </context>
 <context>
@@ -7149,7 +7149,7 @@ Changes:
     <name>src/audio/marker_track.c:61</name>
     <message>
         <source>Markers</source>
-        <translation type="unfinished"></translation>
+        <translation>Značky</translation>
     </message>
 </context>
 <context>
@@ -7273,28 +7273,28 @@ Bit depth: %d bits</source>
     <name>src/audio/tempo_track.c:57</name>
     <message>
         <source>BPM</source>
-        <translation type="unfinished"></translation>
+        <translation>BPM</translation>
     </message>
 </context>
 <context>
     <name>src/audio/tempo_track.c:72</name>
     <message>
         <source>Beats per bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Počet dob v taktu</translation>
     </message>
 </context>
 <context>
     <name>src/audio/tempo_track.c:93</name>
     <message>
         <source>Beat unit</source>
-        <translation type="unfinished"></translation>
+        <translation>Notová hodnota doby</translation>
     </message>
 </context>
 <context>
     <name>src/audio/tempo_track.c:227</name>
     <message>
         <source>Failed to change BPM</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se změnit tempo v BPM</translation>
     </message>
 </context>
 <context>
@@ -7392,7 +7392,7 @@ Bit depth: %d bits</source>
     <name>src/audio/audio_function.c:161</name>
     <message>
         <source>Failed to instantiate plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se vytvořit instanci pluginu</translation>
     </message>
 </context>
 <context>
@@ -7420,14 +7420,14 @@ Bit depth: %d bits</source>
     <name>src/audio/audio_function.c:398</name>
     <message>
         <source>Invalid positions - skipping function</source>
-        <translation type="unfinished"></translation>
+        <translation>Neplatné pozice - funkce se přeskakuje</translation>
     </message>
 </context>
 <context>
     <name>src/audio/audio_function.c:552</name>
     <message>
         <source>Failed to apply plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se použít plugin</translation>
     </message>
 </context>
 <context>
@@ -7455,7 +7455,7 @@ Bit depth: %d bits</source>
     <name>src/audio/track.c:389</name>
     <message>
         <source>Track record</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrávání stopy</translation>
     </message>
 </context>
 <context>
@@ -8028,7 +8028,7 @@ Bit depth: %d bits</source>
     <name>src/actions/arranger_selections.c:3193</name>
     <message>
         <source>Quantize arranger selections</source>
-        <translation type="unfinished"></translation>
+        <translation>Kvantizovat výběr v aranžéru</translation>
     </message>
 </context>
 <context>
@@ -8337,7 +8337,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:1736</name>
     <message>
         <source>Failed to duplicate tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se duplikovat stopy</translation>
     </message>
 </context>
 <context>
@@ -8358,63 +8358,63 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:1836</name>
     <message>
         <source>Failed to pin/unpin tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se připnout/odepnout stopy</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1849</name>
     <message>
         <source>Failed to solo tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se zapnout sólo stop</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1862</name>
     <message>
         <source>Failed to unsolo tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se vypnout sólo stop</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1875</name>
     <message>
         <source>Failed to mute tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se ztlumit stopy</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1888</name>
     <message>
         <source>Failed to unmute tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se odtlumit stopy</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1901</name>
     <message>
         <source>Failed to listen tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se zapnout poslech stop</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1914</name>
     <message>
         <source>Failed to unlisten tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se vypnout poslech stop</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1927</name>
     <message>
         <source>Failed to enable tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se zapnout stopy</translation>
     </message>
 </context>
 <context>
     <name>src/actions/actions.c:1940</name>
     <message>
         <source>Failed to disable tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se vypnout stopy</translation>
     </message>
 </context>
 <context>
@@ -8442,7 +8442,7 @@ Please select a format to export as</source>
     <name>src/actions/actions.c:2190</name>
     <message>
         <source>Selections must be on the same lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybrané objekty musí být ve stejné vrstvě</translation>
     </message>
 </context>
 <context>
@@ -8617,21 +8617,21 @@ Please select a format to export as</source>
     <name>src/actions/transport_action.c:298</name>
     <message>
         <source>Change BPM</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit tempo v BPM</translation>
     </message>
 </context>
 <context>
     <name>src/actions/transport_action.c:300</name>
     <message>
         <source>Beats per bar change</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit počet dob v taktu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/transport_action.c:302</name>
     <message>
         <source>Beat unit change</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit notovou hodnotu doby</translation>
     </message>
 </context>
 <context>
@@ -8820,7 +8820,7 @@ Please select a format to export as</source>
     <name>resources/ui/range_action_buttons.ui:11</name>
     <message>
         <source>Insert silence</source>
-        <translation type="unfinished"></translation>
+        <translation>Vložit ticho</translation>
     </message>
 </context>
 <context>
@@ -8841,7 +8841,7 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:333</name>
     <message>
         <source>No tracks selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Nejsou vybrány žádné stopy</translation>
     </message>
 </context>
 <context>
@@ -8862,7 +8862,7 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:765</name>
     <message>
         <source>%s Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Stopa (%s)</translation>
     </message>
 </context>
 <context>
@@ -8904,126 +8904,126 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:2194</name>
     <message>
         <source>Copy Track inside</source>
-        <translation type="unfinished"></translation>
+        <translation>Zkopírovat stopu dovnitř</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2196</name>
     <message>
         <source>Copy Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Zkopírovat stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2204</name>
     <message>
         <source>Copy %d Tracks inside</source>
-        <translation type="unfinished"></translation>
+        <translation>Zkopírovat stopy dovnitř (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2208</name>
     <message>
         <source>Copy %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Zkopírovat stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2219</name>
     <message>
         <source>Create %s Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Vytvořit stopu (%s)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2225</name>
     <message>
         <source>Create %d %s Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Vytvořit stopy (počet: %d, typ: %s)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2232</name>
     <message>
         <source>Delete Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazat stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2237</name>
     <message>
         <source>Delete %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazat stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2250</name>
     <message>
         <source>Solo Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout sólo stopy</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2253</name>
     <message>
         <source>Unsolo Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout sólo stopy</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2257</name>
     <message>
         <source>Mute Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Ztlumit stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2260</name>
     <message>
         <source>Unmute Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Odtlumit stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2264</name>
     <message>
         <source>Listen Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout poslech stopy</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2267</name>
     <message>
         <source>Unlisten Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout poslech stopy</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2271</name>
     <message>
         <source>Enable Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2274</name>
     <message>
         <source>Disable Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2278</name>
     <message>
         <source>Fold Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Sbalit stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2281</name>
     <message>
         <source>Unfold Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozbalit stopu</translation>
     </message>
 </context>
 <context>
@@ -9044,196 +9044,196 @@ Please select a format to export as</source>
     <name>src/actions/tracklist_selections.c:2290</name>
     <message>
         <source>Change direct out</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit přímý výstup</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2371</name>
     <message>
         <source>Change direct out</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit přímý výstup</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2293</name>
     <message>
         <source>Rename track</source>
-        <translation type="unfinished"></translation>
+        <translation>Přejmenovat stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2296</name>
     <message>
         <source>Rename lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Přejmenovat vrstvu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2299</name>
     <message>
         <source>Change color</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit barvu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2365</name>
     <message>
         <source>Change color</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit barvu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2302</name>
     <message>
         <source>Change icon</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit ikonu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2305</name>
     <message>
         <source>Change comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit komentář</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2308</name>
     <message>
         <source>Change MIDI fader mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit režim MIDI faderu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2368</name>
     <message>
         <source>Change MIDI fader mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Změnit režim MIDI faderu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2321</name>
     <message>
         <source>Solo %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout sólo stop (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2325</name>
     <message>
         <source>Unsolo %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout sólo stop (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2330</name>
     <message>
         <source>Mute %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Ztlumit stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2334</name>
     <message>
         <source>Unmute %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Odtlumit stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2339</name>
     <message>
         <source>Listen %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout poslech stop (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2343</name>
     <message>
         <source>Unlisten %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout poslech stop (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2348</name>
     <message>
         <source>Enable %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2352</name>
     <message>
         <source>Disable %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2357</name>
     <message>
         <source>Fold %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Sbalit stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2361</name>
     <message>
         <source>Unfold %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozbalit stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2384</name>
     <message>
         <source>Move Track inside</source>
-        <translation type="unfinished"></translation>
+        <translation>Přesunout stopu dovnitř</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2388</name>
     <message>
         <source>Move Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Přesunout stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2398</name>
     <message>
         <source>Move %d Tracks inside</source>
-        <translation type="unfinished"></translation>
+        <translation>Přesunout stopy dovnitř (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2405</name>
     <message>
         <source>Move %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Přesunout stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2414</name>
     <message>
         <source>Pin Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Připnout stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2419</name>
     <message>
         <source>Pin %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Připnout stopy (%d)</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2426</name>
     <message>
         <source>Unpin Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Odepnout stopu</translation>
     </message>
 </context>
 <context>
     <name>src/actions/tracklist_selections.c:2431</name>
     <message>
         <source>Unpin %d Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Odepnout stopy (%d)</translation>
     </message>
 </context>
 <context>
@@ -9373,14 +9373,14 @@ Please select a format to export as</source>
     <name>resources/gtk/help-overlay.ui:98</name>
     <message>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/header.ui:50</name>
     <message>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt</translation>
     </message>
 </context>
 <context>
@@ -9499,7 +9499,7 @@ Please select a format to export as</source>
     <name>resources/gtk/help-overlay.ui:228</name>
     <message>
         <source>Ramp tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Nástroj pro lineární změnu</translation>
     </message>
 </context>
 <context>
@@ -9555,14 +9555,14 @@ Please select a format to export as</source>
     <name>resources/gtk/help-overlay.ui:285</name>
     <message>
         <source>Quick Quantize</source>
-        <translation type="unfinished"></translation>
+        <translation>Rychlá kvantizace</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_box.ui:12</name>
     <message>
         <source>Quick Quantize</source>
-        <translation type="unfinished"></translation>
+        <translation>Rychlá kvantizace</translation>
     </message>
 </context>
 <context>
@@ -9576,7 +9576,7 @@ Please select a format to export as</source>
     <name>resources/gtk/help-overlay.ui:301</name>
     <message>
         <source>Looping</source>
-        <translation type="unfinished"></translation>
+        <translation>Smyčkování</translation>
     </message>
 </context>
 <context>
@@ -9733,266 +9733,266 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/scale_selector_window.ui:22</name>
     <message>
         <source>Root Key</source>
-        <translation type="unfinished"></translation>
+        <translation>Základní tón</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:41</name>
     <message>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:37</name>
     <message>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:358</name>
     <message>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:51</name>
     <message>
         <source>D♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Des</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:47</name>
     <message>
         <source>D♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Des</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:368</name>
     <message>
         <source>D♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Des</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:61</name>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>D</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:57</name>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>D</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:378</name>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>D</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:71</name>
     <message>
         <source>E♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Es</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:67</name>
     <message>
         <source>E♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Es</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:388</name>
     <message>
         <source>E♭</source>
-        <translation type="unfinished"></translation>
+        <translation>Es</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:81</name>
     <message>
         <source>E</source>
-        <translation type="unfinished"></translation>
+        <translation>E</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:77</name>
     <message>
         <source>E</source>
-        <translation type="unfinished"></translation>
+        <translation>E</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:398</name>
     <message>
         <source>E</source>
-        <translation type="unfinished"></translation>
+        <translation>E</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:91</name>
     <message>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation>F</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:87</name>
     <message>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation>F</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:408</name>
     <message>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation>F</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:101</name>
     <message>
         <source>F♯</source>
-        <translation type="unfinished"></translation>
+        <translation>Fis</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:97</name>
     <message>
         <source>F♯</source>
-        <translation type="unfinished"></translation>
+        <translation>Fis</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:418</name>
     <message>
         <source>F♯</source>
-        <translation type="unfinished"></translation>
+        <translation>Fis</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:111</name>
     <message>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:107</name>
     <message>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:428</name>
     <message>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:121</name>
     <message>
         <source>A♭</source>
-        <translation type="unfinished"></translation>
+        <translation>As</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:117</name>
     <message>
         <source>A♭</source>
-        <translation type="unfinished"></translation>
+        <translation>As</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:438</name>
     <message>
         <source>A♭</source>
-        <translation type="unfinished"></translation>
+        <translation>As</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:131</name>
     <message>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:127</name>
     <message>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:448</name>
     <message>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:141</name>
     <message>
         <source>B♭</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:137</name>
     <message>
         <source>B♭</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:458</name>
     <message>
         <source>B♭</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:151</name>
     <message>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>H</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:147</name>
     <message>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>H</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:468</name>
     <message>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>H</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:161</name>
     <message>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Stupnice</translation>
     </message>
 </context>
 <context>
@@ -10006,42 +10006,42 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/scale_selector_window.ui:178</name>
     <message>
         <source>Chromatic</source>
-        <translation type="unfinished"></translation>
+        <translation>Chromatická</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:188</name>
     <message>
         <source>Ionian (Major)</source>
-        <translation type="unfinished"></translation>
+        <translation>Jónská (durová)</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:198</name>
     <message>
         <source>Aeolian (Natural Minor)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aiolská (přirozená mollová)</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:208</name>
     <message>
         <source>Harmonic Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>Harmonická mollová</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/scale_selector_window.ui:237</name>
     <message>
         <source>Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Tvorba</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:510</name>
     <message>
         <source>Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Tvorba</translation>
     </message>
 </context>
 <context>
@@ -10062,14 +10062,14 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/scale_selector_window.ui:255</name>
     <message>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastní</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:618</name>
     <message>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastní</translation>
     </message>
 </context>
 <context>
@@ -10174,49 +10174,49 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/chord_selector_window.ui:20</name>
     <message>
         <source>Root Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Základní tón</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:173</name>
     <message>
         <source>maj</source>
-        <translation type="unfinished"></translation>
+        <translation>dur</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:183</name>
     <message>
         <source>min</source>
-        <translation type="unfinished"></translation>
+        <translation>moll</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:193</name>
     <message>
         <source>dim</source>
-        <translation type="unfinished"></translation>
+        <translation>zmenšený</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:203</name>
     <message>
         <source>sus4</source>
-        <translation type="unfinished"></translation>
+        <translation>sus4</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:213</name>
     <message>
         <source>sus2</source>
-        <translation type="unfinished"></translation>
+        <translation>sus2</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:223</name>
     <message>
         <source>aug</source>
-        <translation type="unfinished"></translation>
+        <translation>zvětšený</translation>
     </message>
 </context>
 <context>
@@ -10230,35 +10230,35 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/chord_selector_window.ui:251</name>
     <message>
         <source>7</source>
-        <translation type="unfinished"></translation>
+        <translation>7</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:261</name>
     <message>
         <source>j7</source>
-        <translation type="unfinished"></translation>
+        <translation>maj7</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:341</name>
     <message>
         <source>Bass Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Basový tón</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:496</name>
     <message>
         <source>In scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Ve stupnici</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/chord_selector_window.ui:603</name>
     <message>
         <source>Diatonic</source>
-        <translation type="unfinished"></translation>
+        <translation>Diatonické akordy</translation>
     </message>
 </context>
 <context>
@@ -10272,7 +10272,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/chord_selector_window.ui:633</name>
     <message>
         <source>Circle of Fifths</source>
-        <translation type="unfinished"></translation>
+        <translation>Kvintový kruh</translation>
     </message>
 </context>
 <context>
@@ -10307,7 +10307,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/midi_editor_space.ui:83</name>
     <message>
         <source>Pitch Wheel</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolečko změny výšky tónu</translation>
     </message>
 </context>
 <context>
@@ -10328,14 +10328,14 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/playhead_scroll_buttons.ui:11</name>
     <message>
         <source>Scroll when playhead reaches the edge</source>
-        <translation type="unfinished"></translation>
+        <translation>Posunout zobrazení, když přehrávací kurzor dosáhne okraje</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/playhead_scroll_buttons.ui:24</name>
     <message>
         <source>Follow playhead</source>
-        <translation type="unfinished"></translation>
+        <translation>Sledovat přehrávací kurzor</translation>
     </message>
 </context>
 <context>
@@ -10468,7 +10468,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/chord_key.ui:7</name>
     <message>
         <source>Amin 7</source>
-        <translation type="unfinished"></translation>
+        <translation>Am7</translation>
     </message>
 </context>
 <context>
@@ -10559,7 +10559,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/snap_grid_popover.ui:239</name>
     <message>
         <source>Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Délka</translation>
     </message>
 </context>
 <context>
@@ -10664,7 +10664,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/transport_controls.ui:38</name>
     <message>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastavit</translation>
     </message>
 </context>
 <context>
@@ -10706,35 +10706,35 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/transport_controls.ui:9</name>
     <message>
         <source>Return to cue point on stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Při zastavení se vrátit na výchozí bod</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:26</name>
     <message>
         <source>Play</source>
-        <translation type="unfinished"></translation>
+        <translation>Přehrát</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:50</name>
     <message>
         <source>Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Zpět</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:62</name>
     <message>
         <source>Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Vpřed</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/transport_controls.ui:74</name>
     <message>
         <source>Loop</source>
-        <translation type="unfinished"></translation>
+        <translation>Smyčka</translation>
     </message>
 </context>
 <context>
@@ -10874,70 +10874,70 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/snap_box.ui:13</name>
     <message>
         <source>Snap to grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Přichytávat k mřížce</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_box.ui:27</name>
     <message>
         <source>Keep offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Zachovat posun</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_box.ui:41</name>
     <message>
         <source>Snap to events</source>
-        <translation type="unfinished"></translation>
+        <translation>Přichytávat k událostem</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:5</name>
     <message>
         <source>Quantize Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Možnosti kvantizace</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:26</name>
     <message>
         <source>Quantize to</source>
-        <translation type="unfinished"></translation>
+        <translation>Kvantizovat na</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:55</name>
     <message>
         <source>Adjust</source>
-        <translation type="unfinished"></translation>
+        <translation>Upravit</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:82</name>
     <message>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Míra</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:102</name>
     <message>
         <source>Swing</source>
-        <translation type="unfinished"></translation>
+        <translation>Swing</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:117</name>
     <message>
         <source>Randomization</source>
-        <translation type="unfinished"></translation>
+        <translation>Náhodné odchylky</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/quantize_dialog.ui:140</name>
     <message>
         <source>_Quantize</source>
-        <translation type="unfinished"></translation>
+        <translation>_Kvantizovat</translation>
     </message>
 </context>
 <context>
@@ -11140,133 +11140,133 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>resources/ui/quantize_box.ui:26</name>
     <message>
         <source>Full Quantize...</source>
-        <translation type="unfinished"></translation>
+        <translation>Úplná kvantizace...</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:66</name>
     <message>
         <source>Note length</source>
-        <translation type="unfinished"></translation>
+        <translation>Délka noty</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:149</name>
     <message>
         <source>Note length</source>
-        <translation type="unfinished"></translation>
+        <translation>Délka noty</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:84</name>
     <message>
         <source>t</source>
-        <translation type="unfinished"></translation>
+        <translation>t</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:167</name>
     <message>
         <source>t</source>
-        <translation type="unfinished"></translation>
+        <translation>t</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:87</name>
     <message>
         <source>Triplet</source>
-        <translation type="unfinished"></translation>
+        <translation>Triola</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:170</name>
     <message>
         <source>Triplet</source>
-        <translation type="unfinished"></translation>
+        <translation>Triola</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:97</name>
     <message>
         <source>Dotted</source>
-        <translation type="unfinished"></translation>
+        <translation>S tečkou</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:180</name>
     <message>
         <source>Dotted</source>
-        <translation type="unfinished"></translation>
+        <translation>S tečkou</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:116</name>
     <message>
         <source>Adaptive</source>
-        <translation type="unfinished"></translation>
+        <translation>Přizpůsobovat</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:199</name>
     <message>
         <source>Adaptive</source>
-        <translation type="unfinished"></translation>
+        <translation>Přizpůsobovat</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:118</name>
     <message>
         <source>Adaptive length</source>
-        <translation type="unfinished"></translation>
+        <translation>Přizpůsobovat délku</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:201</name>
     <message>
         <source>Adaptive length</source>
-        <translation type="unfinished"></translation>
+        <translation>Přizpůsobovat délku</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:130</name>
     <message>
         <source>Snap</source>
-        <translation type="unfinished"></translation>
+        <translation>Přichytávání</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:211</name>
     <message>
         <source>Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Propojit</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:212</name>
     <message>
         <source>Link length to snap setting</source>
-        <translation type="unfinished"></translation>
+        <translation>Propojit délku s nastavením přichytávání</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:224</name>
     <message>
         <source>Last object</source>
-        <translation type="unfinished"></translation>
+        <translation>Poslední objekt</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/snap_grid_popover.ui:225</name>
     <message>
         <source>Use last created object&apos;s length</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít délku naposledy vytvořeného objektu</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/range_action_buttons.ui:24</name>
     <message>
         <source>Remove range</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit rozsah</translation>
     </message>
 </context>
 <context>
@@ -11322,7 +11322,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>data/zrythm.desktop.in:11</name>
     <message>
         <source>Digital Audio Workstation</source>
-        <translation type="unfinished"></translation>
+        <translation>Digitální zvuková pracovní stanice</translation>
     </message>
 </context>
 <context>
@@ -11679,21 +11679,21 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>build/data/org.zrythm.Zrythm.gschema.xml:392</name>
     <message>
         <source>Note notation</source>
-        <translation type="unfinished"></translation>
+        <translation>Značení tónů</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:393</name>
     <message>
         <source>The note notation used in the piano roll - MIDI pitch index or notes (C, C#, etc.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Značení tónů používané v klavírním editoru - čísla tónů MIDI nebo názvy tónů (C, Cis atd.)</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:398</name>
     <message>
         <source>Whether to use musical mode. If this is on, time-stretching will be applied to events so that they match the project BPM. This mostly applies to audio regions.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zda používat hudební režim. Je-li zapnutý, délka událostí se přizpůsobí tak, aby odpovídaly tempu projektu v BPM. To se týká především zvukových oblastí.</translation>
     </message>
 </context>
 <context>
@@ -11735,7 +11735,7 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>build/data/org.zrythm.Zrythm.gschema.xml:413</name>
     <message>
         <source>The MIDI modifier to display in the MIDI editor (only velocity is valid at the moment).</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI parametr zobrazený v MIDI editoru (v současnosti je platná pouze dynamika úhozu).</translation>
     </message>
 </context>
 <context>
@@ -13135,14 +13135,14 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>build/data/org.zrythm.Zrythm.gschema.xml:992</name>
     <message>
         <source>Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Pluginy</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1023</name>
     <message>
         <source>Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Pluginy</translation>
     </message>
 </context>
 <context>
@@ -13254,21 +13254,21 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1051</name>
     <message>
         <source>Editing</source>
-        <translation type="unfinished"></translation>
+        <translation>Úpravy</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1065</name>
     <message>
         <source>Editing</source>
-        <translation type="unfinished"></translation>
+        <translation>Úpravy</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1079</name>
     <message>
         <source>Editing</source>
-        <translation type="unfinished"></translation>
+        <translation>Úpravy</translation>
     </message>
 </context>
 <context>
@@ -13436,14 +13436,14 @@ This will guide you through the basic setup of Zrythm. First, choose your langua
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1154</name>
     <message>
         <source>Pan law</source>
-        <translation type="unfinished"></translation>
+        <translation>Útlum při panoramování</translation>
     </message>
 </context>
 <context>
     <name>build/data/org.zrythm.Zrythm.gschema.xml:1155</name>
     <message>
         <source>The pan law to use when applying pan on mono signals (not used at the moment).</source>
-        <translation type="unfinished"></translation>
+        <translation>Útlum používaný při panoramování monofonních signálů (v současnosti se nepoužívá).</translation>
     </message>
 </context>
 <context>

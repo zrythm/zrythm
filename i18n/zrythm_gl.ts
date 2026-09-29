@@ -263,7 +263,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Transpor</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>

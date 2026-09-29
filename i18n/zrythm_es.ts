@@ -263,7 +263,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Trasponer</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>
@@ -1177,17 +1177,17 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="76"/>
         <source>Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Panel izquierdo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="87"/>
         <source>Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Panel Inferior</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="98"/>
         <source>Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Panel derecho</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="110"/>
@@ -2322,47 +2322,47 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="169"/>
         <source>Common Pop Chords</source>
-        <translation type="unfinished"></translation>
+        <translation>Acordes Pop Comunes</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="183"/>
         <source>J-Pop</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">J-Pop</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="187"/>
         <source>J-Pop Uplifting</source>
-        <translation type="unfinished"></translation>
+        <translation>J-Pop Aumentado</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="200"/>
         <source>J-Pop Modulating</source>
-        <translation type="unfinished"></translation>
+        <translation>Modulación J-Pop</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="218"/>
         <source>Royal Road (IV-V-iii-vi)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Royal Road (IV-V-iii-vi)</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="226"/>
         <source>K-Pop</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">K-Pop</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="230"/>
         <source>K-Pop Bright</source>
-        <translation type="unfinished"></translation>
+        <translation>K-Pop Brillante</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="240"/>
         <source>Anime Ballad</source>
-        <translation type="unfinished"></translation>
+        <translation>Balada de Anime</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="244"/>
         <source>Ballad — Bright Modulation</source>
-        <translation type="unfinished"></translation>
+        <translation>Balada - Modulación brillante</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="262"/>
@@ -2397,57 +2397,57 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="351"/>
         <source>Eurobeat — Modal Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>Eurobeat - Modal Menor</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="366"/>
         <source>Eurobeat — Minor Anthem</source>
-        <translation type="unfinished"></translation>
+        <translation>Eurobeat - Himno Menor</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="384"/>
         <source>Eurobeat — Uplifting Major</source>
-        <translation type="unfinished"></translation>
+        <translation>Eurobeat — Estímulo Mayor</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="400"/>
         <source>Eurobeat — Minor Groove</source>
-        <translation type="unfinished"></translation>
+        <translation>Eurobeat — Canal Menor</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="415"/>
         <source>Trance</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Trance</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="419"/>
         <source>Uplifting Trance</source>
-        <translation type="unfinished"></translation>
+        <translation>Trance inspirador</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="449"/>
         <source>Rock Ballad</source>
-        <translation type="unfinished"></translation>
+        <translation>Balada Rock</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="461"/>
         <source>J-Rock</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">J-Rock</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="465"/>
         <source>J-Rock — Modal Mix</source>
-        <translation type="unfinished"></translation>
+        <translation>J-Rock — Mezcla Modal</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="479"/>
         <source>J-Rock — Cinematic</source>
-        <translation type="unfinished"></translation>
+        <translation>J-Rock — Cinemática</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/chord_preset_manager.cpp" line="497"/>
         <source>J-Rock — Diatonic Run</source>
-        <translation type="unfinished"></translation>
+        <translation>J-Rock — Operar Diatónico</translation>
     </message>
     <message>
         <source>Most Often Used Chords</source>
@@ -2791,7 +2791,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/fader.cpp" line="157"/>
         <source>Fader output</source>
-        <translation type="unfinished"></translation>
+        <translation>Salida de potenciómetro</translation>
     </message>
     <message>
         <source>Prefader Volume</source>
@@ -2808,7 +2808,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/fader.cpp" line="60"/>
         <source>Fader Balance</source>
-        <translation type="unfinished">Balance de faders</translation>
+        <translation>Balance de potenciómetro</translation>
     </message>
     <message>
         <source>Prefader Mute</source>
@@ -2817,7 +2817,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/fader.cpp" line="73"/>
         <source>Fader Mute</source>
-        <translation type="unfinished">Silenciar fader</translation>
+        <translation>Silenciar potenciómetro</translation>
     </message>
     <message>
         <source>Prefader Solo</source>
@@ -2826,7 +2826,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/fader.cpp" line="86"/>
         <source>Fader Solo</source>
-        <translation type="unfinished">Volumen del fader</translation>
+        <translation>Volumen del potenciómetro</translation>
     </message>
     <message>
         <source>Prefader Listen</source>
@@ -2835,7 +2835,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/fader.cpp" line="99"/>
         <source>Fader Listen</source>
-        <translation type="unfinished">Silenciar fader</translation>
+        <translation>Silenciar potenciómetro</translation>
     </message>
     <message>
         <source>Prefader Mono Compat</source>
@@ -2844,7 +2844,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/fader.cpp" line="117"/>
         <source>Fader Mono Compat</source>
-        <translation type="unfinished"></translation>
+        <translation>Compatibilidad Mono del poetenciómetro</translation>
     </message>
     <message>
         <source>Ch Pre-Fader in</source>
@@ -2885,7 +2885,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/fader.cpp" line="177"/>
         <source>Ch MIDI Fader in</source>
-        <translation type="unfinished">Ch Entrada MIDI fader</translation>
+        <translation>Ch Entrada MIDI del potenciómetro</translation>
     </message>
     <message>
         <source>Ch MIDI Pre-Fader out</source>
@@ -2894,7 +2894,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/fader.cpp" line="191"/>
         <source>Ch MIDI Fader out</source>
-        <translation type="unfinished">Ch Salida MIDI fader</translation>
+        <translation>Ch Salida MIDI del potenciómetro</translation>
     </message>
     <message>
         <source>Failed to change volume</source>
@@ -3244,12 +3244,12 @@ Bit depth: {} bits</translation>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="72"/>
         <source>MIDI input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada MIDI</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="82"/>
         <source>MIDI output</source>
-        <translation type="unfinished"></translation>
+        <translation>Salida MIDI</translation>
     </message>
     <message>
         <location filename="../src/actions/track_creator.cpp" line="30"/>
@@ -3392,52 +3392,52 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="305"/>
         <source>Ramp Velocities</source>
-        <translation type="unfinished"></translation>
+        <translation>Velocidades de Ramp</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="351"/>
         <source>Delete %1 Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar objetos %1</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="588"/>
         <source>Cut %1 Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Cortar objetos %1</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="701"/>
         <source>Copy %1 Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar objetos %1</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="769"/>
         <source>Mute %1 Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Silenciar objetos %1</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="770"/>
         <source>Unmute %1 Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Activar el silencio de los objetos %1</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="808"/>
         <source>Change Timestretch Algorithm on %1 Clip(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiar el algoritmo de estiramiento temporal en % 1 Clip(s)</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="831"/>
         <source>Set Timebase Override</source>
-        <translation type="unfinished"></translation>
+        <translation>Establecer Anulación de la Base de Tiempo</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="861"/>
         <source>Clear Timebase Override</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrar Anulación de la Base de Tiempo</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_importer.cpp" line="102"/>
         <source>Import %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Importación %1</translation>
     </message>
     <message>
         <location filename="../tests/unit/commands/change_qobject_property_command_test.cpp" line="152"/>
@@ -3513,7 +3513,7 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/RecordSplitButton.qml" line="57"/>
         <source>Punch in/out</source>
-        <translation type="unfinished">Punch in/out</translation>
+        <translation>Pulsar entrar/salir</translation>
     </message>
 </context>
 <context>
@@ -3566,7 +3566,7 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/SaveController.qml" line="45"/>
         <source>Saving project...</source>
-        <translation type="unfinished"></translation>
+        <translation>guardando proyecto...</translation>
     </message>
 </context>
 <context>
@@ -3574,7 +3574,7 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/arranger/ScaleObjectView.qml" line="72"/>
         <source>Edit Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Escala</translation>
     </message>
 </context>
 <context>
@@ -3582,27 +3582,27 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/ScaleSelectorDialog.qml" line="22"/>
         <source>Edit Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Escala</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ScaleSelectorDialog.qml" line="32"/>
         <source>Root Key:</source>
-        <translation type="unfinished"></translation>
+        <translation>Clave Raíz:</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ScaleSelectorDialog.qml" line="75"/>
         <source>Scale:</source>
-        <translation type="unfinished"></translation>
+        <translation>Escala:</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ScaleSelectorDialog.qml" line="96"/>
         <source>Exotic Scales</source>
-        <translation type="unfinished"></translation>
+        <translation>Escalas exóticas</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ScaleSelectorDialog.qml" line="115"/>
         <source>Notes in Scale:</source>
-        <translation type="unfinished"></translation>
+        <translation>Notas en Escala:</translation>
     </message>
 </context>
 <context>
@@ -3615,12 +3615,12 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="38"/>
         <source>%1 - Last object</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - Último objeto</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="41"/>
         <source>%1 - %2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 - %2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="52"/>
@@ -3670,42 +3670,42 @@ Apoya este proyecto en {}
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/4</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1/4</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/8</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1/8</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/16</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1/16</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/32</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1/32</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/64</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1/64</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/128</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">1/128</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="161"/>
         <source>Note Type</source>
-        <translation type="unfinished">tipo de nota</translation>
+        <translation>Tipo de Nota</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
@@ -3728,12 +3728,12 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="191"/>
         <source>Keep Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Mantener Desplazamiento</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="206"/>
         <source>Snap to Events</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar a Eventos</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="222"/>
@@ -3763,12 +3763,12 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="264"/>
         <source>Custom Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Longitud personalizada</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="308"/>
         <source>Custom Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo personalizado</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="339"/>
@@ -3789,7 +3789,7 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="56"/>
         <source>More Options...</source>
-        <translation type="unfinished"></translation>
+        <translation>Más opciones...</translation>
     </message>
 </context>
 <context>
@@ -3797,12 +3797,12 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/arranger/TempoMapArranger.qml" line="22"/>
         <source>Create Time Signature Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Crear Objeto de Compás</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/TempoMapArranger.qml" line="22"/>
         <source>Create Tempo Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Crear Objeto Tempo</translation>
     </message>
 </context>
 <context>
@@ -3850,12 +3850,12 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="101"/>
         <source>BPM:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">BPM:</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="117"/>
         <source>Curve:</source>
-        <translation type="unfinished"></translation>
+        <translation>Curva:</translation>
     </message>
 </context>
 <context>
@@ -3863,27 +3863,27 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="21"/>
         <source>Set Beats Per Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Establecer Latidos Por Barra</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="38"/>
         <source>Set Beat Unit</source>
-        <translation type="unfinished"></translation>
+        <translation>Fijar la Unidad de Ritmo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="96"/>
         <source>Edit Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Compás</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="102"/>
         <source>Beats per bar:</source>
-        <translation type="unfinished"></translation>
+        <translation>Latidos por varilla:</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="116"/>
         <source>Beat unit:</source>
-        <translation type="unfinished"></translation>
+        <translation>Unidad de batido:</translation>
     </message>
 </context>
 <context>
@@ -3891,12 +3891,12 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="32"/>
         <source>Create Marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Crear Marcador</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="32"/>
         <source>Create Scale Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Crear Objeto de Escala</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="108"/>
@@ -3957,7 +3957,7 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="89"/>
         <source>Choose Track Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Elija el color de pista</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="98"/>
@@ -3967,37 +3967,37 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="128"/>
         <source>Timebase</source>
-        <translation type="unfinished"></translation>
+        <translation>Hora</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="136"/>
         <source>Musical</source>
-        <translation type="unfinished">Modo musical</translation>
+        <translation>Musical</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="136"/>
         <source>Absolute</source>
-        <translation type="unfinished"></translation>
+        <translation>Absoluto</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="166"/>
         <source>Device Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada de dispositivos</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="173"/>
         <source>Audio Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada de audio</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="183"/>
         <source>Input %1-%2 (Stereo)</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada %1 - % 2 (estéreo)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="184"/>
         <source>Input %1 (Mono)</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada % 1 (Mono)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="206"/>
@@ -4051,12 +4051,12 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/TrackRouteControl.qml" line="36"/>
         <source>Prerouted</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta previa</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackRouteControl.qml" line="92"/>
         <source>Unroute</source>
-        <translation type="unfinished"></translation>
+        <translation>Desruta</translation>
     </message>
 </context>
 <context>
@@ -4064,7 +4064,7 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="69"/>
         <source>Delete %1 Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar % 1 Pistas</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="69"/>
@@ -4122,22 +4122,22 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="56"/>
         <source>Add Audio FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Añadir Pista de Efectos Audio</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="62"/>
         <source>Add MIDI FX Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Añadir Pista MIDI FX</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="71"/>
         <source>Add Audio Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar Pista de Grupo de Audio</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="77"/>
         <source>Add MIDI Group Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Añadir Pista de Grupo MIDI</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="86"/>
@@ -4147,7 +4147,7 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="100"/>
         <source>Clip Launcher</source>
-        <translation type="unfinished"></translation>
+        <translation>Lanzador de Clips</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="111"/>
@@ -4157,7 +4157,7 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="122"/>
         <source>BPM &amp; Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>BPM y Firma de Tiempo</translation>
     </message>
 </context>
 <context>
@@ -4165,12 +4165,12 @@ Apoya este proyecto en {}
     <message>
         <location filename="../src/gui/qml/components/TransportControls.qml" line="94"/>
         <source>Tempo at playhead differs from base tempo (%1 BPM)</source>
-        <translation type="unfinished"></translation>
+        <translation>El tempo en el cabezal de reproducción difiere del tempo base (%1 BPM)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TransportControls.qml" line="114"/>
         <source>Edit Base Tempo</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Tempo Base</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TransportControls.qml" line="120"/>
@@ -17792,7 +17792,7 @@ Apoye este proyecto en https://liberapay.com/Zrythm
     <message>
         <location filename="../src/dsp/note_type.cpp" line="20"/>
         <source>beat</source>
-        <translation type="unfinished">beat</translation>
+        <translation>pulsar</translation>
     </message>
     <message>
         <location filename="../src/dsp/note_type.cpp" line="33"/>
@@ -17834,27 +17834,27 @@ Apoye este proyecto en https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="297"/>
         <source>Loading project file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Cargando archivo de proyecto...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="349"/>
         <source>Creating project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Creando proyecto...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="367"/>
         <source>Deserializing project data...</source>
-        <translation type="unfinished"></translation>
+        <translation>Deserializando los datos del proyecto...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="378"/>
         <source>Setting up project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurando proyecto...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="412"/>
         <source>Rebuilding audio graph...</source>
-        <translation type="unfinished"></translation>
+        <translation>Reconstruyendo gráficos de audio...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="419"/>

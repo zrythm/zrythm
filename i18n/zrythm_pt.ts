@@ -263,7 +263,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Transposição</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>
@@ -1177,17 +1177,17 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="76"/>
         <source>Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Painel esquerdo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="87"/>
         <source>Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Painel inferior</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="98"/>
         <source>Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Painel direito</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="110"/>

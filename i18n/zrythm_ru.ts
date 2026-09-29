@@ -37,7 +37,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Скопировать</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
@@ -47,7 +47,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Назад</translation>
     </message>
 </context>
 <context>
@@ -65,44 +65,44 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="632"/>
         <source>Timebase</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовой пояс</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="636"/>
         <source>Inherit from Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Унаследовать от трека</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="642"/>
         <source>Musical</source>
-        <translation type="unfinished">Музыкальный режим (Musical Mode)</translation>
+        <translation>Музыкальное</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="648"/>
         <source>Absolute</source>
-        <translation type="unfinished"></translation>
+        <translation>Абсолютный</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="927"/>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="1101"/>
         <source>Erase Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="1119"/>
         <source>Paint Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Раскрасить объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="1220"/>
         <source>Copy Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать объекты</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="1228"/>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="1230"/>
         <source>Move Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Переместить объекты</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Увеличить масштаб (Zoom In)</translation>
+        <translation>Увеличить</translation>
     </message>
 </context>
 <context>
@@ -129,12 +129,12 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="35"/>
         <source>Drum Notation</source>
-        <translation type="unfinished"></translation>
+        <translation>Нотация для ударных</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="62"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Увеличить масштаб (Zoom In)</translation>
+        <translation>Увеличить</translation>
     </message>
 </context>
 <context>
@@ -180,12 +180,12 @@
     <message>
         <location filename="../src/gui/qml/components/BalanceControl.qml" line="32"/>
         <source>Reset</source>
-        <translation type="unfinished">Сброс</translation>
+        <translation>Сброс</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BalanceControl.qml" line="40"/>
         <source>Bind MIDI CC</source>
-        <translation type="unfinished">Привязать MIDI CC</translation>
+        <translation>Назначить MIDI-контроллер</translation>
     </message>
 </context>
 <context>
@@ -193,12 +193,12 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="43"/>
         <source>Select a clip from the timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите клип на временной шкале</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="45"/>
         <source>No clip selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Клип не выбран</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="86"/>
@@ -229,7 +229,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="346"/>
         <source>Arrangement</source>
-        <translation type="unfinished"></translation>
+        <translation>Аранжировка</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="351"/>
@@ -247,7 +247,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ChordEditorPane.qml" line="96"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Увеличить масштаб (Zoom In)</translation>
+        <translation>Увеличить</translation>
     </message>
 </context>
 <context>
@@ -255,69 +255,69 @@
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="57"/>
         <source>Apply Preset</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить пресет</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="62"/>
         <source>Populate pads from a preset</source>
-        <translation type="unfinished"></translation>
+        <translation>Заполнить поля из предустановки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="71"/>
         <source>From Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Исходная гамма</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="157"/>
         <source>Transpose</source>
-        <translation type="unfinished"></translation>
+        <translation>Транспонировать (Transpose)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="165"/>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="498"/>
         <source>Transpose Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Транспонировать вверх</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="174"/>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="509"/>
         <source>Transpose Down</source>
-        <translation type="unfinished"></translation>
+        <translation>Транспонировать вниз</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="196"/>
         <source>Add a scale to the chord track to see chord suggestions</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавьте гамму в трек аккордов, чтобы видеть предложения аккордов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="196"/>
         <source>Press a chord for suggestions</source>
-        <translation type="unfinished"></translation>
+        <translation>Нажмите на аккорд, чтобы увидеть варианты</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="204"/>
         <source>Suggestions:</source>
-        <translation type="unfinished"></translation>
+        <translation>Варианты:</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="453"/>
         <source>Edit…</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактировать…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="464"/>
         <source>Remove</source>
-        <translation type="unfinished">Убрать</translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="473"/>
         <source>Invert Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Перевернуть назад</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordPadPanel.qml" line="484"/>
         <source>Invert Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Перевернуть вперед</translation>
     </message>
 </context>
 <context>
@@ -325,7 +325,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="102"/>
         <source>Chord Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Селектор аккордов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="113"/>
@@ -335,32 +335,32 @@
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="117"/>
         <source>Diatonic</source>
-        <translation type="unfinished"></translation>
+        <translation>Диатоника</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="146"/>
         <source>Constrain to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ограничить до %1</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="187"/>
         <source>Maj</source>
-        <translation type="unfinished"></translation>
+        <translation>Маж</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="191"/>
         <source>min</source>
-        <translation type="unfinished"></translation>
+        <translation>мин</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="195"/>
         <source>dim</source>
-        <translation type="unfinished"></translation>
+        <translation>Уменьш</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="199"/>
         <source>sus4</source>
-        <translation type="unfinished"></translation>
+        <translation>Сус4</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="203"/>
@@ -403,7 +403,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="59"/>
         <source>Highlight</source>
-        <translation type="unfinished"></translation>
+        <translation>Выделение</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="65"/>
@@ -418,7 +418,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="73"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Гамма</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/ClipEditorGrid.qml" line="77"/>
@@ -1182,7 +1182,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="64"/>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="64"/>
         <source>Redo</source>
-        <translation type="unfinished"></translation>
+        <translation>Повторить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="71"/>
@@ -1192,17 +1192,17 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="76"/>
         <source>Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Левая Панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="87"/>
         <source>Bottom Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Нижняя Панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="98"/>
         <source>Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Правая Панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="110"/>
@@ -4211,7 +4211,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="128"/>
         <source>Timebase</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовой пояс</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="136"/>
@@ -4247,7 +4247,7 @@ Support this project at {}
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="206"/>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="355"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет (None)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="262"/>
@@ -4262,7 +4262,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="328"/>
         <source>Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="401"/>
