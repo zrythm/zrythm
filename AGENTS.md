@@ -361,6 +361,10 @@ Zrythm makes extensive use of modern C++ features:
 - Use proper types: annotate signal/function parameters and return types (`signal moved(real x)`, `function fits(width: int): bool`); `var` only for JS-dynamic values (e.g. rows from `ListModel::get()`). Arrow functions cannot have typed parameters — signal handler lambdas are untyped (`onMoved: (x) => …`)
 - Cast items returned by generic accessors (`Repeater::itemAt()`, `ListView::currentItem`) to their concrete type before accessing custom members
 
+**Style template components:**
+- Files under `src/gui/qml/ZrythmStyle/` are styled stock Qt Quick Controls, not new component types: consumers must see exactly the stock `T.*` template's API. Never add public properties (or other API surface) to them — cross-template coordination through injected properties is a design smell; use the stock control's own API (e.g. `DialogButtonBox.defaultButton`, `Dialog.visible`) instead
+- Internal implementation details inside a template (readonly helper properties, functions, child items like `Shortcut` or `Keys` handlers) are fine — the rule covers what consumers could read or set
+
 ### UI Design
 
 - We mostly follow [Apple's Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/) for UI/UX decisions
