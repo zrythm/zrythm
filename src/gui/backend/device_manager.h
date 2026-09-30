@@ -120,14 +120,6 @@ public:
   dsp::MidiDeviceBuffer *
   midi_buffer_for_device (const utils::Utf8String &identifier) const;
 
-  /**
-   * @brief Emitted when the audio device reports an error (e.g. the
-   * device is disconnected).
-   *
-   * May be emitted from the audio device thread.
-   */
-  Q_SIGNAL void errorOccurred (const QString &errorMessage);
-
   // IHardwareMidiInterface
   void
   set_device_change_callback (std::optional<DeviceChangeCallback> cb) override;
@@ -158,37 +150,6 @@ private:
     DeviceManager &dev_manager_;
   };
 
-  /**
-   * @brief Registered as an audio callback so that JUCE delivers audio
-   * device errors to this manager; the audio processing methods are
-   * no-ops.
-   */
-  class DeviceErrorProbe final : public juce::AudioIODeviceCallback
-  {
-  public:
-    explicit DeviceErrorProbe (DeviceManager &dev_manager)
-        : dev_manager_ (dev_manager)
-    {
-    }
-
-    void audioDeviceIOCallbackWithContext (
-      const float * const *,
-      int,
-      float * const *,
-      int,
-      int,
-      const juce::AudioIODeviceCallbackContext &) override
-    {
-    }
-
-    void audioDeviceAboutToStart (juce::AudioIODevice *) override { }
-    void audioDeviceStopped () override { }
-    void audioDeviceError (const juce::String &errorMessage) override;
-
-  private:
-    DeviceManager &dev_manager_;
-  };
-
   class DeviceSelectorWindow : public juce::DocumentWindow
   {
   public:
@@ -204,7 +165,6 @@ private:
   XmlStateSetter                        state_setter_;
   std::unique_ptr<DeviceSelectorWindow> device_selector_window_;
   DeviceChangeListener                  device_change_listener_{ *this };
-  DeviceErrorProbe                      device_error_probe_{ *this };
   std::unique_ptr<MidiImpl>             midi_impl_;
 };
 } // namespace zrythm::gui::backend

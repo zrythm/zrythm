@@ -394,15 +394,6 @@ ZrythmApplication::setup_device_manager ()
           z_warning ("Failed to write device setup file: {}", filepath);
         }
     });
-  // The signal is emitted from the audio device thread, so the
-  // connection context makes the post run on the GUI thread
-  QObject::connect (
-    impl_->device_manager_.get (), &gui::backend::DeviceManager::errorOccurred,
-    impl_->notification_center_.get (),
-    [center = impl_->notification_center_.get ()] (const QString &message) {
-      center->postError (tr ("Audio Device Error"), message);
-    });
-
   try
     {
       impl_->device_manager_->initialize (2, 2, true);
