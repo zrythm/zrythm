@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 For changes prior to v2.0.0, see [CHANGELOG-old.v1.md](CHANGELOG-old.v1.md).
 
-## [v2.0.0-alpha.4] - 2026-09-29
+## [v2.0.0-alpha.5] - 2026-09-30
 
 ### Added
 - Native LV2 plugin hosting replacing the JUCE wrapper: metadata-only
