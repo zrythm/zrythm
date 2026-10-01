@@ -557,10 +557,10 @@ build:mac-arm:
     - cmake --build conanbuild/${BUILD_TYPE} --config ${BUILD_TYPE} --parallel 4
     - *unix_test_cmd
     - cpack -G "DragNDrop" -C ${BUILD_TYPE} --config conanbuild/${BUILD_TYPE}/CPackConfig.cmake -B package-${BUILD_TYPE}
-    # run the packaged app's installation selfcheck on the mounted DMG
-    - hdiutil attach "package-${BUILD_TYPE}"/*.dmg -mountpoint /tmp/zrythm-selfcheck -nobrowse -readonly
-    - /tmp/zrythm-selfcheck/Zrythm.app/Contents/MacOS/zrythm --verify-installation
-    - hdiutil detach /tmp/zrythm-selfcheck
+    # run the packaged app's installation selfcheck on the staged bundle
+    # (mounting the DMG requires agreeing to its license prompt)
+    - STAGED_APP=$(find "package-${BUILD_TYPE}/_CPack_Packages" -name "zrythm.app" -type d | head -n 1)
+    - "${STAGED_APP}/Contents/MacOS/zrythm --verify-installation"
     - >-
       if [ "${BUILD_TYPE}" = "Release" ]; then
         scripts/mac_codesign_and_notarize_dmg.sh "package-${BUILD_TYPE}"/*.dmg "Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
