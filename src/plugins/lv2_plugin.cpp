@@ -597,6 +597,18 @@ public:
   run_work_inline (uint32_t size, const std::byte * data) noexcept;
 
   /**
+   * @brief Executes work items left in the worker queues once the
+   * worker thread has stopped.
+   *
+   * Plugins may only release resources through scheduled work (a
+   * sampler frees its replaced sample from work()), so leftover
+   * requests are run inline and leftover responses delivered instead of
+   * being dropped. Responses that schedule further work are picked up
+   * by the same loop.
+   */
+  void finish_pending_worker_work () noexcept [[clang::blocking]];
+
+  /**
    * @brief Delivers queued worker responses to the plugin's
    * work_response() (audio thread, after run()).
    *
@@ -1933,8 +1945,7 @@ Lv2Plugin::Lv2PluginImpl::free_instance ()
   // The UI holds the instance handle (instance access) and must die
   // before the instance is freed
   destroy_ui ();
-  // The worker calls into the instance and must stop before it dies;
-  // pending requests and responses are dropped with it
+  // The worker calls into the instance and must stop before it dies
   if (worker_ != nullptr)
     {
       worker_->thread_.request_stop ();
@@ -1943,6 +1954,9 @@ Lv2Plugin::Lv2PluginImpl::free_instance ()
         worker_->sleep_cv_.notify_all ();
       }
       worker_->thread_.join ();
+      // Work left in the queues is executed on this thread: plugins may
+      // only release resources through scheduled work
+      finish_pending_worker_work ();
       // Report drops that landed after the worker's last poll
       warn_dropped_records ();
       worker_.reset ();
@@ -3836,6 +3850,30 @@ Lv2Plugin::Lv2PluginImpl::run_work_inline (
         static_cast<uint32_t> (response.size ()), response.data ());
     }
   return status;
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::finish_pending_worker_work () noexcept
+{
+  uint32_t size = 0;
+  for (;;)
+    {
+      bool progressed = false;
+      while (worker_->requests_.pop (worker_->request_scratch_, size))
+        {
+          progressed = true;
+          run_work_inline (size, worker_->request_scratch_.data ());
+        }
+      while (worker_->responses_.pop (worker_->response_scratch_, size))
+        {
+          progressed = true;
+          worker_->interface_->work_response (
+            lilv_instance_get_handle (instance_), size,
+            worker_->response_scratch_.data ());
+        }
+      if (!progressed)
+        return;
+    }
 }
 
 void
