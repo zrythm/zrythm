@@ -37,7 +37,12 @@ public:
 
   /**
    * @brief Returns the directory the LV2 specification bundles are shipped
-   * in: share/zrythm/lv2-specs under the installation prefix.
+   * in.
+   *
+   * When running inside a macOS app bundle, this is
+   * <bundle>/Contents/Resources/lv2-specs. For a plain executable (an
+   * installed <prefix>/bin or the build tree's products/bin), this is
+   * <parent-of-bin>/share/zrythm/lv2-specs.
    */
   static std::filesystem::path get_spec_bundles_dir ();
 

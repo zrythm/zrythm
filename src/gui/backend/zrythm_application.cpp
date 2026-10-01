@@ -3,6 +3,10 @@
 
 #include "zrythm-config.h"
 
+#include <expected>
+#include <filesystem>
+#include <ranges>
+
 #include "utils/format_qt.h"
 #include <fmt/std.h>
 
@@ -10,14 +14,17 @@
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/offscreen_qml_scene.h"
 #include "gui/backend/plugin_protocol_paths.h"
+#include "plugins/lv2_plugin_format.h"
 #include "utils/backtrace.h"
 #include "utils/directory_manager.h"
 #include "utils/dsp_context.h"
+#include "utils/exceptions.h"
 #include "utils/format_juce.h"
 #include "utils/qsettings_backend.h"
 #include "utils/qt.h"
 #include "utils/thread_safe_fftw.h"
 #include "utils/tracy.h"
+#include "utils/utf8_string.h"
 #include "utils/version.h"
 
 #include <QFileInfo>
@@ -25,6 +32,7 @@
 #include <QFontDatabase>
 #include <QIcon>
 #include <QLocalSocket>
+#include <QMessageBox>
 #include <QPalette>
 #include <QProcess>
 #include <QQmlApplicationEngine>
@@ -99,6 +107,31 @@ public:
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     : QApplication (argc, argv), impl_ (std::make_unique<Impl> ())
 {
+  try
+    {
+      initialize ();
+    }
+  catch (const std::exception &e)
+    {
+      z_critical ("Fatal error at startup: {}", e.what ());
+      // ZRYTHM_FATAL_DIALOG=0 skips the dialog (e.g. headless runs)
+      if (qgetenv ("ZRYTHM_FATAL_DIALOG") != "0")
+        {
+          QMessageBox::critical (
+            nullptr, tr ("Fatal Error"), QString::fromUtf8 (e.what ()));
+        }
+      throw;
+    }
+}
+
+void
+ZrythmApplication::initialize ()
+{
+  if (const auto verification = verify_installation (); !verification)
+    {
+      throw utils::ZrythmException (verification.error ().view ());
+    }
+
   // install signal handlers
   impl_->signal_handling_ = utils::Backtrace::init_signal_handlers ();
 
@@ -410,6 +443,41 @@ ZrythmApplication::setup_device_manager ()
   // Create hardware audio interface wrapper
   impl_->hw_audio_interface_ =
     dsp::JuceHardwareAudioInterface::create (impl_->device_manager_);
+}
+
+std::expected<void, zrythm::utils::Utf8String>
+ZrythmApplication::verify_installation ()
+{
+  // the LV2 world created during startup requires the LV2 specification
+  // bundles
+  const auto spec_bundles_dir =
+    zrythm::plugins::Lv2PluginFormat::get_spec_bundles_dir ();
+  std::error_code ec;
+  if (!std::filesystem::is_directory (spec_bundles_dir, ec))
+    {
+      return std::unexpected (
+        zrythm::utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "LV2 specification bundles not found in '{}': the installation is "
+            "incomplete (reinstall Zrythm)",
+            spec_bundles_dir)));
+    }
+
+  const auto num_bundles = std::ranges::count_if (
+    std::filesystem::directory_iterator{ spec_bundles_dir, ec },
+    [] (const auto &entry) {
+      return entry.is_directory () && entry.path ().extension () == ".lv2";
+    });
+  if (ec || num_bundles == 0)
+    {
+      return std::unexpected (
+        zrythm::utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "no LV2 specification bundles (.lv2 directories) found in '{}'",
+            spec_bundles_dir)));
+    }
+
+  return {};
 }
 
 void

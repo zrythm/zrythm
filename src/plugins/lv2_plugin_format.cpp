@@ -46,6 +46,19 @@ canonical_bundle_path (const juce::String &path)
 std::filesystem::path
 Lv2PluginFormat::get_spec_bundles_dir ()
 {
+#if defined(__APPLE__)
+  // inside a macOS app bundle, currentApplicationFile is the bundle and
+  // the spec bundles live in its Resources directory
+  const auto app_file =
+    juce::File::getSpecialLocation (juce::File::currentApplicationFile);
+  if (app_file.isDirectory ())
+    {
+      return utils::Utf8String::from_juce_string (
+               app_file.getChildFile ("Contents/Resources/lv2-specs")
+                 .getFullPathName ())
+        .to_path ();
+    }
+#endif
   // the executable lives in <prefix>/bin (both in the build tree's
   // products/bin and in an installed prefix), so two levels up is the
   // prefix
@@ -53,11 +66,10 @@ Lv2PluginFormat::get_spec_bundles_dir ()
     juce::File::getSpecialLocation (juce::File::currentExecutableFile)
       .getParentDirectory ()
       .getParentDirectory ();
-  return std::filesystem::path{
-    prefix.getChildFile (DATADIR_NAME "/zrythm/lv2-specs")
-      .getFullPathName ()
-      .toStdString ()
-  };
+  return utils::Utf8String::from_juce_string (
+           prefix.getChildFile (DATADIR_NAME "/zrythm/lv2-specs")
+             .getFullPathName ())
+    .to_path ();
 }
 
 Lv2PluginFormat::Lv2PluginFormat (std::shared_ptr<Lv2World> world)

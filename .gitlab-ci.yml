@@ -499,6 +499,8 @@ build:gnu/linux:
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "(appstream-util-validate-appdata|zrythm_gui_qml_unit_tests)" --rerun-failed --output-on-failure
     - APPIMAGE_EXTRACT_AND_RUN=1 cpack -G AppImage -C ${BUILD_TYPE} --config conanbuild/${BUILD_TYPE}/CPackConfig.cmake -B package-${BUILD_TYPE}
+    # run the packaged app's installation selfcheck
+    - APPIMAGE_EXTRACT_AND_RUN=1 package-${BUILD_TYPE}/*.AppImage --verify-installation
   parallel:
     matrix:
       - BUILD_TYPE: Debug
@@ -555,6 +557,10 @@ build:mac-arm:
     - cmake --build conanbuild/${BUILD_TYPE} --config ${BUILD_TYPE} --parallel 4
     - *unix_test_cmd
     - cpack -G "DragNDrop" -C ${BUILD_TYPE} --config conanbuild/${BUILD_TYPE}/CPackConfig.cmake -B package-${BUILD_TYPE}
+    # run the packaged app's installation selfcheck on the mounted DMG
+    - hdiutil attach "package-${BUILD_TYPE}"/*.dmg -mountpoint /tmp/zrythm-selfcheck -nobrowse -readonly
+    - /tmp/zrythm-selfcheck/Zrythm.app/Contents/MacOS/zrythm --verify-installation
+    - hdiutil detach /tmp/zrythm-selfcheck
     - >-
       if [ "${BUILD_TYPE}" = "Release" ]; then
         scripts/mac_codesign_and_notarize_dmg.sh "package-${BUILD_TYPE}"/*.dmg "Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
@@ -597,6 +603,11 @@ build:mac-arm:
     - if (Test-Path $shortPackageDir) { Remove-Item -Recurse -Force $shortPackageDir }
     - New-Item -ItemType Directory -Path $shortPackageDir -Force
     - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config "conanbuild/${env:BUILD_TYPE}/CPackConfig.cmake" -B $shortPackageDir; if (-not $?) { Get-Content "$shortPackageDir/_CPack_Packages/${env:CPACK_SYSTEM_NAME}/INNOSETUP/ISCCOutput.log"; exit 1 }
+    # run the packaged app's installation selfcheck against the staged
+    # install tree
+    - $stagedExe = Get-ChildItem "$shortPackageDir/_CPack_Packages/${env:CPACK_SYSTEM_NAME}/INNOSETUP" -Recurse -Filter "zrythm.exe" | Select-Object -First 1
+    - "& $stagedExe.FullName --verify-installation"
+    - if ($LASTEXITCODE -ne 0) { exit 1 }
     # Move the resulting exe files to the expected location for artifacts
     - if (Test-Path "package-${env:BUILD_TYPE}") { Remove-Item -Recurse -Force "package-${env:BUILD_TYPE}" }
     - New-Item -ItemType Directory -Path "package-${env:BUILD_TYPE}" -Force

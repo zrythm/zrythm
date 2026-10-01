@@ -134,10 +134,21 @@ add_custom_command(TARGET zrythm_plugins_lib POST_BUILD
     "${zrythm_lv2_binaries_parent_dir}/${CMAKE_INSTALL_DATADIR}/${prog_name_lowercase}/lv2-specs"
   COMMENT "Staging LV2 spec bundles"
 )
-install(
-  DIRECTORY "${lv2_RES_DIRS}/lv2/"
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/${prog_name_lowercase}/lv2-specs
-)
+if(APPLE)
+  # inside an app bundle the spec bundles are shipped in the bundle's
+  # Resources directory, where get_spec_bundles_dir() resolves them
+  install(
+    DIRECTORY "${lv2_RES_DIRS}/lv2/"
+    DESTINATION $<TARGET_BUNDLE_CONTENT_DIR:zrythm>/Resources/lv2-specs
+    COMPONENT Runtime
+  )
+else()
+  install(
+    DIRECTORY "${lv2_RES_DIRS}/lv2/"
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/${prog_name_lowercase}/lv2-specs
+    COMPONENT Runtime
+  )
+endif()
 
 target_precompile_headers(zrythm_plugins_lib
   PUBLIC

@@ -176,10 +176,20 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
   juce::addDefaultFormatsToManager (format_manager_);
   format_manager_.addFormat (std::make_unique<plugins::CLAPPluginFormat> ());
   format_manager_.addFormat (std::make_unique<plugins::Vst3PluginFormat> ());
-  format_manager_.addFormat (
-    std::make_unique<plugins::Lv2PluginFormat> (
-      std::make_shared<plugins::Lv2World> (
-        plugins::Lv2PluginFormat::get_spec_bundles_dir ())));
+  // the subprocess continues without LV2 scanning when the LV2 world
+  // cannot be created; the application reports the cause at startup
+  try
+    {
+      format_manager_.addFormat (
+        std::make_unique<plugins::Lv2PluginFormat> (
+          std::make_shared<plugins::Lv2World> (
+            plugins::Lv2PluginFormat::get_spec_bundles_dir ())));
+    }
+  catch (const std::exception &e)
+    {
+      juce::Logger::writeToLog (
+        "LV2 format unavailable: " + juce::String (e.what ()));
+    }
   for (auto * format : format_manager_.getFormats ())
     {
       juce::Logger::writeToLog ("Found format: " + format->getName ());

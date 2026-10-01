@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <expected>
+
 #include "engine/session/control_room.h"
 #include "gui/backend/chord_preset_manager.h"
 #include "gui/backend/device_manager.h"
@@ -13,6 +15,7 @@
 #include "gui/backend/translation_manager.h"
 #include "utils/app_settings.h"
 #include "utils/qt.h"
+#include "utils/utf8_string.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -68,6 +71,18 @@ public:
   ~ZrythmApplication () override;
   Q_DISABLE_COPY_MOVE (ZrythmApplication)
 
+  /**
+   * @brief Checks that the data required at startup exists in the
+   * installation being executed, resolving each location the same way
+   * startup does.
+   *
+   * Callable without an instance: the constructor itself requires this
+   * data.
+   *
+   * @return An error describing the first failed check, or success.
+   */
+  static std::expected<void, zrythm::utils::Utf8String> verify_installation ();
+
   void setup_ui ();
   void setup_ipc ();
   void launch_engine_process ();
@@ -92,6 +107,15 @@ public:
   QString pendingProjectFile () const;
 
 private:
+  /**
+   * @brief Runs the application initialization performed by the
+   * constructor.
+   *
+   * Called by the constructor inside a try block so startup failures are
+   * reported (log and dialog) before the exception propagates.
+   */
+  void initialize ();
+
   void setup_command_line_options ();
   void process_command_line ();
   void set_pending_project_file (const QString &path);
