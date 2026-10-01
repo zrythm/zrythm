@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map_qml_adapter.h"
@@ -20,14 +20,14 @@ int
 TempoMapWrapper::timeSignatureNumeratorAtTick (int64_t tick) const
 {
   const auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (tick));
-  return time_sig.numerator;
+  return time_sig.time_signature.numerator;
 }
 
 int
 TempoMapWrapper::timeSignatureDenominatorAtTick (int64_t tick) const
 {
   const auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (tick));
-  return time_sig.denominator;
+  return time_sig.time_signature.denominator;
 }
 
 double

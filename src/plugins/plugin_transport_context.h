@@ -118,8 +118,8 @@ build_plugin_transport_context (
 
   context.tempo_ = tempo_map.tempo_at_tick (position_tick);
   const auto time_sig = tempo_map.time_signature_at_tick (position_tick);
-  context.time_sig_numerator_ = time_sig.numerator;
-  context.time_sig_denominator_ = time_sig.denominator;
+  context.time_sig_numerator_ = time_sig.time_signature.numerator;
+  context.time_sig_denominator_ = time_sig.time_signature.denominator;
 
   const auto [loop_start, loop_end] = transport.get_loop_range_positions ();
   context.loop_start_ = to_quarters (loop_start);

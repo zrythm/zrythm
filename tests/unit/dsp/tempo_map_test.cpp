@@ -24,8 +24,11 @@ TEST_F (TempoMapTest, InitialState)
 {
   EXPECT_DOUBLE_EQ (
     map->tempo_at_tick (units::ticks (0)).in (units::bpm), 120.0);
-  EXPECT_EQ (map->time_signature_at_tick (units::ticks (0)).numerator, 4);
-  EXPECT_EQ (map->time_signature_at_tick (units::ticks (0)).denominator, 4);
+  EXPECT_EQ (
+    map->time_signature_at_tick (units::ticks (0)).time_signature.numerator, 4);
+  EXPECT_EQ (
+    map->time_signature_at_tick (units::ticks (0)).time_signature.denominator,
+    4);
 }
 
 // Test tempo event management
@@ -72,26 +75,26 @@ TEST_F (TempoMapTest, TempoEventManagement)
 TEST_F (TempoMapTest, TimeSignatureManagement)
 {
   // Add time signature
-  map->add_time_signature_event (units::ticks (1920), 3, 4);
+  map->add_time_signature_event (units::ticks (1920), TimeSignature{ 3, 4 });
   auto ts = map->time_signature_at_tick (units::ticks (1920));
-  EXPECT_EQ (ts.numerator, 3);
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 3);
+  EXPECT_EQ (ts.time_signature.denominator, 4);
   // Before the event, it should be 4/4
   ts = map->time_signature_at_tick (units::ticks (1919));
-  EXPECT_EQ (ts.numerator, 4);
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 4);
+  EXPECT_EQ (ts.time_signature.denominator, 4);
 
   // Update existing
-  map->add_time_signature_event (units::ticks (1920), 5, 8);
+  map->add_time_signature_event (units::ticks (1920), TimeSignature{ 5, 8 });
   ts = map->time_signature_at_tick (units::ticks (1920));
-  EXPECT_EQ (ts.numerator, 5);
-  EXPECT_EQ (ts.denominator, 8);
+  EXPECT_EQ (ts.time_signature.numerator, 5);
+  EXPECT_EQ (ts.time_signature.denominator, 8);
 
   // Remove
   map->remove_time_signature_event (units::ticks (1920));
   ts = map->time_signature_at_tick (units::ticks (1920));
-  EXPECT_EQ (ts.numerator, 4);
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 4);
+  EXPECT_EQ (ts.time_signature.denominator, 4);
 }
 
 // Test constant tempo conversions
@@ -200,12 +203,13 @@ TEST_F (TempoMapTest, MusicalPositionConversion)
 TEST_F (TempoMapTest, TimeSignatureChanges)
 {
   // Add time signatures
-  map->add_time_signature_event (units::ticks (0), 4, 4); // Bar 1: 4/4
-  const auto bar5Start = units::ticks (4 * 4 * 960);      // Bar 5 start
-  map->add_time_signature_event (bar5Start, 3, 4);        // Bar 5: 3/4
+  map->add_time_signature_event (
+    units::ticks (0), TimeSignature{ 4, 4 });        // Bar 1: 4/4
+  const auto bar5Start = units::ticks (4 * 4 * 960); // Bar 5 start
+  map->add_time_signature_event (bar5Start, TimeSignature{ 3, 4 }); // Bar 5: 3/4
   const auto bar8Start =
     bar5Start + units::ticks (3 * 3 * 960); // Bar 8 start (3 bars of 3/4)
-  map->add_time_signature_event (bar8Start, 7, 8); // Bar 8: 7/8
+  map->add_time_signature_event (bar8Start, TimeSignature{ 7, 8 }); // Bar 8: 7/8
 
   // Test positions
   auto pos = map->tick_to_musical_position (units::ticks (0));
@@ -439,7 +443,8 @@ TEST_F (TempoMapTest, SampleRateChanges)
 // Test complex time signature with different beat units
 TEST_F (TempoMapTest, ComplexTimeSignatures)
 {
-  map->add_time_signature_event (units::ticks (0), 6, 8); // 6/8 time
+  map->add_time_signature_event (
+    units::ticks (0), TimeSignature{ 6, 8 }); // 6/8 time
 
   // end at 6 beats
   const auto bar1Ticks = 6 * (TempoMap::get_ppq () / 2);
@@ -454,7 +459,7 @@ TEST_F (TempoMapTest, ComplexTimeSignatures)
   EXPECT_EQ (pos.beat, 6);
 
   // Test 7/16 time
-  map->add_time_signature_event (bar1Ticks, 7, 16);
+  map->add_time_signature_event (bar1Ticks, TimeSignature{ 7, 16 });
 
   // end at 7 beats
   const auto bar2Ticks = 7 * (TempoMap::get_ppq () / 4);
@@ -475,45 +480,46 @@ TEST_F (TempoMapTest, TimeSignatureLookup)
 {
   // Default 4/4
   auto ts = map->time_signature_at_tick (units::ticks (0));
-  EXPECT_EQ (ts.numerator, 4);
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 4);
+  EXPECT_EQ (ts.time_signature.denominator, 4);
 
   // Add time signatures
   map->add_time_signature_event (
-    units::ticks (1920), 3, 4); // Bar 3 (assuming 4/4)
-  map->add_time_signature_event (units::ticks (3840), 5, 8); // Bar 5 (3/4)
+    units::ticks (1920), TimeSignature{ 3, 4 }); // Bar 3 (assuming 4/4)
+  map->add_time_signature_event (
+    units::ticks (3840), TimeSignature{ 5, 8 }); // Bar 5 (3/4)
 
   // Test before first change
   ts = map->time_signature_at_tick (units::ticks (0));
-  EXPECT_EQ (ts.numerator, 4);
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 4);
+  EXPECT_EQ (ts.time_signature.denominator, 4);
 
   // Test at first change point
   ts = map->time_signature_at_tick (units::ticks (1920));
-  EXPECT_EQ (ts.numerator, 3);
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 3);
+  EXPECT_EQ (ts.time_signature.denominator, 4);
 
   // Test between changes
   ts = map->time_signature_at_tick (units::ticks (2000));
-  EXPECT_EQ (ts.numerator, 3);
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 3);
+  EXPECT_EQ (ts.time_signature.denominator, 4);
 
   // Test at second change point
   ts = map->time_signature_at_tick (units::ticks (3840));
-  EXPECT_EQ (ts.numerator, 5);
-  EXPECT_EQ (ts.denominator, 8);
+  EXPECT_EQ (ts.time_signature.numerator, 5);
+  EXPECT_EQ (ts.time_signature.denominator, 8);
 
   // Test after last change
   ts = map->time_signature_at_tick (units::ticks (10000));
-  EXPECT_EQ (ts.numerator, 5);
-  EXPECT_EQ (ts.denominator, 8);
+  EXPECT_EQ (ts.time_signature.numerator, 5);
+  EXPECT_EQ (ts.time_signature.denominator, 8);
 
   // Test with empty map
   TempoMap emptyMap (SAMPLE_RATE);
   emptyMap.remove_time_signature_event (units::ticks (0));
   ts = emptyMap.time_signature_at_tick (units::ticks (0));
-  EXPECT_EQ (ts.numerator, 4); // Default
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 4); // Default
+  EXPECT_EQ (ts.time_signature.denominator, 4);
 }
 
 // Test tempo and time signature interaction
@@ -521,7 +527,7 @@ TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
 {
   // Add time signature change at bar 5
   const auto bar5Start = units::ticks (4 * 4 * 960); // Bar 5 start
-  map->add_time_signature_event (bar5Start, 3, 4);
+  map->add_time_signature_event (bar5Start, TimeSignature{ 3, 4 });
 
   // Add tempo change at bar 3
   const auto bar3Start = units::ticks (2 * 4 * 960); // Bar 3 start
@@ -549,8 +555,8 @@ TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
 TEST_F (TempoMapTest, Serialization)
 {
   // Add tempo and time signature events
-  map->add_time_signature_event (units::ticks (1920), 3, 4);
-  map->add_time_signature_event (units::ticks (3840), 5, 8);
+  map->add_time_signature_event (units::ticks (1920), TimeSignature{ 3, 4 });
+  map->add_time_signature_event (units::ticks (3840), TimeSignature{ 5, 8 });
   map->add_tempo_event (
     units::ticks (1920), units::bpm (140.0), TempoMap::CurveType::Constant);
   map->add_tempo_event (
@@ -576,8 +582,8 @@ TEST_F (TempoMapTest, Serialization)
         deserialized_map.tempo_at_tick (tick).in (units::bpm));
       auto ts1 = map->time_signature_at_tick (tick);
       auto ts2 = deserialized_map.time_signature_at_tick (tick);
-      EXPECT_EQ (ts1.numerator, ts2.numerator);
-      EXPECT_EQ (ts1.denominator, ts2.denominator);
+      EXPECT_EQ (ts1.time_signature.numerator, ts2.time_signature.numerator);
+      EXPECT_EQ (ts1.time_signature.denominator, ts2.time_signature.denominator);
     }
 
   // Also test a conversion to be sure
@@ -608,8 +614,8 @@ TEST_F (TempoMapTest, EmptySerialization)
   EXPECT_DOUBLE_EQ (
     deserialized_map.tempo_at_tick (units::ticks (0)).in (units::bpm), 120.0);
   auto ts = deserialized_map.time_signature_at_tick (units::ticks (0));
-  EXPECT_EQ (ts.numerator, 4);
-  EXPECT_EQ (ts.denominator, 4);
+  EXPECT_EQ (ts.time_signature.numerator, 4);
+  EXPECT_EQ (ts.time_signature.denominator, 4);
 }
 
 // Test samples to musical position conversion
@@ -671,32 +677,42 @@ TEST_F (TempoMapTest, SamplesToMusicalPosition)
 TEST_F (TempoMapTest, TimeSignatureEventUtilityMethods)
 {
   // Test 4/4 time signature
-  TempoMap::TimeSignatureEvent ts4_4{ units::ticks (0), 4, 4 };
+  TempoMap::TimeSignatureEvent ts4_4{
+    units::ticks (0), TimeSignature{ 4, 4 }
+  };
   EXPECT_EQ (ts4_4.quarters_per_bar (), 4);
   EXPECT_EQ (ts4_4.ticks_per_bar ().in (units::ticks), 4 * 960);
   EXPECT_EQ (ts4_4.ticks_per_beat ().in (units::ticks), 960);
 
   // Test 3/4 time signature
-  TempoMap::TimeSignatureEvent ts3_4{ units::ticks (0), 3, 4 };
+  TempoMap::TimeSignatureEvent ts3_4{
+    units::ticks (0), TimeSignature{ 3, 4 }
+  };
   EXPECT_EQ (ts3_4.quarters_per_bar (), 3);
   EXPECT_EQ (ts3_4.ticks_per_bar ().in (units::ticks), 3 * 960);
   EXPECT_EQ (ts3_4.ticks_per_beat ().in (units::ticks), 960);
 
   // Test 6/8 time signature
-  TempoMap::TimeSignatureEvent ts6_8{ units::ticks (0), 6, 8 };
+  TempoMap::TimeSignatureEvent ts6_8{
+    units::ticks (0), TimeSignature{ 6, 8 }
+  };
   EXPECT_EQ (ts6_8.quarters_per_bar (), 3); // (6 * 4) / 8 = 3
   EXPECT_EQ (ts6_8.ticks_per_bar ().in (units::ticks), 3 * 960);
   EXPECT_EQ (ts6_8.ticks_per_beat ().in (units::ticks), 480); // 2880 / 6
 
   // Test 5/8 time signature
-  TempoMap::TimeSignatureEvent ts5_8{ units::ticks (0), 5, 8 };
+  TempoMap::TimeSignatureEvent ts5_8{
+    units::ticks (0), TimeSignature{ 5, 8 }
+  };
   EXPECT_EQ (
     ts5_8.quarters_per_bar (), 2); // (5 * 4) / 8 = 2.5, but integer division
   EXPECT_EQ (ts5_8.ticks_per_bar ().in (units::ticks), 2 * 960);
   EXPECT_EQ (ts5_8.ticks_per_beat ().in (units::ticks), 384); // 1920 / 5
 
   // Test 7/16 time signature
-  TempoMap::TimeSignatureEvent ts7_16{ units::ticks (0), 7, 16 };
+  TempoMap::TimeSignatureEvent ts7_16{
+    units::ticks (0), TimeSignature{ 7, 16 }
+  };
   EXPECT_EQ (
     ts7_16.quarters_per_bar (), 1); // (7 * 4) / 16 = 1.75, but integer division
   EXPECT_EQ (ts7_16.ticks_per_bar ().in (units::ticks), 1 * 960);
@@ -705,13 +721,17 @@ TEST_F (TempoMapTest, TimeSignatureEventUtilityMethods)
                                                       // division)
 
   // Test 2/2 time signature (cut time)
-  TempoMap::TimeSignatureEvent ts2_2{ units::ticks (0), 2, 2 };
+  TempoMap::TimeSignatureEvent ts2_2{
+    units::ticks (0), TimeSignature{ 2, 2 }
+  };
   EXPECT_EQ (ts2_2.quarters_per_bar (), 4); // (2 * 4) / 2 = 4
   EXPECT_EQ (ts2_2.ticks_per_bar ().in (units::ticks), 4 * 960);
   EXPECT_EQ (ts2_2.ticks_per_beat ().in (units::ticks), 1920); // 3840 / 2
 
   // Test 12/8 time signature
-  TempoMap::TimeSignatureEvent ts12_8{ units::ticks (0), 12, 8 };
+  TempoMap::TimeSignatureEvent ts12_8{
+    units::ticks (0), TimeSignature{ 12, 8 }
+  };
   EXPECT_EQ (ts12_8.quarters_per_bar (), 6); // (12 * 4) / 8 = 6
   EXPECT_EQ (ts12_8.ticks_per_bar ().in (units::ticks), 6 * 960);
   EXPECT_EQ (ts12_8.ticks_per_beat ().in (units::ticks), 480); // 5760 / 12
@@ -721,11 +741,12 @@ TEST_F (TempoMapTest, TimeSignatureEventUtilityMethods)
 TEST_F (TempoMapTest, TimeSignatureEventUtilityMethodsIntegration)
 {
   // Add various time signatures to the tempo map
-  map->add_time_signature_event (units::ticks (0), 4, 4);        // Bar 1: 4/4
-  const auto bar3Start = units::ticks (2 * 4 * 960);             // Bar 3 start
-  map->add_time_signature_event (bar3Start, 3, 4);               // Bar 3: 3/4
+  map->add_time_signature_event (
+    units::ticks (0), TimeSignature{ 4, 4 });        // Bar 1: 4/4
+  const auto bar3Start = units::ticks (2 * 4 * 960); // Bar 3 start
+  map->add_time_signature_event (bar3Start, TimeSignature{ 3, 4 }); // Bar 3: 3/4
   const auto bar5Start = bar3Start + units::ticks (2 * 3 * 960); // Bar 5 start
-  map->add_time_signature_event (bar5Start, 6, 8);               // Bar 5: 6/8
+  map->add_time_signature_event (bar5Start, TimeSignature{ 6, 8 }); // Bar 5: 6/8
 
   // Test 4/4 section
   auto ts = map->time_signature_at_tick (units::ticks (0));
@@ -764,19 +785,25 @@ TEST_F (TempoMapTest, TimeSignatureEventUtilityMethodsIntegration)
 TEST_F (TempoMapTest, TimeSignatureEventUtilityMethodsEdgeCases)
 {
   // Test with numerator = 1
-  TempoMap::TimeSignatureEvent ts1_4{ units::ticks (0), 1, 4 };
+  TempoMap::TimeSignatureEvent ts1_4{
+    units::ticks (0), TimeSignature{ 1, 4 }
+  };
   EXPECT_EQ (ts1_4.quarters_per_bar (), 1);
   EXPECT_EQ (ts1_4.ticks_per_bar ().in (units::ticks), 960);
   EXPECT_EQ (ts1_4.ticks_per_beat ().in (units::ticks), 960);
 
   // Test with large numbers
-  TempoMap::TimeSignatureEvent tsLarge{ units::ticks (0), 32, 32 };
+  TempoMap::TimeSignatureEvent tsLarge{
+    units::ticks (0), TimeSignature{ 32, 32 }
+  };
   EXPECT_EQ (tsLarge.quarters_per_bar (), 4); // (32 * 4) / 32 = 4
   EXPECT_EQ (tsLarge.ticks_per_bar ().in (units::ticks), 3840);
   EXPECT_EQ (tsLarge.ticks_per_beat ().in (units::ticks), 120); // 3840 / 32
 
   // Test with denominator larger than numerator
-  TempoMap::TimeSignatureEvent ts3_16{ units::ticks (0), 3, 16 };
+  TempoMap::TimeSignatureEvent ts3_16{
+    units::ticks (0), TimeSignature{ 3, 16 }
+  };
   EXPECT_EQ (
     ts3_16.quarters_per_bar (), 0); // (3 * 4) / 16 = 0 (integer division)
   EXPECT_EQ (ts3_16.ticks_per_bar ().in (units::ticks), 0);
@@ -914,7 +941,7 @@ TEST_F (TempoMapTest, BaseTimeSignatureGovernsLeadRegion)
   constexpr int den = 4;
   const int64_t ticks_per_bar = (num * 4 / den) * ppq;
 
-  map->set_base_time_signature (num, den);
+  map->set_base_time_signature (TimeSignature{ num, den });
 
   auto at_tick0 = map->tick_to_musical_position (units::ticks (0));
   EXPECT_EQ (at_tick0.bar, 1);
@@ -935,7 +962,7 @@ TEST_F (TempoMapTest, BaseTimeSignatureGovernsLeadRegion)
 TEST_F (TempoMapTest, BaseValuesSerialization)
 {
   map->set_base_bpm (units::bpm (150.0));
-  map->set_base_time_signature (6, 8);
+  map->set_base_time_signature (TimeSignature{ 6, 8 });
 
   nlohmann::json j = *map;
   TempoMap       deserialized{ SAMPLE_RATE };
@@ -943,8 +970,8 @@ TEST_F (TempoMapTest, BaseValuesSerialization)
 
   // Scalar roundtrip.
   EXPECT_DOUBLE_EQ (deserialized.base_bpm ().in (units::bpm), 150.0);
-  EXPECT_EQ (deserialized.base_time_signature ().numerator, 6);
-  EXPECT_EQ (deserialized.base_time_signature ().denominator, 8);
+  EXPECT_EQ (deserialized.base_time_signature ().time_signature.numerator, 6);
+  EXPECT_EQ (deserialized.base_time_signature ().time_signature.denominator, 8);
 
   // Behavioral: base_bpm_ actually drives tempo lookup after load.
   EXPECT_DOUBLE_EQ (
@@ -974,8 +1001,8 @@ TEST_F (TempoMapTest, OldFormatLoadUsesDefaultBase)
   j.get_to (deserialized);
 
   EXPECT_DOUBLE_EQ (deserialized.base_bpm ().in (units::bpm), 120.0);
-  EXPECT_EQ (deserialized.base_time_signature ().numerator, 4);
-  EXPECT_EQ (deserialized.base_time_signature ().denominator, 4);
+  EXPECT_EQ (deserialized.base_time_signature ().time_signature.numerator, 4);
+  EXPECT_EQ (deserialized.base_time_signature ().time_signature.denominator, 4);
   EXPECT_DOUBLE_EQ (
     deserialized.tempo_at_tick (units::ticks (0)).in (units::bpm), 120.0);
 }
@@ -987,13 +1014,13 @@ TEST_F (TempoMapTest, TimeSignatureAtTickZeroShadowsBase)
 {
   const int64_t ppq = TempoMap::get_ppq ().in (units::ticks);
   // Inserted 3/4 at tick 0 shadows the default base 4/4.
-  map->add_time_signature_event (units::ticks (0), 3, 4);
+  map->add_time_signature_event (units::ticks (0), TimeSignature{ 3, 4 });
 
   ASSERT_EQ (map->effective_time_signature_events ().size (), 1u);
   const auto &eff0 = map->effective_time_signature_events ()[0];
   EXPECT_EQ (eff0.tick, units::ticks (0));
-  EXPECT_EQ (eff0.numerator, 3);
-  EXPECT_EQ (eff0.denominator, 4);
+  EXPECT_EQ (eff0.time_signature.numerator, 3);
+  EXPECT_EQ (eff0.time_signature.denominator, 4);
 
   // 3/4 -> ticks_per_bar = 3 * ppq, so one bar later lands on bar 2.
   const auto at_bar2 = map->tick_to_musical_position (units::ticks (3 * ppq));
@@ -1009,7 +1036,7 @@ TEST_F (TempoMapTest, BaseAndInsertedTimeSignatureBoundary)
   // Base 4/4 (default). Insert 3/4 at 8 * ppq ticks (2 bars under base 4/4).
   constexpr int64_t boundary_bars = 2;
   const int64_t     boundary = boundary_bars * 4 * ppq;
-  map->add_time_signature_event (units::ticks (boundary), 3, 4);
+  map->add_time_signature_event (units::ticks (boundary), TimeSignature{ 3, 4 });
 
   // Strictly before the boundary: base 4/4 governs.
   EXPECT_EQ (map->tick_to_musical_position (units::ticks (0)).bar, 1);
@@ -1035,7 +1062,7 @@ TEST_F (TempoMapTest, MusicalPositionToTickForwardWithBaseSignature)
 {
   const int64_t ppq = TempoMap::get_ppq ().in (units::ticks);
   // Base 6/8: quarters_per_bar = 6 * (4/8) = 3 -> ticks_per_bar = 3 * ppq.
-  map->set_base_time_signature (6, 8);
+  map->set_base_time_signature (TimeSignature{ 6, 8 });
 
   const TempoMap::MusicalPosition pos{ 2, 1, 1, 0 };
   const auto forward_tick = map->musical_position_to_tick (pos);
@@ -1054,18 +1081,22 @@ TEST_F (TempoMapTest, RemoveEventRestoresBaseGovernance)
   const int64_t ppq = TempoMap::get_ppq ().in (units::ticks);
 
   map->set_base_bpm (units::bpm (100.0));
-  map->set_base_time_signature (3, 4);
+  map->set_base_time_signature (TimeSignature{ 3, 4 });
   // Time signatures must be added before tempo events.
-  map->add_time_signature_event (units::ticks (4 * ppq), 5, 8);
+  map->add_time_signature_event (units::ticks (4 * ppq), TimeSignature{ 5, 8 });
   map->add_tempo_event (
     units::ticks (4 * ppq), units::bpm (140.0), TempoMap::CurveType::Constant);
 
   // Sanity: at the event tick the inserted values govern.
   EXPECT_DOUBLE_EQ (
     map->tempo_at_tick (units::ticks (4 * ppq)).in (units::bpm), 140.0);
-  EXPECT_EQ (map->time_signature_at_tick (units::ticks (4 * ppq)).numerator, 5);
   EXPECT_EQ (
-    map->time_signature_at_tick (units::ticks (4 * ppq)).denominator, 8);
+    map->time_signature_at_tick (units::ticks (4 * ppq)).time_signature.numerator,
+    5);
+  EXPECT_EQ (
+    map->time_signature_at_tick (units::ticks (4 * ppq))
+      .time_signature.denominator,
+    8);
 
   // Remove both -> base values must govern everywhere again.
   map->remove_tempo_event (units::ticks (4 * ppq));
@@ -1077,8 +1108,12 @@ TEST_F (TempoMapTest, RemoveEventRestoresBaseGovernance)
       SCOPED_TRACE (t);
       EXPECT_DOUBLE_EQ (
         map->tempo_at_tick (units::ticks (t)).in (units::bpm), 100.0);
-      EXPECT_EQ (map->time_signature_at_tick (units::ticks (t)).numerator, 3);
-      EXPECT_EQ (map->time_signature_at_tick (units::ticks (t)).denominator, 4);
+      EXPECT_EQ (
+        map->time_signature_at_tick (units::ticks (t)).time_signature.numerator,
+        3);
+      EXPECT_EQ (
+        map->time_signature_at_tick (units::ticks (t)).time_signature.denominator,
+        4);
     }
 }
 }

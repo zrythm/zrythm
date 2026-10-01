@@ -40,6 +40,7 @@ target_sources(zrythm_dsp_lib
     metronome.cpp
     midi_device_buffer.cpp
     midi_event.cpp
+    midi_file.cpp
     midi_activity_provider.cpp
     midi_input_processor.cpp
     midi_input_selection.cpp
@@ -118,6 +119,7 @@ target_sources(zrythm_dsp_lib
       midi_activity_provider.h
       midi_event_buffer.h
       midi_event.h
+      midi_file.h
       midi_input_processor.h
       midi_input_selection.h
       midi_panic_processor.h

@@ -116,7 +116,8 @@ TEST_F (PluginTransportContextTest, TimeSignatureChangeAffectsBars)
   // 3/8 starting at tick 3840 (bar 2 at the default 4/4). A 3/8 bar spans
   // 1.5 quarter notes, so bar 3 starts at tick 5280 = quarter 5.5 = 132000
   // samples at 120 BPM / 48kHz
-  tempo_map_.add_time_signature_event (units::ticks (3840), 3, 8);
+  tempo_map_.add_time_signature_event (
+    units::ticks (3840), dsp::TimeSignature{ 3, 8 });
 
   const auto context = build (units::samples (132000));
   EXPECT_EQ (context.time_sig_numerator_, 3);

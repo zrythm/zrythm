@@ -165,6 +165,7 @@ ProjectSession::ProjectSession (
           *undo_stack_,
           *arranger_object_creator_,
           *track_creator_,
+          *project_->tracklist ()->collection (),
           this)),
       uuid_property_operator_ (
         utils::make_qobject_unique<actions::UuidPropertyOperator> (

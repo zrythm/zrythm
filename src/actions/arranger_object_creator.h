@@ -4,10 +4,13 @@
 #pragma once
 
 #include <exception>
+#include <expected>
+#include <span>
 #include <utility>
 
 #include "commands/add_arranger_object_command.h"
 #include "commands/arranger_object_owner_ref.h"
+#include "dsp/midi_file.h"
 #include "dsp/snap_grid.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
@@ -139,10 +142,37 @@ public:
                 structure::tracks::Track *    track,
                 structure::scenes::ClipSlot * clipSlot,
                 const QString                &absPath);
-  Q_INVOKABLE structure::arrangement::MidiClip * addMidiClipToClipSlotFromFile (
-    structure::tracks::Track *    track,
-    structure::scenes::ClipSlot * clipSlot,
-    const QString                &absPath);
+
+  /**
+   * @brief Creates a MIDI clip at @p lane holding the notes of the given
+   * parsed MIDI tracks, starting at @p startTicks.
+   *
+   * @return A reference to the created clip, or a user-facing refusal
+   * reason.
+   */
+  [[nodiscard]] std::expected<
+    utils::TypedUuidReference<structure::arrangement::MidiClip>,
+    utils::Utf8String>
+  add_midi_clip_from_note_tracks (
+    structure::tracks::Track *                track,
+    structure::tracks::TrackLane *            lane,
+    double                                    startTicks,
+    std::span<const dsp::MidiFile::NoteTrack> note_tracks);
+
+  /**
+   * @brief Creates a MIDI clip in @p clipSlot merging the notes of all the
+   * given parsed MIDI tracks.
+   *
+   * @return A reference to the created clip, or a user-facing refusal
+   * reason.
+   */
+  [[nodiscard]] std::expected<
+    utils::TypedUuidReference<structure::arrangement::MidiClip>,
+    utils::Utf8String>
+  add_midi_clip_to_clip_slot_from_note_tracks (
+    structure::tracks::Track *                track,
+    structure::scenes::ClipSlot *             clipSlot,
+    std::span<const dsp::MidiFile::NoteTrack> note_tracks);
 
   /**
    * @brief Creates a MIDI clip at @p lane from the given @p descr
@@ -154,21 +184,6 @@ public:
                 structure::tracks::TrackLane * lane,
                 const dsp::ChordDescriptor    &descr,
                 double                         startTicks);
-
-  /**
-   * @brief Creates a MIDI clip at @p lane from MIDI file path @p abs_path
-   * starting at @p startTicks.
-   *
-   * @param midi_track_idx The index of this track, starting from 0. This
-   * will be sequential, ie, if idx 1 is requested and the MIDI file only
-   * has tracks 5 and 7, it will use track 7.
-   */
-  Q_INVOKABLE structure::arrangement::MidiClip * addMidiClipFromMidiFile (
-    structure::tracks::Track *     track,
-    structure::tracks::TrackLane * lane,
-    const QString                 &absolutePath,
-    double                         startTicks,
-    int                            midiTrackIndex);
 
   Q_INVOKABLE structure::arrangement::MidiNote * addMidiNote (
     structure::arrangement::MidiClip * clip,

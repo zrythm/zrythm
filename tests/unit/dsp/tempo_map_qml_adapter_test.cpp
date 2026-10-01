@@ -208,7 +208,8 @@ TEST_F (TempoMapWrapperTest, ListPropertyAccess)
 TEST_F (TempoMapWrapperTest, UnderlyingChanges)
 {
   // Directly modify underlying map
-  tempo_map_->add_time_signature_event (units::ticks (1920), 3, 4);
+  tempo_map_->add_time_signature_event (
+    units::ticks (1920), TimeSignature{ 3, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (1920), units::bpm (140.0), TempoMap::CurveType::Constant);
 
@@ -227,7 +228,8 @@ TEST_F (TempoMapWrapperTest, UnderlyingChanges)
 TEST_F (TempoMapWrapperTest, MusicalPositionConversion)
 {
   // Add test data to underlying map
-  tempo_map_->add_time_signature_event (units::ticks (1920), 3, 4);
+  tempo_map_->add_time_signature_event (
+    units::ticks (1920), TimeSignature{ 3, 4 });
   wrapper_->rebuildWrappers ();
 
   // Test tick to musical position
@@ -291,7 +293,8 @@ TEST_F (TempoMapWrapperTest, TickFromMusicalPosition)
   EXPECT_EQ (tickWrapper, tickDirect.asDouble ());
 
   // Add time signature change and test
-  tempo_map_->add_time_signature_event (units::ticks (1920), 3, 4);
+  tempo_map_->add_time_signature_event (
+    units::ticks (1920), TimeSignature{ 3, 4 });
   TempoMap::MusicalPosition pos3{ 2, 1, 1, 0 };
   tickWrapper = wrapper_->getTickFromMusicalPosition (
     pos3.bar, pos3.beat, pos3.sixteenth, pos3.tick);

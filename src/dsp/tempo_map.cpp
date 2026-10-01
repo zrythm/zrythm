@@ -42,9 +42,9 @@ to_json (
   const FixedPpqTempoMap<units::PPQ>::TimeSignatureEvent &e)
 {
   j = nlohmann::json{
-    { "tickPosition", e.tick        },
-    { "numerator",    e.numerator   },
-    { "denominator",  e.denominator }
+    { "tickPosition", e.tick                       },
+    { "numerator",    e.time_signature.numerator   },
+    { "denominator",  e.time_signature.denominator }
   };
 }
 
@@ -54,8 +54,8 @@ from_json (
   FixedPpqTempoMap<units::PPQ>::TimeSignatureEvent &e)
 {
   j.at ("tickPosition").get_to (e.tick);
-  j.at ("numerator").get_to (e.numerator);
-  j.at ("denominator").get_to (e.denominator);
+  j.at ("numerator").get_to (e.time_signature.numerator);
+  j.at ("denominator").get_to (e.time_signature.denominator);
 }
 
 void
@@ -63,8 +63,8 @@ to_json (nlohmann::json &j, const FixedPpqTempoMap<units::PPQ> &tempo_map)
 {
   j[tempo_map.kBaseBpmKey] = tempo_map.base_bpm_;
   j[tempo_map.kBaseTimeSignatureKey] = {
-    { "numerator",   tempo_map.base_time_sig_.numerator   },
-    { "denominator", tempo_map.base_time_sig_.denominator },
+    { "numerator",   tempo_map.base_time_sig_.time_signature.numerator   },
+    { "denominator", tempo_map.base_time_sig_.time_signature.denominator },
   };
   j[tempo_map.kTimeSignaturesKey] = tempo_map.time_sig_events_;
   j[tempo_map.kTempoChangesKey] = tempo_map.events_;
@@ -79,12 +79,14 @@ from_json (const nlohmann::json &j, FixedPpqTempoMap<units::PPQ> &tempo_map)
     {
       const auto &bts = j.at (tempo_map.kBaseTimeSignatureKey);
       if (bts.contains ("numerator"))
-        bts.at ("numerator").get_to (tempo_map.base_time_sig_.numerator);
+        bts.at ("numerator")
+          .get_to (tempo_map.base_time_sig_.time_signature.numerator);
       else
         z_warning (
           "Missing 'numerator' in serialized baseTimeSignature; keeping default");
       if (bts.contains ("denominator"))
-        bts.at ("denominator").get_to (tempo_map.base_time_sig_.denominator);
+        bts.at ("denominator")
+          .get_to (tempo_map.base_time_sig_.time_signature.denominator);
       else
         z_warning (
           "Missing 'denominator' in serialized baseTimeSignature; keeping default");
@@ -139,12 +141,13 @@ FixedPpqTempoMap<PPQ>::remove_tempo_event (units::tick_t tick)
 
 template <units::tick_t::NTTP PPQ>
 void
-FixedPpqTempoMap<PPQ>::
-  add_time_signature_event (units::tick_t tick, int numerator, int denominator)
+FixedPpqTempoMap<PPQ>::add_time_signature_event (
+  units::tick_t tick,
+  TimeSignature time_signature)
 {
   if (tick < units::ticks (0))
     throw std::invalid_argument ("Tick must be non-negative");
-  throw_if_invalid_time_signature (numerator, denominator);
+  throw_if_invalid_time_signature (time_signature);
   if (!events_.empty ())
     throw std::logic_error (
       "Time signature events must be added before tempo events");
@@ -157,7 +160,7 @@ FixedPpqTempoMap<PPQ>::
       time_sig_events_.erase (it);
     }
 
-  time_sig_events_.push_back ({ tick, numerator, denominator });
+  time_sig_events_.push_back ({ tick, time_signature });
   std::ranges::sort (time_sig_events_, {}, &TimeSignatureEvent::tick);
   rebuild_time_signature_cache ();
 }
@@ -397,8 +400,8 @@ FixedPpqTempoMap<PPQ>::tick_to_musical_position (units::tick_t tick) const
     }
 
   const auto &sigEvent = *it;
-  const int   numerator = sigEvent.numerator;
-  const int   denominator = sigEvent.denominator;
+  const int   numerator = sigEvent.time_signature.numerator;
+  const int   denominator = sigEvent.time_signature.denominator;
 
   // Calculate ticks per bar and beat
   const double quarters_per_bar = numerator * (4.0 / denominator);
@@ -411,8 +414,8 @@ FixedPpqTempoMap<PPQ>::tick_to_musical_position (units::tick_t tick) const
   // Calculate total bars from previous time signatures
   for (auto prev = time_sig_events.begin (); prev != it; ++prev)
     {
-      const int    prev_numerator = prev->numerator;
-      const int    prev_denominator = prev->denominator;
+      const int    prev_numerator = prev->time_signature.numerator;
+      const int    prev_denominator = prev->time_signature.denominator;
       const double prev_quarters_per_bar =
         prev_numerator * (4.0 / prev_denominator);
       const auto prev_ticks_per_bar = prev_quarters_per_bar * get_ppq ();
@@ -492,8 +495,8 @@ FixedPpqTempoMap<PPQ>::musical_position_to_tick (const MusicalPosition &pos) con
   for (size_t i = 0; i < time_sig_events.size (); ++i)
     {
       const auto   &event = time_sig_events[i];
-      const int     numerator = event.numerator;
-      const int     denominator = event.denominator;
+      const int     numerator = event.time_signature.numerator;
+      const int     denominator = event.time_signature.denominator;
       const double  quarters_per_bar = numerator * (4.0 / denominator);
       const int64_t ticks_per_bar = static_cast<int64_t> (
         (quarters_per_bar * get_ppq ()).in (units::ticks));
@@ -566,22 +569,6 @@ FixedPpqTempoMap<PPQ>::rebuild_cumulative_times ()
         cumulative_seconds_[i]
         + compute_segment_time (events_[i], events_[i + 1], segmentTicks);
     }
-}
-
-template <units::tick_t::NTTP PPQ>
-void
-FixedPpqTempoMap<PPQ>::throw_if_invalid_time_signature (
-  int numerator,
-  int denominator)
-{
-  if (numerator < 1)
-    throw std::invalid_argument ("Time signature numerator must be >= 1");
-  // denominator must be a power of two in [1, 128].
-  if (
-    denominator < 1 || denominator > 128
-    || (denominator & (denominator - 1)) != 0)
-    throw std::invalid_argument (
-      "Time signature denominator must be a power of two in [1, 128]");
 }
 
 template <units::tick_t::NTTP PPQ>

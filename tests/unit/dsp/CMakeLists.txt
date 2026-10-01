@@ -37,6 +37,7 @@ add_executable(zrythm_dsp_unit_tests
   midi_device_buffer_test.cpp
   midi_event_buffer_test.cpp
   midi_event_test.cpp
+  midi_file_test.cpp
   midi_input_processor_test.cpp
   midi_panic_processor_test.cpp
   midi_port_test.cpp

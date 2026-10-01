@@ -213,7 +213,7 @@ TEST_F (MetronomeTest, BarAndBeatTicks)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
@@ -252,7 +252,7 @@ TEST_F (MetronomeTest, LoopCrossing)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
@@ -300,7 +300,7 @@ TEST_F (MetronomeTest, CountinTicks)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
@@ -333,7 +333,7 @@ TEST_F (MetronomeTest, VolumeAppliedToSamples)
   auto metronome = create_metronome (0.5f); // 50% volume
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
@@ -380,7 +380,7 @@ TEST_F (MetronomeTest, DifferentTimeSignatures)
   auto metronome = create_metronome ();
 
   // Setup 3/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 3, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 3, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
@@ -406,7 +406,7 @@ TEST_F (MetronomeTest, HighTempo)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature with high tempo
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (240.0),
     TempoMap::CurveType::Constant); // 240 BPM
@@ -445,7 +445,7 @@ TEST_F (MetronomeTest, EnabledFalsePreventsTicks)
   metronome->setEnabled (false);
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
@@ -474,7 +474,7 @@ TEST_F (MetronomeTest, EnabledTrueAllowsTicks)
   metronome->setEnabled (true);
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
@@ -502,7 +502,7 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
@@ -541,7 +541,7 @@ TEST_F (MetronomeTest, DisabledDuringPlaybackClearsBuffer)
   auto metronome = create_metronome ();
 
   // Setup 4/4 time signature
-  tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
+  tempo_map_->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map_->add_tempo_event (
     units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 

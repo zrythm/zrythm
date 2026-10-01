@@ -66,8 +66,8 @@ public:
   }
 
   qint64 tick () const { return event_.tick.in (units::ticks); }
-  int    numerator () const { return event_.numerator; }
-  int    denominator () const { return event_.denominator; }
+  int    numerator () const { return event_.time_signature.numerator; }
+  int    denominator () const { return event_.time_signature.denominator; }
 
 private:
   TempoMap::TimeSignatureEvent event_;
@@ -182,18 +182,18 @@ public:
 
   int baseTimeSignatureNumerator () const
   {
-    return tempo_map_.base_time_signature ().numerator;
+    return tempo_map_.base_time_signature ().time_signature.numerator;
   }
   int baseTimeSignatureDenominator () const
   {
-    return tempo_map_.base_time_signature ().denominator;
+    return tempo_map_.base_time_signature ().time_signature.denominator;
   }
   void setBaseTimeSignatureNumerator (int numerator)
   {
     if (numerator == baseTimeSignatureNumerator ())
       return;
     tempo_map_.set_base_time_signature (
-      numerator, baseTimeSignatureDenominator ());
+      TimeSignature{ numerator, baseTimeSignatureDenominator () });
     rebuildTimeSigWrappers ();
     Q_EMIT baseTimeSignatureChanged ();
     Q_EMIT timeSignatureEventsChanged ();
@@ -203,7 +203,7 @@ public:
     if (denominator == baseTimeSignatureDenominator ())
       return;
     tempo_map_.set_base_time_signature (
-      baseTimeSignatureNumerator (), denominator);
+      TimeSignature{ baseTimeSignatureNumerator (), denominator });
     rebuildTimeSigWrappers ();
     Q_EMIT baseTimeSignatureChanged ();
     Q_EMIT timeSignatureEventsChanged ();
@@ -223,7 +223,7 @@ public:
   addTimeSignatureEvent (qint64 tick, int numerator, int denominator)
   {
     tempo_map_.add_time_signature_event (
-      units::ticks (tick), numerator, denominator);
+      units::ticks (tick), TimeSignature{ numerator, denominator });
     rebuildTimeSigWrappers ();
     Q_EMIT timeSignatureEventsChanged ();
   }

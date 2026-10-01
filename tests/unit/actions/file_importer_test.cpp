@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/file_importer.h"
@@ -117,7 +117,8 @@ protected:
 
     // Create file importer
     file_importer_ = std::make_unique<FileImporter> (
-      *undo_stack_, *arranger_object_creator_, *track_creator_);
+      *undo_stack_, *arranger_object_creator_, *track_creator_,
+      *track_collection_);
 
     // Create test files
     setupTestFiles ();
@@ -387,10 +388,177 @@ TEST_F (FileImporterTest, ImportSingleMidiFile)
   file_importer_->importFiles (files, 0.0, nullptr);
 
   // Should have created one new MIDI track
-  EXPECT_EQ (track_collection_->track_count (), initial_track_count + 1);
+  ASSERT_EQ (track_collection_->track_count (), initial_track_count + 1);
 
   // Should have pushed commands to undo stack
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
+
+  const auto * midi_track = qobject_cast<structure::tracks::MidiTrack *> (
+    track_collection_->tracks ()[track_collection_->track_count () - 1].get ());
+  ASSERT_NE (midi_track, nullptr);
+
+  // the track is named after the imported file
+  EXPECT_EQ (midi_track->name (), "test_midi");
+
+  // lane 0 holds one clip containing the mock file's single C4 note
+  const auto clips =
+    midi_track->lanes ()
+      ->at (0)
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_sorted_children_view ();
+  ASSERT_EQ (clips.size (), 1);
+  const auto * clip = (*clips.begin ());
+  const auto   notes = clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_sorted_children_view ();
+  ASSERT_EQ (notes.size (), 1);
+  const auto * note = (*notes.begin ());
+  EXPECT_EQ (note->pitch (), 60);
+  EXPECT_EQ (note->velocity (), 64);
+  EXPECT_DOUBLE_EQ (note->position ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (
+    note->position ()->ticks () + note->length ()->ticks (), 960.0);
+
+  // the clip is sized to the note content
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 960.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 960.0);
+}
+
+// A multi-track MIDI file creates one clip per MIDI track, each on its own
+// lane inside a single imported track
+TEST_F (FileImporterTest, ImportMultiTrackMidiFileCreatesLanePerTrack)
+{
+  const auto initial_track_count = track_collection_->track_count ();
+
+  QStringList files;
+  files.append (
+    utils::Utf8String::from_path (
+      std::filesystem::path (TEST_MIDI_FILES_DIR)
+      / "format_1_two_tracks_with_data.mid")
+      .to_qstring ());
+
+  file_importer_->importFiles (files, 0.0, nullptr);
+
+  ASSERT_EQ (track_collection_->track_count (), initial_track_count + 1);
+  const auto * midi_track = qobject_cast<structure::tracks::MidiTrack *> (
+    track_collection_->tracks ()[track_collection_->track_count () - 1].get ());
+  ASSERT_NE (midi_track, nullptr);
+
+  const auto lane_count = midi_track->lanes ()->size ();
+  ASSERT_GE (lane_count, 3);
+  for (const auto lane_index : std::views::iota (0uz, 2uz))
+    {
+      const auto clips =
+        midi_track->lanes ()
+          ->at (lane_index)
+          ->structure::arrangement::ArrangerObjectOwner<
+            structure::arrangement::MidiClip>::get_sorted_children_view ();
+      ASSERT_EQ (clips.size (), 1);
+      EXPECT_GT ((*clips.begin ())->length ()->ticks (), 0.0);
+    }
+
+  // the trailing lane stays empty
+  const auto trailing_clips =
+    midi_track->lanes ()
+      ->at (lane_count - 1)
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_sorted_children_view ();
+  EXPECT_TRUE (trailing_clips.empty ());
+}
+
+// Importing a MIDI file without notes is refused without creating a track
+TEST_F (FileImporterTest, ImportEmptyMidiFileIsRefused)
+{
+  const auto initial_track_count = track_collection_->track_count ();
+  const auto initial_undo_count = undo_stack_->count ();
+
+  QStringList failed_files;
+  QObject::connect (
+    file_importer_.get (), &FileImporter::importFailed, file_importer_.get (),
+    [&failed_files] (const QString &filePath, const QString &) {
+      failed_files.append (filePath);
+    });
+
+  QStringList files;
+  files.append (
+    utils::Utf8String::from_path (
+      std::filesystem::path (TEST_MIDI_FILES_DIR) / "empty_midi_file_type1.mid")
+      .to_qstring ());
+
+  file_importer_->importFiles (files, 0.0, nullptr);
+
+  EXPECT_EQ (failed_files.size (), 1);
+  EXPECT_EQ (track_collection_->track_count (), initial_track_count);
+  EXPECT_EQ (undo_stack_->count (), initial_undo_count);
+}
+
+// Importing an audio file into a MIDI track is refused
+TEST_F (FileImporterTest, ImportAudioIntoMidiTrackIsRefused)
+{
+  auto track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto *     midi_track = track_result.value<structure::tracks::MidiTrack *> ();
+  const auto initial_clip_count =
+    midi_track->lanes ()
+      ->at (0)
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_sorted_children_view ()
+      .size ();
+
+  QStringList failed_files;
+  QObject::connect (
+    file_importer_.get (), &FileImporter::importFailed, file_importer_.get (),
+    [&failed_files] (const QString &filePath, const QString &) {
+      failed_files.append (filePath);
+    });
+
+  QStringList files;
+  files.append (utils::Utf8String::from_path (audio_file_path_).to_qstring ());
+
+  file_importer_->importFiles (files, 0.0, midi_track);
+
+  EXPECT_EQ (failed_files.size (), 1);
+  EXPECT_EQ (
+    midi_track->lanes ()
+      ->at (0)
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_sorted_children_view ()
+      .size (),
+    initial_clip_count);
+}
+
+// Test undo/redo of a multi-track MIDI import restores the clips
+TEST_F (FileImporterTest, UndoRedoMultiTrackMidiFileImport)
+{
+  const auto initial_track_count = track_collection_->track_count ();
+
+  QStringList files;
+  files.append (
+    utils::Utf8String::from_path (
+      std::filesystem::path (TEST_MIDI_FILES_DIR)
+      / "format_1_two_tracks_with_data.mid")
+      .to_qstring ());
+
+  file_importer_->importFiles (files, 0.0, nullptr);
+  ASSERT_EQ (track_collection_->track_count (), initial_track_count + 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_collection_->track_count (), initial_track_count);
+
+  undo_stack_->redo ();
+  ASSERT_EQ (track_collection_->track_count (), initial_track_count + 1);
+  const auto * midi_track = qobject_cast<structure::tracks::MidiTrack *> (
+    track_collection_->tracks ()[track_collection_->track_count () - 1].get ());
+  const auto clips =
+    midi_track->lanes ()
+      ->at (0)
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_sorted_children_view ();
+  ASSERT_EQ (clips.size (), 1);
+  const auto notes =
+    (*clips.begin ())
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::get_sorted_children_view ();
+  EXPECT_FALSE (notes.empty ());
 }
 
 // Test importing multiple files
@@ -515,8 +683,6 @@ TEST_F (FileImporterTest, ImportFileToClipSlot)
   EXPECT_NE (clip_slot.get ()->clip (), nullptr);
 }
 
-// TODO: unimplememented
-#if 0
 // Test importing MIDI file to clip slot
 TEST_F (FileImporterTest, ImportMidiFileToClipSlot)
 {
@@ -539,10 +705,92 @@ TEST_F (FileImporterTest, ImportMidiFileToClipSlot)
   // Should have pushed commands to undo stack
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
 
-  // Clip slot should now have a clip
-  EXPECT_NE (clip_slot.get ()->clip (), nullptr);
+  // Clip slot should now have a clip with the mock file's note
+  const auto * midi_clip = qobject_cast<structure::arrangement::MidiClip *> (
+    clip_slot.get ()->clip ());
+  ASSERT_NE (midi_clip, nullptr);
+  const auto notes = midi_clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_sorted_children_view ();
+  ASSERT_EQ (notes.size (), 1);
+  EXPECT_EQ ((*notes.begin ())->pitch (), 60);
+  EXPECT_EQ ((*notes.begin ())->velocity (), 64);
 }
-#endif
+
+// Importing without a clip slot is refused
+TEST_F (FileImporterTest, ImportToMissingClipSlotIsRefused)
+{
+  auto track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto * midi_track = track_result.value<structure::tracks::MidiTrack *> ();
+
+  auto scene = utils::make_qobject_unique<structure::scenes::Scene> (
+    registry_, *track_collection_);
+
+  QStringList failed_files;
+  QObject::connect (
+    file_importer_.get (), &FileImporter::importFailed, file_importer_.get (),
+    [&failed_files] (const QString &filePath, const QString &) {
+      failed_files.append (filePath);
+    });
+
+  file_importer_->importFileToClipSlot (
+    utils::Utf8String::from_path (midi_file_path_).to_qstring (), midi_track,
+    scene.get (), nullptr);
+
+  EXPECT_EQ (failed_files.size (), 1);
+}
+
+// Importing an audio file into a MIDI track's clip slot is refused
+TEST_F (FileImporterTest, ImportAudioToMidiClipSlotIsRefused)
+{
+  auto track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto * midi_track = track_result.value<structure::tracks::MidiTrack *> ();
+
+  auto scene = utils::make_qobject_unique<structure::scenes::Scene> (
+    registry_, *track_collection_);
+  const auto &clip_slot = scene->clipSlots ()->clip_slots ()[0];
+
+  QStringList failed_files;
+  QObject::connect (
+    file_importer_.get (), &FileImporter::importFailed, file_importer_.get (),
+    [&failed_files] (const QString &filePath, const QString &) {
+      failed_files.append (filePath);
+    });
+
+  file_importer_->importFileToClipSlot (
+    utils::Utf8String::from_path (audio_file_path_).to_qstring (), midi_track,
+    scene.get (), clip_slot.get ());
+
+  EXPECT_EQ (failed_files.size (), 1);
+  EXPECT_EQ (clip_slot.get ()->clip (), nullptr);
+}
+
+// Importing a MIDI file into an audio track's clip slot is refused
+TEST_F (FileImporterTest, ImportMidiToAudioClipSlotIsRefused)
+{
+  auto track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Audio);
+  auto * audio_track = track_result.value<structure::tracks::AudioTrack *> ();
+
+  auto scene = utils::make_qobject_unique<structure::scenes::Scene> (
+    registry_, *track_collection_);
+  const auto &clip_slot = scene->clipSlots ()->clip_slots ()[0];
+
+  QStringList failed_files;
+  QObject::connect (
+    file_importer_.get (), &FileImporter::importFailed, file_importer_.get (),
+    [&failed_files] (const QString &filePath, const QString &) {
+      failed_files.append (filePath);
+    });
+
+  file_importer_->importFileToClipSlot (
+    utils::Utf8String::from_path (midi_file_path_).to_qstring (), audio_track,
+    scene.get (), clip_slot.get ());
+
+  EXPECT_EQ (failed_files.size (), 1);
+  EXPECT_EQ (clip_slot.get ()->clip (), nullptr);
+}
 
 // Test importing unsupported file to clip slot
 TEST_F (FileImporterTest, ImportUnsupportedFileToClipSlot)

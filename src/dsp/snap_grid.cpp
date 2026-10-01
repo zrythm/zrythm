@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
@@ -29,7 +29,7 @@ SnapGrid::snapTicks (int64_t ticks) const
 {
   auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (ticks));
   auto ticks_per_bar = time_sig.ticks_per_bar ().in (units::ticks);
-  auto ticks_per_beat = ticks_per_bar / time_sig.numerator;
+  auto ticks_per_beat = ticks_per_bar / time_sig.time_signature.numerator;
 
   const auto length = get_effective_note_length ();
   return get_ticks_from_length_and_type (
@@ -50,8 +50,9 @@ SnapGrid::defaultTicks (int64_t ticks) const
 
   auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (ticks));
   const auto ticks_per_bar =
-    (time_sig.numerator * TempoMap::get_ppq () * 4) / time_sig.denominator;
-  const auto ticks_per_beat = ticks_per_bar / time_sig.numerator;
+    (time_sig.time_signature.numerator * TempoMap::get_ppq () * 4)
+    / time_sig.time_signature.denominator;
+  const auto ticks_per_beat = ticks_per_bar / time_sig.time_signature.numerator;
 
   return get_ticks_from_length_and_type (
     default_note_length_, dsp::notes::NoteType::Normal,

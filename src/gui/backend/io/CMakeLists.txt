@@ -3,5 +3,4 @@
 
 target_sources(zrythm_gui_lib
   PRIVATE
-    file_descriptor.cpp
-    midi_file.cpp)
+    file_descriptor.cpp)

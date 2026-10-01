@@ -9,10 +9,68 @@
 #include "actions/arranger_object_creator.h"
 #include "commands/add_clip_to_clip_slot_command.h"
 #include "commands/edit_chord_object_command.h"
+#include "dsp/midi_file.h"
+#include "utils/exceptions.h"
 #include "utils/variant_helpers.h"
 
 namespace zrythm::actions
 {
+namespace
+{
+
+/**
+ * @brief Adds the notes of @p tracks to @p clip and sizes the clip to the
+ * furthest note end.
+ *
+ * @pre @p tracks contains at least one note.
+ */
+void
+populate_midi_clip (
+  structure::arrangement::ArrangerObjectFactory &factory,
+  structure::arrangement::MidiClip              &clip,
+  std::span<const dsp::MidiFile::NoteTrack>      tracks)
+{
+  assert (std::ranges::any_of (tracks, [] (const auto &note_track) {
+    return !note_track.notes.empty ();
+  }));
+
+  auto furthest_end_ticks = units::ticks (0.0);
+  for (const auto &track : tracks)
+    {
+      for (const auto &note : track.notes)
+        {
+          auto note_ref =
+            factory.get_builder<structure::arrangement::MidiNote> ()
+              .with_pitch (note.pitch)
+              .with_velocity (note.velocity)
+              .with_midi_channel (note.midi_channel)
+              .with_start_ticks (note.start_ticks)
+              .with_end_ticks (note.end_ticks)
+              .build_in_registry ();
+          clip.structure::arrangement::ArrangerObjectOwner<
+            structure::arrangement::MidiNote>::add_object (note_ref);
+          furthest_end_ticks = max (furthest_end_ticks, note.end_ticks);
+        }
+    }
+
+  for (const auto &track : tracks)
+    {
+      if (!track.name.empty ())
+        {
+          clip.name ()->setName (track.name.to_qstring ());
+          break;
+        }
+    }
+
+  clip.set_loop_range (
+    dsp::ContentTick (units::ticks (0.0)), dsp::ContentTick (units::ticks (0.0)),
+    dsp::ContentTick (furthest_end_ticks));
+  clip.length ()->setTicks (furthest_end_ticks.in (units::ticks));
+  clip.setTrackBounds (true);
+}
+
+} // namespace
+
 bool
 ArrangerObjectCreator::add_laned_object (
   structure::tracks::Track                           &track,
@@ -212,29 +270,40 @@ ArrangerObjectCreator::addMidiClipFromChordDescriptor (
   return mr;
 }
 
-structure::arrangement::MidiClip *
-ArrangerObjectCreator::addMidiClipFromMidiFile (
-  structure::tracks::Track *     track,
-  structure::tracks::TrackLane * lane,
-  const QString                 &abs_path,
-  double                         startTicks,
-  int                            midi_track_idx)
+std::expected<
+  utils::TypedUuidReference<structure::arrangement::MidiClip>,
+  utils::Utf8String>
+ArrangerObjectCreator::add_midi_clip_from_note_tracks (
+  structure::tracks::Track *                track,
+  structure::tracks::TrackLane *            lane,
+  double                                    startTicks,
+  std::span<const dsp::MidiFile::NoteTrack> note_tracks)
 {
-  auto * mr = addEmptyMidiClip (track, lane, startTicks);
-
-#if 0
-  try
+  const bool has_notes =
+    std::ranges::any_of (note_tracks, [] (const auto &note_track) {
+      return !note_track.notes.empty ();
+    });
+  if (!has_notes)
     {
-      MidiFile mf{ utils::Utf8String::from_qstring (abs_path) };
-      mf.into_clip (*mr, midi_track_idx);
+      return std::unexpected (
+        utils::Utf8String::from_utf8_encoded_string ("no notes to import"));
     }
-  catch (const ZrythmException &e)
-    {
-      z_warning ("Failed to create clip from MIDI file: {}", e.what ());
-    }
-#endif
 
-  return mr;
+  auto mr_ref =
+    arranger_object_factory_.get_builder<structure::arrangement::MidiClip> ()
+      .with_start_ticks (units::ticks (startTicks))
+      .build_in_registry ();
+  if (!add_laned_object (*track, *lane, mr_ref))
+    {
+      return std::unexpected (
+        utils::Utf8String::from_utf8_encoded_string (
+          "could not attach the clip to its lane"));
+    }
+
+  populate_midi_clip (
+    arranger_object_factory_,
+    *mr_ref.get_object_as<structure::arrangement::MidiClip> (), note_tracks);
+  return mr_ref;
 }
 
 structure::arrangement::MidiNote *
@@ -509,20 +578,23 @@ ArrangerObjectCreator::addAudioClipToClipSlotFromFile (
   add_object_to_clip_slot (*track, *clipSlot, ar_ref);
   return ar_ref.get_object_as<structure::arrangement::AudioClip> ();
 }
-
-structure::arrangement::MidiClip *
-ArrangerObjectCreator::addMidiClipToClipSlotFromFile (
-  structure::tracks::Track *    track,
-  structure::scenes::ClipSlot * clipSlot,
-  const QString                &absPath)
+std::expected<
+  utils::TypedUuidReference<structure::arrangement::MidiClip>,
+  utils::Utf8String>
+ArrangerObjectCreator::add_midi_clip_to_clip_slot_from_note_tracks (
+  structure::tracks::Track *                track,
+  structure::scenes::ClipSlot *             clipSlot,
+  std::span<const dsp::MidiFile::NoteTrack> note_tracks)
 {
-  // FIXME: MIDI file parsing is not yet implemented. This stub creates a
-  // placeholder MidiClip with two dummy notes so import does not crash.
-  // Real MIDI import (parsing tempo meta-events into source_bpm_, notes,
-  // and control events) is deferred.
-  z_warning (
-    "MIDI file import not implemented: creating placeholder clip for '{}'",
-    absPath.toUtf8 ().constData ());
+  const bool has_notes =
+    std::ranges::any_of (note_tracks, [] (const auto &note_track) {
+      return !note_track.notes.empty ();
+    });
+  if (!has_notes)
+    {
+      return std::unexpected (
+        utils::Utf8String::from_utf8_encoded_string ("no notes to import"));
+    }
 
   auto mr_ref =
     arranger_object_factory_.get_builder<structure::arrangement::MidiClip> ()
@@ -530,12 +602,10 @@ ArrangerObjectCreator::addMidiClipToClipSlotFromFile (
       .build_in_registry ();
   add_object_to_clip_slot (*track, *clipSlot, mr_ref);
 
-  auto * clip = mr_ref.get_object_as<structure::arrangement::MidiClip> ();
-
-  addMidiNote (clip, 0.0, 60);
-  addMidiNote (clip, 480.0, 64);
-
-  return clip;
+  populate_midi_clip (
+    arranger_object_factory_,
+    *mr_ref.get_object_as<structure::arrangement::MidiClip> (), note_tracks);
+  return mr_ref;
 }
 
 } // namespace zrythm::actions

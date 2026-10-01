@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <span>
+#include <stdexcept>
 #include <string_view>
 #include <vector>
 
@@ -15,6 +16,35 @@
 
 namespace zrythm::dsp
 {
+
+/**
+ * @brief A musical time signature, e.g. 4/4.
+ */
+struct TimeSignature
+{
+  int numerator{};   ///< Beats per bar
+  int denominator{}; ///< Beat unit (2, 4, 8, 16)
+};
+
+/**
+ * @brief Validates a time signature's numerator and denominator.
+ *
+ * @param time_signature Time signature to validate.
+ * @throw std::invalid_argument If the numerator is smaller than 1 or the
+ * denominator is not a power of two in [1, 128].
+ */
+inline void
+throw_if_invalid_time_signature (const TimeSignature &time_signature)
+{
+  if (time_signature.numerator < 1)
+    throw std::invalid_argument ("Time signature numerator must be >= 1");
+  const auto denominator = time_signature.denominator;
+  if (
+    denominator < 1 || denominator > 128
+    || (denominator & (denominator - 1)) != 0)
+    throw std::invalid_argument (
+      "Time signature denominator must be a power of two in [1, 128]");
+}
 
 /**
  * @class FixedPpqTempoMap
@@ -64,13 +94,12 @@ public:
   /// Time signature event definition
   struct TimeSignatureEvent
   {
-    units::tick_t tick;          ///< Position in ticks
-    int           numerator{};   ///< Beats per bar
-    int           denominator{}; ///< Beat unit (2,4,8,16)
+    units::tick_t tick;           ///< Position in ticks
+    TimeSignature time_signature; ///< Numerator and denominator
 
     constexpr auto quarters_per_bar () const
     {
-      return (numerator * 4) / denominator;
+      return (time_signature.numerator * 4) / time_signature.denominator;
     }
 
     constexpr auto ticks_per_bar () const
@@ -80,13 +109,14 @@ public:
 
     constexpr auto ticks_per_beat () const
     {
-      return ticks_per_bar () / numerator;
+      return ticks_per_bar () / time_signature.numerator;
     }
 
     constexpr auto
     is_different_time_signature (const TimeSignatureEvent &other) const
     {
-      return numerator != other.numerator || denominator != other.denominator;
+      return time_signature.numerator != other.time_signature.numerator
+             || time_signature.denominator != other.time_signature.denominator;
     }
 
     friend void to_json (nlohmann::json &j, const TimeSignatureEvent &e);
@@ -153,7 +183,7 @@ public:
    * @throws std::invalid_argument for invalid parameters
    */
   void
-  add_time_signature_event (units::tick_t tick, int numerator, int denominator);
+  add_time_signature_event (units::tick_t tick, TimeSignature time_signature);
 
   /// Remove a time signature event at the specified tick
   void remove_time_signature_event (units::tick_t tick);
@@ -258,11 +288,10 @@ public:
   }
 
   /// Set the base time signature at tick 0.
-  void set_base_time_signature (int numerator, int denominator)
+  void set_base_time_signature (TimeSignature time_signature)
   {
-    throw_if_invalid_time_signature (numerator, denominator);
-    base_time_sig_.numerator = numerator;
-    base_time_sig_.denominator = denominator;
+    throw_if_invalid_time_signature (time_signature);
+    base_time_sig_.time_signature = time_signature;
     rebuild_time_signature_cache ();
   }
 
@@ -288,11 +317,6 @@ private:
   /// Rebuild the cached effective time signature view
   /// (@ref effective_time_sig_events_).
   void rebuild_time_signature_cache ();
-
-  /// Throw std::invalid_argument if (numerator, denominator) is not a usable
-  /// time signature: numerator >= 1 and denominator a power-of-two in
-  /// [1, 128] (i.e. one of 1, 2, 4, 8, 16, 32, 64, 128).
-  static void throw_if_invalid_time_signature (int numerator, int denominator);
 
   /// Compute time duration for a segment between two tempo events
   units::precise_second_t compute_segment_time (
@@ -330,7 +354,9 @@ private:
   // from tick 0 up to the first inserted event (constant), unless an inserted
   // event exists at tick 0.
   units::bpm_t       base_bpm_{ units::bpm (120.0) };
-  TimeSignatureEvent base_time_sig_{ units::ticks (0), 4, 4 };
+  TimeSignatureEvent base_time_sig_{
+    units::ticks (0), TimeSignature{ 4, 4 }
+  };
 
   std::vector<TempoEvent>         events_;          ///< Tempo events
   std::vector<TimeSignatureEvent> time_sig_events_; ///< Time signature events

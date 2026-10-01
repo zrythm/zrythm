@@ -254,7 +254,7 @@ TEST_F (SnapGridTest, DefaultTicks)
 TEST_F (SnapGridTest, TimeSignatureChanges)
 {
   // Change to 3/4 time signature
-  tempo_map->add_time_signature_event (units::ticks (0), 3, 4);
+  tempo_map->add_time_signature_event (units::ticks (0), TimeSignature{ 3, 4 });
 
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Bar);
@@ -437,8 +437,9 @@ TEST_F (SnapGridTest, SnapPointsRespectTimeSignatureChanges)
   // Bar 1: ticks 0-3839 (4/4)
   // Bar 2: ticks 3840-7679 (4/4)
   // Bar 3 onwards: ticks 7680-10559 (3/4)
-  tempo_map->add_time_signature_event (units::ticks (0), 4, 4);
-  tempo_map->add_time_signature_event (units::ticks (7680), 3, 4);
+  tempo_map->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
+  tempo_map->add_time_signature_event (
+    units::ticks (7680), TimeSignature{ 3, 4 });
 
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapToGrid (true);
@@ -494,10 +495,11 @@ TEST_F (SnapGridTest, SnapPointsWithComplexTimeSignatureChanges)
   // 6/8: 6 eighth notes per bar = 2880 ticks/bar, 480 ticks/beat (eighth note
   // gets the beat) 5/4: 5 quarter notes per bar = 4800 ticks/bar, 960 ticks/beat
 
-  tempo_map->add_time_signature_event (units::ticks (0), 4, 4);
-  tempo_map->add_time_signature_event (units::ticks (3840), 6, 8);
+  tempo_map->add_time_signature_event (units::ticks (0), TimeSignature{ 4, 4 });
   tempo_map->add_time_signature_event (
-    units::ticks (3840 + 5760), 5, 4); // 3840 + 2*2880
+    units::ticks (3840), TimeSignature{ 6, 8 });
+  tempo_map->add_time_signature_event (
+    units::ticks (3840 + 5760), TimeSignature{ 5, 4 }); // 3840 + 2*2880
 
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapToGrid (true);
