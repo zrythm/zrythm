@@ -113,10 +113,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   const auto &project = project_;
   const auto &engine = project_->audio_engine_;
-  // auto *      sample_processor = engine->sample_processor_.get ();
-  auto * tracklist = project_->tracklist ();
-  auto * midi_panic_processor = engine->midi_panic_processor ();
-  auto * observation_manager = project->portObservationManager ();
+  auto *      tracklist = project_->tracklist ();
+  auto *      midi_panic_processor = engine->midi_panic_processor ();
+  auto *      observation_manager = project->portObservationManager ();
 
   const auto connect_ports =
     [&] (
@@ -125,16 +124,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       tracks::ChannelSubgraphBuilder::add_connection_for_ports (
         graph, src, dest);
     };
-
-  /* add the sample processor */
-// TODO
-#if 0
-  add_node_for_processable (*sample_processor);
-  for (const auto &fader_out : sample_processor->fader_->get_all_output_ports ())
-    {
-      add_node_for_processable (*fader_out.get_object_as<dsp::AudioPort> ());
-    }
-#endif
 
   // add metronome processor
   dsp::ProcessorGraphBuilder::add_nodes (graph, *metronome_);
@@ -205,24 +194,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         }
     }
 
-    /* ========================
-     * now connect them
-     * ======================== */
-
-// TODO: connect the sample processor
-#if 0
-  {
-    auto * node =
-      graph.get_nodes ().find_node_for_processable (*sample_processor);
-    z_return_if_fail (node);
-    iterate_tuple (
-      [&] (const auto &port) {
-        auto * node2 = graph.get_nodes ().find_node_for_processable (port);
-        node->connect_to (*node2);
-      },
-      sample_processor->fader_->get_stereo_out_ports ());
-  }
-#endif
+  /* ========================
+   * now connect them
+   * ======================== */
 
   // connect metronome processor
   {
@@ -246,25 +220,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   /* connect the monitor fader */
   dsp::ProcessorGraphBuilder::add_connections (graph, *monitor_fader_);
-
-// TODO: connect the sample processor output to the monitor fader output so we
-// hear the samples
-#if 0
-  {
-    const auto &sp_fader_outs = sample_processor->fader_->get_all_output_ports ();
-    const auto &monitor_fader_outs = monitor_fader_->get_all_output_ports ();
-    for (
-      const auto &[sp_out, mf_out] :
-      std::views::zip (sp_fader_outs, monitor_fader_outs))
-      {
-        auto * sp_out_node = graph.get_nodes ().find_node_for_processable (
-          *sp_out.get_object_as<dsp::AudioPort> ());
-        auto * mf_out_node = graph.get_nodes ().find_node_for_processable (
-          *mf_out.get_object_as<dsp::AudioPort> ());
-        sp_out_node->connect_to (*mf_out_node);
-      }
-  }
-#endif
 
   /* connect the audio input processor */
   if (auto * aip = engine->audio_input_processor ())

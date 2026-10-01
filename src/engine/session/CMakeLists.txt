@@ -7,6 +7,4 @@ target_sources(zrythm_gui_lib
     control_room.cpp
     midi_mapping.h
     midi_mapping.cpp
-    sample_processor.h
-    sample_processor.cpp
 )
