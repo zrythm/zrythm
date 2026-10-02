@@ -14,6 +14,7 @@ Arranger {
   id: root
 
   required property bool pinned
+  required property FileImporter fileImporter
   required property TempoObjectManager tempoObjectManager
   required property var timeline
   required property Tracklist tracklist
@@ -239,6 +240,23 @@ Arranger {
     return getTrackItemAtY(y)?.track ?? null;
   }
 
+  onCanvasDrop: drop => {
+    const filePaths = DragUtils.getUniqueFilePaths(drop);
+    if (filePaths.length === 0)
+      return;
+    fileDropFeedback.updateForDrag(drop);
+    if (!fileDropFeedback.dropTargetTrack) {
+      root.fileImporter.importFiles(filePaths, fileDropFeedback.dropTicks, null);
+    } else {
+      root.fileImporter.importFilesToLane(filePaths, fileDropFeedback.dropTicks, fileDropFeedback.dropTargetTrack, fileDropFeedback.dropTargetLane);
+    }
+    drop.accept(Qt.CopyAction);
+    // The drop area does not emit exited() after a drop
+    fileDropFeedback.reset();
+  }
+  onCanvasDragMoved: drag => fileDropFeedback.updateForDrag(drag)
+  onCanvasDragExited: fileDropFeedback.reset()
+
   // Find the track that contains this object
   function getTrackForObject(obj: ArrangerObject): Track {
     return tracklist.getTrackForTimelineObject(obj);
@@ -255,6 +273,12 @@ Arranger {
 
   function getTrackItemAtY(y: real): TrackDelegateItem {
     return tracksListView.itemAt(0, y + tracksListView.contentY) as TrackDelegateItem;
+  }
+
+  // Returns the last track's delegate, or null when there are no tracks
+  function getLastTrackItem(): TrackDelegateItem {
+    const lastIndex = tracksListView.count - 1;
+    return lastIndex >= 0 ? tracksListView.itemAtIndex(lastIndex) as TrackDelegateItem : null;
   }
 
   function getTrackLaneAtY(y: real): TrackLane {
@@ -381,6 +405,14 @@ Arranger {
 
       target: root.tracklist
     }
+
+    FileDropFeedback {
+      id: fileDropFeedback
+
+      anchors.fill: parent
+      arranger: root
+      fileImporter: root.fileImporter
+    }
   }
 
   TextMetrics {
@@ -393,6 +425,7 @@ Arranger {
   component ATHRoleData: QtObject {
     property AutomationTrackHolder automationTrackHolder
   }
+
   component PlaybackCacheActivityOverlay: Item {
     id: overlay
 

@@ -5,6 +5,7 @@
 
 #include <expected>
 #include <filesystem>
+#include <optional>
 #include <vector>
 
 #include "actions/arranger_object_creator.h"
@@ -29,6 +30,7 @@ public:
     ArrangerObjectCreator              &arranger_object_creator,
     TrackCreator                       &track_creator,
     structure::tracks::TrackCollection &track_collection,
+    const dsp::TempoMap                &tempo_map,
     QObject *                           parent = nullptr);
 
   /**
@@ -40,6 +42,8 @@ public:
     Midi,
     Unsupported
   };
+
+  Q_ENUM (FileType)
 
   /**
    * @brief Imports the given files.
@@ -58,6 +62,24 @@ public:
     const QStringList         &filePaths,
     double                     startTicks,
     structure::tracks::Track * track);
+
+  /**
+   * @brief Imports the given files, targeting a specific lane.
+   *
+   * Like importFiles(), but audio files land in @p lane and multi-track
+   * MIDI files stack their clips in consecutive lanes starting at @p lane.
+   * @p lane is only used when @p track is given and accepts the file type.
+   *
+   * @param filePaths Files to import.
+   * @param startTicks Timeline position to import the contents at.
+   * @param track Track to import into, or null to create a new track.
+   * @param lane Lane to import into, or null for the first lane.
+   */
+  Q_INVOKABLE void importFilesToLane (
+    const QStringList             &filePaths,
+    double                         startTicks,
+    structure::tracks::Track *     track,
+    structure::tracks::TrackLane * lane);
 
   Q_INVOKABLE void importFileToClipSlot (
     const QString                &filePath,
@@ -94,18 +116,43 @@ public:
    */
   Q_INVOKABLE bool isMidiFile (const QString &filePath) const;
 
-private:
-  bool import_audio_file (
-    const std::filesystem::path   &filePath,
-    double                         startTicks,
-    structure::tracks::Track *     track,
-    structure::tracks::TrackLane * lane);
+  /**
+   * @brief Returns the duration of a file in timeline ticks.
+   *
+   * Audio durations are converted at the tempo map's current tempo; MIDI
+   * durations are the furthest note end.
+   *
+   * @param filePath Path to the file to probe.
+   * @return The duration in ticks, or a negative value when it cannot be
+   * determined.
+   */
+  Q_INVOKABLE double getFileDurationTicks (const QString &filePath) const;
 
-  bool import_midi_file (
-    const std::filesystem::path   &filePath,
-    double                         startTicks,
-    structure::tracks::Track *     track,
-    structure::tracks::TrackLane * lane);
+private:
+  /**
+   * @brief Imports an audio file.
+   *
+   * @param lane_index Index of the lane to place the clip in, or none for
+   * the first lane.
+   * @return The number of clips created.
+   */
+  size_t import_audio_file (
+    const std::filesystem::path &filePath,
+    double                       startTicks,
+    structure::tracks::Track *   track,
+    std::optional<size_t>        lane_index);
+
+  /**
+   * @brief Imports a MIDI file, placing one clip per note track in
+   * consecutive lanes starting at @p lane_index.
+   *
+   * @return The number of clips created.
+   */
+  size_t import_midi_file (
+    const std::filesystem::path &filePath,
+    double                       startTicks,
+    structure::tracks::Track *   track,
+    std::optional<size_t>        lane_index);
 
   /**
    * @brief Parses the note content of a MIDI file.
@@ -126,6 +173,7 @@ private:
   ::zrythm::actions::ArrangerObjectCreator &arranger_object_creator_;
   structure::tracks::TrackCollection       &track_collection_;
   undo::UndoStack                          &undo_stack_;
+  const dsp::TempoMap                      &tempo_map_;
 
   /** Audio format manager for detecting audio files. */
   mutable juce::AudioFormatManager audio_format_manager_;

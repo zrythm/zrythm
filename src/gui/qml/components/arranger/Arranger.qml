@@ -147,6 +147,11 @@ Item {
   // this for type-specific drops (e.g. chord pad → chord editor).
   signal canvasDrop(DragEvent drop)
 
+  // Emitted while a drag moves over the arranger canvas, and when it
+  // exits. Subclasses can use these to show drop feedback.
+  signal canvasDragMoved(DragEvent drag)
+  signal canvasDragExited()
+
   // Interactive object creation entry point (single-press pencil,
   // double-click): creates an object via createObjectAt() and applies
   // interactive side effects (selection, current action, cursor, undo
@@ -720,49 +725,19 @@ Item {
           }
         }
 
-        Image {
-          id: dropRectImage
-
-          height: 25
-          opacity: arrangerDropArea.containsDrag ? 0.8 : 0.0
-          source: ResourceManager.getIconUrl("zrythm-dark", "zrythm.svg")
-          width: 25
-          x: arrangerDropArea.drag.x
-          y: arrangerDropArea.drag.y
-          z: 2
-        }
-
-        Rectangle {
-          id: arrangerDropRect
+        DropArea {
+          id: arrangerDropArea
 
           anchors.fill: parent
-          color: "grey"
-          opacity: arrangerDropArea.containsDrag ? 0.1 : 0.0
 
-          DropArea {
-            id: arrangerDropArea
-
-            anchors.fill: parent
-
-            onContainsDragChanged: {
-              if (containsDrag) {
-                const item = arrangerDropArea.drag.source as Item;
-                if (!item)
-                  return; // external/MIME-only drags (e.g. chord pad) have no Item source
-                const size = Qt.size(item.width, item.height);
-                dropRectImage.width = item.width;
-                dropRectImage.height = item.height;
-                item.grabToImage(function (result) {
-                  dropRectImage.source = result.url;
-                }, size);
-              }
-            }
-            onDropped: drop => {
-              root.canvasDrop(drop);
-            }
-            onPositionChanged:
-            // TODO: Show drop positions, etc.
-            {}
+          onDropped: drop => {
+            root.canvasDrop(drop);
+          }
+          onPositionChanged: drag => {
+            root.canvasDragMoved(drag);
+          }
+          onExited: {
+            root.canvasDragExited();
           }
         }
 

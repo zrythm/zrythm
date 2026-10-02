@@ -241,6 +241,7 @@ set(rel_qml_file_paths
   components/arranger/ArrangerObjectLoader.qml
   components/arranger/ChordClipContent.qml
   components/arranger/ChordClipView.qml
+  components/arranger/FileDropFeedback.qml
   components/arranger/MarkerView.qml
   components/arranger/MidiArranger.qml
   components/arranger/MidiNoteView.qml

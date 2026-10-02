@@ -23,10 +23,12 @@ FileImporter::FileImporter (
   ::zrythm::actions::ArrangerObjectCreator &arranger_object_creator,
   ::zrythm::actions::TrackCreator          &track_creator,
   structure::tracks::TrackCollection       &track_collection,
+  const dsp::TempoMap                      &tempo_map,
   QObject *                                 parent)
     : QObject (parent), track_creator_ (track_creator),
       arranger_object_creator_ (arranger_object_creator),
-      track_collection_ (track_collection), undo_stack_ (undo_stack)
+      track_collection_ (track_collection), undo_stack_ (undo_stack),
+      tempo_map_ (tempo_map)
 {
   // Initialize the audio format manager with basic formats
   audio_format_manager_.registerBasicFormats ();
@@ -38,6 +40,16 @@ FileImporter::importFiles (
   double                     startTicks,
   structure::tracks::Track * track)
 {
+  importFilesToLane (filePaths, startTicks, track, nullptr);
+}
+
+void
+FileImporter::importFilesToLane (
+  const QStringList             &filePaths,
+  double                         startTicks,
+  structure::tracks::Track *     track,
+  structure::tracks::TrackLane * lane)
+{
   z_debug ("Importing {} files: {}", filePaths.size (), filePaths);
 
   if (filePaths.empty ())
@@ -45,25 +57,54 @@ FileImporter::importFiles (
       return;
     }
 
+  std::optional<size_t> first_lane_index;
+  if (track != nullptr && lane != nullptr)
+    {
+      first_lane_index = track->lanes ()->indexOfLane (lane);
+      if (!first_lane_index.has_value ())
+        {
+          Q_EMIT importFailed (
+            filePaths.front (),
+            tr ("The track lane could not be found for importing"));
+          return;
+        }
+    }
+
   undo::UndoStack::ScopedMacro macro (
     undo_stack_, QString::fromUtf8 ("Import Files"));
+  size_t lane_offset = 0;
   for (const auto &filepath : filePaths)
     {
       const auto file_path =
         utils::Utf8String::from_qstring (filepath).to_path ();
       try
         {
+          const auto target_lane_index =
+            first_lane_index.has_value ()
+              ? std::optional<size_t> (*first_lane_index + lane_offset)
+              : std::nullopt;
+          size_t clips_created = 0;
           if (isMidiFile (filepath))
             {
-              import_midi_file (file_path, startTicks, track, nullptr);
+              clips_created = import_midi_file (
+                file_path, startTicks, track, target_lane_index);
             }
           else if (isAudioFile (filepath))
             {
-              import_audio_file (file_path, startTicks, track, nullptr);
+              clips_created = import_audio_file (
+                file_path, startTicks, track, target_lane_index);
             }
           else
             {
               Q_EMIT importFailed (filepath, tr ("Unsupported file type"));
+            }
+
+          // Files imported into the same track place their clips in their
+          // own lanes, all starting at the drop position; each file into
+          // its own new track starts at the first lane
+          if (track != nullptr)
+            {
+              lane_offset += clips_created;
             }
         }
       catch (const ZrythmException &e)
@@ -191,12 +232,12 @@ FileImporter::importFileToClipSlot (
     }
 }
 
-bool
+size_t
 FileImporter::import_audio_file (
-  const std::filesystem::path   &filePath,
-  double                         startTicks,
-  structure::tracks::Track *     track,
-  structure::tracks::TrackLane * lane)
+  const std::filesystem::path &filePath,
+  double                       startTicks,
+  structure::tracks::Track *   track,
+  std::optional<size_t>        lane_index)
 {
   auto * audio_track = qobject_cast<structure::tracks::AudioTrack *> (track);
   if (track != nullptr && audio_track == nullptr)
@@ -204,7 +245,7 @@ FileImporter::import_audio_file (
       Q_EMIT importFailed (
         path_to_qstring (filePath),
         tr ("Audio files can only be imported into audio tracks"));
-      return false;
+      return 0;
     }
 
   if (audio_track == nullptr)
@@ -216,8 +257,9 @@ FileImporter::import_audio_file (
       rename_track_to_file_basename (*audio_track, filePath);
     }
 
-  auto * target_lane =
-    lane != nullptr ? lane : audio_track->lanes ()->getFirstLane ();
+  const auto target_lane_index = lane_index.value_or (0);
+  audio_track->lanes ()->create_missing_lanes (target_lane_index);
+  auto * target_lane = audio_track->lanes ()->at (target_lane_index);
   try
     {
       if (
@@ -225,7 +267,7 @@ FileImporter::import_audio_file (
           audio_track, target_lane, path_to_qstring (filePath), startTicks)
         != nullptr)
         {
-          return true;
+          return 1;
         }
     }
   catch (const ZrythmException &e)
@@ -234,19 +276,19 @@ FileImporter::import_audio_file (
         path_to_qstring (filePath),
         tr ("Failed to import audio file (%1)")
           .arg (e.what_string ().to_qstring ()));
-      return false;
+      return 0;
     }
   Q_EMIT importFailed (
     path_to_qstring (filePath), tr ("Failed to import audio file"));
-  return false;
+  return 0;
 }
 
-bool
+size_t
 FileImporter::import_midi_file (
-  const std::filesystem::path   &filePath,
-  double                         startTicks,
-  structure::tracks::Track *     track,
-  structure::tracks::TrackLane * lane)
+  const std::filesystem::path &filePath,
+  double                       startTicks,
+  structure::tracks::Track *   track,
+  std::optional<size_t>        lane_index)
 {
   const auto track_type =
     track != nullptr ? track->type () : structure::tracks::Track::Type::Midi;
@@ -258,7 +300,7 @@ FileImporter::import_midi_file (
       Q_EMIT importFailed (
         path_to_qstring (filePath),
         tr ("MIDI files can only be imported into MIDI or instrument tracks"));
-      return false;
+      return 0;
     }
 
   const auto note_tracks = parse_midi_note_tracks (filePath);
@@ -268,13 +310,13 @@ FileImporter::import_midi_file (
         path_to_qstring (filePath),
         tr ("Failed to read MIDI file (%1)")
           .arg (note_tracks.error ().to_qstring ()));
-      return false;
+      return 0;
     }
   if (note_tracks->empty ())
     {
       Q_EMIT importFailed (
         path_to_qstring (filePath), tr ("MIDI file contains no notes"));
-      return false;
+      return 0;
     }
 
   auto * midi_track =
@@ -288,21 +330,8 @@ FileImporter::import_midi_file (
       rename_track_to_file_basename (*midi_track, filePath);
     }
 
-  auto * lanes = midi_track->lanes ();
-  size_t first_lane_index = 0;
-  if (lane != nullptr)
-    {
-      const auto lane_index = lanes->indexOfLane (lane);
-      if (!lane_index.has_value ())
-        {
-          Q_EMIT importFailed (
-            path_to_qstring (filePath),
-            tr ("The track lane could not be found for importing"));
-          return false;
-        }
-      first_lane_index = *lane_index;
-    }
-
+  auto *       lanes = midi_track->lanes ();
+  const size_t first_lane_index = lane_index.value_or (0);
   for (const auto i : std::views::iota (0uz, note_tracks->size ()))
     {
       lanes->create_missing_lanes (first_lane_index + i);
@@ -316,10 +345,10 @@ FileImporter::import_midi_file (
             tr ("Failed to import MIDI track %1 (%2)")
               .arg (static_cast<int> (i) + 1)
               .arg (clip.error ().to_qstring ()));
-          return false;
+          return i;
         }
     }
-  return true;
+  return note_tracks->size ();
 }
 
 std::expected<std::vector<dsp::MidiFile::NoteTrack>, utils::Utf8String>
@@ -391,5 +420,46 @@ FileImporter::isMidiFile (const QString &filePath) const
 {
   return dsp::MidiFile::is_midi_file (
     utils::Utf8String::from_qstring (filePath).to_path ());
+}
+
+double
+FileImporter::getFileDurationTicks (const QString &filePath) const
+{
+  const auto file_path = utils::Utf8String::from_qstring (filePath).to_path ();
+  if (isMidiFile (filePath))
+    {
+      const auto note_tracks = parse_midi_note_tracks (file_path);
+      if (!note_tracks.has_value ())
+        {
+          return -1.0;
+        }
+      const auto note_ends =
+        *note_tracks | std::views::transform (&dsp::MidiFile::NoteTrack::notes)
+        | std::views::join
+        | std::views::transform ([] (const dsp::MidiFile::Note &note) {
+            return note.end_ticks.in (units::ticks);
+          });
+      const auto furthest_end = std::ranges::max_element (note_ends);
+      return furthest_end == note_ends.end () ? 0.0 : *furthest_end;
+    }
+
+  if (isAudioFile (filePath))
+    {
+      const auto file =
+        utils::Utf8String::from_qstring (filePath).to_juce_file ();
+      const auto reader = std::unique_ptr<juce::AudioFormatReader> (
+        audio_format_manager_.createReaderFor (file));
+      if (
+        reader == nullptr || reader->sampleRate <= 0.0
+        || reader->lengthInSamples <= 0)
+        {
+          return -1.0;
+        }
+      const auto seconds =
+        static_cast<double> (reader->lengthInSamples) / reader->sampleRate;
+      return tempo_map_.seconds_to_tick (units::seconds (seconds)).asDouble ();
+    }
+
+  return -1.0;
 }
 }

@@ -13,7 +13,6 @@ QtObject {
 
     // Handle text/uri-list (standard for external file browsers)
     if (drop.hasUrls) {
-      console.log("URLs dropped:", drop.urls.length);
       for (const url of drop.urls) {
         // Convert URLs to local file paths
         filePaths.push(QmlUtils.toPathString(url));

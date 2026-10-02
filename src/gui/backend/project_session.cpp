@@ -166,6 +166,7 @@ ProjectSession::ProjectSession (
           *arranger_object_creator_,
           *track_creator_,
           *project_->tracklist ()->collection (),
+          project_->tempo_map (),
           this)),
       uuid_property_operator_ (
         utils::make_qobject_unique<actions::UuidPropertyOperator> (

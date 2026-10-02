@@ -232,6 +232,7 @@ ColumnLayout {
             Layout.minimumHeight: pinnedTracklist.height
             arrangerSelectionModel: arrangerSelectionModel
             clipEditor: root.session.uiState.clipEditor
+            fileImporter: root.session.fileImporter
             objectCreator: root.session.arrangerObjectCreator
             pinned: true
             ruler: ruler
@@ -285,6 +286,7 @@ ColumnLayout {
             Layout.fillWidth: true
             arrangerSelectionModel: arrangerSelectionModel
             clipEditor: root.session.uiState.clipEditor
+            fileImporter: root.session.fileImporter
             objectCreator: root.session.arrangerObjectCreator
             pinned: false
             ruler: ruler

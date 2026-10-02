@@ -166,6 +166,14 @@ ApplicationWindow {
   }
 
   Connections {
+    function onImportFailed(filePath, reason) {
+      root.notificationCenter.postError(qsTr("Cannot Import File"), filePath + "\n" + reason);
+    }
+
+    target: root.session.fileImporter
+  }
+
+  Connections {
     function onOperationRefused(reason) {
       root.notificationCenter.postError(qsTr("Cannot Perform Operation"), reason);
     }

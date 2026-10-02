@@ -118,7 +118,7 @@ protected:
     // Create file importer
     file_importer_ = std::make_unique<FileImporter> (
       *undo_stack_, *arranger_object_creator_, *track_creator_,
-      *track_collection_);
+      *track_collection_, tempo_map_);
 
     // Create test files
     setupTestFiles ();
@@ -868,6 +868,182 @@ TEST_F (FileImporterTest, MacroCommandWrapping)
   undo_stack_->redo ();
   EXPECT_EQ (
     track_collection_->track_count (), 6); // Singleton + 2 imported tracks
+}
+
+// The probed duration of a MIDI file is the furthest note end, in ticks
+TEST_F (FileImporterTest, GetFileDurationTicksForMidiFile)
+{
+  // The mock MIDI file holds one note from tick 0 to file tick 96 at 96
+  // PPQN, which is 960 Zrythm ticks
+  EXPECT_DOUBLE_EQ (
+    file_importer_->getFileDurationTicks (
+      utils::Utf8String::from_path (midi_file_path_).to_qstring ()),
+    960.0);
+}
+
+// The probed duration of an audio file is its length converted to ticks
+// at the tempo map's base tempo
+TEST_F (FileImporterTest, GetFileDurationTicksForAudioFile)
+{
+  // The mock WAV file holds 2048 samples at 44100 Hz; at 120 BPM and 960
+  // PPQN one second is 1920 ticks
+  const auto expected_ticks = 2048.0 / 44100.0 * 1920.0;
+  EXPECT_NEAR (
+    file_importer_->getFileDurationTicks (
+      utils::Utf8String::from_path (audio_file_path_).to_qstring ()),
+    expected_ticks, 1e-9);
+}
+
+// Durations that cannot be determined are reported as negative values
+TEST_F (FileImporterTest, GetFileDurationTicksForUnusableFiles)
+{
+  EXPECT_DOUBLE_EQ (
+    file_importer_->getFileDurationTicks (
+      utils::Utf8String::from_path (unsupported_file_path_).to_qstring ()),
+    -1.0);
+  EXPECT_DOUBLE_EQ (
+    file_importer_->getFileDurationTicks (
+      utils::Utf8String::from_path (temp_dir_path_ / "missing.mid").to_qstring ()),
+    -1.0);
+}
+
+// Multi-track MIDI files stack their clips in consecutive lanes starting
+// at the target lane
+TEST_F (FileImporterTest, ImportFilesToLaneStacksMidiClipsFromTargetLane)
+{
+  auto track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto * midi_track = track_result.value<structure::tracks::MidiTrack *> ();
+
+  const auto start_ticks = 100.0;
+
+  QStringList files;
+  files.append (
+    utils::Utf8String::from_path (
+      std::filesystem::path (TEST_MIDI_FILES_DIR)
+      / "format_1_two_tracks_with_data.mid")
+      .to_qstring ());
+
+  file_importer_->importFilesToLane (
+    files, start_ticks, midi_track, midi_track->lanes ()->getFirstLane ());
+
+  for (const auto lane_index : std::views::iota (0uz, 2uz))
+    {
+      const auto clips =
+        midi_track->lanes ()
+          ->at (lane_index)
+          ->structure::arrangement::ArrangerObjectOwner<
+            structure::arrangement::MidiClip>::get_sorted_children_view ();
+      ASSERT_EQ (clips.size (), 1);
+      EXPECT_DOUBLE_EQ ((*clips.begin ())->position ()->ticks (), start_ticks);
+    }
+}
+
+// Audio files are imported into the target lane
+TEST_F (FileImporterTest, ImportFilesToLaneImportsAudioIntoTargetLane)
+{
+  auto track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Audio);
+  auto * audio_track = track_result.value<structure::tracks::AudioTrack *> ();
+
+  const auto start_ticks = 50.0;
+
+  QStringList files;
+  files.append (utils::Utf8String::from_path (audio_file_path_).to_qstring ());
+
+  file_importer_->importFilesToLane (
+    files, start_ticks, audio_track, audio_track->lanes ()->getFirstLane ());
+
+  const auto clips =
+    audio_track->lanes ()
+      ->getFirstLane ()
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioClip>::get_sorted_children_view ();
+  ASSERT_EQ (clips.size (), 1);
+  EXPECT_DOUBLE_EQ ((*clips.begin ())->position ()->ticks (), start_ticks);
+}
+
+// Files dropped together onto a track stack their clips in consecutive
+// lanes, all starting at the drop position
+TEST_F (FileImporterTest, ImportFilesToLaneStacksFilesInLanes)
+{
+  auto track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto * midi_track = track_result.value<structure::tracks::MidiTrack *> ();
+
+  const auto dir =
+    utils::Utf8String::from_qstring (temp_dir_->path ()).to_path ();
+  const dsp::MidiFile::NoteTrack note{
+    .notes = { { .pitch = 60,
+                 .velocity = 100,
+                 .midi_channel = 0,
+                 .start_ticks = units::ticks (0.0),
+                 .end_ticks = units::ticks (960.0) } },
+  };
+  const std::array<const dsp::MidiFile::NoteTrack, 2> two_tracks{ note, note };
+  const std::array<const dsp::MidiFile::NoteTrack, 1> one_track{ note };
+  const auto two_tracks_path = dir / "two_tracks.mid";
+  const auto one_track_path = dir / "one_track.mid";
+  dsp::MidiFile::write_to_file (
+    two_tracks_path, dsp::MidiFile::Format::MIDI1, units::bpm (120.0),
+    dsp::TimeSignature{ 4, 4 }, two_tracks);
+  dsp::MidiFile::write_to_file (
+    one_track_path, dsp::MidiFile::Format::MIDI0, units::bpm (120.0),
+    dsp::TimeSignature{ 4, 4 }, one_track);
+
+  const auto  start_ticks = 100.0;
+  QStringList files;
+  files.append (utils::Utf8String::from_path (two_tracks_path).to_qstring ());
+  files.append (utils::Utf8String::from_path (one_track_path).to_qstring ());
+
+  file_importer_->importFilesToLane (
+    files, start_ticks, midi_track, midi_track->lanes ()->getFirstLane ());
+
+  for (const auto lane_index : std::views::iota (0uz, 3uz))
+    {
+      const auto clips =
+        midi_track->lanes ()
+          ->at (lane_index)
+          ->structure::arrangement::ArrangerObjectOwner<
+            structure::arrangement::MidiClip>::get_sorted_children_view ();
+      ASSERT_EQ (clips.size (), 1);
+      EXPECT_DOUBLE_EQ ((*clips.begin ())->position ()->ticks (), start_ticks)
+        << "lane " << lane_index;
+    }
+}
+
+// An import into a lane beyond the first survives being undone and
+// redone, including the lane trimming that undo performs
+TEST_F (FileImporterTest, UndoRedoImportIntoHigherLane)
+{
+  auto track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto * midi_track = track_result.value<structure::tracks::MidiTrack *> ();
+  midi_track->lanes ()->create_missing_lanes (1);
+
+  const auto clips_in_lane = [midi_track] (size_t lane_index) {
+    if (lane_index >= midi_track->lanes ()->size ())
+      {
+        return size_t{ 0 };
+      }
+    return midi_track->lanes ()
+      ->at (lane_index)
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_sorted_children_view ()
+      .size ();
+  };
+
+  QStringList files;
+  files.append (utils::Utf8String::from_path (midi_file_path_).to_qstring ());
+  file_importer_->importFilesToLane (
+    files, 0.0, midi_track, midi_track->lanes ()->at (1));
+  EXPECT_EQ (clips_in_lane (1), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (clips_in_lane (1), 0);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (clips_in_lane (1), 1);
 }
 
 } // namespace zrythm::actions
