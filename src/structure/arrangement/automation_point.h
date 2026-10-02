@@ -16,7 +16,8 @@ class AutomationPoint final : public ArrangerObject
 {
   Q_OBJECT
   Q_PROPERTY (float value READ value WRITE setValue NOTIFY valueChanged)
-  Q_PROPERTY (dsp::CurveOptionsQmlAdapter * curveOpts READ curveOpts CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::CurveOptionsQmlAdapter * curveOpts READ curveOpts CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 

@@ -25,7 +25,7 @@ EXCLUDED_PATTERNS = (
     'Type "QColor" of property "color" not found',
 )
 
-DEFAULT_MAX_WARNINGS = 45
+DEFAULT_MAX_WARNINGS = 32
 DEFAULT_MAX_ERRORS = 9
 
 

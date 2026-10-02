@@ -66,7 +66,7 @@ Arranger {
     FadeOverlayControl {
       curveOptsObj: root.audioClip ? root.audioClip.fadeRange.fadeInCurveOpts : null
       curvinessAction: Arranger.ResizingUpFadeIn
-      fadePx: fadeInPx
+      fadePx: root.fadeInPx
       fadeType: FadeOverlayCanvas.FadeIn
       offsetAction: Arranger.ResizingLFade
       offsetObj: root.audioClip ? root.audioClip.fadeRange.startOffset : null
@@ -77,11 +77,11 @@ Arranger {
     FadeOverlayControl {
       curveOptsObj: root.audioClip ? root.audioClip.fadeRange.fadeOutCurveOpts : null
       curvinessAction: Arranger.ResizingUpFadeOut
-      fadePx: fadeOutPx
+      fadePx: root.fadeOutPx
       fadeType: FadeOverlayCanvas.FadeOut
       offsetAction: Arranger.ResizingRFade
       offsetObj: root.audioClip ? root.audioClip.fadeRange.endOffset : null
-      x: root.clipX + root.clipWidth - fadeOutPx
+      x: root.clipX + root.clipWidth - root.fadeOutPx
       y: 0
     }
 

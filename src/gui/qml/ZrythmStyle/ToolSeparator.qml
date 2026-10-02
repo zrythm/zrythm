@@ -4,7 +4,6 @@
 
 import QtQuick
 import QtQuick.Templates as T
-import ZrythmStyle 1.0
 
 T.ToolSeparator {
   id: control

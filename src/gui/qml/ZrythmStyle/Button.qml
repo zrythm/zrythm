@@ -1,16 +1,14 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
 // SPDX-License-Identifier: GPL-3.0-only
 
 import QtQuick
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
-import ZrythmStyle 1.0
+import ZrythmStyle
 
 T.Button {
   id: control
-
-  property real styleHeight: ZrythmTheme.buttonHeight
 
   font: ZrythmTheme.buttonTextFont
   horizontalPadding: 6
@@ -52,6 +50,6 @@ T.Button {
   icon {
     // height: 24
     color: ZrythmTheme.buttonContentColor(control)
-    width: Math.max(control.styleHeight - padding * 2, textMetrics.height)
+    width: Math.max(control.height - padding * 2, textMetrics.height)
   }
 }

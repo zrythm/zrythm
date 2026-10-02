@@ -409,14 +409,14 @@ Control {
                     SoloButton {
                       id: laneSoloButton
 
+                      height: root.buttonHeight
                       padding: root.buttonPadding
-                      styleHeight: root.buttonHeight
                       visible: false // currently unimplemented
                     }
 
                     MuteButton {
+                      height: root.buttonHeight
                       padding: root.buttonPadding
-                      styleHeight: root.buttonHeight
                       visible: false // currently unimplemented
                     }
                   }
@@ -615,8 +615,8 @@ Control {
               id: muteButton
 
               checked: root.track.channel && root.track.channel.fader.mute.baseValue > 0.5
+              height: root.buttonHeight
               padding: root.buttonPadding
-              styleHeight: root.buttonHeight
               visible: root.track.channel !== null
 
               // External value syncs that flip checked re-enter these
@@ -626,21 +626,18 @@ Control {
             }
 
             SoloButton {
-              id: trackSoloButton
-
               checked: root.track.channel && root.track.channel.fader.solo.baseValue > 0.5
+              height: root.buttonHeight
               padding: root.buttonPadding
-              styleHeight: root.buttonHeight
               visible: root.track.channel !== null
 
               onCheckedChanged: root.track.channel?.fader.solo.setBaseValueByUser(checked ? 1.0 : 0.0)
             }
 
             RecordButton {
-              Layout.preferredHeight: trackSoloButton.height
               checked: root.track.recordingParam?.range.isToggled(root.track.recordingParam.baseValue) ?? false
+              height: root.buttonHeight
               padding: root.buttonPadding
-              styleHeight: root.buttonHeight
               visible: root.track.recordingParam !== null
 
               onClicked: {
@@ -687,9 +684,9 @@ Control {
             Button {
               checkable: true
               checked: root.track.lanes && root.track.lanes.lanesVisible
+              height: root.buttonHeight
               icon.source: ResourceManager.getIconUrl("gnome-icon-library", "list-compact-symbolic.svg")
               padding: root.buttonPadding
-              styleHeight: root.buttonHeight
               visible: root.track.lanes !== null
 
               onClicked: {
@@ -704,9 +701,9 @@ Control {
             Button {
               checkable: true
               checked: root.track.automationTracklist && root.track.automationTracklist.automationVisible
+              height: root.buttonHeight
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
               padding: root.buttonPadding
-              styleHeight: root.buttonHeight
               visible: root.track.automationTracklist !== null
 
               onClicked: {

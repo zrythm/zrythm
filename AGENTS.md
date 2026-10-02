@@ -108,6 +108,15 @@ cmake --build conanbuild/Debug --target all_qmllint
 cmake --build conanbuild/Debug --target zrythm_style_qmllint
 ```
 
+**Checking QML changes against CI:** the `all_qmllint` build target exits nonzero whenever it prints findings; the pass/fail gate is `tools/check_qmllint.py`, which filters known false positives and enforces warning/error thresholds that only go down. Run exactly what CI runs (`.gitlab-ci.yml` `check:qmllint` job):
+
+```bash
+(cmake --build conanbuild/Debug --config Debug --target all_qmllint 2>&1 || true) | tee /tmp/qmllint_output.txt
+python3 tools/check_qmllint.py /tmp/qmllint_output.txt   # exit 1 = over threshold
+```
+
+Judge your own changes by grepping the captured output for your file paths — the target's exit code and raw warning counts are not the gate (some findings are known false positives the script excludes). When a change fixes findings, lower the thresholds in `tools/check_qmllint.py`; raising them requires an explicit justification in the changeset.
+
 **Only run clang-format on C++ files** (`.cpp`/`.h`/`.hpp`). Never run it on QML, CMake, Python, or other non-C++ files — clang-format does not understand their syntax and mangles them beyond repair.
 
 QML module resolution for `qmllint`/`qmlls` is wired in the root `CMakeLists.txt`: the Qt CanvasPainter module ships without QML type info, so a supplemental module description lives under `src/gui/qml/typeinfo/CanvasPainter/` and is copied into the build's `qml/` import root, which is registered as an additional Qt package prefix. `.qmlls.ini` files are generated next to each QML module (gitignored) so the QML language server resolves project types from the build directory.

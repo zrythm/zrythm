@@ -5,7 +5,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls.Basic.impl
 import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
