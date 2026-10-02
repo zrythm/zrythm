@@ -122,6 +122,37 @@ TEST_F (DeleteLaneCommandTest, UndoRestoresLaneWithContents)
   EXPECT_EQ (lane_list.at (0), lane_1);
 }
 
+// Undo recreates the lanes removed after the deletion, so the lane
+// returns at its original position
+TEST_F (DeleteLaneCommandTest, UndoRestoresLaneAfterListShrankBelowItsIndex)
+{
+  structure::tracks::TrackLaneList lane_list{ registry_, nullptr };
+  lane_list.addLane ();
+  lane_list.addLane ();
+  auto * lane_2 = lane_list.addLane ();
+  lane_list.addLane ();
+
+  DeleteLaneCommand command (
+    lane_list,
+    structure::tracks::TrackLaneUuidReference (lane_2->get_uuid (), registry_));
+  command.redo ();
+  // Later commands removed the trailing lanes
+  lane_list.removeLane (2);
+  lane_list.removeLane (1);
+  ASSERT_EQ (lane_list.size (), 1);
+
+  command.undo ();
+  EXPECT_EQ (lane_2->owner_list (), &lane_list);
+  const auto lane_2_index = lane_list.indexOfLane (lane_2);
+  ASSERT_TRUE (lane_2_index.has_value ());
+  EXPECT_EQ (*lane_2_index, 2);
+  // The empty lane at index 1 was recreated, and the list keeps its
+  // trailing empty lane
+  EXPECT_TRUE (lane_list.at (1)->is_empty ());
+  EXPECT_TRUE (lane_list.at (3)->is_empty ());
+  EXPECT_EQ (lane_list.size (), 4);
+}
+
 // A list always ends with an empty lane: removing the last lane is
 // refused when the remaining last lane would have content
 TEST_F (DeleteLaneCommandTest, RefusesRemovingLastLaneWithoutEmptyPredecessor)
@@ -174,7 +205,6 @@ TEST_F (DeleteLaneCommandTest, ReinsertLaneValidates)
     structure::tracks::TrackLane::TrackLaneDependencies{
       .registry_ = registry_, .timebase_provider_ = nullptr });
 
-  EXPECT_THROW (lane_list.reinsert_lane (2, detached_ref), std::out_of_range);
   EXPECT_THROW (
     lane_list.reinsert_lane (
       0,

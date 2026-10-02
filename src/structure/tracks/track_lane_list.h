@@ -12,6 +12,8 @@
 
 namespace zrythm::structure::tracks
 {
+class Track;
+
 class TrackLaneList : public QAbstractListModel
 {
   Q_OBJECT
@@ -92,6 +94,12 @@ public:
   }
 
   /**
+   * @brief Returns the track owning this list, or null for lists not
+   * parented to a track.
+   */
+  [[nodiscard]] Track * track () const;
+
+  /**
    * @brief Returns the index of @p lane in the list, or std::nullopt if it
    * is not one of this list's lanes.
    */
@@ -129,9 +137,10 @@ public:
    * @brief Attaches an already-registered lane at @p index.
    *
    * Used to reattach a lane kept alive by a reference while it was
-   * detached from the list.
+   * detached from the list. Recreates the missing lanes when a trim
+   * removed lanes below @p index; the recreated lanes are fresh lanes
+   * with default settings.
    *
-   * @throw std::out_of_range if @p index is greater than the list size.
    * @throw std::invalid_argument if the lane is already in the list or
    * still attached to a list.
    */

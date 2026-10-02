@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include <optional>
 #include <stdexcept>
 #include <utility>
 
 #include "commands/arranger_object_owner_ref.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/tracks/lane_restoration.h"
 #include "structure/tracks/track_lane_list.h"
 
 #include <QUndoCommand>
@@ -46,6 +48,10 @@ public:
       {
         throw std::invalid_argument ("Source owner does not include the object");
       }
+    target_lane_restoration_ = structure::tracks::capture_lane_restoration (
+      target_owner_.typed_ref<structure::tracks::TrackLane> ());
+    source_lane_restoration_ = structure::tracks::capture_lane_restoration (
+      source_owner_.typed_ref<structure::tracks::TrackLane> ());
   }
 
   /**
@@ -71,6 +77,9 @@ public:
   // owners held as raw pointers), so they cannot return null
   void undo () override
   {
+    // Redo's trailing-lane trim may have detached the source lane: put
+    // it back before adding, so the object lands in a visible lane
+    structure::tracks::reattach_lane_if_detached (source_lane_restoration_);
     // move object back
     auto * source = source_owner_.resolve<ObjectT> ();
     auto * target = target_owner_.resolve<ObjectT> ();
@@ -81,6 +90,9 @@ public:
   }
   void redo () override
   {
+    // Undo's trailing-lane trim may have detached the target lane: put
+    // it back before adding, so the object lands in a visible lane
+    structure::tracks::reattach_lane_if_detached (target_lane_restoration_);
     // move object
     auto * source = source_owner_.resolve<ObjectT> ();
     auto * target = target_owner_.resolve<ObjectT> ();
@@ -94,6 +106,8 @@ private:
   structure::arrangement::ArrangerObjectUuidReference obj_ref_;
   ArrangerObjectOwnerRef                              target_owner_;
   ArrangerObjectOwnerRef                              source_owner_;
+  std::optional<structure::tracks::LaneRestoration>   target_lane_restoration_;
+  std::optional<structure::tracks::LaneRestoration>   source_lane_restoration_;
 };
 
 } // namespace zrythm::commands

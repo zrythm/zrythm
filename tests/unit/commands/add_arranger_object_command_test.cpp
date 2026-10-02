@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/add_arranger_object_command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "structure/tracks/track_factory.h"
+#include "structure/tracks/track_lane_list.h"
 #include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
@@ -240,6 +242,109 @@ TEST_F (AddArrangerObjectCommandTest, MultipleObjectsSameOwner)
   EXPECT_FALSE (mock_owner->contains (test_object_ref.id ()));
   EXPECT_FALSE (mock_owner->contains (second_note_ref.id ()));
   EXPECT_EQ (mock_owner->size (), 0);
+}
+
+// Redo reattaches the owning lane after undo trimmed it away, so the
+// object lands in a lane the track still shows
+TEST_F (AddArrangerObjectCommandTest, RedoReattachesTrimmedLane)
+{
+  structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter{ [] {
+    return false;
+  } };
+  structure::tracks::FinalTrackDependencies dependencies{
+    *tempo_map_wrapper, object_registry, soloed_tracks_exist_getter, {}
+  };
+  structure::tracks::TrackFactory track_factory{
+    [dependencies] () -> structure::tracks::FinalTrackDependencies {
+      return dependencies;
+    }
+  };
+  const auto track_ref =
+    track_factory.create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+
+  auto * lane_list = midi_track->lanes ();
+  EXPECT_EQ (lane_list->track (), midi_track);
+  lane_list->create_missing_lanes (1);
+  auto *     lane = lane_list->at (1);
+  const auto lane_index = lane_list->indexOfLane (lane).value ();
+  auto       clip_ref =
+    factory->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+  AddArrangerObjectCommand<structure::arrangement::MidiClip> command (
+    make_owner_ref (*lane, object_registry), clip_ref);
+
+  command.redo ();
+  EXPECT_EQ (lane->owner_list (), lane_list);
+
+  command.undo ();
+  // The emptied lane was trimmed from the list
+  EXPECT_EQ (lane->owner_list (), nullptr);
+  EXPECT_EQ (lane_list->size (), lane_index);
+
+  command.redo ();
+  // The lane is back at its position, with its clip and the trailing
+  // empty lane restored
+  EXPECT_EQ (lane_list->size (), lane_index + 2);
+  EXPECT_EQ (lane_list->at (lane_index), lane);
+  EXPECT_EQ (lane->owner_list (), lane_list);
+  EXPECT_EQ (
+    lane
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_children_vector ()
+      .size (),
+    1);
+}
+
+// Redo recreates the empty lanes a trim removed below the restored
+// lane's position, so the object lands in a visible lane
+TEST_F (AddArrangerObjectCommandTest, RedoRecreatesLanesTrimmedBelowRestoredLane)
+{
+  structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter{ [] {
+    return false;
+  } };
+  structure::tracks::FinalTrackDependencies dependencies{
+    *tempo_map_wrapper, object_registry, soloed_tracks_exist_getter, {}
+  };
+  structure::tracks::TrackFactory track_factory{
+    [dependencies] () -> structure::tracks::FinalTrackDependencies {
+      return dependencies;
+    }
+  };
+  const auto track_ref =
+    track_factory.create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+
+  auto * lane_list = midi_track->lanes ();
+  lane_list->create_missing_lanes (2);
+  auto * lane = lane_list->at (2);
+  auto   clip_ref =
+    factory->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+  AddArrangerObjectCommand<structure::arrangement::MidiClip> command (
+    make_owner_ref (*lane, object_registry), clip_ref);
+
+  command.redo ();
+  // The clip attach appended a trailing empty lane
+  ASSERT_EQ (lane_list->size (), 4);
+
+  command.undo ();
+  // The trim collapsed the list below the lane's position
+  ASSERT_EQ (lane_list->size (), 1);
+
+  command.redo ();
+  EXPECT_EQ (lane->owner_list (), lane_list);
+  const auto lane_index = lane_list->indexOfLane (lane);
+  ASSERT_TRUE (lane_index.has_value ());
+  EXPECT_EQ (*lane_index, 2);
+  // The empty lane at index 1 was recreated
+  EXPECT_TRUE (lane_list->at (1)->is_empty ());
+  EXPECT_EQ (
+    lane
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_children_vector ()
+      .size (),
+    1);
 }
 
 } // namespace zrythm::commands

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <optional>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -10,6 +11,7 @@
 #include "commands/arranger_object_owner_ref.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/tracks/lane_restoration.h"
 
 #include <QUndoCommand>
 
@@ -50,6 +52,8 @@ public:
         object_ref_ (std::move (object_ref))
   {
     object_owner_.resolve_or_throw<ObjectT> ();
+    lane_restoration_ = structure::tracks::capture_lane_restoration (
+      object_owner_.typed_ref<structure::tracks::TrackLane> ());
   }
 
   /**
@@ -72,6 +76,10 @@ public:
   // owners held as raw pointers), so these resolves cannot return null
   void undo () override
   {
+    // The trailing-lane trim of a command undone before this one may
+    // have detached the owner lane: put it back before adding, so the
+    // object lands in a visible lane
+    structure::tracks::reattach_lane_if_detached (lane_restoration_);
     object_owner_.resolve<ObjectT> ()->add_object (object_ref_);
   }
   void redo () override
@@ -84,6 +92,7 @@ public:
 private:
   ArrangerObjectOwnerRef                              object_owner_;
   structure::arrangement::ArrangerObjectUuidReference object_ref_;
+  std::optional<structure::tracks::LaneRestoration>   lane_restoration_;
 };
 
 } // namespace zrythm::commands

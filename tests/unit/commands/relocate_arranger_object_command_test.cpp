@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/relocate_arranger_object_command.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/automation_track.h"
+#include "structure/tracks/track_factory.h"
+#include "structure/tracks/track_lane_list.h"
 #include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
@@ -238,6 +240,101 @@ TEST_F (RelocateArrangerObjectCommandTest, MultipleMoveOperations)
   command1.undo ();
   EXPECT_EQ (source_at_->get_children_vector ().size (), 1);
   EXPECT_EQ (target_at_->get_children_vector ().size (), 0);
+}
+
+// Creates a MIDI track with four lanes
+class RelocateArrangerObjectLaneTest : public RelocateArrangerObjectCommandTest
+{
+protected:
+  void SetUp () override
+  {
+    RelocateArrangerObjectCommandTest::SetUp ();
+
+    structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter{ [] {
+      return false;
+    } };
+    structure::tracks::FinalTrackDependencies dependencies{
+      tempo_map_wrapper_, registry_, soloed_tracks_exist_getter, {}
+    };
+    structure::tracks::TrackFactory track_factory{
+      [dependencies] () -> structure::tracks::FinalTrackDependencies {
+        return dependencies;
+      }
+    };
+    track_ref_ =
+      track_factory.create_empty_track<structure::tracks::MidiTrack> ();
+    auto * midi_track =
+      track_ref_.get_object_as<structure::tracks::MidiTrack> ();
+
+    lane_list_ = midi_track->lanes ();
+    lane_list_->create_missing_lanes (3);
+    lane_1_ = lane_list_->at (1);
+    lane_3_ = lane_list_->at (3);
+  }
+
+  size_t clips_in_lane (structure::tracks::TrackLane * lane) const
+  {
+    return lane
+      ->structure::arrangement::ArrangerObjectOwner<
+        arrangement::MidiClip>::get_children_vector ()
+      .size ();
+  }
+
+  structure::tracks::TrackUuidReference track_ref_{ registry_ };
+  structure::tracks::TrackLaneList *    lane_list_ = nullptr;
+  structure::tracks::TrackLane *        lane_1_ = nullptr;
+  structure::tracks::TrackLane *        lane_3_ = nullptr;
+};
+
+// Redo reattaches the target lane after undo's trim removed it, so the
+// moved object lands in a visible lane
+TEST_F (RelocateArrangerObjectLaneTest, RedoReattachesTargetLaneTrimmedByUndo)
+{
+  auto clip_ref =
+    factory_->get_builder<arrangement::MidiClip> ().build_in_registry ();
+  lane_1_->structure::arrangement::ArrangerObjectOwner<
+    arrangement::MidiClip>::add_object (clip_ref);
+  RelocateArrangerObjectCommand<arrangement::MidiClip> command (
+    clip_ref, make_owner_ref (*lane_1_, registry_),
+    make_owner_ref (*lane_3_, registry_));
+
+  command.redo ();
+  command.undo ();
+  // Undo's trailing-lane trim removed the emptied target lane
+  EXPECT_EQ (lane_3_->owner_list (), nullptr);
+
+  command.redo ();
+  EXPECT_EQ (lane_3_->owner_list (), lane_list_);
+  const auto lane_3_index = lane_list_->indexOfLane (lane_3_);
+  ASSERT_TRUE (lane_3_index.has_value ());
+  EXPECT_EQ (*lane_3_index, 3);
+  EXPECT_EQ (clips_in_lane (lane_3_), 1);
+  EXPECT_EQ (clips_in_lane (lane_1_), 0);
+}
+
+// Undo reattaches the source lane after redo's trim removed it, so the
+// moved-back object lands in a visible lane
+TEST_F (RelocateArrangerObjectLaneTest, UndoReattachesSourceLaneTrimmedByRedo)
+{
+  auto clip_ref =
+    factory_->get_builder<arrangement::MidiClip> ().build_in_registry ();
+  lane_3_->structure::arrangement::ArrangerObjectOwner<
+    arrangement::MidiClip>::add_object (clip_ref);
+  RelocateArrangerObjectCommand<arrangement::MidiClip> command (
+    clip_ref, make_owner_ref (*lane_3_, registry_),
+    make_owner_ref (*lane_1_, registry_));
+
+  command.redo ();
+  // Redo's trailing-lane trim removed the emptied source lane
+  EXPECT_EQ (lane_3_->owner_list (), nullptr);
+
+  command.undo ();
+  EXPECT_EQ (lane_3_->owner_list (), lane_list_);
+  const auto lane_3_index = lane_list_->indexOfLane (lane_3_);
+  ASSERT_TRUE (lane_3_index.has_value ());
+  EXPECT_EQ (*lane_3_index, 3);
+  EXPECT_EQ (clips_in_lane (lane_3_), 1);
+  EXPECT_EQ (clips_in_lane (lane_1_), 0);
 }
 
 } // namespace zrythm::commands

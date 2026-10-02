@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 qt_add_library(zrythm_structure_tracks_lib STATIC)
@@ -56,6 +56,7 @@ target_sources(zrythm_structure_tracks_lib
       clip_playback_data_provider.h
       folder_track.h
       instrument_track.h
+      lane_restoration.h
       marker_track.h
       master_track.h
       midi_bus_track.h

@@ -1,9 +1,12 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "commands/add_arranger_object_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "structure/tracks/track_factory.h"
+#include "structure/tracks/track_lane_list.h"
 #include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
@@ -270,6 +273,67 @@ TEST_F (RemoveArrangerObjectCommandTest, RemoveNonExistentObjectThrows)
 
   // Redo should throw because the object doesn't exist in the owner
   EXPECT_THROW (command.redo (), std::runtime_error);
+}
+
+// Undo restores the object into its lane when a later command's undo
+// trimmed the lane away
+TEST_F (
+  RemoveArrangerObjectCommandTest,
+  UndoRestoresObjectWhenLaterUndoTrimmedItsLane)
+{
+  structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter{ [] {
+    return false;
+  } };
+  structure::tracks::FinalTrackDependencies dependencies{
+    *tempo_map_wrapper, object_registry, soloed_tracks_exist_getter, {}
+  };
+  structure::tracks::TrackFactory track_factory{
+    [dependencies] () -> structure::tracks::FinalTrackDependencies {
+      return dependencies;
+    }
+  };
+  const auto track_ref =
+    track_factory.create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+
+  auto * lane_list = midi_track->lanes ();
+  lane_list->create_missing_lanes (1);
+  auto * lane = lane_list->at (1);
+
+  auto first_clip_ref =
+    factory->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+  auto second_clip_ref =
+    factory->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+  AddArrangerObjectCommand<structure::arrangement::MidiClip> add_first (
+    make_owner_ref (*lane, object_registry), first_clip_ref);
+  RemoveArrangerObjectCommand<structure::arrangement::MidiClip> remove_first (
+    make_owner_ref (*lane, object_registry), first_clip_ref);
+  AddArrangerObjectCommand<structure::arrangement::MidiClip> add_second (
+    make_owner_ref (*lane, object_registry), second_clip_ref);
+
+  const auto clips_in_lane = [lane] {
+    return lane
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiClip>::get_children_vector ()
+      .size ();
+  };
+
+  add_first.redo ();
+  remove_first.redo ();
+  add_second.redo ();
+  EXPECT_EQ (clips_in_lane (), 1);
+
+  add_second.undo ();
+  EXPECT_EQ (lane->owner_list (), nullptr);
+
+  remove_first.undo ();
+  EXPECT_EQ (lane->owner_list (), lane_list);
+  const auto lane_index = lane_list->indexOfLane (lane);
+  ASSERT_TRUE (lane_index.has_value ());
+  EXPECT_EQ (*lane_index, 1);
+  EXPECT_EQ (clips_in_lane (), 1);
 }
 
 } // namespace zrythm::commands

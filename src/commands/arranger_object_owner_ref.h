@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <optional>
 #include <stdexcept>
 #include <typeinfo>
 #include <utility>
@@ -113,6 +114,21 @@ public:
           "owner handle does not resolve to the requested owner base");
       }
     return *owner;
+  }
+
+  /**
+   * @brief Returns the handle's registry identity as a reference to
+   * @p T, or no value when the owner is not registry-identified as
+   * @p T (e.g. an owner held as raw pointers).
+   */
+  template <typename T>
+  std::optional<utils::TypedUuidReference<T>> typed_ref () const
+  {
+    if (const auto * ref = std::get_if<utils::TypedUuidReference<T>> (&storage_))
+      {
+        return *ref;
+      }
+    return std::nullopt;
   }
 
 private:

@@ -6,8 +6,10 @@
 
 #include "utils/format_qt.h"
 
+#include "structure/tracks/lane_restoration.h"
 #include "structure/tracks/track_lane_list.h"
 #include "utils/exceptions.h"
+#include "utils/logger.h"
 #include "utils/registry_utils.h"
 #include "utils/views.h"
 
@@ -141,15 +143,28 @@ TrackLaneList::insertLane (size_t index)
   return lane;
 }
 
+Track *
+TrackLaneList::track () const
+{
+  auto * track = qobject_cast<Track *> (parent ());
+  if (track == nullptr && parent () != nullptr)
+    {
+      z_warning ("TrackLaneList is parented to an object that is not a Track");
+    }
+  return track;
+}
+
 void
 TrackLaneList::reinsert_lane (size_t index, TrackLaneUuidReference lane_ref)
 {
-  if (index > size ())
-    throw std::out_of_range ("index out of range");
   if (indexOfLane (lane_ref.get ()) != std::nullopt)
     throw std::invalid_argument ("lane is already in the list");
   if (lane_ref.get ()->owner_list () != nullptr)
     throw std::invalid_argument ("lane is still attached to a list");
+  // A trim may have removed the empty lanes below the restored lane's
+  // position: recreate them so the lane returns at its position
+  if (index > size ())
+    create_missing_lanes (index - 1);
 
   // the lane's owner pointer is set before the row insert so rowsInserted
   // handlers observe an attached lane
@@ -409,4 +424,71 @@ from_json (const nlohmann::json &j, TrackLaneList &p)
 }
 
 TrackLaneList::~TrackLaneList () = default;
+
+std::optional<LaneRestoration>
+capture_lane_restoration (const std::optional<TrackLaneUuidReference> &lane_ref)
+{
+  if (!lane_ref.has_value ())
+    {
+      return std::nullopt;
+    }
+  const auto * lane = lane_ref->get ();
+  if (lane == nullptr)
+    {
+      return std::nullopt;
+    }
+  const auto * list = lane->owner_list ();
+  if (list == nullptr)
+    {
+      return std::nullopt;
+    }
+  auto * track = list->track ();
+  if (track == nullptr)
+    {
+      return std::nullopt;
+    }
+  const auto lane_index = list->indexOfLane (lane);
+  if (!lane_index.has_value ())
+    {
+      return std::nullopt;
+    }
+  auto &registry = lane_ref->as_untyped ().get_registry ();
+  return LaneRestoration{
+    TrackUuidReference{ track->get_uuid (), registry },
+    *lane_ref, *lane_index
+  };
+}
+
+void
+reattach_lane_if_detached (const std::optional<LaneRestoration> &restoration)
+{
+  if (!restoration.has_value ())
+    {
+      return;
+    }
+  auto * track = restoration->track.get ();
+  auto * lane = restoration->lane.get ();
+  auto * lanes = track != nullptr ? track->lanes () : nullptr;
+  if (lane == nullptr || lanes == nullptr)
+    {
+      return;
+    }
+  if (const auto * attached_list = lane->owner_list (); attached_list != nullptr)
+    {
+      if (attached_list != lanes)
+        {
+          z_warning (
+            "Lane is attached to another lane list: not reattaching it to its track's list");
+        }
+      return;
+    }
+  try
+    {
+      lanes->reinsert_lane (restoration->index, restoration->lane);
+    }
+  catch (const std::exception &e)
+    {
+      z_error ("Failed to reattach lane: {}", e.what ());
+    }
+}
 }
