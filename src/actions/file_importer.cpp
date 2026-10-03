@@ -267,6 +267,11 @@ FileImporter::import_audio_file (
           audio_track, target_lane, path_to_qstring (filePath), startTicks)
         != nullptr)
         {
+          // show the lanes so clips beyond the first lane are visible
+          if (target_lane_index > 0)
+            {
+              audio_track->lanes ()->setLanesVisible (true);
+            }
           return 1;
         }
     }
@@ -346,6 +351,11 @@ FileImporter::import_midi_file (
               .arg (static_cast<int> (i) + 1)
               .arg (clip.error ().to_qstring ()));
           return i;
+        }
+      // show the lanes so clips beyond the first lane are visible
+      if (first_lane_index + i > 0)
+        {
+          lanes->setLanesVisible (true);
         }
     }
   return note_tracks->size ();

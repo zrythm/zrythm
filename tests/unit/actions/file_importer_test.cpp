@@ -280,6 +280,31 @@ protected:
   std::filesystem::path          audio_file_path_;
   std::filesystem::path          midi_file_path_;
   std::filesystem::path          unsupported_file_path_;
+
+  // Writes a 2-track and a 1-track MIDI file and returns their paths
+  std::pair<std::filesystem::path, std::filesystem::path>
+  write_lane_stacking_midi_files ()
+  {
+    const dsp::MidiFile::NoteTrack note{
+      .name = utils::Utf8String::from_utf8_encoded_string ("notes"),
+      .notes = { { .pitch = 60,
+                   .velocity = 100,
+                   .midi_channel = 0,
+                   .start_ticks = units::ticks (0.0),
+                   .end_ticks = units::ticks (960.0) } },
+    };
+    const std::array<const dsp::MidiFile::NoteTrack, 2> two_tracks{ note, note };
+    const std::array<const dsp::MidiFile::NoteTrack, 1> one_track{ note };
+    const auto two_tracks_path = temp_dir_path_ / "two_tracks.mid";
+    const auto one_track_path = temp_dir_path_ / "one_track.mid";
+    dsp::MidiFile::write_to_file (
+      two_tracks_path, dsp::MidiFile::Format::MIDI1, units::bpm (120.0),
+      dsp::TimeSignature{ 4, 4 }, two_tracks);
+    dsp::MidiFile::write_to_file (
+      one_track_path, dsp::MidiFile::Format::MIDI0, units::bpm (120.0),
+      dsp::TimeSignature{ 4, 4 }, one_track);
+    return { two_tracks_path, one_track_path };
+  }
 };
 
 // Test file type detection
@@ -971,25 +996,8 @@ TEST_F (FileImporterTest, ImportFilesToLaneStacksFilesInLanes)
     structure::tracks::Track::Type::Midi);
   auto * midi_track = track_result.value<structure::tracks::MidiTrack *> ();
 
-  const auto dir =
-    utils::Utf8String::from_qstring (temp_dir_->path ()).to_path ();
-  const dsp::MidiFile::NoteTrack note{
-    .notes = { { .pitch = 60,
-                 .velocity = 100,
-                 .midi_channel = 0,
-                 .start_ticks = units::ticks (0.0),
-                 .end_ticks = units::ticks (960.0) } },
-  };
-  const std::array<const dsp::MidiFile::NoteTrack, 2> two_tracks{ note, note };
-  const std::array<const dsp::MidiFile::NoteTrack, 1> one_track{ note };
-  const auto two_tracks_path = dir / "two_tracks.mid";
-  const auto one_track_path = dir / "one_track.mid";
-  dsp::MidiFile::write_to_file (
-    two_tracks_path, dsp::MidiFile::Format::MIDI1, units::bpm (120.0),
-    dsp::TimeSignature{ 4, 4 }, two_tracks);
-  dsp::MidiFile::write_to_file (
-    one_track_path, dsp::MidiFile::Format::MIDI0, units::bpm (120.0),
-    dsp::TimeSignature{ 4, 4 }, one_track);
+  const auto [two_tracks_path, one_track_path] =
+    write_lane_stacking_midi_files ();
 
   const auto  start_ticks = 100.0;
   QStringList files;
@@ -1010,6 +1018,66 @@ TEST_F (FileImporterTest, ImportFilesToLaneStacksFilesInLanes)
       EXPECT_DOUBLE_EQ ((*clips.begin ())->position ()->ticks (), start_ticks)
         << "lane " << lane_index;
     }
+}
+
+// Imports that land clips beyond the first lane show the track's lanes;
+// imports confined to the first lane leave them collapsed
+TEST_F (FileImporterTest, ImportShowsLanesWhenClipsLandBeyondFirstLane)
+{
+  const auto [two_tracks_path, one_track_path] =
+    write_lane_stacking_midi_files ();
+  const auto path_to_qstring = [] (const std::filesystem::path &path) {
+    return utils::Utf8String::from_path (path).to_qstring ();
+  };
+
+  // a multi-track MIDI file stacks clips in lanes 0 and 1
+  auto multi_track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto * multi_lane_track =
+    multi_track_result.value<structure::tracks::MidiTrack *> ();
+  EXPECT_FALSE (multi_lane_track->lanes ()->lanesVisible ());
+  QStringList two_files;
+  two_files.append (path_to_qstring (two_tracks_path));
+  file_importer_->importFilesToLane (
+    two_files, 0.0, multi_lane_track,
+    multi_lane_track->lanes ()->getFirstLane ());
+  EXPECT_TRUE (multi_lane_track->lanes ()->lanesVisible ());
+
+  // a single-track MIDI file into lane 1
+  auto lane_track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto * lane_track = lane_track_result.value<structure::tracks::MidiTrack *> ();
+  lane_track->lanes ()->create_missing_lanes (1);
+  QStringList one_file;
+  one_file.append (path_to_qstring (one_track_path));
+  file_importer_->importFilesToLane (
+    one_file, 0.0, lane_track, lane_track->lanes ()->at (1));
+  EXPECT_TRUE (lane_track->lanes ()->lanesVisible ());
+
+  // a single-track MIDI file into lane 0 leaves the lanes collapsed
+  auto single_track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Midi);
+  auto * single_lane_track =
+    single_track_result.value<structure::tracks::MidiTrack *> ();
+  file_importer_->importFilesToLane (
+    one_file, 0.0, single_lane_track,
+    single_lane_track->lanes ()->getFirstLane ());
+  EXPECT_FALSE (single_lane_track->lanes ()->lanesVisible ());
+
+  // consecutive audio files stack in lanes 0 and 1
+  auto audio_track_result = track_creator_->addEmptyTrackFromType (
+    structure::tracks::Track::Type::Audio);
+  auto * audio_track =
+    audio_track_result.value<structure::tracks::AudioTrack *> ();
+  EXPECT_FALSE (audio_track->lanes ()->lanesVisible ());
+  const auto second_wav_path = temp_dir_path_ / "test_audio_2.wav";
+  createMockWavFile (second_wav_path);
+  QStringList wavs;
+  wavs.append (path_to_qstring (audio_file_path_));
+  wavs.append (path_to_qstring (second_wav_path));
+  file_importer_->importFilesToLane (
+    wavs, 0.0, audio_track, audio_track->lanes ()->getFirstLane ());
+  EXPECT_TRUE (audio_track->lanes ()->lanesVisible ());
 }
 
 // An import into a lane beyond the first survives being undone and
