@@ -336,4 +336,52 @@ TEST_F (
   EXPECT_EQ (clips_in_lane (), 1);
 }
 
+// Removing a lane's last clip collapses the list back to a single
+// trailing empty lane; undoing restores the spare lane for the clip
+TEST_F (RemoveArrangerObjectCommandTest, RedoTrimsTrailingEmptyLane)
+{
+  structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter{ [] {
+    return false;
+  } };
+  structure::tracks::FinalTrackDependencies dependencies{
+    *tempo_map_wrapper, object_registry, soloed_tracks_exist_getter, {}
+  };
+  structure::tracks::TrackFactory track_factory{
+    [dependencies] () -> structure::tracks::FinalTrackDependencies {
+      return dependencies;
+    }
+  };
+  const auto track_ref =
+    track_factory.create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+
+  auto * lane_list = midi_track->lanes ();
+  lane_list->create_missing_lanes (1);
+  auto * lane = lane_list->at (1);
+
+  auto keep_clip_ref =
+    factory->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+  AddArrangerObjectCommand<structure::arrangement::MidiClip> add_keep_clip (
+    make_owner_ref (*lane_list->at (0), object_registry), keep_clip_ref);
+  add_keep_clip.redo ();
+
+  auto clip_ref =
+    factory->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+  AddArrangerObjectCommand<structure::arrangement::MidiClip> add_clip (
+    make_owner_ref (*lane, object_registry), clip_ref);
+  RemoveArrangerObjectCommand<structure::arrangement::MidiClip> remove_clip (
+    make_owner_ref (*lane, object_registry), clip_ref);
+
+  add_clip.redo ();
+  ASSERT_EQ (lane_list->size (), 3);
+
+  remove_clip.redo ();
+  EXPECT_EQ (lane_list->size (), 2);
+
+  remove_clip.undo ();
+  EXPECT_EQ (lane_list->size (), 3);
+}
+
 } // namespace zrythm::commands

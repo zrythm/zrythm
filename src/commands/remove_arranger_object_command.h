@@ -82,7 +82,10 @@ public:
   }
   void redo () override
   {
-    object_owner_.resolve<ObjectT> ()->remove_object (object_ref_.id ());
+    auto * owner = object_owner_.resolve<ObjectT> ();
+    owner->remove_object (object_ref_.id ());
+    // keeps a single trailing empty lane in the list the object left
+    structure::tracks::trim_trailing_empty_lanes_if_lane (owner);
   }
 
   int id () const override { return CommandId; }
