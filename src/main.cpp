@@ -23,6 +23,13 @@ main (int argc, char ** argv)
       qputenv ("QT_NO_GLIB", "1");
     }
 
+#if defined(Q_OS_LINUX)
+  // Use the XDG desktop portal for native file dialogs. This is the only
+  // theme plugin shipped with the bundled Qt; without a portal the
+  // dialog falls back to Qt's built-in one.
+  qputenv ("QT_QPA_PLATFORMTHEME", "xdgdesktopportal");
+#endif
+
   // handled before constructing the application: the checks verify data
   // the application constructor itself requires
   QCommandLineParser verify_parser;

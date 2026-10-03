@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import QtQml.Models
 import Zrythm
@@ -16,6 +17,7 @@ ColumnLayout {
   id: root
 
   required property PlaybackCacheActivityAggregator cacheActivityAggregator
+  required property FileDialog importFileDialog
   readonly property Project project: session.project
   readonly property int rulerHeight: 24
   required property ProjectSession session
@@ -65,6 +67,7 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.maximumHeight: root.rulerHeight
           Layout.minimumHeight: root.rulerHeight
+          importFileDialog: root.importFileDialog
           trackCreator: root.session.trackCreator
           tracklist: root.project.tracklist
         }

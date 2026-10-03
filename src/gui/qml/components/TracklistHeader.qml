@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick.Controls
+import QtQuick.Dialogs
 import ZrythmGui
 import Zrythm
 import ZrythmStyle
@@ -12,6 +13,7 @@ ZrythmToolBar {
   property alias clipLauncherVisible: clipLauncherVisibleButton.checked
   property alias tempoMapVisible: tempoMeterButton.checked
   property alias timelineVisible: timelineVisibleButton.checked
+  required property FileDialog importFileDialog
   required property TrackCreator trackCreator
   required property Tracklist tracklist
 
@@ -46,7 +48,9 @@ ZrythmToolBar {
         }
 
         MenuItem {
-          text: qsTr("Import File...")
+          text: qsTr("Import File…")
+
+          onTriggered: root.importFileDialog.open()
         }
 
         MenuSeparator {

@@ -4,6 +4,7 @@
 import "../config.js" as Config
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 import Zrythm
 import ZrythmStyle
 import Qt.labs.synchronizer
@@ -18,6 +19,7 @@ MenuBar {
   required property DeviceManager deviceManager
   required property Action duplicateAction
   required property ExportDialog exportDialog
+  required property FileDialog importFileDialog
   required property LoadController loadController
   required property Action pasteAction
   readonly property Project project: session.project
@@ -54,6 +56,12 @@ MenuBar {
 
     MenuItem {
       action: root.loadController.loadAction
+    }
+
+    Action {
+      text: qsTr("Import File…")
+
+      onTriggered: root.importFileDialog.open()
     }
 
     Action {

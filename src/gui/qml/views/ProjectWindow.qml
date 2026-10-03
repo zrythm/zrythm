@@ -110,6 +110,7 @@ ApplicationWindow {
     deviceManager: root.deviceManager
     duplicateAction: root.duplicateAction
     exportDialog: exportDialog
+    importFileDialog: importFileDialog
     loadController: loadController
     pasteAction: root.pasteAction
     saveController: saveController
@@ -269,6 +270,26 @@ ApplicationWindow {
     exportDirectory: root.session.projectDirectory + "/exports"
     notificationCenter: root.notificationCenter
     session: root.session
+  }
+
+  FileDialog {
+    id: importFileDialog
+
+    fileMode: FileDialog.OpenFiles
+    nameFilters: [
+      qsTr("Importable files (%1)").arg(
+        "*.mid *.midi *.smf *.wav *.aif *.aiff *.flac *.ogg *.mp3"),
+      qsTr("MIDI files (%1)").arg("*.mid *.midi *.smf"),
+      qsTr("Audio files (%1)").arg("*.wav *.aif *.aiff *.flac *.ogg *.mp3"),
+      qsTr("All files (%1)").arg("*")
+    ]
+    title: qsTr("Import Files")
+
+    onAccepted: {
+      const paths = Array.from(importFileDialog.selectedFiles).map(
+        url => QmlUtils.toPathString(url));
+      root.session.fileImporter.importFiles(paths, 0, null);
+    }
   }
 
   MessageDialog {
@@ -467,6 +488,7 @@ ApplicationWindow {
           SplitView.minimumHeight: 120
           SplitView.preferredHeight: 200
           cacheActivityAggregator: cacheActivityAggregator
+          importFileDialog: importFileDialog
           session: root.session
           trackSelectionModel: trackSelectionModel
         }
