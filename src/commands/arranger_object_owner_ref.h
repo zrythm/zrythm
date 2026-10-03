@@ -13,6 +13,7 @@
 #include "structure/arrangement/arranger_object_owner_variant.h"
 #include "structure/arrangement/tempo_object_manager.h"
 #include "structure/tracks/automation_track.h"
+#include "structure/tracks/lane_restoration.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_lane.h"
 #include "utils/logger.h"
@@ -224,6 +225,41 @@ to_owner_ref (
         structure::arrangement::ArrangerObjectOwnerPtrVariant{ owner });
     },
     std::move (owner_ptrs));
+}
+
+/**
+ * @brief Reattaches @p restoration's lane (when detached), then adds
+ * @p object_ref to the owner.
+ *
+ * A trailing-lane trim can detach the owning lane, and objects added
+ * to a detached lane are invisible and skip trailing-empty-lane
+ * maintenance.
+ *
+ * @param owner_ref handle to the owner @p object_ref is added to.
+ * @param object_ref reference to the object being added.
+ * @param restoration identifies the lane to reattach; no value when the
+ * owner is not a lane.
+ * @throw std::invalid_argument when @p restoration names a lane other
+ * than @p owner_ref's lane.
+ */
+template <structure::arrangement::FinalArrangerObjectSubclass ObjectT>
+void
+reattach_and_add (
+  const ArrangerObjectOwnerRef                              &owner_ref,
+  const structure::arrangement::ArrangerObjectUuidReference &object_ref,
+  const std::optional<structure::tracks::LaneRestoration>   &restoration)
+{
+  const auto owner_lane_id =
+    owner_ref.typed_ref<structure::tracks::TrackLane> ();
+  if (
+    restoration.has_value () && owner_lane_id.has_value ()
+    && owner_lane_id->id () != restoration->lane.id ())
+    {
+      throw std::invalid_argument (
+        "owner and lane restoration identify different lanes");
+    }
+  structure::tracks::reattach_lane_if_detached (restoration);
+  owner_ref.resolve_or_throw<ObjectT> ().add_object (object_ref);
 }
 
 } // namespace zrythm::commands

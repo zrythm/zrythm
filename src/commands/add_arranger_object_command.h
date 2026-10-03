@@ -85,10 +85,9 @@ public:
   }
   void redo () override
   {
-    // Undo's trailing-lane trim may have detached the owner lane: put
-    // it back before adding, so the object lands in a visible lane
-    structure::tracks::reattach_lane_if_detached (lane_restoration_);
-    object_owner_.resolve<ObjectT> ()->add_object (object_ref_);
+    // Undo's trailing-lane trim may have detached the owner lane: the
+    // helper puts it back before adding
+    reattach_and_add<ObjectT> (object_owner_, object_ref_, lane_restoration_);
   }
 
   int id () const override { return CommandId; }

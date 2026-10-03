@@ -77,27 +77,23 @@ public:
   // owners held as raw pointers), so they cannot return null
   void undo () override
   {
-    // Redo's trailing-lane trim may have detached the source lane: put
-    // it back before adding, so the object lands in a visible lane
-    structure::tracks::reattach_lane_if_detached (source_lane_restoration_);
-    // move object back
-    auto * source = source_owner_.resolve<ObjectT> ();
+    // Redo's trailing-lane trim may have detached the source lane: the
+    // helper puts it back before adding
     auto * target = target_owner_.resolve<ObjectT> ();
     auto   clip_ref = target->remove_object (obj_ref_.id ());
-    source->add_object (clip_ref);
+    reattach_and_add<ObjectT> (
+      source_owner_, clip_ref, source_lane_restoration_);
     // keeps a single trailing empty lane in the list the object left
     structure::tracks::trim_trailing_empty_lanes_if_lane (target);
   }
   void redo () override
   {
-    // Undo's trailing-lane trim may have detached the target lane: put
-    // it back before adding, so the object lands in a visible lane
-    structure::tracks::reattach_lane_if_detached (target_lane_restoration_);
-    // move object
+    // Undo's trailing-lane trim may have detached the target lane: the
+    // helper puts it back before adding
     auto * source = source_owner_.resolve<ObjectT> ();
-    auto * target = target_owner_.resolve<ObjectT> ();
     auto   clip_ref = source->remove_object (obj_ref_.id ());
-    target->add_object (clip_ref);
+    reattach_and_add<ObjectT> (
+      target_owner_, clip_ref, target_lane_restoration_);
     // keeps a single trailing empty lane in the list the object left
     structure::tracks::trim_trailing_empty_lanes_if_lane (source);
   }

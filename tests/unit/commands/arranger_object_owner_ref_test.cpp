@@ -9,6 +9,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/automation_track.h"
+#include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_lane.h"
 #include "structure/tracks/track_lane_list.h"
 #include "utils/app_settings.h"
@@ -277,6 +278,44 @@ TEST_F (ArrangerObjectOwnerRefTest, ToOwnerRefThrowsOnNullOwner)
       structure::arrangement::MidiClip> *> (nullptr)
   };
   EXPECT_THROW (to_owner_ref (owner_ptrs, registry_), std::invalid_argument);
+}
+
+// The helper rejects a restoration that names a lane other than the
+// owner's
+TEST_F (ArrangerObjectOwnerRefTest, ReattachAndAddRejectsMismatchedLane)
+{
+  structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter{ [] {
+    return false;
+  } };
+  structure::tracks::FinalTrackDependencies dependencies{
+    tempo_map_wrapper_, registry_, soloed_tracks_exist_getter, {}
+  };
+  structure::tracks::TrackFactory track_factory{
+    [dependencies] () -> structure::tracks::FinalTrackDependencies {
+      return dependencies;
+    }
+  };
+  const auto track_ref =
+    track_factory.create_empty_track<structure::tracks::MidiTrack> ();
+  auto * lane_list =
+    track_ref.get_object_as<structure::tracks::MidiTrack> ()->lanes ();
+  lane_list->create_missing_lanes (1);
+  auto * lane_1 = lane_list->at (0);
+  auto * lane_2 = lane_list->at (1);
+
+  auto clip_ref =
+    factory_->get_builder<structure::arrangement::MidiClip> ()
+      .build_in_registry ();
+
+  const auto lane_2_owner_ref = make_owner_ref (*lane_2, registry_);
+  const auto restoration = structure::tracks::capture_lane_restoration (
+    lane_2_owner_ref.typed_ref<structure::tracks::TrackLane> ());
+  ASSERT_TRUE (restoration.has_value ());
+
+  EXPECT_THROW (
+    reattach_and_add<structure::arrangement::MidiClip> (
+      make_owner_ref (*lane_1, registry_), clip_ref, restoration),
+    std::invalid_argument);
 }
 
 } // namespace zrythm::commands
