@@ -8,6 +8,50 @@ All notable changes to this project will be documented in this file.
 
 For changes prior to v2.0.0, see [CHANGELOG-old.v1.md](CHANGELOG-old.v1.md).
 
+## [v2.0.0-alpha.6] - 2026-10-04
+
+### Added
+- File import (#5197, #5325): MIDI files import as tracks with one
+  clip per MIDI track on its own lane and into clip launcher
+  slots, undoable as a single step; audio and MIDI files can be
+  dropped onto the timeline at the snapped position (multi-file
+  drops stack clips in consecutive lanes, drops below the
+  tracklist create one track per file) or imported through an
+  "Import File…" picker in the File menu and the tracklist header
+- The playhead and its glow turn red while recording, and the
+  record button and a status bar indicator blink while recording
+  is active
+- A --verify-installation command line option that checks the
+  installation layout and exits
+
+### Changed
+- The mixer strip and track headers regroup their state controls
+  at a compact size: solo, mute, record and listen sit together,
+  the mono, phase and monitor controls appear only when one of
+  them is active, and automation lane controls follow the same
+  sizing
+- Recording (record buttons, playhead) and destructive or failure
+  states (delete rubber band, cut tool, meter over-levels) use
+  separate record and error colors that meet contrast requirements
+  in both themes
+- File dialogs are native on GNU/Linux through the XDG desktop
+  portal and support multiple selection
+
+### Fixed
+- Undo and redo leaving clips invisible when their lane was
+  trimmed away after becoming empty: lanes are restored at their
+  position, and lanes emptied by clip removals collapse back to a
+  single trailing empty lane (#5325)
+- LV2 plugins leaking resources they schedule for release through
+  the worker extension when destroyed
+- LV2 plugins failing to scan in packaged macOS and Windows builds
+  because the LV2 spec files were missing from the app bundle and
+  installer; startup now verifies the installation and reports
+  fatal errors in a dialog
+
+### Removed
+- The legacy sample processor (unused)
+
 ## [v2.0.0-alpha.5] - 2026-09-30
 
 ### Added
