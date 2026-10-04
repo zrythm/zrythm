@@ -531,6 +531,9 @@ ApplicationWindow {
         },
         StatusBarText {
           text: qsTr("%1 tracks").arg(root.project.tracklist.collection.trackCount)
+        },
+        RecordingIndicator {
+          recording: root.project.transport.recordingActive
         }
       ]
       rightItems: [

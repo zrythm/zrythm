@@ -304,6 +304,7 @@ set(rel_qml_file_paths
   components/PluginSlotView.qml
   components/PluginWindowHeaderBar.qml
   components/RecordSplitButton.qml
+  components/RecordingIndicator.qml
   components/RightDock.qml
   components/Ruler.qml
   components/LoadController.qml

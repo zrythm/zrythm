@@ -401,8 +401,7 @@ Control {
       color: {
         let c;
         if (root.plugin && root.plugin.instantiationStatus === Plugin.Failed) {
-          // lighter error red for readable text
-          c = ZrythmTheme.darkMode ? "#FF6862" : ZrythmTheme.errorColor;
+          c = ZrythmTheme.errorTextColor;
         } else {
           c = palette.text;
         }

@@ -17,11 +17,37 @@ SplitButton {
   required property AppSettings appSettings
   required property Transport transport
 
+  // The record icon blinks while the transport records: one 1 s
+  // ease-in-out cycle between full and 25 % opacity. Only the
+  // content item is animated; the button's own opacity (the styled
+  // dimming) is untouched, and the content opacity is reset when the
+  // animation stops.
+  SequentialAnimation {
+    running: root.transport.recordingActive
+    loops: Animation.Infinite
+
+    NumberAnimation {
+      duration: 500
+      easing.type: Easing.InOutQuad
+      property: "opacity"
+      target: root.mainButton.contentItem
+      to: 0.25
+    }
+    NumberAnimation {
+      duration: 500
+      easing.type: Easing.InOutQuad
+      property: "opacity"
+      target: root.mainButton.contentItem
+      to: 1
+    }
+
+    onStopped: root.mainButton.contentItem.opacity = 1
+  }
+
   iconSource: ResourceManager.getIconUrl("zrythm-dark", "record.svg")
   mainButton.checkable: true
-  // lighter record red for readable text
   mainButton.palette.accent: ZrythmTheme.recordColor
-  mainButton.palette.buttonText: ZrythmTheme.darkMode ? "#FF5F9E" : ZrythmTheme.recordColor
+  mainButton.palette.buttonText: ZrythmTheme.recordTextColor
   menuTooltipText: qsTr("Record Options")
   tooltipText: qsTr("Record")
 

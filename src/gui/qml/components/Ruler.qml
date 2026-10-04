@@ -246,6 +246,7 @@ Item {
       PlayheadTriangle {
         id: playheadShape
 
+        color: root.transport.recordingActive ? ZrythmTheme.recordColor : palette.accent
         height: 8
         width: 12
         x: root.transport.playhead.ticks * root.pxPerTick - width / 2

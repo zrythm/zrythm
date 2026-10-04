@@ -720,9 +720,10 @@ A 2 px full-height accent line in the arranger; it switches to
 `recordColor` while the transport records. A same-color glow hugs the
 line — accent at rest, `recordColor` while recording — and a small cap
 at the ruler marks its
-position. While the transport records, the record indicators in the
-transport buttons blink: one 1 s ease-in-out cycle between full and
-25 % opacity and back, continuing under reduced motion.
+position. While the transport records, the record indicators blink —
+the transport record button's icon and the status bar's REC indicator
+(a record-red dot and "REC" text): one 1 s ease-in-out cycle between
+full and 25 % opacity and back, continuing under reduced motion.
 
 ## Do's and Don'ts
 

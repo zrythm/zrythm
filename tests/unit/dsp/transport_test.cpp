@@ -154,6 +154,65 @@ TEST_F (TransportTest, PlayStateChanges)
   EXPECT_TRUE (transport_->isPaused ());
 }
 
+// recordingActive only becomes true while record-enabled and rolling,
+// and each flip notifies exactly once
+TEST_F (TransportTest, RecordingActiveTracksRecordEnabledAndRolling)
+{
+  QSignalSpy spy (transport_.get (), &Transport::recordingActiveChanged);
+  EXPECT_FALSE (transport_->isRecordingActive ());
+
+  // Armed but paused: not recording yet
+  transport_->setRecordEnabled (true);
+  EXPECT_FALSE (transport_->isRecordingActive ());
+  EXPECT_EQ (spy.count (), 0);
+
+  // Rolling: recording
+  transport_->setPlayState (Transport::PlayState::Rolling);
+  EXPECT_TRUE (transport_->isRecordingActive ());
+  EXPECT_EQ (spy.count (), 1);
+
+  // Paused again: not recording
+  transport_->setPlayState (Transport::PlayState::Paused);
+  EXPECT_FALSE (transport_->isRecordingActive ());
+  EXPECT_EQ (spy.count (), 2);
+
+  // Rolling again while still armed
+  transport_->setPlayState (Transport::PlayState::Rolling);
+  EXPECT_TRUE (transport_->isRecordingActive ());
+  EXPECT_EQ (spy.count (), 3);
+
+  // Disarming mid-roll stops recording
+  transport_->setRecordEnabled (false);
+  EXPECT_FALSE (transport_->isRecordingActive ());
+  EXPECT_EQ (spy.count (), 4);
+}
+
+// After a roll request (e.g. with a count-in), recordingActive only
+// flips when the audio thread settles into rolling and the property
+// notification timer picks it up
+TEST_F (TransportTest, RecordingActiveSettlesFromAudioThreadFeedback)
+{
+  QSignalSpy spy (transport_.get (), &Transport::recordingActiveChanged);
+
+  transport_->setRecordEnabled (true);
+  transport_->requestRoll ();
+  // The display state is the request, not rolling yet
+  EXPECT_FALSE (transport_->isRecordingActive ());
+  EXPECT_EQ (spy.count (), 0);
+
+  // Simulate the audio thread latching the request and starting to
+  // roll (tests act as the audio thread, per the fixture note)
+  std::ignore = transport_->get_snapshot ();
+  transport_->set_play_state_rt_safe (Transport::PlayState::Rolling);
+
+  // The property notification timer picks the settle up (qWaitFor's
+  // deadline comes from QTest::defaultTryTimeout, 5 s)
+  EXPECT_TRUE (QTest::qWaitFor ([this] () {
+    return transport_->isRecordingActive ();
+  }));
+  EXPECT_EQ (spy.count (), 1);
+}
+
 // Test playhead movement
 TEST_F (TransportTest, PlayheadMovement)
 {

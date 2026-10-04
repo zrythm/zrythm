@@ -68,6 +68,9 @@ QtObject {
   readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
   readonly   property color electricPurple: "#A654F7"
   property color errorColor: darkMode ? "#FF4747" : "#A30015"
+
+  // the error hue at 4.5:1 as resting text
+  readonly property color errorTextColor: darkMode ? "#FF6862" : errorColor
   readonly property font fadedTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 11,
@@ -132,6 +135,9 @@ QtObject {
   property color primaryColor: zrythmColor
 
   property color recordColor: darkMode ? "#D90368" : "#9E004A"
+
+  // the record hue at 4.5:1 as resting text
+  readonly property color recordTextColor: darkMode ? "#FF5F9E" : recordColor
 
   readonly property PropertyAnimation propertyAnimation: PropertyAnimation {
     duration: root.animationDuration

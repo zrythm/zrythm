@@ -47,8 +47,10 @@ Transport::Transport (
     // settled state
     if (play_state_ != rt_feedback.state)
       {
+        const bool was_recording_active = isRecordingActive ();
         play_state_ = rt_feedback.state;
         Q_EMIT playStateChanged (play_state_);
+        notifyRecordingActiveIfChanged (was_recording_active);
       }
   });
   property_notification_timer_->start ();
@@ -166,9 +168,11 @@ Transport::setRecordEnabled (bool enabled)
       return;
     }
 
+  const bool was_recording_active = isRecordingActive ();
   recording_ = enabled;
   publish_rt_state ();
   Q_EMIT recordEnabledChanged (recording_);
+  notifyRecordingActiveIfChanged (was_recording_active);
 }
 
 void
@@ -199,8 +203,10 @@ Transport::request_play_state (PlayState state)
 
   if (play_state_ != state)
     {
+      const bool was_recording_active = isRecordingActive ();
       play_state_ = state;
       Q_EMIT playStateChanged (play_state_);
+      notifyRecordingActiveIfChanged (was_recording_active);
     }
 }
 
@@ -234,6 +240,15 @@ init_from (
   obj.punch_in_position_->setTicks (other.punch_in_position_->ticks ());
   obj.punch_out_position_->setTicks (other.punch_out_position_->ticks ());
   obj.publish_rt_state ();
+}
+
+void
+Transport::notifyRecordingActiveIfChanged (bool was_recording_active)
+{
+  if (isRecordingActive () != was_recording_active)
+    {
+      Q_EMIT recordingActiveChanged ();
+    }
 }
 
 void
@@ -329,7 +344,7 @@ Transport::add_to_playhead_in_audio_thread (
 bool
 Transport::can_user_move_playhead () const
 {
-  return !recording_ || play_state_ != PlayState::Rolling;
+  return !isRecordingActive ();
 }
 
 void

@@ -765,15 +765,40 @@ Item {
           z: 10
         }
 
-        // Playhead
+        // Playhead: accent at rest, recordColor while recording
         Rectangle {
           id: playhead
 
-          color: ZrythmTheme.recordColor
+          color: root.transport.recordingActive ? ZrythmTheme.recordColor : palette.accent
           height: parent.height
           width: 2
           x: root.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
           z: 1000
+        }
+
+        // Glow hugging the playhead line: 6 px falloff per side,
+        // peaking at 0.2 alpha next to the line
+        Rectangle {
+          gradient: Gradient {
+            orientation: Gradient.Horizontal
+
+            GradientStop {
+              color: Qt.alpha(playhead.color, 0)
+              position: 0
+            }
+            GradientStop {
+              color: Qt.alpha(playhead.color, 0.2)
+              position: 0.5
+            }
+            GradientStop {
+              color: Qt.alpha(playhead.color, 0)
+              position: 1
+            }
+          }
+          height: playhead.height
+          width: playhead.width + 12
+          x: playhead.x - 6
+          z: playhead.z - 1
         }
 
         // Selection rectangle

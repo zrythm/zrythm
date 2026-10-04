@@ -57,6 +57,8 @@ class Transport : public QObject
     bool recordEnabled READ recordEnabled WRITE setRecordEnabled NOTIFY
       recordEnabledChanged)
   Q_PROPERTY (
+    bool recordingActive READ isRecordingActive NOTIFY recordingActiveChanged)
+  Q_PROPERTY (
     bool punchEnabled READ punchEnabled WRITE setPunchEnabled NOTIFY
       punchEnabledChanged)
   Q_PROPERTY (
@@ -267,6 +269,16 @@ public:
   bool          recordEnabled () const { return recording_; }
   void          setRecordEnabled (bool enabled);
   Q_SIGNAL void recordEnabledChanged (bool enabled);
+
+  /**
+   * Whether the transport is currently recording (record enabled and
+   * rolling).
+   */
+  bool isRecordingActive () const
+  {
+    return recording_ && play_state_ == PlayState::Rolling;
+  }
+  Q_SIGNAL void recordingActiveChanged ();
 
   bool          punchEnabled () const { return punch_mode_; }
   void          setPunchEnabled (bool enabled);
@@ -554,6 +566,14 @@ private:
    * (eg, via the UI or via scripts).
    */
   bool can_user_move_playhead () const;
+
+  /**
+   * @brief Emits @ref recordingActiveChanged if the derived flag flipped.
+   *
+   * Must be called on the object's thread, after the underlying
+   * main-thread state changed.
+   */
+  void notifyRecordingActiveIfChanged (bool was_recording_active);
 
   /**
    * @brief State published from the main thread to the audio thread.

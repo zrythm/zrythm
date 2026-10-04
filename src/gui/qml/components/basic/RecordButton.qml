@@ -14,9 +14,7 @@ Button {
 
   palette {
     accent: ZrythmTheme.recordColor
-
-    // lighter record red for readable text
-    buttonText: ZrythmTheme.darkMode ? "#FF5F9E" : ZrythmTheme.recordColor
+    buttonText: ZrythmTheme.recordTextColor
   }
 
   ToolTip {
