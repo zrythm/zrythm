@@ -14,8 +14,7 @@ Control {
   id: root
 
   required property AudioEngine audioEngine
-  readonly property real buttonHeight: 18
-  readonly property real buttonPadding: 1
+  readonly property real buttonHeight: ZrythmTheme.compactControlHeight
   readonly property real contentBottomMargins: 3
   readonly property real contentTopMargins: 1
   required property int depth
@@ -406,17 +405,15 @@ Control {
                     Layout.fillHeight: false
                     Layout.fillWidth: false
 
-                    SoloButton {
-                      id: laneSoloButton
-
-                      height: root.buttonHeight
-                      padding: root.buttonPadding
+                    ChannelStateButton {
+                      checkedFill: ZrythmTheme.soloGreenColor
+                      text: "S"
                       visible: false // currently unimplemented
                     }
 
-                    MuteButton {
-                      height: root.buttonHeight
-                      padding: root.buttonPadding
+                    ChannelStateButton {
+                      checkedFill: palette.dark
+                      text: "M"
                       visible: false // currently unimplemented
                     }
                   }
@@ -606,42 +603,55 @@ Control {
 
             Layout.alignment: Qt.AlignRight | Qt.AlignBaseline | Qt.AlignTop
             Layout.fillWidth: false
-            layer.enabled: true
 
-            layer.effect: DropShadowEffect {
-            }
-
-            MuteButton {
+            ChannelStateButton {
               id: muteButton
 
+              Accessible.name: qsTr("Mute")
+              checkedFill: palette.dark
               checked: root.track.channel && root.track.channel.fader.mute.baseValue > 0.5
-              height: root.buttonHeight
-              padding: root.buttonPadding
+              text: "M"
               visible: root.track.channel !== null
 
               // External value syncs that flip checked re-enter these
               // handlers; the write-back is a no-op then (value unchanged),
               // which only holds for binary 0/1 toggles like these
               onCheckedChanged: root.track.channel?.fader.mute.setBaseValueByUser(checked ? 1.0 : 0.0)
+
+              ToolTip {
+                text: qsTr("Mute")
+              }
             }
 
-            SoloButton {
+            ChannelStateButton {
+              Accessible.name: qsTr("Solo")
+              checkedFill: ZrythmTheme.soloGreenColor
               checked: root.track.channel && root.track.channel.fader.solo.baseValue > 0.5
-              height: root.buttonHeight
-              padding: root.buttonPadding
+              text: "S"
               visible: root.track.channel !== null
 
               onCheckedChanged: root.track.channel?.fader.solo.setBaseValueByUser(checked ? 1.0 : 0.0)
+
+              ToolTip {
+                text: qsTr("Solo")
+              }
             }
 
-            RecordButton {
+            ChannelStateButton {
+              Accessible.name: qsTr("Record")
+              checkedFill: ZrythmTheme.recordColor
               checked: root.track.recordingParam?.range.isToggled(root.track.recordingParam.baseValue) ?? false
-              height: root.buttonHeight
-              padding: root.buttonPadding
+              glyphPixelSize: 10
+              restInk: ZrythmTheme.recordTextColor
+              text: "●"
               visible: root.track.recordingParam !== null
 
               onClicked: {
                 root.track.recordingParam.setBaseValueByUser(root.track.recordingParam.range.isToggled(root.track.recordingParam.baseValue) ? 0.0 : 1.0);
+              }
+
+              ToolTip {
+                text: qsTr("Record")
               }
             }
           }
@@ -676,17 +686,12 @@ Control {
 
             Layout.alignment: Qt.AlignRight | Qt.AlignBottom
             Layout.fillHeight: true
-            layer.enabled: true
 
-            layer.effect: DropShadowEffect {
-            }
-
-            Button {
-              checkable: true
+            ChannelStateButton {
+              Accessible.name: qsTr("Show lanes")
+              checkedFill: palette.dark
               checked: root.track.lanes && root.track.lanes.lanesVisible
-              height: root.buttonHeight
               icon.source: ResourceManager.getIconUrl("gnome-icon-library", "list-compact-symbolic.svg")
-              padding: root.buttonPadding
               visible: root.track.lanes !== null
 
               onClicked: {
@@ -698,12 +703,11 @@ Control {
               }
             }
 
-            Button {
-              checkable: true
+            ChannelStateButton {
+              Accessible.name: qsTr("Show automation")
+              checkedFill: palette.dark
               checked: root.track.automationTracklist && root.track.automationTracklist.automationVisible
-              height: root.buttonHeight
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
-              padding: root.buttonPadding
               visible: root.track.automationTracklist !== null
 
               onClicked: {

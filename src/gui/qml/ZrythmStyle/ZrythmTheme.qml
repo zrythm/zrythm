@@ -38,7 +38,22 @@ QtObject {
       "bold": true
     })
   readonly property color celestialBlueColor: "#009DFF"
+  // The two polarity inks a fill's text/glyph may take; the one passing
+  // contrast against the fill is chosen by polarityTextColor()
+  // (DESIGN.md "Buttons")
+  readonly property color lightInkColor: "#FFFFFF"
+  readonly property color darkInkColor: "#161616"
+  // 9 px bold letter glyphs for channel state buttons (DESIGN.md
+  // "Channel state buttons")
+  readonly property font channelStateTextFont: ({
+      "family": root.fontFamily,
+      "pixelSize": 9,
+      "bold": true
+    })
   readonly property color clipContentColor: Qt.rgba(colorPalette.highlightedText.r, colorPalette.highlightedText.g, colorPalette.highlightedText.b, 0.85)
+  // Height of dense inline controls (channel state chips and compact
+  // word-mode selectors); DESIGN.md "Channel state buttons"
+  readonly property real compactControlHeight: 18
   readonly property Palette colorPalette: Palette {
     accent: root.primaryColor
     alternateBase: root.alternateBackgroundColor
@@ -238,10 +253,34 @@ QtObject {
     return arg.hslLightness < 0.5;
   }
 
-  // The ink polarity that passes contrast against the given fill:
-  // #161616 on light fills, light ink on dark ones.
+  // WCAG 2.x relative luminance of a color
+  function luminance(arg: color): real {
+    return 0.2126 * linearChannel(arg.r) + 0.7152 * linearChannel(arg.g) + 0.0722 * linearChannel(arg.b);
+  }
+
+  // A color channel converted to its WCAG 2.x linear-light value
+  function linearChannel(v: real): real {
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  }
+
+  // WCAG 2.x contrast ratio between two colors (1 to 21)
+  function contrastRatio(a: color, b: color): real {
+    const la = luminance(a);
+    const lb = luminance(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  }
+
+  // The ink polarity that passes contrast against the given fill: white
+  // or #161616 — whichever reaches 4.5:1 against it, the higher ratio
+  // winning if neither does (DESIGN.md "Buttons")
   function polarityTextColor(fill: color): color {
-    return isColorDark(fill) ? (root.darkMode ? root.textColor : root.pageColor) : "#161616";
+    const whiteRatio = contrastRatio(root.lightInkColor, fill);
+    const blackRatio = contrastRatio(root.darkInkColor, fill);
+    if (whiteRatio >= 4.5 && whiteRatio >= blackRatio)
+      return root.lightInkColor;
+    if (blackRatio >= 4.5)
+      return root.darkInkColor;
+    return whiteRatio >= blackRatio ? root.lightInkColor : root.darkInkColor;
   }
 
   function toggleDarkMode(): void {

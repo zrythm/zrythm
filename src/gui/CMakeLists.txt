@@ -201,22 +201,20 @@ foreach(wav_filepath ${wav_filepaths})
 endforeach()
 
 set(rel_qml_file_paths
+  components/basic/ChannelStateButton.qml
   components/basic/DropAreaBase.qml
   components/basic/EditableLabel.qml
   components/basic/EditableValueDisplay.qml
   components/basic/ExpanderBox.qml
   components/basic/Knob.qml
   components/basic/LinkedButtons.qml
-  components/basic/MuteButton.qml
   components/basic/PlaceholderPage.qml
   components/basic/PresetBrowserPopup.qml
   components/basic/PresetListPopup.qml
   components/basic/PresetSelector.qml
-  components/basic/RecordButton.qml
   components/basic/ResizeHandle.qml
   components/basic/RotatedLabel.qml
   components/basic/ScrubbableValueSegment.qml
-  components/basic/SoloButton.qml
   components/basic/ZrythmFilePicker.qml
   components/basic/ZrythmPreferencesPage.qml
   components/basic/ZrythmResizablePanel.qml

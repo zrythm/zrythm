@@ -496,6 +496,7 @@ ScrollView {
             Layout.fillWidth: true
 
             FaderButtons {
+              Layout.fillWidth: false
               fader: root.track.channel.fader
               track: root.track
             }

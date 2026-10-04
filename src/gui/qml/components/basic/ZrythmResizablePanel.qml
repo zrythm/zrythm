@@ -45,7 +45,7 @@ Pane {
         Label {
           Layout.alignment: root.vertical ? Qt.AlignVCenter : Qt.AlignBottom
           Layout.fillWidth: true
-          color: "white"
+          color: ZrythmTheme.lightInkColor
           rotation: root.vertical ? 0 : -90
           text: root.title
         }

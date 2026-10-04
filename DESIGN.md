@@ -45,6 +45,10 @@ typography:
     fontFamily: Noto Sans
     fontSize: 12px
     fontWeight: 500
+  channel-state:
+    fontFamily: Noto Sans
+    fontSize: 9px
+    fontWeight: 700
   faded:
     fontFamily: Noto Sans
     fontSize: 11px
@@ -77,6 +81,7 @@ rounded:
 spacing:
   base: 4px
   control-height: 24px
+  compact-control-height: 18px
   dropdown-icon-size: 16px
   floating-surface-width: 360px
 components:
@@ -327,6 +332,7 @@ shown; `blend` means "button background blended toward contrast × 1.3"
 | `semiBoldTextFont` | 12 px | Medium (500) | Tabs, menu-bar labels, menu items, checkboxes, list rows |
 | `normalTextFont` | 12 px | Normal (400) | Labels, text fields, tooltips |
 | `trackNameTextFont` | 12 px | Medium (500) | Track headers in the arrangement view |
+| `channelStateTextFont` | 9 px | Bold | Channel state button glyphs (letters and the record dot) |
 | `fadedTextFont` | 11 px | Normal | Secondary/disabled text |
 | `arrangerObjectTextFont` | 11 px | Medium | Text inside arranger objects |
 | `arrangerObjectBoldTextFont` | 11 px | Bold | Emphasized arranger object text |
@@ -342,6 +348,7 @@ of it (4, 8, 12, 16, 24), and the standard control height is 24 px (6 units).
 | Token | Value | Purpose |
 |---|---|---|
 | `buttonHeight` | 24 px | Standard control height (buttons, combos, text fields, menu/list rows) |
+| `compactControlHeight` | 18 px | Dense inline controls: channel state chips, compact word-mode selectors (see [Channel state buttons](#channel-state-buttons)) |
 | `buttonPadding` | 4 px | Default control padding and spacing |
 | `animationDuration` / easing | 200 ms, `OutExpo` | Color/border transitions, popup enter |
 | `toolTipDelay` | 700 ms | Hover dwell before tooltip shows |
@@ -360,6 +367,9 @@ Depth comes from a single shadow level plus surface/border contrast:
 |---|---|---|
 | Flat | none | Panels, lists, fields, tabs, toolbar buttons at rest on the page |
 | Raised | 2 px offset (both axes), blur 0.6, black @ 70 % (`shadowColor`) | Buttons and popup surfaces (tooltips, menus, combo popups) |
+
+Channel state chips are the dense-inline exception: flat in every state
+(see [Channel state buttons](#channel-state-buttons)).
 
 ## Shapes
 
@@ -548,6 +558,37 @@ Flat 24 × 24 (radius 6) icon buttons with
 | Hovered / pressed | `buttonHoverBackgroundAppendColor` overlay (white @ 10 %) |
 | Keyboard focus | 2 px accent border |
 | Toggled (checked) | accent-colored icon and text (no fill) |
+
+### Channel state buttons
+
+Dense checkable chips for channel and signal states on track headers
+and mixer strips: 18 × 18, radius 4, a single bold 9 px glyph
+(`channelStateTextFont`) — letters for states (M, S, L, Ø), a 10 px `●`
+for record — always with a tooltip. Related chips group into pills
+(horizontal in track headers, vertical in mixer strips) whose shared
+corners are flattened, rounding only the pill's outer corners. These
+chips are flat — the dense-inline exception to button elevation.
+
+| Chip | Rest | Checked |
+|---|---|---|
+| Solo (S) | button fill | `soloGreenColor` + polarity ink |
+| Record (●) | button fill, glyph in `recordTextColor` (the record hue at 4.5:1) | `recordColor` + polarity ink |
+| Mute (M), Listen (L) | button fill | emphasized inversion (`textColor` fill + polarity ink) |
+| Mono, phase (Ø), monitor | ghost (below) | emphasized inversion |
+
+Ghost chips — the secondary pills (mono, phase, monitor) and standalone
+actions such as channel settings — are transparent at rest with
+`windowText` @ 62 % ink and the toolbar-button hover overlay. When any
+chip in a ghost pill is checked, the whole pill materializes: every chip
+takes the button fill and the checked chip shows its inversion fill.
+The monitor chip cycles Off → On → Auto on click; On and Auto render
+checked, and Auto additionally shows a 5 px accent dot in the top
+trailing corner.
+
+Compact word-mode selectors at the same density (e.g. the automation
+lane's On/Touch/Off group) share the chip geometry — 18 px tall, radius
+4, `channelStateTextFont`, flat linked pills — with the selected mode
+taking the accent, since they select a mode rather than latch a state.
 
 ### Menus and menu items
 

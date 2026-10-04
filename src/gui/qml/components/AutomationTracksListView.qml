@@ -41,8 +41,6 @@ ListView {
     ColumnLayout {
       id: automationColumnLayout
 
-      readonly property font buttonFont: ZrythmTheme.semiBoldTextFont
-
       spacing: 4
 
       anchors {
@@ -63,10 +61,9 @@ ListView {
           Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
           Layout.fillHeight: false
           Layout.fillWidth: true
-          Layout.preferredHeight: ZrythmTheme.buttonHeight
-          font: automationColumnLayout.buttonFont
+          Layout.preferredHeight: ZrythmTheme.compactControlHeight
+          font: ZrythmTheme.smallTextFont
           icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
-          padding: ZrythmTheme.buttonPadding
           text: automationTrackItem.automationTrackHolder.automationTrack.parameter.label
 
           Component.onCompleted: {
@@ -115,15 +112,13 @@ ListView {
           Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
           Layout.fillHeight: false
           Layout.fillWidth: false
-          layer.enabled: true
 
           Button {
             ButtonGroup.group: automationModeGroup
             checkable: true
             checked: automationTrackItem.automationTrack.automationMode === 0
-            font: automationColumnLayout.buttonFont
-            height: ZrythmTheme.buttonHeight
-            padding: ZrythmTheme.buttonPadding
+            font: ZrythmTheme.channelStateTextFont
+            Layout.preferredHeight: ZrythmTheme.compactControlHeight
             text: qsTr("On")
 
             onClicked: {
@@ -135,9 +130,8 @@ ListView {
             ButtonGroup.group: automationModeGroup
             checkable: true
             checked: automationTrackItem.automationTrack.automationMode === 1
-            font: automationColumnLayout.buttonFont
-            height: ZrythmTheme.buttonHeight
-            padding: ZrythmTheme.buttonPadding
+            font: ZrythmTheme.channelStateTextFont
+            Layout.preferredHeight: ZrythmTheme.compactControlHeight
             text: automationTrackItem.automationTrack.recordMode === 0 ? qsTr("Touch") : qsTr("Latch")
 
             onClicked: {
@@ -152,9 +146,8 @@ ListView {
             ButtonGroup.group: automationModeGroup
             checkable: true
             checked: automationTrackItem.automationTrack.automationMode === 2
-            font: automationColumnLayout.buttonFont
-            height: ZrythmTheme.buttonHeight
-            padding: ZrythmTheme.buttonPadding
+            font: ZrythmTheme.channelStateTextFont
+            Layout.preferredHeight: ZrythmTheme.compactControlHeight
             text: qsTr("Off")
 
             onClicked: {
@@ -174,13 +167,12 @@ ListView {
           Layout.alignment: Qt.AlignRight | Qt.AlignBaseline
           Layout.fillHeight: false
           Layout.fillWidth: false
-          layer.enabled: true
 
           Button {
             id: removeAutomationTrackButton
 
-            height: ZrythmTheme.buttonHeight
-            padding: ZrythmTheme.buttonPadding
+            Layout.preferredHeight: ZrythmTheme.compactControlHeight
+            padding: 3
 
             // icon.source: ResourceManager.getIconUrl("zrythm-dark", "remove.svg")
             text: "-"
@@ -196,15 +188,15 @@ ListView {
             font {
               bold: true
               family: ZrythmTheme.fontFamily
-              pixelSize: 14
+              pixelSize: 12
             }
           }
 
           Button {
             id: addAutomationTrackButton
 
-            height: ZrythmTheme.buttonHeight
-            padding: ZrythmTheme.buttonPadding
+            Layout.preferredHeight: ZrythmTheme.compactControlHeight
+            padding: 3
 
             // icon.source: ResourceManager.getIconUrl("zrythm-dark", "add.svg")
             text: "+"
@@ -220,7 +212,7 @@ ListView {
             font {
               bold: true
               family: ZrythmTheme.fontFamily
-              pixelSize: 14
+              pixelSize: 12
             }
           }
         }
