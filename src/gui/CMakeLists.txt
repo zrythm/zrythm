@@ -202,6 +202,7 @@ endforeach()
 
 set(rel_qml_file_paths
   components/basic/ChannelStateButton.qml
+  components/basic/DestructiveButton.qml
   components/basic/DropAreaBase.qml
   components/basic/EditableLabel.qml
   components/basic/EditableValueDisplay.qml
