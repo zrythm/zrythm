@@ -70,7 +70,7 @@ Rectangle {
 
     readonly property bool isOver: meterProcessor.peakAmplitude > 1
 
-    color: isOver ? ZrythmTheme.dangerColor : ZrythmTheme.backgroundAppendColor
+    color: isOver ? ZrythmTheme.errorColor : ZrythmTheme.backgroundAppendColor
     height: isOver ? 2 : 1.5
     opacity: isOver ? 1 : meterProcessor.peakAmplitude
     y: root.height - root.peakPx

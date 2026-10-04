@@ -111,7 +111,7 @@ Item {
   Rectangle {
     id: dropLine
 
-    color: feedback.accepted ? ZrythmTheme.successColor : ZrythmTheme.dangerColor
+    color: feedback.accepted ? ZrythmTheme.successColor : ZrythmTheme.errorColor
     height: parent.height
     visible: feedback.active
     width: 2
@@ -122,9 +122,9 @@ Item {
   Rectangle {
     id: ghostClip
 
-    border.color: feedback.accepted ? ZrythmTheme.successColor : ZrythmTheme.dangerColor
+    border.color: feedback.accepted ? ZrythmTheme.successColor : ZrythmTheme.errorColor
     border.width: 1
-    color: Qt.alpha(feedback.accepted ? ZrythmTheme.successColor : ZrythmTheme.dangerColor, 0.15)
+    color: Qt.alpha(feedback.accepted ? ZrythmTheme.successColor : ZrythmTheme.errorColor, 0.15)
     height: feedback.targetHeight
     radius: ZrythmTheme.buttonRadius
     visible: feedback.active && feedback.targetHeight > 0
@@ -139,7 +139,7 @@ Item {
       anchors.right: parent.right
       anchors.rightMargin: ZrythmTheme.buttonPadding
       anchors.verticalCenter: parent.verticalCenter
-      color: feedback.accepted ? ZrythmTheme.successColor : ZrythmTheme.dangerColor
+      color: feedback.accepted ? ZrythmTheme.successColor : ZrythmTheme.errorColor
       elide: Text.ElideRight
       font: ZrythmTheme.arrangerObjectTextFont
       text: feedback.fileName

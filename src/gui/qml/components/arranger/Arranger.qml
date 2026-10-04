@@ -769,7 +769,7 @@ Item {
         Rectangle {
           id: playhead
 
-          color: ZrythmTheme.dangerColor
+          color: ZrythmTheme.recordColor
           height: parent.height
           width: 2
           x: root.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
@@ -780,7 +780,7 @@ Item {
         Rectangle {
           id: selectionRectangle
 
-          readonly property color baseColor: scrollView.currentAction === Arranger.DeleteSelecting ? ZrythmTheme.dangerColor : ZrythmTheme.backgroundAppendColor
+          readonly property color baseColor: scrollView.currentAction === Arranger.DeleteSelecting ? ZrythmTheme.errorColor : ZrythmTheme.backgroundAppendColor
           readonly property real maxX: Math.max(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
           readonly property real maxY: Math.max(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
           readonly property real minX: Math.min(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
@@ -805,7 +805,7 @@ Item {
 
           readonly property point hoveredObjectPos: root.hoveredObject ? root.hoveredObject.mapToItem(arrangerContent, 0, 0) : Qt.point(0, 0)
 
-          color: ZrythmTheme.dangerColor
+          color: ZrythmTheme.errorColor
           height: root.hoveredObject ? root.hoveredObject.height : parent.height
           visible: root.tool.effectiveToolValue === ArrangerTool.Cut && (arrangerMouseArea.hovered || root.hoveredObject !== null)
           width: 2

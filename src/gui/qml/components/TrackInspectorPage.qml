@@ -543,10 +543,11 @@ ScrollView {
                 return txt_val + " db";
               }
 
+              // lighter error red for readable text
               Binding {
                 property: "color"
                 target: peakLabel
-                value: ZrythmTheme.dangerColor
+                value: ZrythmTheme.darkMode ? "#FF6862" : ZrythmTheme.errorColor
                 when: peakLabel.peak_in_dbfs > 0
               }
             }

@@ -62,7 +62,6 @@ QtObject {
     window: root.pageColor
     windowText: root.textColor
   }
-  readonly property color dangerColor: "#D90368"
   property bool darkMode: true
   readonly property var darkOnlyThemeColors: [zrythmColor, jonquilYellowColor, springGreen, munsellRed]
   readonly property real disabledOpacityFactor: 0.7
@@ -132,6 +131,8 @@ QtObject {
   property color placeholderTextColor: darkMode ? Qt.rgba(1, 1, 1, 0.5) : Qt.rgba(0, 0, 0, 0.5)
   property color primaryColor: zrythmColor
 
+  property color recordColor: darkMode ? "#D90368" : "#9E004A"
+
   readonly property PropertyAnimation propertyAnimation: PropertyAnimation {
     duration: root.animationDuration
     easing.type: root.animationEasingType
@@ -148,7 +149,7 @@ QtObject {
       "pixelSize": 10,
       "weight": Font.Normal
     })
-  readonly property color soloGreenColor: "#009B86"
+  property color soloGreenColor: darkMode ? "#009B86" : "#006456"
   readonly property color springGreen: "#40FFA0"
   readonly property color successColor: darkMode ? "#009B86" : "#006456"
   readonly property color superorangeColor: "#FF5500"
