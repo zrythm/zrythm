@@ -26,6 +26,7 @@ add_executable(zrythm_commands_unit_tests
   resize_arranger_objects_command_test.cpp
   route_track_command_test.cpp
   set_clip_loop_points_command_test.cpp
+  transform_arranger_objects_command_test.cpp
 )
 
 set_target_properties(zrythm_commands_unit_tests PROPERTIES

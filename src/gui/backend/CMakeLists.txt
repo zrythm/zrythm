@@ -56,6 +56,8 @@ target_sources(zrythm_gui_lib
     unified_proxy_model.cpp
     editor_arranger_objects_model.h
     editor_arranger_objects_model.cpp
+    editor_function_registry.h
+    editor_function_registry.cpp
     timeline_arranger_objects_model.h
     timeline_arranger_objects_model.cpp
     x11_plugin_host_window.h

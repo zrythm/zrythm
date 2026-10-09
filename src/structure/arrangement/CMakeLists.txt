@@ -27,6 +27,7 @@ target_sources(zrythm_arrangement_lib
     midi_control_event.cpp
     midi_note.cpp
     midi_clip.cpp
+    midi_function.cpp
     muteable_object.cpp
     named_object.cpp
     clip_renderer.cpp
@@ -53,12 +54,15 @@ target_sources(zrythm_arrangement_lib
       chord_clip.h
       clip.h
       colored_object.h
+      editor_function_kind.h
+      editor_function_param.h
       fadeable_object.h
       loop_segment_iterator.h
       marker.h
       midi_control_event.h
       midi_note.h
       midi_clip.h
+      midi_function.h
       muteable_object.h
       named_object.h
       clip_renderer.h
@@ -89,18 +93,3 @@ qt_add_qml_module(zrythm_arrangement_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmArrangement
 )
 set_target_properties(zrythm_arrangement_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-
-# TODO: port these too
-target_sources(zrythm_gui_lib
-  PRIVATE
-    audio_function.h
-    audio_function.cpp
-    automation_function.h
-    automation_function.cpp
-    midi_function.h
-    midi_function.cpp
-    # region_link_group.h
-    # region_link_group.cpp
-    # region_link_group_manager.h
-    # region_link_group_manager.cpp
-)

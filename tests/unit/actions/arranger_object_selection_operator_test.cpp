@@ -11,6 +11,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/arrangement/midi_function.h"
 #include "structure/project/project_registry.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_factory.h"
@@ -18,6 +19,7 @@
 #include "utils/audio.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+#include "utils/utf8_string.h"
 #include "utils/variant_helpers.h"
 
 #include <QSignalSpy>
@@ -32,6 +34,15 @@
 
 namespace zrythm::actions
 {
+
+using structure::arrangement::MidiFunction;
+
+/// The function id as the operator receives it from QML.
+QString
+function_id (std::string_view id)
+{
+  return utils::Utf8String::from_utf8_encoded_string (id).to_qstring ();
+}
 
 class ArrangerObjectSelectionOperatorTest : public ::testing::Test
 {
@@ -4045,4 +4056,186 @@ TEST_F (
     registry_.count_matching<structure::arrangement::ScaleObject> (), 1u);
 }
 
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionCrescendo)
+{
+  auto crescendo_note_ref1 = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  auto crescendo_note_ref2 = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  auto crescendo_note_ref3 = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  for (
+    const auto &crescendo_note_ref :
+    { crescendo_note_ref1, crescendo_note_ref2, crescendo_note_ref3 })
+    {
+      crescendo_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+      test_objects_.get<structure::arrangement::random_access_index> ()
+        .push_back (crescendo_note_ref);
+    }
+  crescendo_note_ref1.get ()->position ()->setTicks (1000.0);
+  crescendo_note_ref2.get ()->position ()->setTicks (2000.0);
+  crescendo_note_ref3.get ()->position ()->setTicks (3000.0);
+
+  select_object (crescendo_note_ref1);
+  select_object (crescendo_note_ref2);
+  select_object (crescendo_note_ref3);
+
+  const auto note_velocity = [] (const auto &ref) {
+    return ref.template get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity ();
+  };
+
+  const bool result = operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Crescendo::kId),
+    QVariantMap{
+      { "startVelocity",  40                                      },
+      { "endVelocity",    100                                     },
+      { "curveAlgorithm",
+       ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Exponent) },
+      { "curviness",      0.0                                     }
+  });
+  EXPECT_TRUE (result);
+
+  EXPECT_EQ (note_velocity (crescendo_note_ref1), 40);
+  EXPECT_EQ (note_velocity (crescendo_note_ref2), 70);
+  EXPECT_EQ (note_velocity (crescendo_note_ref3), 100);
+
+  // A single undo step for the whole function
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (note_velocity (crescendo_note_ref1), 64);
+  EXPECT_EQ (note_velocity (crescendo_note_ref2), 64);
+  EXPECT_EQ (note_velocity (crescendo_note_ref3), 64);
+  undo_stack_->redo ();
+  EXPECT_EQ (note_velocity (crescendo_note_ref2), 70);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionFlamAddsGraceNote)
+{
+  auto flam_note_ref = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  flam_note_ref.get ()->position ()->setTicks (1920.0);
+  flam_note_ref.get ()->length ()->setTicks (960.0);
+  flam_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+    ->setVelocity (60);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    flam_note_ref);
+  select_object (flam_note_ref);
+
+  const auto * mock_midi_note_owner =
+    static_cast<const structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote> *> (mock_owner_.get ());
+  const auto children_before =
+    mock_midi_note_owner->get_children_view ().size ();
+
+  const bool result = operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Flam::kId),
+    QVariantMap{
+      { "time",     10.0 },
+      { "velocity", 80   }
+  });
+  EXPECT_TRUE (result);
+
+  // The original note is truncated and the grace note is owned alongside it
+  auto * flam_note =
+    flam_note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  EXPECT_NEAR (flam_note->length ()->ticks (), 19.2, 1e-6);
+  ASSERT_EQ (
+    mock_midi_note_owner->get_children_view ().size (), children_before + 1);
+
+  undo_stack_->undo ();
+  EXPECT_DOUBLE_EQ (flam_note->length ()->ticks (), 960.0);
+  EXPECT_EQ (
+    mock_midi_note_owner->get_children_view ().size (), children_before);
+  undo_stack_->redo ();
+  EXPECT_NEAR (flam_note->length ()->ticks (), 19.2, 1e-6);
+  EXPECT_EQ (
+    mock_midi_note_owner->get_children_view ().size (), children_before + 1);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionNoSelection)
+{
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Crescendo::kId),
+    QVariantMap{
+      { "curveAlgorithm", 999 }
+  }));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionVelocityOutOfRange)
+{
+  auto velocity_note_ref = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    velocity_note_ref);
+  select_object (velocity_note_ref);
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Crescendo::kId),
+    QVariantMap{
+      { "startVelocity", 999 }
+  }));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionUnknownFunctionId)
+{
+  auto invalid_note_ref = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    invalid_note_ref);
+  select_object (invalid_note_ref);
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyMidiFunction (
+    selection_model_.get (), "no-such-function", {}));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyMidiFunctionInvalidCurveAlgorithm)
+{
+  auto algorithm_note_ref = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    algorithm_note_ref);
+  select_object (algorithm_note_ref);
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Crescendo::kId),
+    QVariantMap{
+      { "curveAlgorithm", 999 }
+  }));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionNoOpPushesNothing)
+{
+  auto noop_note_ref = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  noop_note_ref.get ()->length ()->setTicks (48.0);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    noop_note_ref);
+  select_object (noop_note_ref);
+
+  // Staccato targets a length of 48 ticks, which the note already has
+  EXPECT_TRUE (operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Staccato::kId), {}));
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
 } // namespace zrythm::actions

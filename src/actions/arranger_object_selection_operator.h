@@ -146,6 +146,29 @@ public:
     QItemSelectionModel * selectionModel,
     double                delta);
 
+  /**
+   * @brief Applies a transformative function to the selected MIDI notes,
+   * in a single undo step.
+   *
+   * Non-note objects in the selection are skipped. Functions that add
+   * notes (Flam) push one add command per new note inside the same undo
+   * macro, with each new note cloned from its source note and given the
+   * computed grace-note state. When the function would change nothing, no
+   * command is pushed.
+   *
+   * @param selectionModel The editor's selection.
+   * @param function_id The id of the structure::arrangement::MidiFunction
+   * kind to apply.
+   * @param options Parameter values by key, as declared by the kind;
+   * values outside the declared ranges are refused.
+   * @return false if no MIDI notes are selected, @p function_id is not a
+   * known function or @p options holds an invalid value.
+   */
+  Q_INVOKABLE bool applyMidiFunction (
+    QItemSelectionModel * selectionModel,
+    const QString        &function_id,
+    const QVariantMap    &options);
+
   Q_INVOKABLE bool resizeObjects (
     QItemSelectionModel *     selectionModel,
     commands::ResizeType      type,

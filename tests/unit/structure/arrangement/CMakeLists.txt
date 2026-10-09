@@ -22,6 +22,7 @@ add_executable(zrythm_structure_arrangement_unit_tests
   midi_control_event_test.cpp
   midi_note_test.cpp
   midi_clip_test.cpp
+  midi_function_test.cpp
   clip_renderer_test.cpp
   muteable_object_test.cpp
   named_object_test.cpp

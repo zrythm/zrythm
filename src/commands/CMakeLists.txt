@@ -15,6 +15,7 @@ target_sources(zrythm_commands_lib
     remove_plugins_command.cpp
     resize_arranger_objects_command.cpp
     set_clip_loop_points_command.cpp
+    transform_arranger_objects_command.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
@@ -44,6 +45,7 @@ target_sources(zrythm_commands_lib
       rename_track_command.h
       set_clip_loop_points_command.h
       set_folder_parent_command.h
+      transform_arranger_objects_command.h
 )
 
 set_target_properties(zrythm_commands_lib PROPERTIES

@@ -138,6 +138,8 @@ class AppSettings : public QObject
   DEFINE_SETTING_PROPERTY (int, lastAudioFunction, -1)
   DEFINE_SETTING_PROPERTY (double, lastAudioFunctionPitchShiftRatio, 1.0)
   DEFINE_SETTING_PROPERTY (int, lastMidiFunction, -1)
+  // JSON object of last-used parameter values per editor function id
+  DEFINE_SETTING_PROPERTY (QString, editorFunctionLastParams, u"{}"_s)
   DEFINE_SETTING_PROPERTY (QString, fileBrowserInstrument, {})
   DEFINE_SETTING_PROPERTY (QString, pluginBrowserSearchText, {})
   DEFINE_SETTING_PROPERTY (QStringList, pluginBrowserSpecTypes, QStringList ())

@@ -12,10 +12,12 @@
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "commands/resize_arranger_objects_command.h"
+#include "commands/transform_arranger_objects_command.h"
 #include "dsp/timebase.h"
 #include "dsp/timestretch_engine.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/audio_clip.h"
+#include "structure/arrangement/midi_function.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/exceptions.h"
@@ -337,6 +339,141 @@ ArrangerObjectSelectionOperator::rampVelocities (
       undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
         *note, object_factory_.registry (), QStringLiteral ("velocity"),
         new_velocity));
+    }
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::applyMidiFunction (
+  QItemSelectionModel * selectionModel,
+  const QString        &function_id,
+  const QVariantMap    &options)
+{
+  using structure::arrangement::MidiFunction;
+  using structure::arrangement::MidiNote;
+
+  const auto kind = MidiFunction::kind_from_id (
+    utils::Utf8String::from_qstring (function_id).view ());
+  if (!kind)
+    {
+      refuse_operation (QObject::tr ("Unknown function %1").arg (function_id));
+      return false;
+    }
+
+  std::vector<structure::arrangement::ArrangerObjectUuidReference> objects;
+  std::vector<MidiNote *>                                          notes;
+  for (const auto &obj_ref : extractSelectedObjects (selectionModel))
+    {
+      if (
+        auto * note = obj_ref.template get_object_as<MidiNote> ();
+        note != nullptr)
+        {
+          objects.push_back (obj_ref);
+          notes.push_back (note);
+        }
+    }
+  if (notes.empty ())
+    {
+      refuse_operation (QObject::tr ("No MIDI notes selected"));
+      return false;
+    }
+
+  // Fill the kind's parameters from the options, refusing unknown keys
+  // and values outside the declared ranges
+  const auto result = std::visit (
+    [&] (const auto &kind_instance) -> std::optional<MidiFunction::Result> {
+      using K = std::decay_t<decltype (kind_instance)>;
+      auto       params = kind_instance;
+      const auto applied =
+        structure::arrangement::apply_options (options, params, K::params ());
+      if (!applied)
+        {
+          refuse_operation (applied.error ().to_qstring ());
+          return std::nullopt;
+        }
+      return K::compute (notes, params);
+    },
+    *kind);
+  if (!result)
+    return false;
+
+  const auto to_command_state = [] (const MidiFunction::NoteState &state) {
+    commands::TransformableObjectState command_state;
+    command_state.position_ticks_ = state.position_ticks_;
+    command_state.length_ticks_ = state.length_ticks_;
+    command_state.pitch_ = state.pitch_;
+    command_state.velocity_ = state.velocity_;
+    return command_state;
+  };
+  const auto current_state = [] (const MidiNote &note) {
+    commands::TransformableObjectState state;
+    state.position_ticks_ = note.position ()->asTick ();
+    state.length_ticks_ = note.length ()->asTick ();
+    state.pitch_ = note.pitch ();
+    state.velocity_ = note.velocity ();
+    return state;
+  };
+
+  // Skip notes the function leaves unchanged, so that no-op functions push
+  // nothing
+  std::vector<structure::arrangement::ArrangerObjectUuidReference>
+                                                  changed_objects;
+  std::vector<commands::TransformableObjectState> changed_states;
+  for (
+    const auto &[obj_ref, note, state] :
+    std::views::zip (objects, notes, result->new_states_))
+    {
+      const auto after = to_command_state (state);
+      if (after == current_state (*note))
+        continue;
+      changed_objects.push_back (obj_ref);
+      changed_states.push_back (after);
+    }
+  if (changed_objects.empty () && result->added_notes_.empty ())
+    {
+      return true;
+    }
+
+  const QString text =
+    QObject::tr ("Apply %1")
+      .arg (MidiFunction::label (*kind, true).to_qstring ());
+
+  // Construct all commands before pushing any: a failing clone refuses the
+  // whole operation instead of leaving a half-applied macro
+  std::vector<std::unique_ptr<QUndoCommand>> add_commands;
+  for (const auto &added : result->added_notes_)
+    {
+      auto clone = clone_and_attach (
+        utils::convert_to_variant_qobj<
+          structure::arrangement::ArrangerObjectPtrVariant> (
+          objects[added.source_index_].get ()),
+        [&state = added.state_] (structure::arrangement::ArrangerObject &object) {
+          auto * note =
+            qobject_cast<structure::arrangement::MidiNote *> (&object);
+          note->setPitch (state.pitch_);
+          note->setVelocity (state.velocity_);
+          note->position ()->set_ticks (state.position_ticks_);
+          note->length ()->set_ticks (state.length_ticks_);
+        });
+      if (!clone)
+        {
+          refuse_operation (
+            QObject::tr ("Cannot add the notes the function requires"));
+          return false;
+        }
+      add_commands.push_back (std::move (clone->command));
+    }
+
+  undo::UndoStack::ScopedMacro macro (undo_stack_, text);
+  if (!changed_objects.empty ())
+    {
+      undo_stack_.push (new commands::TransformArrangerObjectsCommand (
+        std::move (changed_objects), std::move (changed_states), text));
+    }
+  for (auto &command : add_commands)
+    {
+      undo_stack_.push (command.release ());
     }
 
   return true;

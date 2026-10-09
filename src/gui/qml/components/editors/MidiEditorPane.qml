@@ -165,6 +165,9 @@ GridLayout {
     }
   }
 
+  // Selection of the pane's arrangers, exposed for toolbar function menus.
+  readonly property alias selectionModel: arrangerSelectionModel
+
   // Shared between MidiArranger and VelocityArranger so velocity bars react
   // to note drags (and vice versa) in real time.
   ArrangerDragState {
@@ -175,11 +178,11 @@ GridLayout {
     id: arrangerSelectionModel
 
     function getObjectFromUnifiedIndex(unifiedIndex: var): ArrangerObject {
-      const sourceIndex = unifiedObjectsModel.mapToSource(unifiedIndex);
+      const sourceIndex = root.unifiedObjectsModel.mapToSource(unifiedIndex);
       return sourceIndex.data(ArrangerObjectListModel.ArrangerObjectPtrRole);
     }
 
-    model: unifiedObjectsModel
+    model: root.unifiedObjectsModel
   }
 
   MidiArranger {

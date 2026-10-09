@@ -259,6 +259,8 @@ set(rel_qml_file_paths
   components/arranger/ChordArranger.qml
   components/dialogs/ProgressDialog.qml
   components/dialogs/ProgressDialogWithFuture.qml
+  components/dialogs/FunctionDialog.qml
+  components/dialogs/FunctionParameterControl.qml
   components/editors/AudioEditorPane.qml
   components/editors/AutomationEditorPane.qml
   components/editors/ClipEditorGrid.qml
