@@ -26,33 +26,26 @@ RowLayout {
   signal valueEdited(var value)
 
   readonly property var _initial: root.initialValue !== undefined ? root.initialValue : root.parameter.defaultValue
+  readonly property bool _isInteger: root.parameter.type === EditorFunctionParameter.Integer
 
   Label {
     text: root.parameter.label
   }
 
-  SpinBox {
-    id: integerSpinBox
+  EditableSlider {
+    id: numericSlider
 
-    visible: root.parameter.type === EditorFunctionParameter.Integer
-    from: Math.round(root.parameter.minimum)
-    to: Math.round(root.parameter.maximum)
-    value: Math.round(root._initial)
-
-    onValueModified: root.valueEdited(value)
-  }
-
-  DoubleSpinBox {
-    id: doubleSpinBox
-
-    visible: root.parameter.type === EditorFunctionParameter.Double
-    decimals: 2
+    visible: root._isInteger || root.parameter.type === EditorFunctionParameter.Double
+    Layout.fillWidth: true
+    decimals: root._isInteger || root.parameter.step >= 1 ? 0 : 2
     from: root.parameter.minimum
-    stepSize: root.parameter.maximum > root.parameter.minimum ? (root.parameter.maximum - root.parameter.minimum) / 100.0 : 0.1
     to: root.parameter.maximum
+    stepSize: root.parameter.step
     value: root._initial
 
-    onValueModified: root.valueEdited(value)
+    onValueEdited: function(value) {
+      root.valueEdited(value);
+    }
   }
 
   CheckBox {
@@ -71,7 +64,7 @@ RowLayout {
     model: root.parameter.choices
     textRole: "display"
     valueRole: "value"
-    currentIndex: indexOfValue(root._initial)
+    currentIndex: count > 0 ? indexOfValue(root._initial) : -1
 
     onActivated: function(index) {
       root.valueEdited(currentValue);

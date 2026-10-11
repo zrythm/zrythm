@@ -62,7 +62,7 @@ definitions_for_family (EditorFunctionRegistry &registry, Family family)
               param.id.to_qstring (), param.label.to_qstring (),
               parameter_type_from (param.spec.kind), param.spec.minimum,
               param.spec.maximum, value_as_variant (param.spec.default_value),
-              param.spec.choices));
+              param.spec.choices, param.spec.step));
           }
         auto * definition = new EditorFunctionDefinition (
           utils::Utf8String::from_utf8_encoded_string (K::kId).to_qstring (),
@@ -86,11 +86,20 @@ EditorFunctionParameter::EditorFunctionParameter (
   double        maximum,
   QVariant      default_value,
   QVariantList  choices,
+  double        step,
   QObject *     parent)
     : QObject (parent), key_ (std::move (key)), label_ (std::move (label)),
       type_ (type), minimum_ (minimum), maximum_ (maximum),
       choices_ (std::move (choices)), default_value_ (std::move (default_value))
 {
+  // A declared step of 0 derives the increment: whole units for Integer
+  // parameters, a hundredth of the range otherwise
+  step_ =
+    step > 0
+      ? step
+      : (type_ == ParameterType::Integer
+           ? 1
+           : (maximum_ > minimum_ ? (maximum_ - minimum_) / 100.0 : 0.1));
 }
 
 EditorFunctionDefinition::EditorFunctionDefinition (
@@ -122,11 +131,11 @@ EditorFunctionRegistry::EditorFunctionRegistry (QObject * parent)
   const auto make_parameter =
     [] (
       const char * key, const QString &label,
-      EditorFunctionParameter::ParameterType type, double minimum,
-      double maximum, QVariant default_value, QVariantList choices = {}) {
+      EditorFunctionParameter::ParameterType type, double minimum, double maximum,
+      QVariant default_value, QVariantList choices = {}, double step = 0) {
       return new EditorFunctionParameter (
         QString::fromUtf8 (key), label, type, minimum, maximum,
-        std::move (default_value), std::move (choices));
+        std::move (default_value), std::move (choices), step);
     };
   const auto make_definition =
     [this] (

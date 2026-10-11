@@ -15,10 +15,10 @@ namespace zrythm::gui
 /**
  * @brief One typed parameter of an editor function.
  *
- * The generic function dialog renders a control per parameter: a spin box
- * for Integer and Double parameters, a checkbox for Boolean parameters and
- * a combo box for Choice parameters (whose entries are given by
- * @ref choices as {display, value} maps).
+ * The generic function dialog renders a control per parameter: a slider
+ * with an editable value readout for Integer and Double parameters, a
+ * checkbox for Boolean parameters and a combo box for Choice parameters
+ * (whose entries are given by @ref choices as {display, value} maps).
  */
 class EditorFunctionParameter : public QObject
 {
@@ -28,6 +28,7 @@ class EditorFunctionParameter : public QObject
   Q_PROPERTY (ParameterType type READ type CONSTANT FINAL)
   Q_PROPERTY (double minimum READ minimum CONSTANT FINAL)
   Q_PROPERTY (double maximum READ maximum CONSTANT FINAL)
+  Q_PROPERTY (double step READ step CONSTANT FINAL)
   Q_PROPERTY (QVariantList choices READ choices CONSTANT FINAL)
   Q_PROPERTY (QVariant defaultValue READ defaultParameterValue CONSTANT FINAL)
   QML_ELEMENT
@@ -50,13 +51,18 @@ public:
     double        maximum,
     QVariant      default_value,
     QVariantList  choices = {},
+    double        step = 0,
     QObject *     parent = nullptr);
 
-  const QString      &key () const { return key_; }
-  const QString      &label () const { return label_; }
-  ParameterType       type () const { return type_; }
-  double              minimum () const { return minimum_; }
-  double              maximum () const { return maximum_; }
+  const QString &key () const { return key_; }
+  const QString &label () const { return label_; }
+  ParameterType  type () const { return type_; }
+  double         minimum () const { return minimum_; }
+  double         maximum () const { return maximum_; }
+
+  /// Value increment the dialog's slider snaps to; never smaller than 1
+  /// for Integer parameters.
+  double              step () const { return step_; }
   const QVariantList &choices () const { return choices_; }
   QVariant            defaultParameterValue () const { return default_value_; }
 
@@ -66,6 +72,7 @@ private:
   ParameterType type_;
   double        minimum_ = 0;
   double        maximum_ = 0;
+  double        step_ = 0;
   QVariantList  choices_;
   QVariant      default_value_;
 };

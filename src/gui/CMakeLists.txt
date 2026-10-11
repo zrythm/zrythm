@@ -283,6 +283,7 @@ set(rel_qml_file_paths
   components/ClipLauncherView.qml
   components/ClipSlotView.qml
   components/DspLoadIndicator.qml
+  components/EditableSlider.qml
   components/FaderButtons.qml
   components/FaderControl.qml
   components/FileBrowserPage.qml

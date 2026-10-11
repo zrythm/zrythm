@@ -41,6 +41,10 @@ struct ParamSpec
   double minimum = 0;
   double maximum = 0;
 
+  /// Value increment the dialog's slider snaps to; 0 derives it from
+  /// the range.
+  double step = 0;
+
   /// For Choice parameters: {display, value} maps, matching the combo box
   /// contract of the generic function dialog.
   QVariantList choices;

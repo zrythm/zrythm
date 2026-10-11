@@ -185,6 +185,7 @@ MidiFunction::Crescendo::params ()
      { .kind = ParamSpec::Kind::Double,
         .minimum = -1.0,
         .maximum = 1.0,
+        .step = 0.01,
         .default_value = 0.5 },
      [] (Crescendo &c, ParamValue v) { c.curviness = std::get<double> (v); } },
   };
@@ -254,6 +255,7 @@ MidiFunction::Flam::params ()
      { .kind = ParamSpec::Kind::Double,
         .minimum = -100.0,
         .maximum = 100.0,
+        .step = 1.0,
         .default_value = 10.0 },
      [] (Flam &f, ParamValue v) {
         f.time = units::seconds (std::get<double> (v) / 1000.0);
@@ -525,6 +527,7 @@ MidiFunction::Strum::params ()
      { .kind = ParamSpec::Kind::Double,
         .minimum = -1.0,
         .maximum = 1.0,
+        .step = 0.01,
         .default_value = 0.5 },
      [] (Strum &s, ParamValue v) { s.curviness = std::get<double> (v); } },
     { utils::Utf8String (u8"time"),
@@ -532,6 +535,7 @@ MidiFunction::Strum::params ()
      { .kind = ParamSpec::Kind::Double,
         .minimum = 1.0,
         .maximum = 200.0,
+        .step = 1.0,
         .default_value = 50.0 },
      [] (Strum &s, ParamValue v) {
         s.time = units::seconds (std::get<double> (v) / 1000.0);
