@@ -124,51 +124,12 @@ EditorFunctionDefinition::EditorFunctionDefinition (
 EditorFunctionRegistry::EditorFunctionRegistry (QObject * parent)
     : QObject (parent)
 {
-  const QVariantList curve_choices = CurveOptions_Algorithm_to_qml_list ();
-  const int          superellipse =
-    ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::SuperEllipse);
-
-  const auto make_parameter =
-    [] (
-      const char * key, const QString &label,
-      EditorFunctionParameter::ParameterType type, double minimum, double maximum,
-      QVariant default_value, QVariantList choices = {}, double step = 0) {
-      return new EditorFunctionParameter (
-        QString::fromUtf8 (key), label, type, minimum, maximum,
-        std::move (default_value), std::move (choices), step);
-    };
-  const auto make_definition =
-    [this] (
-      const char * id, const QString &label,
-      EditorFunctionDefinition::Family family, int function_type,
-      int minimum_selection_count, QList<EditorFunctionParameter *> parameters) {
-      auto * definition = new EditorFunctionDefinition (
-        QString::fromUtf8 (id), label, family, function_type,
-        minimum_selection_count, std::move (parameters), this);
-      for (auto * parameter : definition->parameters ())
-        {
-          parameter->setParent (definition);
-        }
-      return definition;
-    };
-
   midi_functions_ = definitions_for_family<
     structure::arrangement::MidiFunction::Kind> (*this, Family::Midi);
 
-  using AutomationType = structure::arrangement::AutomationFunction::Type;
-  automation_functions_ = {
-    make_definition (
-      "flip-horizontal", tr ("Flip Horizontal"),
-      EditorFunctionDefinition::Family::Automation,
-      ENUM_VALUE_TO_INT (AutomationType::FlipHorizontal), 1, {}),
-    make_definition (
-      "flip-vertical", tr ("Flip Vertical"),
-      EditorFunctionDefinition::Family::Automation,
-      ENUM_VALUE_TO_INT (AutomationType::FlipVertical), 1, {}),
-    make_definition (
-      "flatten", tr ("Flatten"), EditorFunctionDefinition::Family::Automation,
-      ENUM_VALUE_TO_INT (AutomationType::Flatten), 1, {}),
-  };
+  automation_functions_ =
+    definitions_for_family<structure::arrangement::AutomationFunction::Kind> (
+      *this, Family::Automation);
 }
 
 } // namespace zrythm::gui

@@ -11,6 +11,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/arrangement/automation_function.h"
 #include "structure/arrangement/midi_function.h"
 #include "structure/project/project_registry.h"
 #include "structure/tracks/track_all.h"
@@ -35,6 +36,7 @@
 namespace zrythm::actions
 {
 
+using structure::arrangement::AutomationFunction;
 using structure::arrangement::MidiFunction;
 
 /// The function id as the operator receives it from QML.
@@ -4238,4 +4240,96 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionNoOpPushesNothing)
     selection_model_.get (), function_id (MidiFunction::Staccato::kId), {}));
   EXPECT_EQ (undo_stack_->index (), 0);
 }
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyAutomationFunctionFlipVertical)
+{
+  const auto make_selected_point = [this] (double ticks, float value) {
+    auto point_ref = utils::create_object<
+      structure::arrangement::AutomationPoint> (registry_, *tempo_map_wrapper);
+    auto * point =
+      point_ref.get_object_as<structure::arrangement::AutomationPoint> ();
+    point->position ()->setTicks (ticks);
+    point->setValue (value);
+    test_objects_.get<structure::arrangement::random_access_index> ()
+      .push_back (point_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationPoint>::add_object (point_ref);
+    select_object (point_ref);
+    return point;
+  };
+  auto * point1 = make_selected_point (100.0, 0.2f);
+  auto * point2 = make_selected_point (200.0, 0.9f);
+  point1->curveOpts ()->setCurviness (0.4);
+  point2->curveOpts ()->setCurviness (-0.3);
+
+  const bool result = operator_->applyAutomationFunction (
+    selection_model_.get (),
+    function_id (AutomationFunction::FlipVertical::kId));
+  EXPECT_TRUE (result);
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  EXPECT_FLOAT_EQ (point1->value (), 0.8f);
+  EXPECT_FLOAT_EQ (point2->value (), 0.1f);
+  EXPECT_DOUBLE_EQ (point1->curveOpts ()->curviness (), -0.4);
+
+  undo_stack_->undo ();
+  EXPECT_FLOAT_EQ (point1->value (), 0.2f);
+  EXPECT_DOUBLE_EQ (point1->curveOpts ()->curviness (), 0.4);
+  undo_stack_->redo ();
+  EXPECT_FLOAT_EQ (point2->value (), 0.1f);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAutomationFunctionNoOpPushesNothing)
+{
+  auto point_ref = utils::create_object<structure::arrangement::AutomationPoint> (
+    registry_, *tempo_map_wrapper);
+  auto * point =
+    point_ref.get_object_as<structure::arrangement::AutomationPoint> ();
+  // Flipping a centered, straight point changes nothing
+  point->setValue (0.5f);
+  point->curveOpts ()->setCurviness (0.0);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    point_ref);
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AutomationPoint>::add_object (point_ref);
+  select_object (point_ref);
+
+  EXPECT_TRUE (operator_->applyAutomationFunction (
+    selection_model_.get (),
+    function_id (AutomationFunction::FlipVertical::kId)));
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAutomationFunctionUnknownFunctionId)
+{
+  auto point_ref = utils::create_object<structure::arrangement::AutomationPoint> (
+    registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    point_ref);
+  select_object (point_ref);
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyAutomationFunction (
+    selection_model_.get (), "no-such-function"));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAutomationFunctionNoPointsSelected)
+{
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyAutomationFunction (
+    selection_model_.get (), function_id (AutomationFunction::Flatten::kId)));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
 } // namespace zrythm::actions

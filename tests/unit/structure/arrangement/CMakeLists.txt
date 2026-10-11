@@ -11,6 +11,7 @@ add_executable(zrythm_structure_arrangement_unit_tests
   arranger_object_test.cpp
   audio_clip_test.cpp
   audio_source_object_test.cpp
+  automation_function_test.cpp
   automation_point_test.cpp
   automation_clip_test.cpp
   chord_object_test.cpp

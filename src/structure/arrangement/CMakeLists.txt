@@ -18,6 +18,7 @@ target_sources(zrythm_arrangement_lib
     audio_source_object.cpp
     automation_point.cpp
     automation_clip.cpp
+    automation_function.cpp
     chord_object.cpp
     chord_clip.cpp
     clip.cpp
@@ -50,6 +51,7 @@ target_sources(zrythm_arrangement_lib
       audio_source_object.h
       automation_point.h
       automation_clip.h
+      automation_function.h
       chord_object.h
       chord_clip.h
       clip.h

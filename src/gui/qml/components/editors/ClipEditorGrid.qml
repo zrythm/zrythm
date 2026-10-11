@@ -13,21 +13,20 @@ import ZrythmGui
 GridLayout {
   id: root
 
-  required property ClipEditor clipEditor
-  readonly property Project project: session.project
-  readonly property var clipObject: clipEditor.clipObject
-  required property ProjectSession session
-  readonly property var track: clipEditor.track
+  // Function whose parameter dialog is open
+  property var _pendingFunction: null
 
-  columns: 2
-  rows: 2
-
+  // Number of rows selected in the open editor pane; kept up to date by
+  // connectionsMenuCount and refreshed when the functions menu opens
+  property int _selectionCount: 0
   readonly property var activeFunctionDefinitions: {
     if (!root.clipObject)
       return [];
     switch (root.clipObject.type) {
     case ArrangerObject.MidiClip:
       return root.session.editorFunctions.midiFunctions;
+    case ArrangerObject.AutomationClip:
+      return root.session.editorFunctions.automationFunctions;
     default:
       return [];
     }
@@ -38,39 +37,27 @@ GridLayout {
     switch (editorSpecializedStack.currentIndex) {
     case 0:
       return midiEditorLoader.item ? midiEditorLoader.item.selectionModel : null;
+    case 2:
+      return automationEditorLoader.item ? automationEditorLoader.item.selectionModel : null;
     default:
       return null;
     }
   }
-
-  // Number of rows selected in the open editor pane; kept up to date by
-  // connectionsMenuCount and refreshed when the functions menu opens
-  property int _selectionCount: 0
-
-  // Function whose parameter dialog is open
-  property var _pendingFunction: null
-
-  function _refreshSelectionCount() {
-    root._selectionCount = root.activeSelectionModel !== null ? root.activeSelectionModel.selectedIndexes.length : 0;
-  }
+  required property ClipEditor clipEditor
+  readonly property Clip clipObject: clipEditor.clipObject
+  readonly property Project project: session.project
+  required property ProjectSession session
+  readonly property Track track: clipEditor.track
 
   function _applyFunction(definition, options) {
     switch (definition.family) {
     case EditorFunctionDefinition.Midi:
       root.session.arrangerObjectSelectionOperator.applyMidiFunction(root.activeSelectionModel, definition.id, options);
       break;
+    case EditorFunctionDefinition.Automation:
+      root.session.arrangerObjectSelectionOperator.applyAutomationFunction(root.activeSelectionModel, definition.id);
       break;
-    }
-  }
-
-  function _triggerFunction(definition) {
-    if (definition.hasParameters) {
-      root._pendingFunction = definition;
-      functionDialogLoader.active = true;
-      if (functionDialogLoader.item)
-        functionDialogLoader.item.open();
-    } else {
-      root._applyFunction(definition, {});
+      break;
     }
   }
 
@@ -85,27 +72,44 @@ GridLayout {
     }
   }
 
+  function _refreshSelectionCount() {
+    root._selectionCount = root.activeSelectionModel !== null ? root.activeSelectionModel.selectedIndexes.length : 0;
+  }
+
   function _rememberParams(definition, options) {
     const settings = GlobalState.application.appSettings;
     let allParams = {};
     try {
       allParams = JSON.parse(settings.editorFunctionLastParams);
-    } catch (e) {
-    }
+    } catch (e) {}
     allParams[definition.id] = options;
     settings.editorFunctionLastParams = JSON.stringify(allParams);
   }
+
+  function _triggerFunction(definition) {
+    if (definition.hasParameters) {
+      root._pendingFunction = definition;
+      functionDialogLoader.active = true;
+      if (functionDialogLoader.item)
+        functionDialogLoader.item.open();
+    } else {
+      root._applyFunction(definition, {});
+    }
+  }
+
+  columns: 2
+  rows: 2
 
   onActiveSelectionModelChanged: root._refreshSelectionCount()
 
   Connections {
     id: connectionsMenuCount
 
-    target: root.activeSelectionModel
-
     function onSelectionChanged(selected, deselected) {
       root._refreshSelectionCount();
     }
+
+    target: root.activeSelectionModel
   }
 
   Loader {
@@ -117,11 +121,11 @@ GridLayout {
       functionDefinition: root._pendingFunction
       initialValues: root._lastParamsFor(root._pendingFunction)
 
-      onOptionsConfirmed: function(options) {
+      onClosed: functionDialogLoader.active = false
+      onOptionsConfirmed: function (options) {
         root._rememberParams(root._pendingFunction, options);
         root._applyFunction(root._pendingFunction, options);
       }
-      onClosed: functionDialogLoader.active = false
     }
 
     // Hosts a popup dialog; invisible so it takes no grid cell (layouts
@@ -199,7 +203,6 @@ GridLayout {
           }
         }
       },
-
       ToolButton {
         text: qsTr("Functions")
         visible: root.activeFunctionDefinitions.length > 0
@@ -223,10 +226,10 @@ GridLayout {
               onTriggered: root._triggerFunction(modelData)
             }
 
-            onObjectAdded: function(index, object) {
+            onObjectAdded: function (index, object) {
               functionsMenu.insertItem(index, object);
             }
-            onObjectRemoved: function(index, object) {
+            onObjectRemoved: function (index, object) {
               functionsMenu.removeItem(object);
             }
           }

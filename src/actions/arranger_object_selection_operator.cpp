@@ -17,6 +17,7 @@
 #include "dsp/timestretch_engine.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/audio_clip.h"
+#include "structure/arrangement/automation_function.h"
 #include "structure/arrangement/midi_function.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
@@ -475,6 +476,89 @@ ArrangerObjectSelectionOperator::applyMidiFunction (
     {
       undo_stack_.push (command.release ());
     }
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::applyAutomationFunction (
+  QItemSelectionModel * selectionModel,
+  const QString        &function_id)
+{
+  using structure::arrangement::AutomationFunction;
+  using structure::arrangement::AutomationPoint;
+
+  const auto kind = AutomationFunction::kind_from_id (
+    utils::Utf8String::from_qstring (function_id).view ());
+  if (!kind)
+    {
+      refuse_operation (QObject::tr ("Unknown function %1").arg (function_id));
+      return false;
+    }
+
+  std::vector<structure::arrangement::ArrangerObjectUuidReference> objects;
+  std::vector<AutomationPoint *>                                   points;
+  for (const auto &obj_ref : extractSelectedObjects (selectionModel))
+    {
+      if (
+        auto * point = obj_ref.template get_object_as<AutomationPoint> ();
+        point != nullptr)
+        {
+          objects.push_back (obj_ref);
+          points.push_back (point);
+        }
+    }
+  if (points.empty ())
+    {
+      refuse_operation (QObject::tr ("No automation points selected"));
+      return false;
+    }
+
+  const auto result = AutomationFunction::compute (points, *kind);
+
+  const auto to_command_state = [] (const AutomationFunction::PointState &st) {
+    commands::TransformableObjectState command_state;
+    command_state.position_ticks_ = st.position_ticks_;
+    command_state.automation_value_ = st.value_;
+    command_state.curve_algorithm_ = st.curve_algorithm_;
+    command_state.curve_curviness_ = st.curve_curviness_;
+    return command_state;
+  };
+  const auto current_state = [] (const AutomationPoint &point) {
+    commands::TransformableObjectState state;
+    state.position_ticks_ = point.position ()->asTick ();
+    state.automation_value_ = point.value ();
+    state.curve_algorithm_ = point.curveOpts ()->algorithm ();
+    state.curve_curviness_ = point.curveOpts ()->curviness ();
+    return state;
+  };
+
+  // Skip points the function leaves unchanged, so that no-op functions push
+  // nothing
+  std::vector<structure::arrangement::ArrangerObjectUuidReference>
+                                                  changed_objects;
+  std::vector<commands::TransformableObjectState> changed_states;
+  for (
+    const auto &[obj_ref, point, state] :
+    std::views::zip (objects, points, result.new_states_))
+    {
+      const auto after = to_command_state (state);
+      if (after == current_state (*point))
+        continue;
+      changed_objects.push_back (obj_ref);
+      changed_states.push_back (after);
+    }
+  if (changed_objects.empty ())
+    {
+      return true;
+    }
+
+  const QString text =
+    QObject::tr ("Apply %1")
+      .arg (AutomationFunction::label (*kind, true).to_qstring ());
+
+  undo_stack_.push (new commands::TransformArrangerObjectsCommand (
+    std::move (changed_objects), std::move (changed_states), text));
 
   return true;
 }

@@ -169,6 +169,23 @@ public:
     const QString        &function_id,
     const QVariantMap    &options);
 
+  /**
+   * @brief Applies a transformative function to the selected automation
+   * points, in a single undo step.
+   *
+   * Non-point objects in the selection are skipped. When the function would
+   * change nothing, no command is pushed.
+   *
+   * @param selectionModel The editor's selection.
+   * @param function_id The id of the structure::arrangement::AutomationFunction
+   * kind to apply.
+   * @return false if no automation points are selected or @p function_id is
+   * not a known function.
+   */
+  Q_INVOKABLE bool applyAutomationFunction (
+    QItemSelectionModel * selectionModel,
+    const QString        &function_id);
+
   Q_INVOKABLE bool resizeObjects (
     QItemSelectionModel *     selectionModel,
     commands::ResizeType      type,
