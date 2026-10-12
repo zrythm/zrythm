@@ -126,6 +126,13 @@ components:
     size: 16px
   checkbox-checked:
     backgroundColor: "{colors.primary}"
+  slider:
+    backgroundColor: "{colors.on-surface}"
+    fill-color: "{colors.primary}"
+    handle-color: "{colors.primary}"
+    handle-size: 18px
+    height: 24px
+    width: 200px
   tab:
     backgroundColor: "{colors.secondary}"
     textColor: "{colors.on-surface}"
@@ -504,6 +511,31 @@ standard transition.
 6 px tall track in `textColor` and an accent fill, both with radius set to
 half the bar height (3 px today). The indeterminate state scrolls five accent
 blocks of width/3 in a 1500 ms `InOutQuad` loop.
+
+### Slider
+
+24 px tall control (200 px implicit width) with an 18 px round handle; the
+track reuses the progress-bar anatomy — a 6 px groove in `textColor` and an
+accent fill, both at radius 3. The handle takes the accent itself — the
+checked-state fill — with a 1 px polarity-ink edge (`polarityTextColor` of the
+accent) so it stays defined against the light groove it rides on; the
+ink-on-accent rule is the checked checkbox glyph's.
+
+| State | Handle |
+|---|---|
+| Default | accent fill + 1 px polarity-ink edge |
+| Hovered | fill blended toward contrast |
+| Pressed | fill strengthened |
+| Keyboard focus | 2 px accent border, fill blended toward contrast |
+| Disabled / window inactive | unchanged (shared opacity rules) |
+
+Hover and press follow the shared derivation rules. The handle follows the
+checkbox-indicator pattern: a press strengthens the fill without adding a
+border, and only keyboard focus raises the 2 px accent border.
+
+Vertical sliders mirror the geometry and fill from the bottom edge (fader
+convention): the minimum rests at the bottom and the handle travels up.
+Mirrored horizontal (RTL) sliders fill from the trailing edge.
 
 ### Selectable text
 

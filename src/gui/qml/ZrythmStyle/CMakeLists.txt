@@ -42,6 +42,7 @@ qt_add_qml_module(zrythm_style
     RoundButton.qml
     ProgressBar.qml
     SearchField.qml
+    Slider.qml
     # ScrollBar.qml
     # ScrollIndicator.qml
     # ScrollView.qml
