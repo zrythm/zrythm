@@ -34,6 +34,7 @@
 #include "utils/qt.h"
 #include "utils/rt_logger.h"
 #include "utils/serialization.h"
+#include "utils/types.h"
 #include "utils/views.h"
 
 #include <farbot/RealtimeObject.hpp>
@@ -43,6 +44,7 @@
 #endif
 
 #include <QCoreApplication>
+#include <QThread>
 #include <QTimer>
 
 #include <pluginterfaces/gui/iplugview.h>
@@ -590,10 +592,15 @@ private:
  * The factory is a last-writer-wins singleton by SDK design; plugins
  * (VSTGUI) query the context during view lifecycle calls, so this must be
  * called immediately before createView()/attached()/removed().
+ *
+ * Main thread only: the factory is an unsynchronized last-writer-wins
+ * singleton, so all context mutations (claims and clears) are serialized
+ * on the Qt thread.
  */
 static void
 claim_plugin_context (Vst::IHostApplication * host_app)
 {
+  Q_ASSERT (ZRYTHM_IS_QT_THREAD);
   Vst::PluginContextFactory::instance ().setPluginContext (host_app);
 }
 
@@ -604,10 +611,13 @@ claim_plugin_context (Vst::IHostApplication * host_app)
  * The factory is a process-wide singleton holding a raw pointer; leaving a
  * stale pointer behind would let a later getPluginContext() observe freed
  * memory.
+ *
+ * Main thread only, like claim_plugin_context().
  */
 static void
 clear_plugin_context_if_current (Vst::IHostApplication * host_app)
 {
+  Q_ASSERT (ZRYTHM_IS_QT_THREAD);
   if (Vst::PluginContextFactory::instance ().getPluginContext () == host_app)
     Vst::PluginContextFactory::instance ().setPluginContext (nullptr);
 }
@@ -1334,7 +1344,7 @@ Vst3Plugin::load_plugin (
     }
 
   pimpl_->host_app_ = owned (new Vst3HostApplication);
-  Vst::PluginContextFactory::instance ().setPluginContext (
+  claim_plugin_context (
     static_cast<Vst::IHostApplication *> (pimpl_->host_app_));
   pimpl_->plug_provider_ = std::make_unique<Vst::PlugProvider> (
     module->getFactory (), *class_info_it, true);
