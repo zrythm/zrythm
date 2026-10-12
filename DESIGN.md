@@ -792,13 +792,103 @@ every occurrence it absorbed; expiry does not acknowledge. Events
 arriving while the popover is open join the history immediately and are
 marked seen when it closes.
 
+### Clips
+
+Clips render as rounded bodies tinted by the clip's own color, or the
+track color where the clip has none. All surface colors derive in a
+single OKLCH pass from the source hue, so any track color lands at a
+consistent depth in both modes:
+
+| Part | Dark mode | Light mode |
+|---|---|---|
+| Body | the hue at L 0.30, C 0.065 | the hue at L 0.89, C 0.06 |
+| Border | the hue at the body's chroma, L + 0.08, 1 px | the hue at the body's chroma, L − 0.05, 1 px |
+| Header band | the hue at the body's chroma, L − 0.08 — a flat band reserved above the content | the hue at the body's chroma, L − 0.08 — a flat band reserved above the content |
+| Content ink | the hue at C 0.21, L 0.60 | the hue at C 0.18, L 0.44 |
+
+Chroma clips to the sRGB gamut in both modes. The body is a shadowed
+tint of the hue — dark, low-chroma — so the large area stays
+quiet and the content carries the color, the way human vision reads
+saturation best: in small elements. Achromatic sources yield gray
+surfaces. The body fill draws at 75 % opacity so the lane grid reads
+through and stacked clips stay mutually legible; the border and
+content ink stay opaque. Content ink covers MIDI notes, audio
+waveforms, automation curves, loop lines and content badges —
+graphics, holding ≥ 3:1 against every body the recipe can produce
+(worst ≈ 3.2 — the ink sits at the deepest saturation the contract
+allows);
+text that sits directly on the body (chord names inside clips)
+follows the polarity rule instead (`polarityTextColor`, ≥ 4.5:1).
+Derived values are never hand-adjusted, they are re-derived with the
+rule when a surface changes.
+
+**Anatomy.** Every clip reserves a header zone at the top — a flat
+band in the scrim color carrying the name and the trailing header
+badges — and all content lives in the zone below it. The header is
+part of the clip's layout, not an overlay: nothing ever draws under
+the name, so the name needs no outline or scrim gradient and stays
+legible at every clip height. The name sits top-left in
+`arrangerObjectTextFont` in the mode's text color, elided; the trailing header
+edge holds a ⭯ badge when the clip is looped — in the body's polarity
+ink — and optional content badges (such as an AI-attribution tag); the
+name elides around the space they reserve. Content — MIDI notes,
+waveforms, automation curves, chord names — reflows into the zone
+below the band. Loop points draw dashed 1 px vertical lines in the
+content ink over the whole clip height. Body corners take the 6 px
+toolbutton radius.
+
+**States** (uniform tints toward the mode's polarity ink — identical
+gain on every hue; selection and hover/press stack):
+
+| State | Treatment |
+|---|---|
+| Hovered | body tinted 17 % toward polarity ink |
+| Pressed (drag, resize) | body tinted 26 % toward polarity ink |
+| Selected | body tinted 20 % toward polarity ink (stacking with hover/press), plus the [Selection](#selection) outline; name bold |
+| Muted track | whole clip renders fully desaturated — every part at zero chroma — and fades to 50 % opacity; for achromatic sources the fade is the only muted cue |
+| Disabled | unchanged (70 % object opacity per the shared rule) |
+
+Worked example (teal, hue 185°; orange, hue 70°):
+
+| | Body | Border | Header band | Content ink |
+|---|---|---|---|---|
+| Teal, dark | `#003631` | `#054D47` | `#00211D` | `#009488` |
+| Teal, light | `#AEE8E0` | `#9ED8CF` | `#95CEC6` | `#006058` |
+| Orange, dark | `#422700` | `#583C17` | `#2A1500` | `#B17000` |
+| Orange, light | `#F5D5B0` | `#E4C4A1` | `#DBBB97` | `#744700` |
+
+### Non-clip arranger objects
+
+Arranger objects outside clips share the clip recipe: `contentColor`
+re-derives the clip content-ink constants and `labelColors` the clip
+body/border constants from the object's own color, else the track
+color. The role follows the element's footprint — small elements
+carry saturation, large spans stay quiet:
+
+| Object family | Role | Treatment |
+|---|---|---|
+| MIDI notes, velocity bars, automation points | content | solid content ink |
+| Markers | label | quiet name capsule at 75 % opacity with the recipe border, plus a content-ink pennant whose notch tip sits on the marker's position; the start/end markers carry directional bar-and-triangle glyphs (`\|>` / `<\|`) centered on the position and always display their canonical names |
+| Editor waveforms (audio) | content | content-ink waveform |
+| Automation curves (editor) | content | content-ink stroke; the curve-derived gradient fill (ink at 30 % → 5 %, fading down), identical to in-clip curves |
+| Scale objects | label | tinted span at 75 % opacity with the recipe border, plus a 4 px content-ink ribbon, inset 2 px, along the span's left edge — the span stays quiet, the ribbon is the findable anchor |
+| Chord events | label | tinted pill at 75 % opacity with the recipe border; the name takes the mode's text color |
+| Tempo / time-signature objects | label | tinted badge at 75 % opacity with the recipe border |
+
+Achromatic sources yield gray in both roles. Hover, press, selection
+and muted states run the shared object state pipeline over the
+derived colors ([Selection](#selection)). Editors and the timeline
+share the same views, so a MIDI note or chord pill renders identically
+inside a clip and in its editor.
+
 ### Selection
 
 Selected arranger objects (clips, chords, MIDI notes, automation points,
 markers, and tempo-map badges) draw a 1 px `textColor` outline around
 their bounds, following each object's corner radius (fully round for
-automation points). On top of the outline, the fill brightens slightly
-toward contrast and the object name is rendered bold.
+automation points). On top of the outline, the fill follows the object
+family's selected-state rule (clips: [Clips](#clips)) and the object
+name is rendered bold.
 
 ### Playhead
 

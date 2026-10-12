@@ -51,7 +51,11 @@ Loader {
   active: objectEndX + ZrythmTheme.scrollLoaderBufferPx >= scrollX && objectX <= (scrollX + scrollViewWidth + ZrythmTheme.scrollLoaderBufferPx)
   asynchronous: true
   visible: status === Loader.Ready
+  // Views whose glyphs extend left of their position (marker heads)
+  // expose positionLeftOffset so the whole visible area sits inside
+  // the item's bounds
   x: objectX - (centeredOnPosition ? width / 2 : 0)
+    + (item ? (item.positionLeftOffset ?? 0) : 0)
 
   // Move: GPU Translate (zero re-rendering). Resize handled via width/x
   // override above + Binding below — content clips/extends without stretching.

@@ -18,6 +18,12 @@ Arranger {
   readonly property real clipX: root.audioClip ? root.audioClip.position.ticks * root.ruler.pxPerTick : 0
   readonly property real fadeInPx: root.audioClip && root.audioClip.fadeRange ? root.audioClip.fadeRange.startOffset.ticks * root.ruler.pxPerTick : 0
   readonly property real fadeOutPx: root.audioClip && root.audioClip.fadeRange ? root.audioClip.fadeRange.endOffset.ticks * root.ruler.pxPerTick : 0
+  // Editor waveform ink: the shared musical-content color over the
+  // clip's own color where set, else the track color, so the editor
+  // renders identically to in-clip waveforms (DESIGN.md "Clips")
+  readonly property color waveformInk: ZrythmTheme.contentColor (
+    root.audioClip && root.audioClip.color.useColor
+      ? root.audioClip.color.color : root.track.color, false)
   property QObjectPropertyOperator fadePropertyOperator: null
   readonly property Track track: clipEditor.track
 
@@ -52,12 +58,9 @@ Arranger {
 
       audioClip: root.audioClip
       height: contentItem.height
-      outlineColor: {
-        const lighter = Qt.lighter(root.track.color, 1.4);
-        return Qt.rgba(lighter.r, lighter.g, lighter.b, 200 / 255);
-      }
+      outlineColor: Qt.rgba (root.waveformInk.r, root.waveformInk.g, root.waveformInk.b, 200 / 255)
       tempoMap: root.tempoMap
-      waveformColor: Qt.rgba(root.track.color.r, root.track.color.g, root.track.color.b, 80 / 255)
+      waveformColor: Qt.rgba (root.waveformInk.r, root.waveformInk.g, root.waveformInk.b, 80 / 255)
       width: root.clipWidth
       x: root.clipX
       y: 0
