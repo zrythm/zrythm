@@ -94,14 +94,23 @@ DeviceManager::initialize (
   int  max_output_channels,
   bool fallback_to_default)
 {
-  auto ret = initialise (
+  auto error = initialise (
     max_input_channels, max_output_channels, state_getter_ ().get (),
     fallback_to_default);
-  if (ret.isNotEmpty ())
+  if (error.isNotEmpty () && max_input_channels > 0)
+    {
+      z_warning (
+        "Failed to open the audio device(s) with up to {} input channel(s) "
+        "({}); retrying with output channels only",
+        max_input_channels, utils::Utf8String::from_juce_string (error));
+      error = initialise (0, max_output_channels, nullptr, true);
+    }
+  if (error.isNotEmpty ())
     {
       throw utils::ZrythmException (
         fmt::format (
-          "Audio device initialization failed: {}", ret.toStdString ()));
+          "Audio device initialization failed: {}",
+          utils::Utf8String::from_juce_string (error).view ()));
     }
   Q_EMIT availableAudioInputsChanged ();
   Q_EMIT availableMidiInputsChanged ();

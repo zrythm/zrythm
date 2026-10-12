@@ -182,6 +182,33 @@ ProjectManager::create_window_for_plugin (plugins::Plugin &plugin) const
   return ret;
 }
 
+namespace
+{
+
+/**
+ * @brief Throws a ZrythmException if no audio device is open.
+ *
+ * Opening a project requires an open audio device (the project's tempo map
+ * and processing graph are built from the device's sample rate and buffer
+ * size).
+ */
+void
+throw_if_no_audio_device ()
+{
+  auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
+  if (
+    zapp == nullptr
+    || zapp->deviceManager ()->getCurrentAudioDevice () == nullptr)
+    {
+      throw ZrythmException (
+        QObject::tr (
+          "No audio device is open. Select an audio device in the device "
+          "settings and try again."));
+    }
+}
+
+} // namespace
+
 utils::QObjectUniquePtr<ProjectSession>
 ProjectManager::create_default (
   const std::filesystem::path &prj_dir,
@@ -193,33 +220,52 @@ ProjectManager::create_default (
   const auto project_dir_path = prj_dir / name;
 
   utils::QObjectUniquePtr<ProjectSession> project_session;
+  std::exception_ptr                      main_thread_error;
   QMetaObject::invokeMethod (
     qApp,
-    [this, &project_session, &name, project_dir_path] {
-      // registries and registry objects must be created on the main thread
-      {
-        auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
-        auto   prj = utils::make_qobject_unique<structure::project::Project> (
-          app_settings_,
-          [project_dir_path] (bool for_backup) { return project_dir_path; },
-          zapp->hw_audio_interface (), *zapp->deviceManager (),
-          zapp->pluginManager ()->get_format_manager (),
-          [this] (plugins::Plugin &plugin) {
-            return create_window_for_plugin (plugin);
-          },
-          *zapp->controlRoom ()->metronome (),
-          *zapp->controlRoom ()->monitorFader (),
-          zapp->pluginManager ()->get_lv2_world ());
-        project_session = utils::make_qobject_unique<ProjectSession> (
-          app_settings_, *clipboard_, std::move (prj));
-      }
-      project_session->setTitle (name.to_qstring ());
-      project_session->project ()->add_default_tracks ();
-      project_session->uiState ()->clipEditor ()->init ();
-      project_session->uiState ()->chordPadBank ()->applyPresetFromScale (
-        dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A);
+    [this, &project_session, &name, project_dir_path, &main_thread_error] {
+      // Exceptions cannot propagate through a queued invocation: capture
+      // them here and rethrow on the calling thread below
+      try
+        {
+          // registries and registry objects must be created on the main
+          // thread
+          {
+            throw_if_no_audio_device ();
+            auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
+            auto prj = utils::make_qobject_unique<structure::project::Project> (
+              app_settings_,
+              [project_dir_path] (bool for_backup) { return project_dir_path; },
+              zapp->hw_audio_interface (), *zapp->deviceManager (),
+              zapp->pluginManager ()->get_format_manager (),
+              [this] (plugins::Plugin &plugin) {
+                return create_window_for_plugin (plugin);
+              },
+              *zapp->controlRoom ()->metronome (),
+              *zapp->controlRoom ()->monitorFader (),
+              zapp->pluginManager ()->get_lv2_world ());
+            project_session = utils::make_qobject_unique<ProjectSession> (
+              app_settings_, *clipboard_, std::move (prj));
+          }
+          project_session->setTitle (name.to_qstring ());
+          project_session->project ()->add_default_tracks ();
+          project_session->uiState ()->clipEditor ()->init ();
+          project_session->uiState ()->chordPadBank ()->applyPresetFromScale (
+            dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A);
+        }
+      catch (const std::exception &e)
+        {
+          // logged here: the failure handler downstream only handles
+          // ZrythmException
+          z_warning ("Failed to create project: {}", e.what ());
+          main_thread_error = std::current_exception ();
+        }
     },
     Qt::BlockingQueuedConnection);
+  if (main_thread_error)
+    {
+      std::rethrow_exception (main_thread_error);
+    }
   project_session->moveToThread (this->thread ());
 
   z_debug ("done creating default project");
@@ -386,6 +432,8 @@ ProjectManager::loadProject (const QString &filepath)
       [this, &json, &title, &project_dir, &promise] () {
         try
           {
+            throw_if_no_audio_device ();
+
             const auto report_progress =
               [&promise] (int value, const QString &text) {
                 promise.setProgressValueAndText (value, text);

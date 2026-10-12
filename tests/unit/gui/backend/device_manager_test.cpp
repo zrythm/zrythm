@@ -106,21 +106,7 @@ public:
     const juce::BigInteger &inputs,
     const juce::BigInteger &outputs,
     double                  sample_rate,
-    int                     buffer_size_samples) override
-  {
-    active_inputs_ = inputs;
-    active_outputs_ = outputs;
-    sample_rate_ = sample_rate;
-    buffer_size_ = buffer_size_samples;
-    input_channels_.assign (
-      inputs.countNumberOfSetBits (),
-      std::vector<float> (buffer_size_samples, 0.f));
-    output_channels_.assign (
-      outputs.countNumberOfSetBits (),
-      std::vector<float> (buffer_size_samples, 0.f));
-    open_ = true;
-    return {};
-  }
+    int                     buffer_size_samples) override;
 
   void close () override { open_ = false; }
   bool isOpen () override { return open_; }
@@ -241,6 +227,10 @@ public:
    * manager. */
   FakeAudioIODevice * last_created_device = nullptr;
 
+  /** When true, devices fail to open when input channels are requested,
+   * like an ALSA device on a machine with no capture devices. */
+  bool fail_open_with_input_channels = false;
+
   void forget_device (const FakeAudioIODevice &device)
   {
     if (last_created_device == &device)
@@ -255,6 +245,33 @@ FakeAudioIODevice::FakeAudioIODevice (
   FakeAudioIODeviceType &owner)
     : juce::AudioIODevice (std::move (device_name), "Fake"), owner_ (owner)
 {
+}
+
+juce::String
+FakeAudioIODevice::open (
+  const juce::BigInteger &inputs,
+  const juce::BigInteger &outputs,
+  double                  sample_rate,
+  int                     buffer_size_samples)
+{
+  if (inputs.countNumberOfSetBits () > 0 && owner_.fail_open_with_input_channels)
+    {
+      // Stands in for a machine where no capture device can be opened,
+      // e.g. no microphone connected
+      return "No such file or directory";
+    }
+  active_inputs_ = inputs;
+  active_outputs_ = outputs;
+  sample_rate_ = sample_rate;
+  buffer_size_ = buffer_size_samples;
+  input_channels_.assign (
+    inputs.countNumberOfSetBits (),
+    std::vector<float> (buffer_size_samples, 0.f));
+  output_channels_.assign (
+    outputs.countNumberOfSetBits (),
+    std::vector<float> (buffer_size_samples, 0.f));
+  open_ = true;
+  return {};
 }
 
 FakeAudioIODevice::~FakeAudioIODevice ()
@@ -280,11 +297,16 @@ public:
     juce::OwnedArray<juce::AudioIODeviceType> &types) override
   {
     auto * type = new FakeAudioIODeviceType ();
+    type->fail_open_with_input_channels = fail_open_with_input_channels;
     fake_device_type_ = type;
     types.add (type);
   }
 
   FakeAudioIODeviceType * fake_device_type_ = nullptr;
+
+  /** Propagated to the fake device type when it is created during
+   * initialize(). */
+  bool fail_open_with_input_channels = false;
 };
 
 class DeviceManagerTest : public ::testing::Test
@@ -332,6 +354,26 @@ TEST_F (DeviceManagerTest, DeviceOutputMatchesEngineRenderAcrossCycles)
           EXPECT_NEAR (sample, engine_render_level, 1e-6f);
         }
     }
+}
+
+// A machine with no capture devices must still get playback: initialize()
+// falls back to opening the device with no input channels instead of
+// failing altogether
+TEST_F (DeviceManagerTest, InitializeFallsBackToOutputOnlyWithoutCapture)
+{
+  auto manager = std::make_unique<TestDeviceManager> ();
+  manager->fail_open_with_input_channels = true;
+
+  EXPECT_NO_THROW (
+    manager->initialize (fake_num_channels, fake_num_channels, true));
+
+  auto * device = manager->fake_device_type_->last_created_device;
+  ASSERT_NE (device, nullptr);
+  EXPECT_TRUE (device->isPlaying ());
+  EXPECT_EQ (device->getActiveInputChannels ().countNumberOfSetBits (), 0);
+  EXPECT_GT (device->getActiveOutputChannels ().countNumberOfSetBits (), 0);
+
+  manager.reset ();
 }
 
 } // namespace

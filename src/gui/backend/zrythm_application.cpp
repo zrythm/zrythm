@@ -411,8 +411,9 @@ ZrythmApplication::setup_device_manager ()
           z_debug ("Parsed contents:\n{}", xml->toString ());
           return xml;
         }
-      z_warning (
-        "Failed to parse device setup XML conents from file: {}", filepath);
+      z_info (
+        "No valid device setup XML found at {}: using default devices",
+        filepath);
       return nullptr;
     },
     [filepath] (const juce::XmlElement &el) {
@@ -430,6 +431,16 @@ ZrythmApplication::setup_device_manager ()
   try
     {
       impl_->device_manager_->initialize (2, 2, true);
+      if (impl_->device_manager_->availableAudioInputs ().isEmpty ())
+        {
+          // Posting before the UI exists is safe: the notification area
+          // presents unpresented notifications on creation
+          impl_->notification_center_->postWarning (
+            tr ("No Audio Inputs"),
+            tr (
+              "No audio input devices were found. Playback will work, "
+              "but audio recording will be disabled."));
+        }
     }
   catch (const utils::ZrythmException &e)
     {
