@@ -8,6 +8,8 @@ import ZrythmGui
 Item {
   id: root
 
+  // Ink for the curve, derived from the clip/track color (DESIGN.md "Clips")
+  property color inkColor
   required property AutomationClip automationClip
   required property int contentHeight
   required property int contentWidth
@@ -17,7 +19,7 @@ Item {
 
   AutomationClipCanvas {
     automationClip: root.automationClip
-    curveColor: ZrythmTheme.clipContentColor
+    curveColor: root.inkColor
     height: root.contentHeight
     loopPreview: root.loopPreview
     referenceWidth: root.referenceWidth

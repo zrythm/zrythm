@@ -108,7 +108,9 @@ Arranger {
 
       applyLoops: false
       automationClip: root.automationClip
-      curveColor: root.track.color
+      // Ink curve; the fill below it is the curve-derived gradient
+      // (DESIGN.md "Non-clip arranger objects")
+      curveColor: ZrythmTheme.contentColor (root.track.color, false)
       dragActive: root.dragState.dragMode === ArrangerDragState.DragMode.Move
       dragDeltaPx: root.dragState.dragDeltaPx
       dragDeltaY: root.dragState.dragDeltaY

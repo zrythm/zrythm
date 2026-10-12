@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/project/audio_clip_editor.h"
@@ -7,6 +7,24 @@
 
 namespace zrythm::structure::project
 {
+
+void
+AudioClipEditor::setSelectionStartTick (double tick)
+{
+  if (selection_start_tick_ == tick)
+    return;
+  selection_start_tick_ = tick;
+  Q_EMIT selectionStartTickChanged (tick);
+}
+
+void
+AudioClipEditor::setSelectionEndTick (double tick)
+{
+  if (selection_end_tick_ == tick)
+    return;
+  selection_end_tick_ = tick;
+  Q_EMIT selectionEndTickChanged (tick);
+}
 
 void
 init_from (

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -11,6 +11,8 @@ import Zrythm
 
 ArrangerObjectBaseView {
   id: root
+
+  colorRole: ArrangerObjectBaseView.ColorRole.Label
 
   property TempoObject tempoObject: root.arrangerObject as TempoObject
 
@@ -64,7 +66,9 @@ ArrangerObjectBaseView {
 
   Rectangle {
     anchors.fill: parent
-    color: root.objectColor
+    color: Qt.alpha (root.objectColor, ZrythmTheme.bodyAlpha)
+    border.color: root.objectBorderColor
+    border.width: 1
     radius: ZrythmTheme.toolButtonRadius
   }
 

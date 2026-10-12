@@ -11,6 +11,9 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/arrangement/audio_function.h"
+#include "structure/arrangement/automation_function.h"
+#include "structure/arrangement/midi_function.h"
 #include "structure/project/project_registry.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_factory.h"
@@ -18,6 +21,7 @@
 #include "utils/audio.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+#include "utils/utf8_string.h"
 #include "utils/variant_helpers.h"
 
 #include <QSignalSpy>
@@ -32,6 +36,17 @@
 
 namespace zrythm::actions
 {
+
+namespace AudioFunction = structure::arrangement::AudioFunction;
+using structure::arrangement::AutomationFunction;
+using structure::arrangement::MidiFunction;
+
+/// The function id as the operator receives it from QML.
+QString
+function_id (std::string_view id)
+{
+  return utils::Utf8String::from_utf8_encoded_string (id).to_qstring ();
+}
 
 class ArrangerObjectSelectionOperatorTest : public ::testing::Test
 {
@@ -4043,6 +4058,484 @@ TEST_F (
   // The orphaned clone was removed from the registry
   EXPECT_EQ (
     registry_.count_matching<structure::arrangement::ScaleObject> (), 1u);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionCrescendo)
+{
+  auto crescendo_note_ref1 = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  auto crescendo_note_ref2 = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  auto crescendo_note_ref3 = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  for (
+    const auto &crescendo_note_ref :
+    { crescendo_note_ref1, crescendo_note_ref2, crescendo_note_ref3 })
+    {
+      crescendo_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+      test_objects_.get<structure::arrangement::random_access_index> ()
+        .push_back (crescendo_note_ref);
+    }
+  crescendo_note_ref1.get ()->position ()->setTicks (1000.0);
+  crescendo_note_ref2.get ()->position ()->setTicks (2000.0);
+  crescendo_note_ref3.get ()->position ()->setTicks (3000.0);
+
+  select_object (crescendo_note_ref1);
+  select_object (crescendo_note_ref2);
+  select_object (crescendo_note_ref3);
+
+  const auto note_velocity = [] (const auto &ref) {
+    return ref.template get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity ();
+  };
+
+  const bool result = operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Crescendo::kId),
+    QVariantMap{
+      { "startVelocity",  40                                      },
+      { "endVelocity",    100                                     },
+      { "curveAlgorithm",
+       ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::Exponent) },
+      { "curviness",      0.0                                     }
+  });
+  EXPECT_TRUE (result);
+
+  EXPECT_EQ (note_velocity (crescendo_note_ref1), 40);
+  EXPECT_EQ (note_velocity (crescendo_note_ref2), 70);
+  EXPECT_EQ (note_velocity (crescendo_note_ref3), 100);
+
+  // A single undo step for the whole function
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (note_velocity (crescendo_note_ref1), 64);
+  EXPECT_EQ (note_velocity (crescendo_note_ref2), 64);
+  EXPECT_EQ (note_velocity (crescendo_note_ref3), 64);
+  undo_stack_->redo ();
+  EXPECT_EQ (note_velocity (crescendo_note_ref2), 70);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionFlamAddsGraceNote)
+{
+  auto flam_note_ref = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  flam_note_ref.get ()->position ()->setTicks (1920.0);
+  flam_note_ref.get ()->length ()->setTicks (960.0);
+  flam_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+    ->setVelocity (60);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    flam_note_ref);
+  select_object (flam_note_ref);
+
+  const auto * mock_midi_note_owner =
+    static_cast<const structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote> *> (mock_owner_.get ());
+  const auto children_before =
+    mock_midi_note_owner->get_children_view ().size ();
+
+  const bool result = operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Flam::kId),
+    QVariantMap{
+      { "time",     10.0 },
+      { "velocity", 80   }
+  });
+  EXPECT_TRUE (result);
+
+  // The original note is truncated and the grace note is owned alongside it
+  auto * flam_note =
+    flam_note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  EXPECT_NEAR (flam_note->length ()->ticks (), 19.2, 1e-6);
+  ASSERT_EQ (
+    mock_midi_note_owner->get_children_view ().size (), children_before + 1);
+
+  undo_stack_->undo ();
+  EXPECT_DOUBLE_EQ (flam_note->length ()->ticks (), 960.0);
+  EXPECT_EQ (
+    mock_midi_note_owner->get_children_view ().size (), children_before);
+  undo_stack_->redo ();
+  EXPECT_NEAR (flam_note->length ()->ticks (), 19.2, 1e-6);
+  EXPECT_EQ (
+    mock_midi_note_owner->get_children_view ().size (), children_before + 1);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionNoSelection)
+{
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Crescendo::kId),
+    QVariantMap{
+      { "curveAlgorithm", 999 }
+  }));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionVelocityOutOfRange)
+{
+  auto velocity_note_ref = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    velocity_note_ref);
+  select_object (velocity_note_ref);
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Crescendo::kId),
+    QVariantMap{
+      { "startVelocity", 999 }
+  }));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionUnknownFunctionId)
+{
+  auto invalid_note_ref = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    invalid_note_ref);
+  select_object (invalid_note_ref);
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyMidiFunction (
+    selection_model_.get (), "no-such-function", {}));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyMidiFunctionInvalidCurveAlgorithm)
+{
+  auto algorithm_note_ref = utils::create_object<
+    structure::arrangement::MidiNote> (registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    algorithm_note_ref);
+  select_object (algorithm_note_ref);
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Crescendo::kId),
+    QVariantMap{
+      { "curveAlgorithm", 999 }
+  }));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionNoOpPushesNothing)
+{
+  auto noop_note_ref = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  noop_note_ref.get ()->length ()->setTicks (48.0);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    noop_note_ref);
+  select_object (noop_note_ref);
+
+  // Staccato targets a length of 48 ticks, which the note already has
+  EXPECT_TRUE (operator_->applyMidiFunction (
+    selection_model_.get (), function_id (MidiFunction::Staccato::kId), {}));
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Attaches a 2-channel source whose samples count up from 0 on both
+// channels, and returns the source's pool id
+static dsp::FileAudioSource::Uuid
+attach_ramp_source (
+  structure::project::ProjectRegistry    &registry,
+  dsp::TempoMapWrapper                   &tempo_map_wrapper,
+  structure::arrangement::ArrangerObject &clip,
+  int                                     num_frames)
+{
+  utils::audio::AudioBuffer frames{ 2, num_frames };
+  for (const auto ch : std::views::iota (0, 2))
+    {
+      for (const auto i : std::views::iota (0, num_frames))
+        {
+          frames.setSample (ch, i, static_cast<float> (i));
+        }
+    }
+  auto source_ref = utils::create_object<dsp::FileAudioSource> (
+    registry, frames, utils::audio::BitDepth::BIT_DEPTH_32,
+    units::sample_rate (44100), units::bpm (120.0), u8"OperatorAudioSource");
+  auto source_object_ref =
+    utils::create_object<structure::arrangement::AudioSourceObject> (
+      registry, tempo_map_wrapper, registry, source_ref);
+  qobject_cast<structure::arrangement::AudioClip *> (&clip)->set_source (
+    source_object_ref);
+  return source_ref.id ();
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionAppendsWholeClipInvertEntry)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  QSignalSpy rendered_spy (
+    audio_clip, &structure::arrangement::AudioClip::renderedAudioChanged);
+
+  const bool result = operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {});
+  EXPECT_TRUE (result);
+  EXPECT_EQ (undo_stack_->index (), 1);
+  EXPECT_EQ (rendered_spy.count (), 1);
+
+  // The function appended one entry covering the clip's audible span
+  const auto &entries = audio_clip->transform_entries ();
+  ASSERT_EQ (entries.size (), 1u);
+  const auto * invert = std::get_if<AudioFunction::Invert> (&entries.front ());
+  ASSERT_NE (invert, nullptr);
+  EXPECT_DOUBLE_EQ (
+    invert->start.asDouble (),
+    audio_clip->clipStartPosition ()->asTick ().asDouble ());
+  EXPECT_DOUBLE_EQ (
+    invert->end.asDouble (),
+    (audio_clip->clipStartPosition ()->asTick ()
+     + audio_clip->length ()->asTick ())
+      .asDouble ());
+
+  // The rendered audio is inverted, while the pooled samples stay intact
+  const auto window = AudioFunction::audio_clip_content_window (*audio_clip);
+  EXPECT_FLOAT_EQ (window.getSample (0, 3), -3.f);
+  EXPECT_FLOAT_EQ (window.getSample (1, 7), -7.f);
+  {
+    auto view = audio_clip->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioSourceObject>::get_children_view ();
+    const auto &samples = view.front ()->file_audio_source ().get_samples ();
+    EXPECT_FLOAT_EQ (samples.getSample (0, 3), 3.f);
+  }
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (audio_clip->transform_entries ().empty ());
+  undo_stack_->redo ();
+  EXPECT_EQ (audio_clip->transform_entries ().size (), 1u);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionFadeUsesSelectedRangeAndOptions)
+{
+  attach_ramp_source (
+    registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 88200);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+
+  const bool result = operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), 10.0,
+    20.0, function_id (AudioFunction::FadeIn::kId),
+    {
+      { "curviness", 0.25 }
+  });
+  EXPECT_TRUE (result);
+
+  const auto &entries = audio_clip->transform_entries ();
+  ASSERT_EQ (entries.size (), 1u);
+  const auto * fade = std::get_if<AudioFunction::FadeIn> (&entries.front ());
+  ASSERT_NE (fade, nullptr);
+  EXPECT_DOUBLE_EQ (fade->start.asDouble (), 10.0);
+  EXPECT_DOUBLE_EQ (fade->end.asDouble (), 20.0);
+  EXPECT_DOUBLE_EQ (fade->curve.curviness_, 0.25);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionNormalizeFreezesGainOverRange)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+
+  // The ramp's peak sample is 7, so normalizing to unity peak freezes a
+  // gain of 1/7 into the entry
+  const bool result = operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::NormalizePeak::kId), {});
+  EXPECT_TRUE (result);
+
+  const auto * normalize = std::get_if<AudioFunction::NormalizePeak> (
+    &audio_clip->transform_entries ().front ());
+  ASSERT_NE (normalize, nullptr);
+  EXPECT_NEAR (normalize->gain, 1.0 / 7.0, 1e-6);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionNormalizeDefaultRangeClampsToLoopEndOnLoopedClips)
+{
+  attach_ramp_source (
+    registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 2000);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  // Loop positions after the length, or the length change overrides them
+  audio_clip->position ()->setTicks (0.);
+  audio_clip->length ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (2000)).asDouble ());
+  audio_clip->clipStartPosition ()->setTicks (0.);
+  audio_clip->loopStartPosition ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (250)).asDouble ());
+  audio_clip->loopEndPosition ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (750)).asDouble ());
+  ASSERT_TRUE (audio_clip->looped ());
+
+  // Without a selection, the entry covers the audible span up to the loop
+  // end, not the full linear clip length
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::NormalizePeak::kId), {}));
+
+  const auto * normalize = std::get_if<AudioFunction::NormalizePeak> (
+    &audio_clip->transform_entries ().front ());
+  ASSERT_NE (normalize, nullptr);
+  EXPECT_DOUBLE_EQ (
+    normalize->start.asDouble (),
+    audio_clip->clipStartPosition ()->asTick ().asDouble ());
+  EXPECT_DOUBLE_EQ (
+    normalize->end.asDouble (),
+    audio_clip->loopEndPosition ()->asTick ().asDouble ());
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionFadeWithoutSelectionIsRefused)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::FadeIn::kId), {}));
+  EXPECT_EQ (refused_spy.count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionUnknownFunctionIdIsRefused)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, "no-such-function", {}));
+  EXPECT_EQ (refused_spy.count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionWithoutSourceIsRefused)
+{
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  // The fixture's audio clip carries no audio source
+  EXPECT_FALSE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {}));
+  EXPECT_EQ (refused_spy.count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, ApplyAutomationFunctionFlipVertical)
+{
+  const auto make_selected_point = [this] (double ticks, float value) {
+    auto point_ref = utils::create_object<
+      structure::arrangement::AutomationPoint> (registry_, *tempo_map_wrapper);
+    auto * point =
+      point_ref.get_object_as<structure::arrangement::AutomationPoint> ();
+    point->position ()->setTicks (ticks);
+    point->setValue (value);
+    test_objects_.get<structure::arrangement::random_access_index> ()
+      .push_back (point_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationPoint>::add_object (point_ref);
+    select_object (point_ref);
+    return point;
+  };
+  auto * point1 = make_selected_point (100.0, 0.2f);
+  auto * point2 = make_selected_point (200.0, 0.9f);
+  point1->curveOpts ()->setCurviness (0.4);
+  point2->curveOpts ()->setCurviness (-0.3);
+
+  const bool result = operator_->applyAutomationFunction (
+    selection_model_.get (),
+    function_id (AutomationFunction::FlipVertical::kId));
+  EXPECT_TRUE (result);
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  EXPECT_FLOAT_EQ (point1->value (), 0.8f);
+  EXPECT_FLOAT_EQ (point2->value (), 0.1f);
+  EXPECT_DOUBLE_EQ (point1->curveOpts ()->curviness (), -0.4);
+
+  undo_stack_->undo ();
+  EXPECT_FLOAT_EQ (point1->value (), 0.2f);
+  EXPECT_DOUBLE_EQ (point1->curveOpts ()->curviness (), 0.4);
+  undo_stack_->redo ();
+  EXPECT_FLOAT_EQ (point2->value (), 0.1f);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAutomationFunctionNoOpPushesNothing)
+{
+  auto point_ref = utils::create_object<structure::arrangement::AutomationPoint> (
+    registry_, *tempo_map_wrapper);
+  auto * point =
+    point_ref.get_object_as<structure::arrangement::AutomationPoint> ();
+  // Flipping a centered, straight point changes nothing
+  point->setValue (0.5f);
+  point->curveOpts ()->setCurviness (0.0);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    point_ref);
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AutomationPoint>::add_object (point_ref);
+  select_object (point_ref);
+
+  EXPECT_TRUE (operator_->applyAutomationFunction (
+    selection_model_.get (),
+    function_id (AutomationFunction::FlipVertical::kId)));
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAutomationFunctionUnknownFunctionId)
+{
+  auto point_ref = utils::create_object<structure::arrangement::AutomationPoint> (
+    registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    point_ref);
+  select_object (point_ref);
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyAutomationFunction (
+    selection_model_.get (), "no-such-function"));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAutomationFunctionNoPointsSelected)
+{
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyAutomationFunction (
+    selection_model_.get (), function_id (AutomationFunction::Flatten::kId)));
+  EXPECT_EQ (refused_spy.count (), 1);
 }
 
 } // namespace zrythm::actions

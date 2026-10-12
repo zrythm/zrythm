@@ -106,6 +106,9 @@ public:
   {
     return TimelineTick{ units::ticks (ticks ()) };
   }
+
+  /// Typed variant of @ref setTicks.
+  void set_ticks (TimelineTick tick) { setTicks (tick.asDouble ()); }
 };
 
 /**
@@ -124,6 +127,9 @@ public:
   using Position::Position;
 
   ContentTick asTick () const { return ContentTick{ units::ticks (ticks ()) }; }
+
+  /// Typed variant of @ref setTicks.
+  void set_ticks (ContentTick tick) { setTicks (tick.asDouble ()); }
 };
 
 } // namespace zrythm::dsp

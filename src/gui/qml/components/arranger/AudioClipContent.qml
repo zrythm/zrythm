@@ -10,6 +10,8 @@ import ZrythmGui
 Item {
   id: root
 
+  // Ink for the waveform, derived from the clip/track color (DESIGN.md "Clips")
+  property color inkColor
   required property AudioClip audioClip
   required property int contentHeight
   required property int contentWidth
@@ -22,11 +24,11 @@ Item {
     audioClip: root.audioClip
     height: root.contentHeight
     loopPreview: root.loopPreview
-    outlineColor: Qt.lighter(ZrythmTheme.clipContentColor, 1.4)
+    outlineColor: Qt.lighter(root.inkColor, 1.4)
     referenceWidth: root.referenceWidth
     referenceX: root.referenceX
     tempoMap: root.tempoMap
-    waveformColor: ZrythmTheme.clipContentColor
+    waveformColor: root.inkColor
     width: root.contentWidth
   }
 }

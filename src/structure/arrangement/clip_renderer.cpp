@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -409,10 +409,22 @@ ClipRenderer::build_native_looped_buffer (
   auto       &fs = clip.get_children_view ().front ()->file_audio_source ();
   const auto &samples = fs.get_samples ();
   const int   channels = samples.getNumChannels ();
-  const auto  clip_frames = units::samples (samples.getNumSamples ());
-  const auto  source_bpm = fs.source_bpm ();
-  const auto  sr = clip.get_tempo_map ().get_sample_rate ();
-  const auto  effective_bpm =
+
+  // Transform entries are already folded into the content window (in
+  // source sample space, before loop expansion), so ranged entries
+  // repeat in every loop iteration.
+  const juce::AudioSampleBuffer * read_buffer = &samples;
+  utils::audio::AudioBuffer       entry_window;
+  if (!clip.transform_entries ().empty ())
+    {
+      entry_window = AudioFunction::audio_clip_content_window (clip);
+      read_buffer = &entry_window;
+    }
+  const auto readable_frames = units::samples (read_buffer->getNumSamples ());
+
+  const auto source_bpm = fs.source_bpm ();
+  const auto sr = clip.get_tempo_map ().get_sample_rate ();
+  const auto effective_bpm =
     source_bpm > units::bpm (0.0)
       ? source_bpm
       : clip.get_tempo_map ().tempo_at_tick (
@@ -426,11 +438,14 @@ ClipRenderer::build_native_looped_buffer (
   };
 
   const auto clip_start_s = clamp (
-    native_offset (clip.clipStartPosition ()), units::samples (0), clip_frames);
+    native_offset (clip.clipStartPosition ()), units::samples (0),
+    readable_frames);
   const auto loop_start_s = clamp (
-    native_offset (clip.loopStartPosition ()), units::samples (0), clip_frames);
+    native_offset (clip.loopStartPosition ()), units::samples (0),
+    readable_frames);
   const auto loop_end_raw = clamp (
-    native_offset (clip.loopEndPosition ()), units::samples (0), clip_frames);
+    native_offset (clip.loopEndPosition ()), units::samples (0),
+    readable_frames);
   const auto loop_end_s =
     std::max (loop_end_raw, loop_start_s + units::samples (1));
   const bool do_loop = clip.looped ();
@@ -462,8 +477,8 @@ ClipRenderer::build_native_looped_buffer (
     {
       // au does not support min() on a tuple/initializer list so we do double
       // min()
-      const auto this_end =
-        min (min (loop_end_s, clip_frames), read_pos + (out_len - write_pos));
+      const auto this_end = min (
+        min (loop_end_s, readable_frames), read_pos + (out_len - write_pos));
       const auto this_len = this_end - read_pos;
       if (this_len <= units::samples (0))
         {
@@ -476,7 +491,7 @@ ClipRenderer::build_native_looped_buffer (
         }
       for (int c = 0; c < channels; ++c)
         b1.copyFrom (
-          c, write_pos.in<int> (units::samples), samples, c,
+          c, write_pos.in<int> (units::samples), *read_buffer, c,
           read_pos.in<int> (units::samples), this_len.in<int> (units::samples));
       write_pos += this_len;
       read_pos += this_len;

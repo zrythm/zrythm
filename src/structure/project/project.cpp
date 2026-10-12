@@ -405,28 +405,22 @@ Project::add_default_tracks ()
   const auto add_default_markers =
     [] (auto &marker_track_inner, const auto &factory, const auto &tempo_map) {
       {
-        auto marker_name = fmt::format ("[{}]", QObject::tr ("start"));
         auto marker_ref =
           factory->template get_builder<structure::arrangement::Marker> ()
             .with_start_ticks (units::ticks (0))
-            .with_name (
-              utils::Utf8String::from_utf8_encoded_string (marker_name)
-                .to_qstring ())
+            .with_name (QObject::tr ("Start"))
             .with_marker_type (structure::arrangement::Marker::MarkerType::Start)
             .build_in_registry ();
         marker_track_inner->add_object (marker_ref);
       }
 
       {
-        auto       marker_name = fmt::format ("[{}]", QObject::tr ("end"));
         const auto pos = tempo_map.musical_position_to_tick (
           { .bar = 129, .beat = 1, .sixteenth = 1, .tick = 0 });
         auto marker_ref =
           factory->template get_builder<structure::arrangement::Marker> ()
             .with_start_ticks (pos.asQuantity ())
-            .with_name (
-              utils::Utf8String::from_utf8_encoded_string (marker_name)
-                .to_qstring ())
+            .with_name (QObject::tr ("End"))
             .with_marker_type (structure::arrangement::Marker::MarkerType::End)
             .build_in_registry ();
         marker_track_inner->add_object (marker_ref);

@@ -7,6 +7,8 @@ import Zrythm
 ArrangerObjectBaseView {
   id: root
 
+  colorRole: ArrangerObjectBaseView.ColorRole.Content
+
   // Velocity shown by the label and used for the bar height; defaults to the
   // note's velocity and is overridden live by VelocityArranger during a drag.
   property int displayVelocity: midiNote.velocity

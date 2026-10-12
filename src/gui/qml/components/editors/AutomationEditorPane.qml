@@ -71,15 +71,18 @@ GridLayout {
     Layout.fillHeight: true
   }
 
+  // Selection of the pane's arranger, exposed for toolbar function menus.
+  readonly property alias selectionModel: arrangerSelectionModel
+
   ItemSelectionModel {
     id: arrangerSelectionModel
 
     function getObjectFromUnifiedIndex(unifiedIndex: var): ArrangerObject {
-      const sourceIndex = unifiedObjectsModel.mapToSource(unifiedIndex);
+      const sourceIndex = root.unifiedObjectsModel.mapToSource(unifiedIndex);
       return sourceIndex.data(ArrangerObjectListModel.ArrangerObjectPtrRole);
     }
 
-    model: unifiedObjectsModel
+    model: root.unifiedObjectsModel
   }
 
   AutomationArranger {

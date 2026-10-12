@@ -17,6 +17,7 @@
 #include "controllers/recording_materializer.h"
 #include "controllers/transport_controller.h"
 #include "gui/backend/editor_arranger_objects_model.h"
+#include "gui/backend/editor_function_registry.h"
 #include "gui/backend/timeline_arranger_objects_model.h"
 #include "gui/qquick/generic_plugin_ui_controller.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
@@ -62,6 +63,9 @@ class ProjectSession : public QObject
   Q_PROPERTY (
     zrythm::gui::EditorArrangerObjectsModel * editorArrangerObjects READ
       editorArrangerObjects CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::EditorFunctionRegistry * editorFunctions READ editorFunctions
+      CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
       arrangerObjectCreator CONSTANT FINAL)
@@ -117,6 +121,7 @@ public:
   undo::UndoStack *                          undoStack () const;
   TimelineArrangerObjectsModel *             timelineArrangerObjects () const;
   EditorArrangerObjectsModel *               editorArrangerObjects () const;
+  EditorFunctionRegistry *                   editorFunctions () const;
   zrythm::actions::ArrangerObjectCreator *   arrangerObjectCreator () const;
   zrythm::actions::ClipOperator *            clipOperator () const;
   zrythm::actions::TrackCreator *            trackCreator () const;
@@ -217,6 +222,7 @@ private:
   utils::QObjectUniquePtr<TimelineArrangerObjectsModel>
     timeline_arranger_objects_;
   utils::QObjectUniquePtr<EditorArrangerObjectsModel> editor_arranger_objects_;
+  utils::QObjectUniquePtr<EditorFunctionRegistry>     editor_functions_;
 
   // Quantize options for MIDI editing
   std::unique_ptr<old_dsp::QuantizeOptions> quantize_opts_editor_;

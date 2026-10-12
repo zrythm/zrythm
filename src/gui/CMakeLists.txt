@@ -202,12 +202,14 @@ endforeach()
 
 set(rel_qml_file_paths
   components/basic/ChannelStateButton.qml
+  components/basic/DestructiveButton.qml
   components/basic/DropAreaBase.qml
   components/basic/EditableLabel.qml
   components/basic/EditableValueDisplay.qml
   components/basic/ExpanderBox.qml
   components/basic/Knob.qml
   components/basic/LinkedButtons.qml
+  components/basic/MenuButton.qml
   components/basic/PlaceholderPage.qml
   components/basic/PresetBrowserPopup.qml
   components/basic/PresetListPopup.qml
@@ -258,6 +260,8 @@ set(rel_qml_file_paths
   components/arranger/ChordArranger.qml
   components/dialogs/ProgressDialog.qml
   components/dialogs/ProgressDialogWithFuture.qml
+  components/dialogs/FunctionDialog.qml
+  components/dialogs/FunctionParameterControl.qml
   components/editors/AudioEditorPane.qml
   components/editors/AutomationEditorPane.qml
   components/editors/ClipEditorGrid.qml
@@ -280,6 +284,7 @@ set(rel_qml_file_paths
   components/ClipLauncherView.qml
   components/ClipSlotView.qml
   components/DspLoadIndicator.qml
+  components/EditableSlider.qml
   components/FaderButtons.qml
   components/FaderControl.qml
   components/FileBrowserPage.qml

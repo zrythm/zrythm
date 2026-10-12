@@ -14,6 +14,7 @@ ClipBaseView {
     automationClip: root.automationClip
     contentHeight: root.contentHeight
     contentWidth: root.contentWidth
+    inkColor: root.contentInkColor
     loopPreview: root.loopPreview
     referenceWidth: root.referenceWidth
     referenceX: root.referenceX

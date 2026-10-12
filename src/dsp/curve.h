@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "utils/enum_utils.h"
+
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -195,9 +197,6 @@ evaluate_curve (
 
 } // namespace zrythm::dsp
 
-// These may be used in the UI eventually, but it's probably better to have a
-// method in CurveOptionsQmlAdapter that returns them (TODO)
-#if 0
 DEFINE_ENUM_FORMATTER (
   zrythm::dsp::CurveOptions::Algorithm,
   CurveOptions_Algorithm,
@@ -206,4 +205,3 @@ DEFINE_ENUM_FORMATTER (
   "Vital",
   QT_TR_NOOP_UTF8 ("Pulse"),
   QT_TR_NOOP_UTF8 ("Logarithmic"));
-#endif
