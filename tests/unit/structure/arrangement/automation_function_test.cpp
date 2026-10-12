@@ -13,13 +13,6 @@
 namespace zrythm::structure::arrangement
 {
 
-/// Content-tick literal for expectations.
-constexpr dsp::ContentTick
-ticks (double t)
-{
-  return dsp::ContentTick{ units::ticks (t) };
-}
-
 class AutomationFunctionTest : public ::testing::Test
 {
 protected:
@@ -35,7 +28,8 @@ protected:
   {
     auto point =
       std::make_unique<AutomationPoint> (*tempo_map_wrapper, parent.get ());
-    point->position ()->set_ticks (ticks (position_ticks));
+    point->position ()->set_ticks (
+      dsp::ContentTick{ units::ticks (position_ticks) });
     point->setValue (value);
     point->curveOpts ()->setCurviness (curviness);
     return point;
@@ -59,7 +53,9 @@ TEST_F (AutomationFunctionTest, FlipVerticalInvertsValuesAndCurveDirection)
   EXPECT_DOUBLE_EQ (result.new_states_[0].curve_curviness_, -0.4);
   EXPECT_DOUBLE_EQ (result.new_states_[1].curve_curviness_, 0.3);
   // Positions and algorithms stay
-  EXPECT_EQ (result.new_states_[0].position_ticks_, ticks (100.0));
+  EXPECT_EQ (
+    result.new_states_[0].position_ticks_,
+    dsp::ContentTick{ units::ticks (100.0) });
   EXPECT_EQ (
     result.new_states_[0].curve_algorithm_, p1->curveOpts ()->algorithm ());
 }
@@ -74,9 +70,15 @@ TEST_F (AutomationFunctionTest, FlipHorizontalMirrorsPositionsAcrossSpan)
   const auto result = AutomationFunction::FlipHorizontal::compute (points, {});
 
   // Points trade places from the outside in; the middle stays
-  EXPECT_EQ (result.new_states_[0].position_ticks_, ticks (500.0));
-  EXPECT_EQ (result.new_states_[1].position_ticks_, ticks (300.0));
-  EXPECT_EQ (result.new_states_[2].position_ticks_, ticks (100.0));
+  EXPECT_EQ (
+    result.new_states_[0].position_ticks_,
+    dsp::ContentTick{ units::ticks (500.0) });
+  EXPECT_EQ (
+    result.new_states_[1].position_ticks_,
+    dsp::ContentTick{ units::ticks (300.0) });
+  EXPECT_EQ (
+    result.new_states_[2].position_ticks_,
+    dsp::ContentTick{ units::ticks (100.0) });
   // Values stay
   EXPECT_FLOAT_EQ (result.new_states_[0].value_, 0.2f);
   EXPECT_FLOAT_EQ (result.new_states_[2].value_, 0.8f);
@@ -92,7 +94,9 @@ TEST_F (AutomationFunctionTest, FlipHorizontalWithSinglePointKeepsPosition)
 
   const auto result = AutomationFunction::FlipHorizontal::compute (points, {});
 
-  EXPECT_EQ (result.new_states_[0].position_ticks_, ticks (100.0));
+  EXPECT_EQ (
+    result.new_states_[0].position_ticks_,
+    dsp::ContentTick{ units::ticks (100.0) });
   EXPECT_DOUBLE_EQ (result.new_states_[0].curve_curviness_, -0.4);
 }
 
@@ -119,7 +123,8 @@ TEST_F (AutomationFunctionTest, ApplyWritesComputedStates)
 
   EXPECT_FLOAT_EQ (p1->value (), 0.8f);
   EXPECT_DOUBLE_EQ (p1->curveOpts ()->curviness (), -0.4);
-  EXPECT_EQ (p1->position ()->asTick (), ticks (100.0));
+  EXPECT_EQ (
+    p1->position ()->asTick (), dsp::ContentTick{ units::ticks (100.0) });
 }
 
 TEST_F (AutomationFunctionTest, KindFromIdFindsEveryKind)

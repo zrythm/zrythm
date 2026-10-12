@@ -13,17 +13,6 @@
 namespace zrythm::commands
 {
 
-namespace
-{
-
-constexpr dsp::ContentTick
-ticks (double t)
-{
-  return dsp::ContentTick{ units::ticks (t) };
-}
-
-} // namespace
-
 class SetAudioClipTransformsCommandTest : public ::testing::Test
 {
 protected:
@@ -64,7 +53,8 @@ TEST_F (SetAudioClipTransformsCommandTest, RedoAndUndoSwapEntryLists)
   std::vector<structure::arrangement::AudioFunction::Entry> after;
   after.push_back (
     structure::arrangement::AudioFunction::Invert{
-      .start = ticks (0.), .end = ticks (1920.) });
+      .start = dsp::ContentTick{ units::ticks (0.0) },
+      .end = dsp::ContentTick{ units::ticks (1920.0) } });
   SetAudioClipTransformsCommand command (
     clip_ref, std::move (after), QStringLiteral ("Apply Invert Polarity"));
 

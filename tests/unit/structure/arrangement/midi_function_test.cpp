@@ -20,13 +20,6 @@ namespace zrythm::structure::arrangement
 /// Ticks one millisecond spans at the default tempo (120 BPM, 960 PPQ).
 constexpr double kTicksPerMs = 1.92;
 
-/// Content-tick literal for expectations.
-constexpr dsp::ContentTick
-ticks (double t)
-{
-  return dsp::ContentTick{ units::ticks (t) };
-}
-
 /// One millisecond as a strong duration.
 constexpr units::precise_second_t
 ms (double milliseconds)
@@ -38,7 +31,8 @@ ms (double milliseconds)
 void
 expect_ticks_near (dsp::ContentTick actual, dsp::ContentTick expected)
 {
-  EXPECT_LT (dsp::abs (actual - expected), ticks (1e-6));
+  EXPECT_LT (
+    dsp::abs (actual - expected), dsp::ContentTick{ units::ticks (1e-6) });
 }
 
 class MidiFunctionTest : public ::testing::Test
@@ -56,8 +50,9 @@ protected:
   add_note (double position_ticks, double length_ticks, int pitch, int velocity)
   {
     auto note = std::make_unique<MidiNote> (*tempo_map_wrapper);
-    note->position ()->set_ticks (ticks (position_ticks));
-    note->length ()->set_ticks (ticks (length_ticks));
+    note->position ()->set_ticks (
+      dsp::ContentTick{ units::ticks (position_ticks) });
+    note->length ()->set_ticks (dsp::ContentTick{ units::ticks (length_ticks) });
     note->setPitch (pitch);
     note->setVelocity (velocity);
     notes_.push_back (std::move (note));
@@ -176,8 +171,12 @@ TEST_F (MidiFunctionTest, FlipVerticalMirrorsPitches)
   EXPECT_EQ (result.new_states_[1].pitch_, 62);
   EXPECT_EQ (result.new_states_[2].pitch_, 55);
   // Positions and lengths are untouched
-  EXPECT_EQ (result.new_states_[1].position_ticks_, ticks (960));
-  EXPECT_EQ (result.new_states_[1].length_ticks_, ticks (200));
+  EXPECT_EQ (
+    result.new_states_[1].position_ticks_,
+    dsp::ContentTick{ units::ticks (960.0) });
+  EXPECT_EQ (
+    result.new_states_[1].length_ticks_,
+    dsp::ContentTick{ units::ticks (200.0) });
 }
 
 TEST_F (MidiFunctionTest, FlipHorizontalReversesPositions)
@@ -188,12 +187,22 @@ TEST_F (MidiFunctionTest, FlipHorizontalReversesPositions)
 
   const auto result = MidiFunction::FlipHorizontal::compute (all_notes (), {});
 
-  EXPECT_EQ (result.new_states_[0].position_ticks_, ticks (1920));
-  EXPECT_EQ (result.new_states_[1].position_ticks_, ticks (960));
-  EXPECT_EQ (result.new_states_[2].position_ticks_, ticks (0));
+  EXPECT_EQ (
+    result.new_states_[0].position_ticks_,
+    dsp::ContentTick{ units::ticks (1920.0) });
+  EXPECT_EQ (
+    result.new_states_[1].position_ticks_,
+    dsp::ContentTick{ units::ticks (960.0) });
+  EXPECT_EQ (
+    result.new_states_[2].position_ticks_,
+    dsp::ContentTick{ units::ticks (0.0) });
   // Each note keeps its own length and pitch
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (100));
-  EXPECT_EQ (result.new_states_[2].length_ticks_, ticks (300));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (100.0) });
+  EXPECT_EQ (
+    result.new_states_[2].length_ticks_,
+    dsp::ContentTick{ units::ticks (300.0) });
   EXPECT_EQ (result.new_states_[1].pitch_, 64);
 }
 
@@ -205,10 +214,16 @@ TEST_F (MidiFunctionTest, LegatoExtendsNotesToTheNextNote)
 
   const auto result = MidiFunction::Legato::compute (all_notes (), {});
 
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (480));
-  EXPECT_EQ (result.new_states_[1].length_ticks_, ticks (480));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (480.0) });
+  EXPECT_EQ (
+    result.new_states_[1].length_ticks_,
+    dsp::ContentTick{ units::ticks (480.0) });
   // The last note is untouched
-  EXPECT_EQ (result.new_states_[2].length_ticks_, ticks (240));
+  EXPECT_EQ (
+    result.new_states_[2].length_ticks_,
+    dsp::ContentTick{ units::ticks (240.0) });
 }
 
 TEST_F (MidiFunctionTest, PortatoLeavesAGapBeforeTheNextNote)
@@ -219,9 +234,15 @@ TEST_F (MidiFunctionTest, PortatoLeavesAGapBeforeTheNextNote)
 
   const auto result = MidiFunction::Portato::compute (all_notes (), {});
 
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (432));
-  EXPECT_EQ (result.new_states_[1].length_ticks_, ticks (432));
-  EXPECT_EQ (result.new_states_[2].length_ticks_, ticks (240));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (432.0) });
+  EXPECT_EQ (
+    result.new_states_[1].length_ticks_,
+    dsp::ContentTick{ units::ticks (432.0) });
+  EXPECT_EQ (
+    result.new_states_[2].length_ticks_,
+    dsp::ContentTick{ units::ticks (240.0) });
 }
 
 TEST_F (MidiFunctionTest, StaccatoShortensAllNotes)
@@ -231,8 +252,12 @@ TEST_F (MidiFunctionTest, StaccatoShortensAllNotes)
 
   const auto result = MidiFunction::Staccato::compute (all_notes (), {});
 
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (48));
-  EXPECT_EQ (result.new_states_[1].length_ticks_, ticks (48));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (48.0) });
+  EXPECT_EQ (
+    result.new_states_[1].length_ticks_,
+    dsp::ContentTick{ units::ticks (48.0) });
 }
 
 TEST_F (MidiFunctionTest, FlamAddsGraceNoteAfterAndTruncatesNote)
@@ -244,12 +269,17 @@ TEST_F (MidiFunctionTest, FlamAddsGraceNoteAfterAndTruncatesNote)
   ASSERT_EQ (result.added_notes_.size (), 1u);
   EXPECT_EQ (result.added_notes_[0].source_index_, 0u);
   expect_ticks_near (
-    result.added_notes_[0].state_.position_ticks_, ticks (1939.2));
-  EXPECT_EQ (result.added_notes_[0].state_.length_ticks_, ticks (960));
+    result.added_notes_[0].state_.position_ticks_,
+    dsp::ContentTick{ units::ticks (1939.2) });
+  EXPECT_EQ (
+    result.added_notes_[0].state_.length_ticks_,
+    dsp::ContentTick{ units::ticks (960.0) });
   EXPECT_EQ (result.added_notes_[0].state_.pitch_, 60);
   EXPECT_EQ (result.added_notes_[0].state_.velocity_, 80);
   // The note is truncated to end where the grace note begins
-  expect_ticks_near (result.new_states_[0].length_ticks_, ticks (19.2));
+  expect_ticks_near (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (19.2) });
 }
 
 TEST_F (MidiFunctionTest, FlamKeepsNoteWhenOffsetExceedsItsLength)
@@ -259,9 +289,12 @@ TEST_F (MidiFunctionTest, FlamKeepsNoteWhenOffsetExceedsItsLength)
   const auto result =
     MidiFunction::Flam::compute (all_notes (), flam (2000, 80));
 
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (960));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (960.0) });
   expect_ticks_near (
-    result.added_notes_[0].state_.position_ticks_, ticks (1920 + 3840));
+    result.added_notes_[0].state_.position_ticks_,
+    dsp::ContentTick{ units::ticks (1920.0 + 3840.0) });
 }
 
 TEST_F (MidiFunctionTest, FlamEnforcesMinimumNoteLength)
@@ -270,7 +303,8 @@ TEST_F (MidiFunctionTest, FlamEnforcesMinimumNoteLength)
 
   const auto result = MidiFunction::Flam::compute (all_notes (), flam (0.1, 80));
 
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (1.0));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_, dsp::ContentTick{ units::ticks (1.0) });
 }
 
 TEST_F (MidiFunctionTest, FlamAddsGraceNoteBeforeForNegativeTime)
@@ -281,12 +315,19 @@ TEST_F (MidiFunctionTest, FlamAddsGraceNoteBeforeForNegativeTime)
 
   ASSERT_EQ (result.added_notes_.size (), 1u);
   expect_ticks_near (
-    result.added_notes_[0].state_.position_ticks_, ticks (1900.8));
+    result.added_notes_[0].state_.position_ticks_,
+    dsp::ContentTick{ units::ticks (1900.8) });
   // The grace note runs up to the note's start
-  expect_ticks_near (result.added_notes_[0].state_.length_ticks_, ticks (19.2));
+  expect_ticks_near (
+    result.added_notes_[0].state_.length_ticks_,
+    dsp::ContentTick{ units::ticks (19.2) });
   // The note itself is untouched
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (960));
-  EXPECT_EQ (result.new_states_[0].position_ticks_, ticks (1920));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (960.0) });
+  EXPECT_EQ (
+    result.new_states_[0].position_ticks_,
+    dsp::ContentTick{ units::ticks (1920.0) });
 }
 
 TEST_F (MidiFunctionTest, StrumSpreadsNotesAscendingByPitch)
@@ -301,14 +342,21 @@ TEST_F (MidiFunctionTest, StrumSpreadsNotesAscendingByPitch)
 
   // Creation order: 71, 60, 67, 64
   expect_ticks_near (
-    result.new_states_[0].position_ticks_, ticks (1920 + 3 * 10 * kTicksPerMs));
-  expect_ticks_near (result.new_states_[1].position_ticks_, ticks (1920));
+    result.new_states_[0].position_ticks_,
+    dsp::ContentTick{ units::ticks (1920 + 3 * 10 * kTicksPerMs) });
   expect_ticks_near (
-    result.new_states_[2].position_ticks_, ticks (1920 + 2 * 10 * kTicksPerMs));
+    result.new_states_[1].position_ticks_,
+    dsp::ContentTick{ units::ticks (1920.0) });
   expect_ticks_near (
-    result.new_states_[3].position_ticks_, ticks (1920 + 10 * kTicksPerMs));
+    result.new_states_[2].position_ticks_,
+    dsp::ContentTick{ units::ticks (1920 + 2 * 10 * kTicksPerMs) });
+  expect_ticks_near (
+    result.new_states_[3].position_ticks_,
+    dsp::ContentTick{ units::ticks (1920 + 10 * kTicksPerMs) });
   // Lengths are untouched
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (480));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (480.0) });
 }
 
 TEST_F (MidiFunctionTest, StrumSpreadsNotesDescendingByPitch)
@@ -320,9 +368,12 @@ TEST_F (MidiFunctionTest, StrumSpreadsNotesDescendingByPitch)
     MidiFunction::Strum::compute (all_notes (), strum (false, 40));
 
   // The highest pitch starts first
-  expect_ticks_near (result.new_states_[0].position_ticks_, ticks (1920));
   expect_ticks_near (
-    result.new_states_[1].position_ticks_, ticks (1920 + 20 * kTicksPerMs));
+    result.new_states_[0].position_ticks_,
+    dsp::ContentTick{ units::ticks (1920.0) });
+  expect_ticks_near (
+    result.new_states_[1].position_ticks_,
+    dsp::ContentTick{ units::ticks (1920 + 20 * kTicksPerMs) });
 }
 
 TEST_F (MidiFunctionTest, ComputeDoesNotMutateNotes)
@@ -348,8 +399,10 @@ TEST_F (MidiFunctionTest, ApplyWritesComputedStates)
 
   EXPECT_EQ (notes_[0]->pitch (), 69);
   EXPECT_EQ (notes_[1]->pitch (), 55);
-  EXPECT_EQ (notes_[0]->length ()->asTick (), ticks (48));
-  EXPECT_EQ (notes_[1]->length ()->asTick (), ticks (48));
+  EXPECT_EQ (
+    notes_[0]->length ()->asTick (), dsp::ContentTick{ units::ticks (48.0) });
+  EXPECT_EQ (
+    notes_[1]->length ()->asTick (), dsp::ContentTick{ units::ticks (48.0) });
 }
 
 TEST_F (MidiFunctionTest, ComputeOnEmptySelectionIsEmpty)
@@ -373,8 +426,8 @@ TEST_F (MidiFunctionTest, FlamOffsetAccountsForClipStretch)
 
   auto note_ref = utils::create_object<MidiNote> (registry, *tempo_map_wrapper);
   auto * note = note_ref.get_object_as<MidiNote> ();
-  note->position ()->set_ticks (ticks (1000.0));
-  note->length ()->set_ticks (ticks (960.0));
+  note->position ()->set_ticks (dsp::ContentTick{ units::ticks (1000.0) });
+  note->length ()->set_ticks (dsp::ContentTick{ units::ticks (960.0) });
   clip->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
 
   std::vector<MidiNote *> notes{ note };
@@ -384,7 +437,8 @@ TEST_F (MidiFunctionTest, FlamOffsetAccountsForClipStretch)
   // which is content tick 1153.6 — not the unwarped 1184.32
   ASSERT_EQ (result.added_notes_.size (), 1u);
   expect_ticks_near (
-    result.added_notes_[0].state_.position_ticks_, ticks (1153.6));
+    result.added_notes_[0].state_.position_ticks_,
+    dsp::ContentTick{ units::ticks (1153.6) });
 }
 
 // A negative Flam offset that would reach before the clip start is
@@ -398,7 +452,9 @@ TEST_F (MidiFunctionTest, FlamGraceNoteBeforeClipStartIsClamped)
 
   // 100 ms at 120 BPM is 192 ticks, so the grace note would start at -92
   ASSERT_EQ (result.added_notes_.size (), 1u);
-  EXPECT_EQ (result.added_notes_[0].state_.position_ticks_, ticks (0.0));
+  EXPECT_EQ (
+    result.added_notes_[0].state_.position_ticks_,
+    dsp::ContentTick{ units::ticks (0.0) });
 }
 
 // Notes sharing an onset form one event: every chord tone sustains until
@@ -411,9 +467,15 @@ TEST_F (MidiFunctionTest, LegatoExtendsChordTonesToNextDistinctOnset)
 
   const auto result = MidiFunction::Legato::compute (all_notes (), {});
 
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (960));
-  EXPECT_EQ (result.new_states_[1].length_ticks_, ticks (960));
-  EXPECT_EQ (result.new_states_[2].length_ticks_, ticks (240));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (960.0) });
+  EXPECT_EQ (
+    result.new_states_[1].length_ticks_,
+    dsp::ContentTick{ units::ticks (960.0) });
+  EXPECT_EQ (
+    result.new_states_[2].length_ticks_,
+    dsp::ContentTick{ units::ticks (240.0) });
 }
 
 // Portato behaves like legato over chord tones but leaves a gap before
@@ -426,9 +488,15 @@ TEST_F (MidiFunctionTest, PortatoLeavesGapAfterChordTones)
 
   const auto result = MidiFunction::Portato::compute (all_notes (), {});
 
-  EXPECT_EQ (result.new_states_[0].length_ticks_, ticks (960 - 48));
-  EXPECT_EQ (result.new_states_[1].length_ticks_, ticks (960 - 48));
-  EXPECT_EQ (result.new_states_[2].length_ticks_, ticks (240));
+  EXPECT_EQ (
+    result.new_states_[0].length_ticks_,
+    dsp::ContentTick{ units::ticks (960.0 - 48.0) });
+  EXPECT_EQ (
+    result.new_states_[1].length_ticks_,
+    dsp::ContentTick{ units::ticks (960.0 - 48.0) });
+  EXPECT_EQ (
+    result.new_states_[2].length_ticks_,
+    dsp::ContentTick{ units::ticks (240.0) });
 }
 
 TEST_F (MidiFunctionTest, KindFromIdFindsEveryKind)

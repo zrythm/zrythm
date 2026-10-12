@@ -17,13 +17,6 @@
 namespace zrythm::commands
 {
 
-/// Content-tick literal for state construction and expectations.
-constexpr dsp::ContentTick
-ticks (double t)
-{
-  return dsp::ContentTick{ units::ticks (t) };
-}
-
 class TransformArrangerObjectsCommandTest : public ::testing::Test
 {
 protected:
@@ -50,8 +43,8 @@ protected:
       factory->get_builder<structure::arrangement::MidiNote> ()
         .build_in_registry ();
     auto * note = note_ref->get_object_as<structure::arrangement::MidiNote> ();
-    note->position ()->set_ticks (ticks (1920));
-    note->length ()->set_ticks (ticks (480));
+    note->position ()->set_ticks (dsp::ContentTick{ units::ticks (1920.0) });
+    note->length ()->set_ticks (dsp::ContentTick{ units::ticks (480.0) });
     note->setPitch (60);
     note->setVelocity (40);
   }
@@ -72,16 +65,18 @@ protected:
 TEST_F (TransformArrangerObjectsCommandTest, RedoWritesAfterStates)
 {
   TransformableObjectState after;
-  after.position_ticks_ = ticks (3840);
-  after.length_ticks_ = ticks (96);
+  after.position_ticks_ = dsp::ContentTick{ units::ticks (3840.0) };
+  after.length_ticks_ = dsp::ContentTick{ units::ticks (96.0) };
   after.pitch_ = 72;
   after.velocity_ = 111;
 
   TransformArrangerObjectsCommand command ({ *note_ref }, { after }, "Test");
   command.redo ();
 
-  EXPECT_EQ (note ()->position ()->asTick (), ticks (3840));
-  EXPECT_EQ (note ()->length ()->asTick (), ticks (96));
+  EXPECT_EQ (
+    note ()->position ()->asTick (), dsp::ContentTick{ units::ticks (3840.0) });
+  EXPECT_EQ (
+    note ()->length ()->asTick (), dsp::ContentTick{ units::ticks (96.0) });
   EXPECT_EQ (note ()->pitch (), 72);
   EXPECT_EQ (note ()->velocity (), 111);
 }
@@ -89,15 +84,17 @@ TEST_F (TransformArrangerObjectsCommandTest, RedoWritesAfterStates)
 TEST_F (TransformArrangerObjectsCommandTest, UndoRestoresBeforeStates)
 {
   TransformableObjectState after;
-  after.length_ticks_ = ticks (96);
+  after.length_ticks_ = dsp::ContentTick{ units::ticks (96.0) };
   after.velocity_ = 111;
 
   TransformArrangerObjectsCommand command ({ *note_ref }, { after }, "Test");
   command.redo ();
   command.undo ();
 
-  EXPECT_EQ (note ()->position ()->asTick (), ticks (1920));
-  EXPECT_EQ (note ()->length ()->asTick (), ticks (480));
+  EXPECT_EQ (
+    note ()->position ()->asTick (), dsp::ContentTick{ units::ticks (1920.0) });
+  EXPECT_EQ (
+    note ()->length ()->asTick (), dsp::ContentTick{ units::ticks (480.0) });
   EXPECT_EQ (note ()->pitch (), 60);
   EXPECT_EQ (note ()->velocity (), 40);
 }
@@ -105,8 +102,8 @@ TEST_F (TransformArrangerObjectsCommandTest, UndoRestoresBeforeStates)
 TEST_F (TransformArrangerObjectsCommandTest, RepeatedCyclesAreIdempotent)
 {
   TransformableObjectState after;
-  after.position_ticks_ = ticks (0);
-  after.length_ticks_ = ticks (48);
+  after.position_ticks_ = dsp::ContentTick{ units::ticks (0.0) };
+  after.length_ticks_ = dsp::ContentTick{ units::ticks (48.0) };
   after.pitch_ = 127;
   after.velocity_ = 127;
 
@@ -114,13 +111,18 @@ TEST_F (TransformArrangerObjectsCommandTest, RepeatedCyclesAreIdempotent)
   for (int i = 0; i < 3; ++i)
     {
       command.redo ();
-      EXPECT_EQ (note ()->position ()->asTick (), ticks (0));
-      EXPECT_EQ (note ()->length ()->asTick (), ticks (48));
+      EXPECT_EQ (
+        note ()->position ()->asTick (), dsp::ContentTick{ units::ticks (0.0) });
+      EXPECT_EQ (
+        note ()->length ()->asTick (), dsp::ContentTick{ units::ticks (48.0) });
       EXPECT_EQ (note ()->pitch (), 127);
       EXPECT_EQ (note ()->velocity (), 127);
       command.undo ();
-      EXPECT_EQ (note ()->position ()->asTick (), ticks (1920));
-      EXPECT_EQ (note ()->length ()->asTick (), ticks (480));
+      EXPECT_EQ (
+        note ()->position ()->asTick (),
+        dsp::ContentTick{ units::ticks (1920.0) });
+      EXPECT_EQ (
+        note ()->length ()->asTick (), dsp::ContentTick{ units::ticks (480.0) });
       EXPECT_EQ (note ()->pitch (), 60);
       EXPECT_EQ (note ()->velocity (), 40);
     }
