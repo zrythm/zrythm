@@ -591,6 +591,19 @@ Flat 24 × 24 (radius 6) icon buttons with
 | Keyboard focus | 2 px accent border |
 | Toggled (checked) | accent-colored icon and text (no fill) |
 
+### Menu buttons
+
+A toolbar button that opens a menu of choices instead of acting
+immediately. The label is a noun naming what the menu contains
+("Filters", "Presets", "Functions"); action verbs are reserved for
+controls that act immediately. The trailing 12 px chevron-down glyph in
+`textColor` — the same dropdown cue as the combo box — signals the
+popup. An optional 16 px leading icon may aid recognition. While state
+controlled by the menu is in effect (e.g. filters applied), label and
+chevron take the accent color per the toolbar button toggled rule;
+command menus never appear toggled. The tooltip names the outcome
+("Filter the plugin list").
+
 ### Channel state buttons
 
 Dense checkable chips for channel and signal states on track headers

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -203,11 +203,12 @@ GridLayout {
           }
         }
       },
-      ToolButton {
+      MenuButton {
         text: qsTr("Functions")
+        tooltipText: qsTr("Apply a function to the selection")
         visible: root.activeFunctionDefinitions.length > 0
 
-        onClicked: functionsMenu.popup()
+        menu: functionsMenu
 
         Menu {
           id: functionsMenu
