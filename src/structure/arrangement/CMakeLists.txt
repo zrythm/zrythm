@@ -15,6 +15,7 @@ target_sources(zrythm_arrangement_lib
     arranger_object.cpp
     arranger_object_list_model.cpp
     audio_clip.cpp
+    audio_function.cpp
     audio_source_object.cpp
     automation_point.cpp
     automation_clip.cpp
@@ -48,6 +49,7 @@ target_sources(zrythm_arrangement_lib
       arranger_object_list_model.h
       arranger_object_owner.h
       audio_clip.h
+      audio_function.h
       audio_source_object.h
       automation_point.h
       automation_clip.h

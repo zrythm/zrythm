@@ -27,6 +27,8 @@ GridLayout {
       return root.session.editorFunctions.midiFunctions;
     case ArrangerObject.AutomationClip:
       return root.session.editorFunctions.automationFunctions;
+    case ArrangerObject.AudioClip:
+      return root.session.editorFunctions.audioFunctions;
     default:
       return [];
     }
@@ -37,6 +39,8 @@ GridLayout {
     switch (editorSpecializedStack.currentIndex) {
     case 0:
       return midiEditorLoader.item ? midiEditorLoader.item.selectionModel : null;
+    case 1:
+      return audioEditorLoader.item ? audioEditorLoader.item.selectionModel : null;
     case 2:
       return automationEditorLoader.item ? automationEditorLoader.item.selectionModel : null;
     default:
@@ -57,6 +61,8 @@ GridLayout {
     case EditorFunctionDefinition.Automation:
       root.session.arrangerObjectSelectionOperator.applyAutomationFunction(root.activeSelectionModel, definition.id);
       break;
+    case EditorFunctionDefinition.Audio:
+      root.session.arrangerObjectSelectionOperator.applyAudioFunction(root.clipObject, root.clipEditor.audioEditor.selectionStartTick, root.clipEditor.audioEditor.selectionEndTick, definition.id, options);
       break;
     }
   }

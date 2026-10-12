@@ -325,6 +325,21 @@ TEST_F (
       factory.create_audio_clip_with_clip (audio_source_ref, units::ticks (0));
     auto * clip = clip_ref.get_object_as<structure::arrangement::AudioClip> ();
     clip->name ()->setName (u8"Audio Clip");
+    // Non-destructive transform entries, covering the range-only, gain and
+    // curve payload shapes
+    clip->set_transform_entries (
+      {
+        structure::arrangement::AudioFunction::Invert{
+                                                      .start = dsp::ContentTick{ units::ticks (0.) },
+                                                      .end = dsp::ContentTick{ units::ticks (100.) } },
+        structure::arrangement::AudioFunction::NormalizePeak{
+                                                      .start = dsp::ContentTick{ units::ticks (0.) },
+                                                      .end = dsp::ContentTick{ units::ticks (100.) },
+                                                      .gain = 0.5 },
+        structure::arrangement::AudioFunction::FadeOut{
+                                                      .start = dsp::ContentTick{ units::ticks (0.) },
+                                                      .end = dsp::ContentTick{ units::ticks (100.) } },
+    });
     track->lanes ()->at (0)->structure::arrangement::
       ArrangerObjectOwner<structure::arrangement::AudioClip>::add_object (
         clip_ref);

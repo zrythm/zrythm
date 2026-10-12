@@ -74,7 +74,9 @@ Item {
 
   /// Converts an absolute content-item x (mouse.x) to clip content ticks.
   function contentTicksAt(x: real): real {
-    const absTimelineTicks = root.ticksFromX(x);
+    // Timeline positions before the origin are invalid (the tempo map
+    // asserts on them), so clamp x dragged left of the origin
+    const absTimelineTicks = Math.max(0, root.ticksFromX(x));
     const relTimelineTicks = absTimelineTicks - root.clipObject.position.ticks;
     const warp = root.clipObject.contentWarp;
     return warp ? warp.timelineTicksRelativeToContent(relTimelineTicks) : relTimelineTicks;

@@ -1,8 +1,20 @@
-// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
+#include <optional>
+#include <ranges>
+#include <variant>
+#include <vector>
+
+#include "dsp/tempo_map.h"
+#include "structure/arrangement/audio_clip.h"
 #include "structure/arrangement/audio_function.h"
+#include "structure/arrangement/editor_function_kind.h"
 #include "utils/enum_utils.h"
+#include "utils/exceptions.h"
+#include "utils/float_ranges.h"
+#include "utils/logger.h"
 #include "utils/utf8_string.h"
 
 #include <rubberband/rubberband-c.h>
@@ -29,6 +41,432 @@ DEFINE_ENUM_FORMATTER (
 namespace zrythm::structure::arrangement
 {
 
+// --- Function kinds ---
+
+// String literals are kept directly inside the QObject::tr call: lupdate
+// only extracts literals written there.
+namespace AudioFunction
+{
+
+utils::Utf8String
+Invert::label (bool translate)
+{
+  return translate
+           ? utils::Utf8String::from_qstring (QObject::tr ("Invert Polarity"))
+           : utils::Utf8String (u8"Invert Polarity");
+}
+
+std::vector<EditorFunctionParam<Invert>>
+Invert::params ()
+{
+  return {};
+}
+
+utils::Utf8String
+Reverse::label (bool translate)
+{
+  return translate ? utils::Utf8String::from_qstring (QObject::tr ("Reverse"))
+                   : utils::Utf8String (u8"Reverse");
+}
+
+std::vector<EditorFunctionParam<Reverse>>
+Reverse::params ()
+{
+  return {};
+}
+
+utils::Utf8String
+NormalizePeak::label (bool translate)
+{
+  return translate
+           ? utils::Utf8String::from_qstring (QObject::tr ("Normalize Peak"))
+           : utils::Utf8String (u8"Normalize Peak");
+}
+
+std::vector<EditorFunctionParam<NormalizePeak>>
+NormalizePeak::params ()
+{
+  return {};
+}
+
+utils::Utf8String
+NormalizeRms::label (bool translate)
+{
+  return translate
+           ? utils::Utf8String::from_qstring (QObject::tr ("Normalize RMS"))
+           : utils::Utf8String (u8"Normalize RMS");
+}
+
+std::vector<EditorFunctionParam<NormalizeRms>>
+NormalizeRms::params ()
+{
+  return {};
+}
+
+utils::Utf8String
+FadeIn::label (bool translate)
+{
+  return translate ? utils::Utf8String::from_qstring (QObject::tr ("Fade In"))
+                   : utils::Utf8String (u8"Fade In");
+}
+
+std::vector<EditorFunctionParam<FadeIn>>
+FadeIn::params ()
+{
+  return {
+    { utils::Utf8String (u8"curveAlgorithm"),
+     utils::Utf8String::from_qstring (QObject::tr ("Curve")),
+     { .kind = ParamSpec::Kind::Choice,
+        .choices = CurveOptions_Algorithm_to_qml_list (),
+        .default_value =
+          ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::SuperEllipse) },
+     [] (FadeIn &f, ParamValue v) {
+        f.curve.algo_ =
+          static_cast<dsp::CurveOptions::Algorithm> (std::get<int> (v));
+      } },
+    { utils::Utf8String (u8"curviness"),
+     utils::Utf8String::from_qstring (QObject::tr ("Curviness")),
+     { .kind = ParamSpec::Kind::Double,
+        .minimum = -1.0,
+        .maximum = 1.0,
+        .step = 0.01,
+        .default_value = 0.5 },
+     [] (FadeIn &f, ParamValue v) {
+        f.curve.curviness_ = std::get<double> (v);
+      } },
+  };
+}
+
+utils::Utf8String
+FadeOut::label (bool translate)
+{
+  return translate ? utils::Utf8String::from_qstring (QObject::tr ("Fade Out"))
+                   : utils::Utf8String (u8"Fade Out");
+}
+
+std::vector<EditorFunctionParam<FadeOut>>
+FadeOut::params ()
+{
+  return {
+    { utils::Utf8String (u8"curveAlgorithm"),
+     utils::Utf8String::from_qstring (QObject::tr ("Curve")),
+     { .kind = ParamSpec::Kind::Choice,
+        .choices = CurveOptions_Algorithm_to_qml_list (),
+        .default_value =
+          ENUM_VALUE_TO_INT (dsp::CurveOptions::Algorithm::SuperEllipse) },
+     [] (FadeOut &f, ParamValue v) {
+        f.curve.algo_ =
+          static_cast<dsp::CurveOptions::Algorithm> (std::get<int> (v));
+      } },
+    { utils::Utf8String (u8"curviness"),
+     utils::Utf8String::from_qstring (QObject::tr ("Curviness")),
+     { .kind = ParamSpec::Kind::Double,
+        .minimum = -1.0,
+        .maximum = 1.0,
+        .step = 0.01,
+        .default_value = 0.5 },
+     [] (FadeOut &f, ParamValue v) {
+        f.curve.curviness_ = std::get<double> (v);
+      } },
+  };
+}
+
+std::optional<Entry>
+kind_from_id (std::string_view id)
+{
+  return detail::kind_from_id<Entry> (id);
+}
+
+utils::Utf8String
+label (const Entry &entry, bool translate)
+{
+  return detail::label<Entry> (entry, translate);
+}
+
+namespace
+{
+constexpr auto kKindKey = "kind"sv;
+constexpr auto kStartKey = "start"sv;
+constexpr auto kEndKey = "end"sv;
+constexpr auto kGainKey = "gain"sv;
+constexpr auto kCurveKey = "curve"sv;
+}
+
+void
+entry_to_json (nlohmann::json &j, const Entry &entry)
+{
+  std::visit (
+    [&] (const auto &k) {
+      using K = std::decay_t<decltype (k)>;
+      j[kKindKey] = std::string (K::kId);
+      j[kStartKey] = k.start.asDouble ();
+      j[kEndKey] = k.end.asDouble ();
+      if constexpr (requires { k.gain; })
+        j[kGainKey] = k.gain;
+      if constexpr (requires { k.curve; })
+        to_json (j[kCurveKey], k.curve);
+    },
+    entry);
+}
+
+void
+entry_from_json (const nlohmann::json &j, Entry &entry)
+{
+  const auto kind_tag = j.at (kKindKey).get<std::string> ();
+  const auto kind = kind_from_id (kind_tag);
+  if (!kind)
+    {
+      throw ZrythmException (
+        fmt::format ("Unknown audio transform entry kind: {}", kind_tag));
+    }
+  entry = *kind;
+  std::visit (
+    [&] (auto &k) {
+      k.start =
+        dsp::ContentTick{ units::ticks (j.at (kStartKey).get<double> ()) };
+      k.end = dsp::ContentTick{ units::ticks (j.at (kEndKey).get<double> ()) };
+      if constexpr (requires { k.gain; })
+        j.at (kGainKey).get_to (k.gain);
+      if constexpr (requires { k.curve; })
+        from_json (j.at (kCurveKey), k.curve);
+    },
+    entry);
+}
+
+namespace
+{
+
+/// Maps content ticks to native source samples for the clip's effective
+/// BPM and sample rate.
+struct NativeMapping
+{
+  units::bpm_t                 effective_bpm;
+  units::precise_sample_rate_t sample_rate;
+
+  units::sample_t ticks_to_native (dsp::ContentTick t) const
+  {
+    return au::round_as<int64_t> (
+      units::samples,
+      units::ticks (t.asDouble ()) / effective_bpm * sample_rate);
+  }
+};
+
+NativeMapping
+native_mapping_for (const AudioClip &clip, const dsp::FileAudioSource &fs)
+{
+  const auto &tempo_map = clip.get_tempo_map ();
+  const auto  source_bpm = fs.source_bpm ();
+  return {
+    source_bpm > units::bpm (0.0)
+      ? source_bpm
+      : tempo_map.tempo_at_tick (
+          units::ticks (static_cast<int64_t> (clip.position ()->ticks ()))),
+    tempo_map.get_sample_rate ()
+  };
+}
+
+} // namespace
+
+utils::audio::AudioBuffer
+audio_clip_content_window (const AudioClip &clip)
+{
+  z_return_val_if_fail (
+    !clip.get_children_view ().empty (), utils::audio::AudioBuffer{});
+  auto       &fs = clip.get_children_view ().front ()->file_audio_source ();
+  const auto &samples = fs.get_samples ();
+  const auto  channels = samples.getNumChannels ();
+  const auto  clip_frames = units::samples (samples.getNumSamples ());
+  const auto  mapping = native_mapping_for (clip, fs);
+  const auto  native_offset = [&mapping] (const dsp::Position * pos) {
+    return mapping.ticks_to_native (
+      dsp::ContentTick{ units::ticks (pos->ticks ()) });
+  };
+
+  const auto clip_start_s = clamp (
+    native_offset (clip.clipStartPosition ()), units::samples (0), clip_frames);
+  const auto loop_end_s = clamp (
+    native_offset (clip.loopEndPosition ()), units::samples (0), clip_frames);
+  const auto length_s = max (units::samples (0), native_offset (clip.length ()));
+  const auto end = max (
+    clip_start_s, min (clip_frames, max (loop_end_s, clip_start_s + length_s)));
+
+  utils::audio::AudioBuffer window{ channels, end.in<int> (units::samples) };
+  for (const auto ch : std::views::iota (0, channels))
+    {
+      window.copyFrom (ch, 0, samples, ch, 0, end.in<int> (units::samples));
+    }
+
+  for (const auto &entry : clip.transform_entries ())
+    {
+      const auto [entry_start, entry_end] = std::visit (
+        [] (const auto &k) { return std::pair{ k.start, k.end }; }, entry);
+      const auto start =
+        clamp (mapping.ticks_to_native (entry_start), units::samples (0), end);
+      const auto stop =
+        clamp (mapping.ticks_to_native (entry_end), units::samples (0), end);
+      if (stop <= start)
+        continue;
+      apply_entry_to_buffer (
+        window, entry,
+        units::samples (static_cast<uint64_t> (start.in (units::samples))),
+        units::samples (
+          static_cast<uint64_t> ((stop - start).in (units::samples))));
+    }
+
+  return window;
+}
+
+double
+normalize_gain (
+  const AudioClip &clip,
+  dsp::ContentTick start,
+  dsp::ContentTick end,
+  bool             rms)
+{
+  z_return_val_if_fail (!clip.get_children_view ().empty (), 1.0);
+  const auto window = audio_clip_content_window (clip);
+  const auto frames = units::samples (window.getNumSamples ());
+  auto      &fs = clip.get_children_view ().front ()->file_audio_source ();
+  const auto mapping = native_mapping_for (clip, fs);
+  const auto range_start =
+    clamp (mapping.ticks_to_native (start), units::samples (0), frames);
+  const auto range_end =
+    clamp (mapping.ticks_to_native (end), units::samples (0), frames);
+  if (range_end <= range_start)
+    return 1.0;
+
+  float  peak = 0.F;
+  double sum_of_squares = 0.0;
+  size_t sample_count = 0;
+  for (const auto ch : std::views::iota (0, window.getNumChannels ()))
+    {
+      for (
+        const auto i : std::views::iota (
+          range_start.in<int64_t> (units::samples),
+          range_end.in<int64_t> (units::samples)))
+        {
+          const auto sample = window.getSample (ch, static_cast<int> (i));
+          peak = std::max (peak, std::abs (sample));
+          sum_of_squares +=
+            static_cast<double> (sample) * static_cast<double> (sample);
+          ++sample_count;
+        }
+    }
+  if (sample_count == 0)
+    return 1.0;
+  if (rms)
+    {
+      const double rms_value =
+        std::sqrt (sum_of_squares / static_cast<double> (sample_count));
+      return rms_value > 0.0 ? 1.0 / rms_value : 1.0;
+    }
+  return peak > 0.F ? 1.0 / peak : 1.0;
+}
+
+namespace
+{
+
+/// Per-frame gain multipliers for a fade over @p num_frames frames.
+std::vector<float>
+curve_gains (int num_frames, const dsp::CurveOptions &curve, bool rising)
+{
+  std::vector<float> gains (static_cast<size_t> (num_frames));
+  for (const auto i : std::views::iota (0, num_frames))
+    {
+      const auto fraction =
+        (num_frames == 1)
+          ? 1.0
+          : static_cast<double> (i) / static_cast<double> (num_frames - 1);
+      gains[static_cast<size_t> (i)] = static_cast<float> (
+        rising
+          ? curve.get_normalized_y (fraction, false)
+          : curve.get_normalized_y (1.0 - fraction, false));
+    }
+  return gains;
+}
+
+void
+mul_by_gains (std::span<float> range, const std::vector<float> &gains)
+{
+  for (const auto [sample, gain] : std::views::zip (range, gains))
+    {
+      sample *= gain;
+    }
+}
+
+} // namespace
+
+void
+Invert::apply (std::span<float> range, const Invert &)
+{
+  utils::float_ranges::mul_k2 (range, -1.f);
+}
+
+void
+Reverse::apply (std::span<float> range, const Reverse &)
+{
+  std::ranges::reverse (range);
+}
+
+void
+NormalizePeak::apply (std::span<float> range, const NormalizePeak &kind)
+{
+  utils::float_ranges::mul_k2 (range, static_cast<float> (kind.gain));
+}
+
+void
+NormalizeRms::apply (std::span<float> range, const NormalizeRms &kind)
+{
+  utils::float_ranges::mul_k2 (range, static_cast<float> (kind.gain));
+}
+
+void
+FadeIn::apply (std::span<float> range, const FadeIn &kind)
+{
+  mul_by_gains (
+    range, curve_gains (static_cast<int> (range.size ()), kind.curve, true));
+}
+
+void
+FadeOut::apply (std::span<float> range, const FadeOut &kind)
+{
+  mul_by_gains (
+    range, curve_gains (static_cast<int> (range.size ()), kind.curve, false));
+}
+
+void
+apply_entry_to_buffer (
+  utils::audio::AudioBuffer &buffer,
+  const Entry               &entry,
+  units::sample_u64_t        start_frame,
+  units::sample_u64_t        num_frames)
+{
+  const auto total_frames = buffer.getNumSamples ();
+  const auto start = std::clamp<int64_t> (
+    static_cast<int64_t> (start_frame.in (units::samples)), 0, total_frames);
+  const auto length = std::clamp<int64_t> (
+    static_cast<int64_t> (num_frames.in (units::samples)), 0,
+    total_frames - start);
+  const auto channels = buffer.getNumChannels ();
+  if (channels == 0 || length == 0)
+    return;
+
+  for (const auto ch : std::views::iota (0, channels))
+    {
+      const std::span<float> range{
+        buffer.getWritePointer (ch) + start, static_cast<size_t> (length)
+      };
+      std::visit (
+        [&] (const auto &k) {
+          using K = std::decay_t<decltype (k)>;
+          K::apply (range, k);
+        },
+        entry);
+    }
+}
+
+} // namespace AudioFunction
+
 utils::Utf8String
 audio_function_get_action_target_for_type (AudioFunctionType type)
 {
@@ -37,6 +475,12 @@ audio_function_get_action_target_for_type (AudioFunctionType type)
   auto substituted = type_str_lower.replace (u8" ", u8"-");
 
   return substituted;
+}
+
+utils::Utf8String
+audio_function_type_to_string (AudioFunctionType type, bool translate)
+{
+  return AudioFunctionType_to_string (type, translate);
 }
 
 utils::Utf8String

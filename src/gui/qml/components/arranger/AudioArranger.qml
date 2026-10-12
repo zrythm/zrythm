@@ -27,6 +27,14 @@ Arranger {
   property QObjectPropertyOperator fadePropertyOperator: null
   readonly property Track track: clipEditor.track
 
+  // A different clip being edited invalidates the selected range
+  onAudioClipChanged: {
+    if (root.audioEditor) {
+      root.audioEditor.selectionStartTick = -1;
+      root.audioEditor.selectionEndTick = -1;
+    }
+  }
+
   function getObjectHeight(obj): real {
     return 0;
   }
@@ -53,6 +61,55 @@ Arranger {
 
     anchors.fill: parent
 
+    // Drag-selects the time range that audio functions apply to. Sits below
+    // the fade controls, and takes only the Select tool's left button.
+    MouseArea {
+      id: rangeSelectionMouseArea
+
+      property real dragStartTick: 0
+      property real dragEndTick: 0
+      property real pressX: 0
+      property bool rangeDragActive: false
+
+      // Selection is bounded to the clip's audible content span: the first
+      // leg plays [clip start, loop end) and loop iterations play
+      // [loop start, loop end), so content outside this span never plays
+      readonly property real firstAudibleContentTick: root.audioClip ? Math.min(root.audioClip.clipStartPosition.ticks, root.audioClip.loopStartPosition.ticks) : 0
+      readonly property real lastAudibleContentTick: root.audioClip ? root.audioClip.loopEndPosition.ticks : 0
+
+      function snappedContentTicks(ticks: real, startTicks: real): real {
+        const bounded = Math.max(rangeSelectionMouseArea.firstAudibleContentTick, Math.min(ticks, rangeSelectionMouseArea.lastAudibleContentTick));
+        return root.shouldSnap ? root.snapGrid.snapWithStartTicks(bounded, startTicks) : bounded;
+      }
+
+      acceptedButtons: Qt.LeftButton
+      anchors.fill: parent
+      enabled: root.audioClip !== null && root.tool.effectiveToolValue === ArrangerTool.Select
+      preventStealing: true
+
+      onPressed: mouse => {
+        pressX = mouse.x;
+        dragStartTick = snappedContentTicks(root.ruler.contentTicksAt(mouse.x), 0);
+        dragEndTick = dragStartTick;
+        rangeDragActive = true;
+      }
+      onPositionChanged: mouse => {
+        if (!rangeDragActive)
+          return;
+        dragEndTick = snappedContentTicks(root.ruler.contentTicksAt(mouse.x), dragStartTick);
+      }
+      onReleased: mouse => {
+        rangeDragActive = false;
+        if (Math.abs(mouse.x - pressX) < Qt.styleHints.startDragDistance) {
+          root.audioEditor.selectionStartTick = -1;
+          root.audioEditor.selectionEndTick = -1;
+        } else {
+          root.audioEditor.selectionStartTick = Math.min(dragStartTick, dragEndTick);
+          root.audioEditor.selectionEndTick = Math.max(dragStartTick, dragEndTick);
+        }
+      }
+    }
+
     AudioClipWaveformCanvas {
       id: waveformCanvas
 
@@ -63,6 +120,26 @@ Arranger {
       waveformColor: Qt.rgba (root.waveformInk.r, root.waveformInk.g, root.waveformInk.b, 80 / 255)
       width: root.clipWidth
       x: root.clipX
+      y: 0
+    }
+
+    // Highlights the time range that audio functions apply to, both while
+    // dragging and after the range is committed
+    Rectangle {
+      id: functionRangeOverlay
+
+      readonly property double startTick: rangeSelectionMouseArea.rangeDragActive ? Math.min(rangeSelectionMouseArea.dragStartTick, rangeSelectionMouseArea.dragEndTick) : root.audioEditor.selectionStartTick
+      readonly property double endTick: rangeSelectionMouseArea.rangeDragActive ? Math.max(rangeSelectionMouseArea.dragStartTick, rangeSelectionMouseArea.dragEndTick) : root.audioEditor.selectionEndTick
+      readonly property var warp: root.audioClip ? root.audioClip.contentWarp : null
+      readonly property double startRelativeTicks: warp ? warp.contentToTimelineTicksRelative(startTick) : startTick
+      readonly property double endRelativeTicks: warp ? warp.contentToTimelineTicksRelative(endTick) : endTick
+
+      border.color: palette.accent
+      color: Qt.alpha(palette.accent, 0.12)
+      height: parent.height
+      visible: startTick >= 0 && endTick > startTick
+      width: (endRelativeTicks - startRelativeTicks) * root.ruler.pxPerTick
+      x: root.clipX + startRelativeTicks * root.ruler.pxPerTick
       y: 0
     }
 

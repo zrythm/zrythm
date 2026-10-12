@@ -14,6 +14,7 @@ target_sources(zrythm_commands_lib
     delete_lane_command.cpp
     remove_plugins_command.cpp
     resize_arranger_objects_command.cpp
+    set_audio_clip_transforms_command.cpp
     set_clip_loop_points_command.cpp
     transform_arranger_objects_command.cpp
   PUBLIC
@@ -43,6 +44,7 @@ target_sources(zrythm_commands_lib
       remove_arranger_object_command.h
       remove_plugins_command.h
       rename_track_command.h
+      set_audio_clip_transforms_command.h
       set_clip_loop_points_command.h
       set_folder_parent_command.h
       transform_arranger_objects_command.h

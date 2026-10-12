@@ -7,6 +7,7 @@
 #include <cmath>
 #include <expected>
 #include <functional>
+#include <limits>
 #include <optional>
 #include <variant>
 #include <vector>
@@ -107,13 +108,18 @@ validate_param_value (
       {
         bool         ok = false;
         const double number = value.toDouble (&ok);
-        const auto   integer = ok ? integer_in_range (number) : std::nullopt;
-        if (integer)
+        // The choices list is the value domain: any integer listed there is
+        // accepted, within the range of representable ints
+        if (
+          ok && number == std::floor (number)
+          && number >= static_cast<double> (std::numeric_limits<int>::min ())
+          && number <= static_cast<double> (std::numeric_limits<int>::max ()))
           {
+            const int integer = static_cast<int> (number);
             for (const auto &choice : spec.choices)
               {
-                if (choice.toMap ().value (QStringLiteral ("value")) == *integer)
-                  return *integer;
+                if (choice.toMap ().value (QStringLiteral ("value")) == integer)
+                  return integer;
               }
           }
         return std::unexpected (

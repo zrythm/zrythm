@@ -12,11 +12,14 @@
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "commands/resize_arranger_objects_command.h"
+#include "commands/set_audio_clip_transforms_command.h"
 #include "commands/transform_arranger_objects_command.h"
 #include "dsp/timebase.h"
 #include "dsp/timestretch_engine.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/audio_clip.h"
+#include "structure/arrangement/audio_function.h"
+#include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/automation_function.h"
 #include "structure/arrangement/midi_function.h"
 #include "structure/tracks/track_all.h"
@@ -559,6 +562,113 @@ ArrangerObjectSelectionOperator::applyAutomationFunction (
 
   undo_stack_.push (new commands::TransformArrangerObjectsCommand (
     std::move (changed_objects), std::move (changed_states), text));
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::applyAudioFunction (
+  structure::arrangement::Clip * clip,
+  double                         selection_start_tick,
+  double                         selection_end_tick,
+  const QString                 &function_id,
+  const QVariantMap             &options)
+{
+  using structure::arrangement::AudioClip;
+  using structure::arrangement::AudioSourceObject;
+  namespace AudioFunction = structure::arrangement::AudioFunction;
+
+  auto * audio_clip = qobject_cast<AudioClip *> (clip);
+  if (audio_clip == nullptr)
+    {
+      refuse_operation (QObject::tr ("The clip is not an audio clip"));
+      return false;
+    }
+
+  if (
+    audio_clip
+      ->structure::arrangement::ArrangerObjectOwner<
+        AudioSourceObject>::get_children_view ()
+      .empty ())
+    {
+      refuse_operation (QObject::tr ("The clip has no audio"));
+      return false;
+    }
+
+  const auto kind = AudioFunction::kind_from_id (
+    utils::Utf8String::from_qstring (function_id).view ());
+  if (!kind)
+    {
+      refuse_operation (QObject::tr ("Unknown function %1").arg (function_id));
+      return false;
+    }
+
+  // Fades need a selected range; the other functions default to the
+  // clip's audible span
+  const bool has_selection =
+    selection_start_tick >= 0.0 && selection_end_tick > selection_start_tick;
+  if (
+    !has_selection
+    && (std::holds_alternative<AudioFunction::FadeIn> (*kind) || std::holds_alternative<AudioFunction::FadeOut> (*kind)))
+    {
+      refuse_operation (
+        QObject::tr ("%1 needs a selected range")
+          .arg (AudioFunction::label (*kind, true).to_qstring ()));
+      return false;
+    }
+
+  AudioFunction::Entry entry = *kind;
+  const auto           applied = std::visit (
+    [&options] (auto &k) {
+      using K = std::decay_t<decltype (k)>;
+      return apply_options (options, k, K::params ());
+    },
+    entry);
+  if (!applied)
+    {
+      refuse_operation (applied.error ().to_qstring ());
+      return false;
+    }
+
+  const auto range_start =
+    has_selection
+      ? dsp::ContentTick{ units::ticks (selection_start_tick) }
+      : audio_clip->clipStartPosition ()->asTick ();
+  const auto range_end =
+    has_selection
+      ? dsp::ContentTick{ units::ticks (selection_end_tick) }
+      : (audio_clip->looped ()
+           ? audio_clip->loopEndPosition ()->asTick ()
+           : audio_clip->clipStartPosition ()->asTick ()
+               + audio_clip->length ()->asTick ());
+  std::visit (
+    [&] (auto &k) {
+      using K = std::decay_t<decltype (k)>;
+      k.start = range_start;
+      k.end = range_end;
+      if constexpr (
+        std::same_as<K, AudioFunction::NormalizePeak>
+        || std::same_as<K, AudioFunction::NormalizeRms>)
+        {
+          k.gain = AudioFunction::normalize_gain (
+            *audio_clip, range_start, range_end,
+            std::same_as<K, AudioFunction::NormalizeRms>);
+        }
+    },
+    entry);
+
+  auto after_entries =
+    audio_clip->transform_entries () | std::ranges::to<std::vector> ();
+  after_entries.push_back (entry);
+
+  const QString text =
+    QObject::tr ("Apply %1")
+      .arg (AudioFunction::label (entry, true).to_qstring ());
+
+  undo_stack_.push (new commands::SetAudioClipTransformsCommand (
+    structure::arrangement::ArrangerObjectUuidReference (
+      audio_clip->get_uuid (), project_registry_),
+    std::move (after_entries), text));
 
   return true;
 }

@@ -11,6 +11,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/arrangement/audio_function.h"
 #include "structure/arrangement/automation_function.h"
 #include "structure/arrangement/midi_function.h"
 #include "structure/project/project_registry.h"
@@ -36,6 +37,7 @@
 namespace zrythm::actions
 {
 
+namespace AudioFunction = structure::arrangement::AudioFunction;
 using structure::arrangement::AutomationFunction;
 using structure::arrangement::MidiFunction;
 
@@ -4238,6 +4240,210 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ApplyMidiFunctionNoOpPushesNothing)
   // Staccato targets a length of 48 ticks, which the note already has
   EXPECT_TRUE (operator_->applyMidiFunction (
     selection_model_.get (), function_id (MidiFunction::Staccato::kId), {}));
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Attaches a 2-channel source whose samples count up from 0 on both
+// channels, and returns the source's pool id
+static dsp::FileAudioSource::Uuid
+attach_ramp_source (
+  structure::project::ProjectRegistry    &registry,
+  dsp::TempoMapWrapper                   &tempo_map_wrapper,
+  structure::arrangement::ArrangerObject &clip,
+  int                                     num_frames)
+{
+  utils::audio::AudioBuffer frames{ 2, num_frames };
+  for (const auto ch : std::views::iota (0, 2))
+    {
+      for (const auto i : std::views::iota (0, num_frames))
+        {
+          frames.setSample (ch, i, static_cast<float> (i));
+        }
+    }
+  auto source_ref = utils::create_object<dsp::FileAudioSource> (
+    registry, frames, utils::audio::BitDepth::BIT_DEPTH_32,
+    units::sample_rate (44100), units::bpm (120.0), u8"OperatorAudioSource");
+  auto source_object_ref =
+    utils::create_object<structure::arrangement::AudioSourceObject> (
+      registry, tempo_map_wrapper, registry, source_ref);
+  qobject_cast<structure::arrangement::AudioClip *> (&clip)->set_source (
+    source_object_ref);
+  return source_ref.id ();
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionAppendsWholeClipInvertEntry)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  QSignalSpy rendered_spy (
+    audio_clip, &structure::arrangement::AudioClip::renderedAudioChanged);
+
+  const bool result = operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {});
+  EXPECT_TRUE (result);
+  EXPECT_EQ (undo_stack_->index (), 1);
+  EXPECT_EQ (rendered_spy.count (), 1);
+
+  // The function appended one entry covering the clip's audible span
+  const auto &entries = audio_clip->transform_entries ();
+  ASSERT_EQ (entries.size (), 1u);
+  const auto * invert = std::get_if<AudioFunction::Invert> (&entries.front ());
+  ASSERT_NE (invert, nullptr);
+  EXPECT_DOUBLE_EQ (
+    invert->start.asDouble (),
+    audio_clip->clipStartPosition ()->asTick ().asDouble ());
+  EXPECT_DOUBLE_EQ (
+    invert->end.asDouble (),
+    (audio_clip->clipStartPosition ()->asTick ()
+     + audio_clip->length ()->asTick ())
+      .asDouble ());
+
+  // The rendered audio is inverted, while the pooled samples stay intact
+  const auto window = AudioFunction::audio_clip_content_window (*audio_clip);
+  EXPECT_FLOAT_EQ (window.getSample (0, 3), -3.f);
+  EXPECT_FLOAT_EQ (window.getSample (1, 7), -7.f);
+  {
+    auto view = audio_clip->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioSourceObject>::get_children_view ();
+    const auto &samples = view.front ()->file_audio_source ().get_samples ();
+    EXPECT_FLOAT_EQ (samples.getSample (0, 3), 3.f);
+  }
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (audio_clip->transform_entries ().empty ());
+  undo_stack_->redo ();
+  EXPECT_EQ (audio_clip->transform_entries ().size (), 1u);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionFadeUsesSelectedRangeAndOptions)
+{
+  attach_ramp_source (
+    registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 88200);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+
+  const bool result = operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), 10.0,
+    20.0, function_id (AudioFunction::FadeIn::kId),
+    {
+      { "curviness", 0.25 }
+  });
+  EXPECT_TRUE (result);
+
+  const auto &entries = audio_clip->transform_entries ();
+  ASSERT_EQ (entries.size (), 1u);
+  const auto * fade = std::get_if<AudioFunction::FadeIn> (&entries.front ());
+  ASSERT_NE (fade, nullptr);
+  EXPECT_DOUBLE_EQ (fade->start.asDouble (), 10.0);
+  EXPECT_DOUBLE_EQ (fade->end.asDouble (), 20.0);
+  EXPECT_DOUBLE_EQ (fade->curve.curviness_, 0.25);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionNormalizeFreezesGainOverRange)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+
+  // The ramp's peak sample is 7, so normalizing to unity peak freezes a
+  // gain of 1/7 into the entry
+  const bool result = operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::NormalizePeak::kId), {});
+  EXPECT_TRUE (result);
+
+  const auto * normalize = std::get_if<AudioFunction::NormalizePeak> (
+    &audio_clip->transform_entries ().front ());
+  ASSERT_NE (normalize, nullptr);
+  EXPECT_NEAR (normalize->gain, 1.0 / 7.0, 1e-6);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionNormalizeDefaultRangeClampsToLoopEndOnLoopedClips)
+{
+  attach_ramp_source (
+    registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 2000);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  // Loop positions after the length, or the length change overrides them
+  audio_clip->position ()->setTicks (0.);
+  audio_clip->length ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (2000)).asDouble ());
+  audio_clip->clipStartPosition ()->setTicks (0.);
+  audio_clip->loopStartPosition ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (250)).asDouble ());
+  audio_clip->loopEndPosition ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (750)).asDouble ());
+  ASSERT_TRUE (audio_clip->looped ());
+
+  // Without a selection, the entry covers the audible span up to the loop
+  // end, not the full linear clip length
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::NormalizePeak::kId), {}));
+
+  const auto * normalize = std::get_if<AudioFunction::NormalizePeak> (
+    &audio_clip->transform_entries ().front ());
+  ASSERT_NE (normalize, nullptr);
+  EXPECT_DOUBLE_EQ (
+    normalize->start.asDouble (),
+    audio_clip->clipStartPosition ()->asTick ().asDouble ());
+  EXPECT_DOUBLE_EQ (
+    normalize->end.asDouble (),
+    audio_clip->loopEndPosition ()->asTick ().asDouble ());
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionFadeWithoutSelectionIsRefused)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::FadeIn::kId), {}));
+  EXPECT_EQ (refused_spy.count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionUnknownFunctionIdIsRefused)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  EXPECT_FALSE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, "no-such-function", {}));
+  EXPECT_EQ (refused_spy.count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  ApplyAudioFunctionWithoutSourceIsRefused)
+{
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+
+  // The fixture's audio clip carries no audio source
+  EXPECT_FALSE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {}));
+  EXPECT_EQ (refused_spy.count (), 1);
   EXPECT_EQ (undo_stack_->index (), 0);
 }
 

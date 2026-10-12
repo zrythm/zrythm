@@ -18,6 +18,9 @@ GridLayout {
   readonly property Project project: session.project
   required property ProjectSession session
   readonly property Track track: project.tracklist.getTrackForTimelineObject(root.audioClip)
+  // Audio clips have no selectable child objects, so the selection model
+  // stays empty
+  readonly property alias selectionModel: emptySelectionModel
 
   columnSpacing: 0
   columns: 3

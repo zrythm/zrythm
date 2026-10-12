@@ -91,8 +91,6 @@ class EditorFunctionDefinition : public QObject
   Q_PROPERTY (QString id READ id CONSTANT FINAL)
   Q_PROPERTY (QString label READ label CONSTANT FINAL)
   Q_PROPERTY (Family family READ family CONSTANT FINAL)
-  // Only the audio family uses this; the other families dispatch by id.
-  Q_PROPERTY (int functionType READ functionType CONSTANT FINAL)
   Q_PROPERTY (
     int minimumSelectionCount READ minimumSelectionCount CONSTANT FINAL)
   Q_PROPERTY (QList<QObject *> parameters READ parameters CONSTANT FINAL)
@@ -112,7 +110,6 @@ public:
     QString                          id,
     QString                          label,
     Family                           family,
-    int                              function_type,
     int                              minimum_selection_count,
     QList<EditorFunctionParameter *> parameters,
     QObject *                        parent = nullptr);
@@ -120,7 +117,6 @@ public:
   const QString &id () const { return id_; }
   const QString &label () const { return label_; }
   Family         family () const { return family_; }
-  int            functionType () const { return function_type_; }
   int minimumSelectionCount () const { return minimum_selection_count_; }
   QList<QObject *> parameters () const { return parameters_; }
   bool             hasParameters () const { return !parameters_.isEmpty (); }
@@ -129,7 +125,6 @@ private:
   QString          id_;
   QString          label_;
   Family           family_;
-  int              function_type_;
   int              minimum_selection_count_;
   QList<QObject *> parameters_;
 };

@@ -186,6 +186,34 @@ public:
     QItemSelectionModel * selectionModel,
     const QString        &function_id);
 
+  /**
+   * @brief Applies a transformative function to @p clip's audio by
+   * appending a transform entry to the clip, in a single undo step.
+   *
+   * @p selection_start_tick and @p selection_end_tick give the edited range
+   * in clip content ticks; pass a negative start tick to apply the function
+   * to the clip's audible span. Fade functions require a selected range.
+   *
+   * @param clip The audio clip being edited.
+   * @param selection_start_tick First content tick of the edited range, or a
+   * negative value for the clip's audible span.
+   * @param selection_end_tick Last content tick of the edited range
+   * (exclusive).
+   * @param function_id The id of the structure::arrangement::AudioFunction
+   * kind to apply.
+   * @param options Function options by key ("curveAlgorithm",
+   * "curviness" for the fades).
+   * @return false if the clip is not an audio clip, has no audio, @p
+   * function_id is not a known function, a fade is requested without a
+   * selected range, or an option is invalid.
+   */
+  Q_INVOKABLE bool applyAudioFunction (
+    structure::arrangement::Clip * clip,
+    double                         selection_start_tick,
+    double                         selection_end_tick,
+    const QString                 &function_id,
+    const QVariantMap             &options);
+
   Q_INVOKABLE bool resizeObjects (
     QItemSelectionModel *     selectionModel,
     commands::ResizeType      type,

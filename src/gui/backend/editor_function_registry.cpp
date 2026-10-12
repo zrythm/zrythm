@@ -5,6 +5,7 @@
 
 #include "dsp/curve.h"
 #include "gui/backend/editor_function_registry.h"
+#include "structure/arrangement/audio_function.h"
 #include "structure/arrangement/automation_function.h"
 #include "structure/arrangement/midi_function.h"
 #include "utils/enum_utils.h"
@@ -66,9 +67,8 @@ definitions_for_family (EditorFunctionRegistry &registry, Family family)
           }
         auto * definition = new EditorFunctionDefinition (
           utils::Utf8String::from_utf8_encoded_string (K::kId).to_qstring (),
-          K::label (true).to_qstring (), family,
-          /* function_type */ 0, K::kMinimumSelectionCount, parameters,
-          &registry);
+          K::label (true).to_qstring (), family, K::kMinimumSelectionCount,
+          parameters, &registry);
         definitions.append (definition);
       }(),
       ...));
@@ -106,13 +106,11 @@ EditorFunctionDefinition::EditorFunctionDefinition (
   QString                          id,
   QString                          label,
   Family                           family,
-  int                              function_type,
   int                              minimum_selection_count,
   QList<EditorFunctionParameter *> parameters,
   QObject *                        parent)
     : QObject (parent), id_ (std::move (id)), label_ (std::move (label)),
-      family_ (family), function_type_ (function_type),
-      minimum_selection_count_ (minimum_selection_count),
+      family_ (family), minimum_selection_count_ (minimum_selection_count),
       parameters_ (parameters.cbegin (), parameters.cend ())
 {
   for (auto * parameter : parameters_)
@@ -126,10 +124,11 @@ EditorFunctionRegistry::EditorFunctionRegistry (QObject * parent)
 {
   midi_functions_ = definitions_for_family<
     structure::arrangement::MidiFunction::Kind> (*this, Family::Midi);
-
   automation_functions_ =
     definitions_for_family<structure::arrangement::AutomationFunction::Kind> (
       *this, Family::Automation);
+  audio_functions_ = definitions_for_family<
+    structure::arrangement::AudioFunction::Entry> (*this, Family::Audio);
 }
 
 } // namespace zrythm::gui

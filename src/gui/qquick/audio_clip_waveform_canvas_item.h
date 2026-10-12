@@ -111,9 +111,16 @@ private:
 private Q_SLOTS:
   void handle_property_change ();
 
+  /// Re-serializes the whole buffer unconditionally, bypassing the snapshot
+  /// comparison used for property changes.
+  void reserialize ();
+
 private:
+  void connect_audio_source_signals ();
+
   QPointer<structure::arrangement::AudioClip> audio_clip_;
   std::vector<QMetaObject::Connection>        clip_connections_;
+  std::vector<QMetaObject::Connection>        source_connections_;
   QPointer<QObject>                           tempo_map_;
   std::vector<QMetaObject::Connection>        tempo_map_connections_;
   ClipSnapshot                                last_snapshot_;

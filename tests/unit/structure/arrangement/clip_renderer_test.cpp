@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
@@ -644,6 +644,94 @@ TEST_F (ClipRendererTest, SerializeAudioClipWithLooping)
             right_channel[sample_in_second_loop],
             right_channel[sample_in_first_loop], 0.01f);
         }
+    }
+}
+
+TEST_F (ClipRendererTest, SerializeAudioClipAppliesWholeClipInvertEntry)
+{
+  // Baseline without entries
+  juce::AudioSampleBuffer base;
+  ClipRenderer::serialize_to_buffer (*audio_clip, base);
+
+  // Invert the clip's audible span; the entry applies before gain and
+  // fades, which are all multiplicative, so every sample negates exactly
+  AudioFunction::Invert entry;
+  entry.start = dsp::ContentTick{ units::ticks (0.) };
+  entry.end =
+    audio_clip->clipStartPosition ()->asTick ()
+    + audio_clip->length ()->asTick ();
+  audio_clip->set_transform_entries ({ entry });
+
+  juce::AudioSampleBuffer transformed;
+  ClipRenderer::serialize_to_buffer (*audio_clip, transformed);
+
+  ASSERT_EQ (transformed.getNumSamples (), base.getNumSamples ());
+  for (const auto ch : std::views::iota (0, 2))
+    {
+      for (const auto i : std::views::iota (0, base.getNumSamples ()))
+        {
+          EXPECT_NEAR (
+            transformed.getSample (ch, i), -base.getSample (ch, i), 1e-6)
+            << "ch " << ch << " frame " << i;
+        }
+    }
+}
+
+TEST_F (ClipRendererTest, SerializeAudioClipRangedReverseRepeatsPerLoopIteration)
+{
+  // A dedicated clip long enough for two loop legs: first leg plays
+  // [clip start, loop end), then the [loop start, loop end) region repeats
+  auto looped_clip =
+    std::make_unique<AudioClip> (*tempo_map_wrapper, registry, nullptr);
+  looped_clip->set_source (create_sine_wave_audio_source (4096));
+  looped_clip->position ()->setTicks (0.);
+  looped_clip->length ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (2000)).asDouble ());
+  looped_clip->clipStartPosition ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (0)).asDouble ());
+  looped_clip->loopStartPosition ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (250)).asDouble ());
+  looped_clip->loopEndPosition ()->setTicks (
+    tempo_map->samples_to_tick (units::samples (750)).asDouble ());
+
+  // Baseline without entries
+  juce::AudioSampleBuffer base;
+  ClipRenderer::serialize_to_buffer (*looped_clip, base);
+
+  // Reverse the window up to the loop end. The first leg plays
+  // [clip start, loop end) of the reversed window; every loop iteration
+  // then repeats the reversed [loop start, loop end) span.
+  constexpr int loop_end_frame = 750;
+  constexpr int loop_start_frame = 250;
+
+  AudioFunction::Reverse entry;
+  entry.start = looped_clip->clipStartPosition ()->asTick ();
+  entry.end = looped_clip->loopEndPosition ()->asTick ();
+  looped_clip->set_transform_entries ({ entry });
+
+  juce::AudioSampleBuffer transformed;
+  ClipRenderer::serialize_to_buffer (*looped_clip, transformed);
+
+  // First leg (away from the builtin fades): sample i of the reversed
+  // window is window[loop end - 1 - i]
+  for (const auto i : std::views::iota (15, 700))
+    {
+      EXPECT_NEAR (
+        transformed.getSample (0, i),
+        base.getSample (0, loop_end_frame - 1 - i), 1e-6)
+        << "first leg frame " << i;
+    }
+
+  // Second leg: each output sample j reads window[loop start + j] of the
+  // entry window, which holds orig[loop end - 1 - (loop start + j)]
+  constexpr int second_leg_start = loop_end_frame;
+  constexpr int leg_span = loop_end_frame - loop_start_frame;
+  for (const auto j : std::views::iota (15, leg_span - 15))
+    {
+      EXPECT_NEAR (
+        transformed.getSample (0, second_leg_start + j),
+        base.getSample (0, (loop_end_frame - 1 - loop_start_frame) - j), 1e-6)
+        << "second leg frame " << j;
     }
 }
 

@@ -1190,6 +1190,82 @@
         }
       ]
     },
+    "audioTransformEntry": {
+      "$comment": "One non-destructive audio transform entry; the kind discriminates the payload",
+      "type": "object",
+      "required": [
+        "kind",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "invert-polarity",
+            "reverse",
+            "normalize-peak",
+            "normalize-rms",
+            "fade-in",
+            "fade-out"
+          ],
+          "description": "Transform function kind"
+        },
+        "start": {
+          "type": "number",
+          "description": "Content tick where the entry starts"
+        },
+        "end": {
+          "type": "number",
+          "description": "Content tick where the entry ends (exclusive)"
+        },
+        "gain": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Frozen sample multiplier (normalize kinds)"
+        },
+        "curve": {
+          "$ref": "#/definitions/curveOptions",
+          "description": "Ramp shape (fade kinds)"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "normalize-peak",
+                  "normalize-rms"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "gain"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "fade-in",
+                  "fade-out"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "curve"
+            ]
+          }
+        }
+      ]
+    },
     "audioClip": {
       "$comment": "Audio clip (derives from clipBase)",
       "allOf": [
@@ -1234,6 +1310,13 @@
             "fadeOutOpts": {
               "$ref": "#/definitions/curveOptions",
               "description": "Fade out curve options"
+            },
+            "transformEntries": {
+              "type": "array",
+              "description": "Ordered non-destructive transform entries applied to the clip's audio",
+              "items": {
+                "$ref": "#/definitions/audioTransformEntry"
+              }
             }
           }
         }
