@@ -45,19 +45,10 @@
 
 // FIXME: temporarily disabled - engine-process not currently used
 // #include "engine-process/ipc_message.h"
+#include "gui/backend/juce_event_loop_bridge.h"
+
 #include "zrythm_application.h"
 #include <backward.hpp>
-
-#ifdef __linux__
-// see the following:
-// - juce_audio_plugin_client/detail/juce_LinuxMessageThread.h
-// - juce_events/native/juce_Messaging_linux.cpp
-namespace juce::detail
-{
-bool
-dispatchNextMessageOnSystemQueue (bool returnIfNoPendingMessages);
-}
-#endif
 
 using namespace zrythm;
 using namespace zrythm::gui;
@@ -88,7 +79,7 @@ public:
 
   utils::QObjectUniquePtr<QProcess> engine_process_;
 
-  utils::QObjectUniquePtr<QTimer> juce_dispatch_timer_;
+  std::unique_ptr<gui::backend::JuceEventLoopBridge> juce_event_loop_bridge_;
 
   utils::QObjectUniquePtr<QQmlApplicationEngine> qml_engine_;
 
@@ -205,19 +196,10 @@ ZrythmApplication::initialize ()
     std::make_unique<juce::ScopedJuceInitialiser_GUI> ();
 
 #ifdef __linux__
-  // Dispatch JUCE messages on the main thread via a timer instead of from
-  // notify(). This avoids dispatching JUCE messages multiple times on the same
-  // frame which
-  // can cause crashes.
-  impl_->juce_dispatch_timer_ = utils::make_qobject_unique<QTimer> (this);
-  QObject::connect (
-    impl_->juce_dispatch_timer_.get (), &QTimer::timeout, this, [] () {
-      ZoneScopedN ("JUCE message dispatch");
-
-      // We need to do this on GNU/Linux otherwise plugin UIs appear blank.
-      juce::detail::dispatchNextMessageOnSystemQueue (true);
-    });
-  impl_->juce_dispatch_timer_->start (0);
+  // Dispatch JUCE events (JUCE messages and X11 events for JUCE-created
+  // windows) inside Qt's event loop
+  impl_->juce_event_loop_bridge_ =
+    std::make_unique<gui::backend::JuceEventLoopBridge> ();
 #endif
 
   impl_->notification_center_ =
@@ -411,8 +393,9 @@ ZrythmApplication::setup_device_manager ()
           z_debug ("Parsed contents:\n{}", xml->toString ());
           return xml;
         }
-      z_warning (
-        "Failed to parse device setup XML conents from file: {}", filepath);
+      z_info (
+        "No valid device setup XML found at {}: using default devices",
+        filepath);
       return nullptr;
     },
     [filepath] (const juce::XmlElement &el) {
@@ -430,6 +413,16 @@ ZrythmApplication::setup_device_manager ()
   try
     {
       impl_->device_manager_->initialize (2, 2, true);
+      if (impl_->device_manager_->availableAudioInputs ().isEmpty ())
+        {
+          // Posting before the UI exists is safe: the notification area
+          // presents unpresented notifications on creation
+          impl_->notification_center_->postWarning (
+            tr ("No Audio Inputs"),
+            tr (
+              "No audio input devices were found. Playback will work, "
+              "but audio recording will be disabled."));
+        }
     }
   catch (const utils::ZrythmException &e)
     {

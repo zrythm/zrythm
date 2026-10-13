@@ -25,8 +25,8 @@ EXCLUDED_PATTERNS = (
     'Type "QColor" of property "color" not found',
 )
 
-DEFAULT_MAX_WARNINGS = 32
-DEFAULT_MAX_ERRORS = 9
+DEFAULT_MAX_WARNINGS = 28
+DEFAULT_MAX_ERRORS = 8
 
 
 def filter_findings(lines, path_prefix):

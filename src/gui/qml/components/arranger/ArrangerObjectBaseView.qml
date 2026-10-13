@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -14,14 +14,57 @@ Control {
   required property ArrangerObject arrangerObject
   readonly property alias down: dragArea.pressed
   readonly property alias edgeHandles: edgeHandlesLoader
+  // How the object's base color (its own color, else the track color)
+  // maps to its on-screen color: Raw keeps it as-is, Content derives
+  // the shared content ink (small elements — notes, curves,
+  // waveforms), Label derives the clip-like tinted body (quiet spans
+  // and label boxes — scale objects, markers, chord events,
+  // tempo/time-signature objects) — DESIGN.md "Non-clip arranger
+  // objects". States (hover, press, selection, muted) apply on top
+  // of the derived color. objectAccentColor pairs a Label body with
+  // a small content-ink anchor (marker pennants, scale ribbons).
+  enum ColorRole { Raw, Content, Label }
+  property int colorRole: ArrangerObjectBaseView.ColorRole.Raw
   property point hoveredPoint: Qt.point(0, 0)
   property bool isResizeLHovered: false
   property bool isResizeRHovered: false
   property bool isResizingL: false // simple flag to be turned off immediately after checked by the interested party (Arranger)
   property bool isResizingR: false // ditto
   required property bool isSelected
-  readonly property color objectColor: {
-    let c = (arrangerObject.color && arrangerObject.color.useColor) ? arrangerObject.color.color : (track ? track.color : palette.button);
+  // The object's color: its own color where set, else the track color
+  readonly property color objectBaseColor:
+    (arrangerObject.color && arrangerObject.color.useColor) ? arrangerObject.color.color : (track ? track.color : palette.button);
+  // The role's derived colors in one pass; they depend only on the
+  // base color and the theme, so state changes (hover, press,
+  // selection, muted) re-run only the state pipeline below, never
+  // the derivation. The accent ink is computed for Label objects,
+  // which pair a quiet body with a small saturated anchor.
+  readonly property var _roleColors: {
+    if (colorRole === ArrangerObjectBaseView.ColorRole.Content)
+      return { main: ZrythmTheme.contentColor (objectBaseColor, false) };
+    if (colorRole === ArrangerObjectBaseView.ColorRole.Label) {
+      const label = ZrythmTheme.labelColors (objectBaseColor, false);
+      return {
+        main: label.body,
+        border: label.border,
+        accent: ZrythmTheme.contentColor (objectBaseColor, false)
+      };
+    }
+    return { main: objectBaseColor };
+  }
+  readonly property color objectDerivedColor: root._roleColors.main
+  readonly property color objectBorderColor: root._roleColors.border ?? root.objectDerivedColor
+  readonly property color objectColor: root._applyObjectStates (root.objectDerivedColor)
+  // The content ink for the object's hue, run through the same state
+  // pipeline as objectColor
+  readonly property color objectAccentColor:
+    root._applyObjectStates (root._roleColors.accent ?? root.objectDerivedColor)
+  readonly property bool _isMuted: arrangerObject.mute?.muted ?? false
+  required property Track track
+  required property UndoStack undoStack
+
+  function _applyObjectStates (arg: color): color {
+    let c = arg;
     if (root.isSelected)
       c = ZrythmTheme.getColorBlendedTowardsContrastByFactor(c, 1.1);
 
@@ -32,9 +75,6 @@ Control {
 
     return c;
   }
-  readonly property bool _isMuted: arrangerObject.mute?.muted ?? false
-  required property Track track
-  required property UndoStack undoStack
 
   // Corner radius of the selection outline; types whose shape has corners
   // other than the default set this to match (e.g. half the height for the
@@ -105,7 +145,10 @@ Control {
   }
 
   Rectangle {
-    anchors.fill: parent
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    anchors.left: parent.left
     border.color: root.palette.windowText
     border.width: 1
     color: "transparent"

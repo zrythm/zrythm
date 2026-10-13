@@ -52,15 +52,11 @@ ColumnLayout {
     Layout.fillWidth: true
 
     leftItems: [
-      ToolButton {
-        icon.source: ResourceManager.getIconUrl("gnome-icon-library", "arrow-pointing-at-line-down-symbolic.svg")
-        text: qsTr("Apply Preset")
+      MenuButton {
+        text: qsTr("Presets")
+        tooltipText: qsTr("Populate pads from a preset")
 
-        onClicked: presetMenu.popup()
-
-        ToolTip {
-          text: qsTr("Populate pads from a preset")
-        }
+        menu: presetMenu
 
         Menu {
           id: presetMenu

@@ -3,8 +3,10 @@
 
 #include <algorithm>
 
+#include "dsp/file_audio_source.h"
 #include "gui/qquick/audio_clip_waveform_canvas_item.h"
 #include "structure/arrangement/audio_clip.h"
+#include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/clip_renderer.h"
 
 namespace zrythm::gui::qquick
@@ -144,6 +146,47 @@ AudioClipWaveformCanvasItem::handle_property_change ()
   notifyBufferChanged ();
 }
 
+void
+AudioClipWaveformCanvasItem::reserialize ()
+{
+  if (audio_clip_ == nullptr)
+    return;
+  connect_audio_source_signals ();
+  last_snapshot_ = take_snapshot ();
+  structure::arrangement::ClipRenderer::serialize_to_buffer (
+    *audio_clip_, audio_buffer_);
+  notifyBufferChanged ();
+}
+
+void
+AudioClipWaveformCanvasItem::connect_audio_source_signals ()
+{
+  for (const auto &connection : source_connections_)
+    QObject::disconnect (connection);
+  source_connections_.clear ();
+  if (audio_clip_ == nullptr)
+    return;
+
+  const auto source_objects =
+    audio_clip_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioSourceObject>::get_children_view ();
+  if (source_objects.empty ())
+    return;
+  auto * source_object = source_objects.front ();
+  // Watch the source object's own propertiesChanged and the samplesChanged
+  // of the source it currently points at.
+  source_connections_.push_back (
+    QObject::connect (
+      source_object, &structure::arrangement::ArrangerObject::propertiesChanged,
+      this, &AudioClipWaveformCanvasItem::reserialize,
+      Qt::ConnectionType::QueuedConnection));
+  source_connections_.push_back (
+    QObject::connect (
+      &source_object->file_audio_source (), &dsp::FileAudioSource::samplesChanged,
+      this, &AudioClipWaveformCanvasItem::reserialize,
+      Qt::ConnectionType::QueuedConnection));
+}
+
 std::vector<int64_t>
 AudioClipWaveformCanvasItem::computeTimelineFrameMapping (
   int    canvas_width,
@@ -171,6 +214,9 @@ AudioClipWaveformCanvasItem::setAudioClip (
   for (const auto &connection : clip_connections_)
     QObject::disconnect (connection);
   clip_connections_.clear ();
+  for (const auto &connection : source_connections_)
+    QObject::disconnect (connection);
+  source_connections_.clear ();
 
   // Serialize the clip's audio into the base buffer
   if (audio_clip_ != nullptr)
@@ -179,6 +225,7 @@ AudioClipWaveformCanvasItem::setAudioClip (
       structure::arrangement::ClipRenderer::serialize_to_buffer (
         *audio_clip_, audio_buffer_);
       notifyBufferChanged ();
+      connect_audio_source_signals ();
 
       // Re-serialize when loop points or bounds change
       clip_connections_.push_back (
@@ -191,6 +238,12 @@ AudioClipWaveformCanvasItem::setAudioClip (
         QObject::connect (
           audio_clip_, &structure::arrangement::Clip::timelineLengthTicksChanged,
           this, &AudioClipWaveformCanvasItem::handle_property_change,
+          Qt::ConnectionType::QueuedConnection));
+      // Re-serialize when the clip's transform entries change
+      clip_connections_.push_back (
+        QObject::connect (
+          audio_clip_, &structure::arrangement::AudioClip::renderedAudioChanged,
+          this, &AudioClipWaveformCanvasItem::reserialize,
           Qt::ConnectionType::QueuedConnection));
       clip_connections_.push_back (
         QObject::connect (

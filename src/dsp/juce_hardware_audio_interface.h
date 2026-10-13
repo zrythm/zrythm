@@ -30,6 +30,11 @@ public:
 
   ~JuceHardwareAudioInterface () override;
 
+  /**
+   * @brief Returns the current audio device information.
+   *
+   * @exception ZrythmException No audio device is open.
+   */
   [[nodiscard]] AudioDeviceInfo get_device_info () const override;
 
   void add_audio_callback (IAudioCallback * callback) override;

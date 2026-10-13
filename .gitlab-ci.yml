@@ -472,8 +472,36 @@ check:build-without-pch:
     - cmake --preset default -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON -DZRYTHM_UNITY_BUILD=OFF -DZRYTHM_TESTS=OFF
     - cmake --build conanbuild/Release --parallel
 
-# AddressSanitizer/LeakSanitizer/MemorySanitizer are not needed since we are
-# running valgrind anyway
+# Full test suite under Valgrind memcheck. Separate from build:gnu/linux so
+# packaging and deployment are not blocked by the long memcheck run. Uses the
+# build stage (not check): the single GNU/Linux runner executes jobs serially,
+# and a check-stage job would run before the build jobs and delay them. No
+# deploy job needs this job.
+check:memcheck:gnu/linux:
+  extends: .gnu-linux-template
+  stage: build
+  needs:
+    - job: configure:gnu/linux
+      artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: Debug
+            HOST_PROFILE: gcc_debug
+  timeout: 2h
+  script:
+    - cmake --build conanbuild/Debug --parallel
+    # Each valgrind process is mostly single-threaded, so give ctest all cores
+    # instead of half; --fair-sched prevents thread starvation when many
+    # valgrind instances run concurrently.
+    - >-
+      ctest --test-dir conanbuild/Debug --parallel $(nproc) --test-load $(nproc)
+      --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1 --fair-sched=yes"
+      -T memcheck -E "(appstream-util-validate-appdata|zrythm_gui_qml_unit_tests)" --output-on-failure
+  artifacts:
+    when: on_failure
+    paths:
+      - conanbuild/Debug/Testing/Temporary/*.log
+    expire_in: 1 day
 
 build:gnu/linux:
   extends: .gnu-linux-template
@@ -493,11 +521,6 @@ build:gnu/linux:
   script:
     - cmake --build conanbuild/${BUILD_TYPE} --config ${BUILD_TYPE} --parallel --target all all_verify_interface_header_sets
     - *unix_test_cmd
-    # Run valgrind tests in parallel because they take a long time
-    - >-
-      ctest --test-dir conanbuild/${BUILD_TYPE} --parallel $(($(nproc) / 2)) --test-load $(($(nproc) / 2))
-      --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
-      -T memcheck -E "(appstream-util-validate-appdata|zrythm_gui_qml_unit_tests)" --rerun-failed --output-on-failure
     - APPIMAGE_EXTRACT_AND_RUN=1 cpack -G AppImage -C ${BUILD_TYPE} --config conanbuild/${BUILD_TYPE}/CPackConfig.cmake -B package-${BUILD_TYPE}
     # run the packaged app's installation selfcheck
     - APPIMAGE_EXTRACT_AND_RUN=1 package-${BUILD_TYPE}/*.AppImage --verify-installation

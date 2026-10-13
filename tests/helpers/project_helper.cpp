@@ -240,7 +240,7 @@ check_vs_orig_state:
     {
       const auto &m = P_MARKER_TRACK->markers_.at (0);
       ASSERT_NONNULL (m);
-      ASSERT_EQ (m->name_, "[start]");
+      ASSERT_EQ (m->name_, "Start");
     }
     {
       const auto &m = P_MARKER_TRACK->markers_.at (2);

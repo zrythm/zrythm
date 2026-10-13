@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/audio_function.h"
 #include "utils/logger.h"
 
 #include <fmt/format.h>
@@ -38,6 +39,22 @@ AudioClip::set_source (const ArrangerObjectUuidReference &source)
   add_object (source);
   init_length_from_clip ();
   update_warp_configuration ();
+}
+
+std::span<const AudioFunction::Entry>
+AudioClip::transform_entries () const
+{
+  return transform_entries_;
+}
+
+void
+AudioClip::set_transform_entries (std::vector<AudioFunction::Entry> entries)
+{
+  if (entries == transform_entries_)
+    return;
+  transform_entries_ = std::move (entries);
+  Q_EMIT renderedAudioChanged ();
+  Q_EMIT propertiesChanged ();
 }
 
 void
@@ -110,6 +127,7 @@ init_from (
 {
   obj.gain_.store (other.gain_.load ());
   obj.algorithm_ = other.algorithm_;
+  obj.transform_entries_ = other.transform_entries_;
   init_from (
     static_cast<Clip &> (obj), static_cast<const Clip &> (other), clone_type);
   init_from (
@@ -139,6 +157,17 @@ to_json (nlohmann::json &j, const AudioClip &clip)
   j[AudioClip::kAlgorithmKey] = clip.algorithm_;
   if (clip.fade_range_)
     to_json (j, *clip.fade_range_);
+  if (!clip.transform_entries_.empty ())
+    {
+      auto entries_json = nlohmann::json::array ();
+      for (const auto &entry : clip.transform_entries_)
+        {
+          nlohmann::json entry_json;
+          AudioFunction::entry_to_json (entry_json, entry);
+          entries_json.push_back (std::move (entry_json));
+        }
+      j[AudioClip::kTransformEntriesKey] = std::move (entries_json);
+    }
 }
 
 void
@@ -152,6 +181,16 @@ from_json (const nlohmann::json &j, AudioClip &clip)
   if (j.contains (AudioClip::kAlgorithmKey))
     {
       j.at (AudioClip::kAlgorithmKey).get_to (clip.algorithm_);
+    }
+  if (j.contains (AudioClip::kTransformEntriesKey))
+    {
+      clip.transform_entries_.clear ();
+      for (const auto &entry_json : j.at (AudioClip::kTransformEntriesKey))
+        {
+          AudioFunction::Entry entry;
+          AudioFunction::entry_from_json (entry_json, entry);
+          clip.transform_entries_.push_back (std::move (entry));
+        }
     }
   if (clip.fade_range_)
     from_json (j, *clip.fade_range_);

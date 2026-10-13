@@ -16,6 +16,8 @@ target_sources(zrythm_gui_lib
     file_system_model.h
     file_system_model.cpp
     global_state.h
+    juce_event_loop_bridge.h
+    juce_event_loop_bridge.cpp
     notification.h
     notification.cpp
     notification_center.h
@@ -56,6 +58,8 @@ target_sources(zrythm_gui_lib
     unified_proxy_model.cpp
     editor_arranger_objects_model.h
     editor_arranger_objects_model.cpp
+    editor_function_registry.h
+    editor_function_registry.cpp
     timeline_arranger_objects_model.h
     timeline_arranger_objects_model.cpp
     x11_plugin_host_window.h

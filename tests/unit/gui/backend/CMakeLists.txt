@@ -4,6 +4,7 @@
 add_executable(zrythm_gui_backend_unit_tests
   device_manager_test.cpp
   editor_arranger_objects_model_test.cpp
+  juce_event_loop_bridge_test.cpp
   notification_center_test.cpp
   timeline_arranger_objects_model_test.cpp
 )

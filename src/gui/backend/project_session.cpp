@@ -191,6 +191,8 @@ ProjectSession::ProjectSession (
     utils::make_qobject_unique<EditorArrangerObjectsModel> (this);
   editor_arranger_objects_->setClipEditor (ui_state_->clipEditor ());
 
+  editor_functions_ = utils::make_qobject_unique<EditorFunctionRegistry> (this);
+
   project_->set_audio_input_selection_provider (
     [this] (const structure::tracks::Track::Uuid &uuid)
       -> dsp::AudioInputSelection * {
@@ -543,6 +545,12 @@ EditorArrangerObjectsModel *
 ProjectSession::editorArrangerObjects () const
 {
   return editor_arranger_objects_.get ();
+}
+
+EditorFunctionRegistry *
+ProjectSession::editorFunctions () const
+{
+  return editor_functions_.get ();
 }
 
 zrythm::actions::ArrangerObjectCreator *

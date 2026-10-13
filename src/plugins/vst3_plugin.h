@@ -139,11 +139,22 @@ private:
    *   module hash to the same value, the class name disambiguates.
    * @param generate_new_ports Whether to create Zrythm ports from the plugin's
    *   bus layout.
+   *
+   * Main thread only: the process-wide plugin context factory is claimed
+   * during setup (see claim_plugin_context() in the .cpp), and the SDK's
+   * component/controller lifecycle calls are main-thread only.
    */
   bool load_plugin (
     const std::filesystem::path &path,
     int64_t                      plugin_unique_id,
     bool                         generate_new_ports = true);
+
+  /**
+   * @brief Tears down and releases the current plugin instance, detaching
+   * its editor view first.
+   *
+   * Main thread only, like load_plugin().
+   */
   void unload_current_plugin ();
 
   /**

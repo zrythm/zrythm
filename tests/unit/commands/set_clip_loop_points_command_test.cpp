@@ -18,15 +18,6 @@
 namespace zrythm::commands
 {
 
-namespace
-{
-constexpr dsp::ContentTick
-ct (double ticks)
-{
-  return dsp::ContentTick{ units::ticks (ticks) };
-}
-} // namespace
-
 class SetClipLoopPointsCommandTest : public ::testing::Test
 {
 protected:
@@ -83,11 +74,16 @@ TEST_F (SetClipLoopPointsCommandTest, RedoUndo)
 {
   auto * c = clip ();
   c->length ()->setTicks (4000.0);
-  c->set_loop_range (ct (100.0), ct (200.0), ct (3000.0));
+  c->set_loop_range (
+    dsp::ContentTick{ units::ticks (100.0) },
+    dsp::ContentTick{ units::ticks (200.0) },
+    dsp::ContentTick{ units::ticks (3000.0) });
   ASSERT_FALSE (c->trackBounds ());
 
   SetClipLoopPointsCommand command (
-    clip_ref (), ct (500.0), ct (600.0), ct (3500.0));
+    clip_ref (), dsp::ContentTick{ units::ticks (500.0) },
+    dsp::ContentTick{ units::ticks (600.0) },
+    dsp::ContentTick{ units::ticks (3500.0) });
   command.redo ();
 
   EXPECT_DOUBLE_EQ (c->clipStartPosition ()->ticks (), 500.0);
@@ -109,10 +105,15 @@ TEST_F (SetClipLoopPointsCommandTest, ReEngagesTrackBoundsOnDefault)
 {
   auto * c = clip ();
   c->length ()->setTicks (4000.0);
-  c->set_loop_range (ct (100.0), ct (200.0), ct (3000.0));
+  c->set_loop_range (
+    dsp::ContentTick{ units::ticks (100.0) },
+    dsp::ContentTick{ units::ticks (200.0) },
+    dsp::ContentTick{ units::ticks (3000.0) });
 
   SetClipLoopPointsCommand command (
-    clip_ref (), ct (0.0), ct (0.0), ct (4000.0));
+    clip_ref (), dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (4000.0) });
   command.redo ();
 
   EXPECT_DOUBLE_EQ (c->clipStartPosition ()->ticks (), 0.0);
@@ -140,7 +141,9 @@ TEST_F (SetClipLoopPointsCommandTest, DisablesTrackBoundsOnNonDefault)
   ASSERT_DOUBLE_EQ (c->loopEndPosition ()->ticks (), 4000.0);
 
   SetClipLoopPointsCommand command (
-    clip_ref (), ct (0.0), ct (500.0), ct (3500.0));
+    clip_ref (), dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (500.0) },
+    dsp::ContentTick{ units::ticks (3500.0) });
   command.redo ();
 
   EXPECT_DOUBLE_EQ (c->loopStartPosition ()->ticks (), 500.0);
@@ -161,11 +164,16 @@ TEST_F (SetClipLoopPointsCommandTest, RedoDoesNotClampExpandingLoopStart)
 {
   auto * c = clip ();
   c->length ()->setTicks (4000.0);
-  c->set_loop_range (ct (0.0), ct (0.0), ct (100.0));
+  c->set_loop_range (
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (100.0) });
   ASSERT_DOUBLE_EQ (c->loopEndPosition ()->ticks (), 100.0);
 
   SetClipLoopPointsCommand command (
-    clip_ref (), ct (0.0), ct (500.0), ct (4000.0));
+    clip_ref (), dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (500.0) },
+    dsp::ContentTick{ units::ticks (4000.0) });
   command.redo ();
 
   EXPECT_DOUBLE_EQ (c->clipStartPosition ()->ticks (), 0.0);
@@ -180,7 +188,10 @@ TEST_F (SetClipLoopPointsCommandTest, RedoDoesNotClampExpandingLoopStart)
 // Command text is set for the undo stack display.
 TEST_F (SetClipLoopPointsCommandTest, CommandText)
 {
-  SetClipLoopPointsCommand command (clip_ref (), ct (0.0), ct (0.0), ct (0.0));
+  SetClipLoopPointsCommand command (
+    clip_ref (), dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (0.0) });
   EXPECT_EQ (command.text (), QString ("Change Clip Loop Points"));
 }
 

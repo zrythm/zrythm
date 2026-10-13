@@ -11,6 +11,8 @@ import ZrythmStyle
 ArrangerObjectBaseView {
   id: root
 
+  colorRole: ArrangerObjectBaseView.ColorRole.Content
+
   property ChordTrack chordTrack: null
   property int highlightMode: 0
   property MidiNote midiNote: root.arrangerObject as MidiNote

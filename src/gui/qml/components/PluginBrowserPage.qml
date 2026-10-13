@@ -180,22 +180,14 @@ Item {
         }
       }
 
-      ToolButton {
+      MenuButton {
         id: filterButton
 
         Accessible.name: qsTr("Plugin Spec Filters")
-        display: AbstractButton.TextBesideIcon
-        icon.height: 12
-        icon.source: ResourceManager.getIconUrl("noto-glyphs", "triangle-down.svg")
-        icon.width: 12
+        active: root.activeFilterCount > 0
+        menu: filterPopup
         text: qsTr("Filters")
-
-        onClicked: filterPopup.open()
-
-        // Tint text and icon while any spec filter is active
-        palette {
-          buttonText: root.activeFilterCount > 0 ? ZrythmTheme.colorPalette.accent : ZrythmTheme.colorPalette.buttonText
-        }
+        tooltipText: qsTr("Filter the plugin list")
 
         Popup {
           id: filterPopup

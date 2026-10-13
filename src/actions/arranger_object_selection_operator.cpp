@@ -12,10 +12,16 @@
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "commands/resize_arranger_objects_command.h"
+#include "commands/set_audio_clip_transforms_command.h"
+#include "commands/transform_arranger_objects_command.h"
 #include "dsp/timebase.h"
 #include "dsp/timestretch_engine.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/audio_clip.h"
+#include "structure/arrangement/audio_function.h"
+#include "structure/arrangement/audio_source_object.h"
+#include "structure/arrangement/automation_function.h"
+#include "structure/arrangement/midi_function.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/exceptions.h"
@@ -338,6 +344,331 @@ ArrangerObjectSelectionOperator::rampVelocities (
         *note, object_factory_.registry (), QStringLiteral ("velocity"),
         new_velocity));
     }
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::applyMidiFunction (
+  QItemSelectionModel * selectionModel,
+  const QString        &function_id,
+  const QVariantMap    &options)
+{
+  using structure::arrangement::MidiFunction;
+  using structure::arrangement::MidiNote;
+
+  const auto kind = MidiFunction::kind_from_id (
+    utils::Utf8String::from_qstring (function_id).view ());
+  if (!kind)
+    {
+      refuse_operation (QObject::tr ("Unknown function %1").arg (function_id));
+      return false;
+    }
+
+  std::vector<structure::arrangement::ArrangerObjectUuidReference> objects;
+  std::vector<MidiNote *>                                          notes;
+  for (const auto &obj_ref : extractSelectedObjects (selectionModel))
+    {
+      if (
+        auto * note = obj_ref.template get_object_as<MidiNote> ();
+        note != nullptr)
+        {
+          objects.push_back (obj_ref);
+          notes.push_back (note);
+        }
+    }
+  if (notes.empty ())
+    {
+      refuse_operation (QObject::tr ("No MIDI notes selected"));
+      return false;
+    }
+
+  // Fill the kind's parameters from the options, refusing unknown keys
+  // and values outside the declared ranges
+  const auto result = std::visit (
+    [&] (const auto &kind_instance) -> std::optional<MidiFunction::Result> {
+      using K = std::decay_t<decltype (kind_instance)>;
+      auto       params = kind_instance;
+      const auto applied =
+        structure::arrangement::apply_options (options, params, K::params ());
+      if (!applied)
+        {
+          refuse_operation (applied.error ().to_qstring ());
+          return std::nullopt;
+        }
+      return K::compute (notes, params);
+    },
+    *kind);
+  if (!result)
+    return false;
+
+  const auto to_command_state = [] (const MidiFunction::NoteState &state) {
+    commands::TransformableObjectState command_state;
+    command_state.position_ticks_ = state.position_ticks_;
+    command_state.length_ticks_ = state.length_ticks_;
+    command_state.pitch_ = state.pitch_;
+    command_state.velocity_ = state.velocity_;
+    return command_state;
+  };
+  const auto current_state = [] (const MidiNote &note) {
+    commands::TransformableObjectState state;
+    state.position_ticks_ = note.position ()->asTick ();
+    state.length_ticks_ = note.length ()->asTick ();
+    state.pitch_ = note.pitch ();
+    state.velocity_ = note.velocity ();
+    return state;
+  };
+
+  // Skip notes the function leaves unchanged, so that no-op functions push
+  // nothing
+  std::vector<structure::arrangement::ArrangerObjectUuidReference>
+                                                  changed_objects;
+  std::vector<commands::TransformableObjectState> changed_states;
+  for (
+    const auto &[obj_ref, note, state] :
+    std::views::zip (objects, notes, result->new_states_))
+    {
+      const auto after = to_command_state (state);
+      if (after == current_state (*note))
+        continue;
+      changed_objects.push_back (obj_ref);
+      changed_states.push_back (after);
+    }
+  if (changed_objects.empty () && result->added_notes_.empty ())
+    {
+      return true;
+    }
+
+  const QString text =
+    QObject::tr ("Apply %1")
+      .arg (MidiFunction::label (*kind, true).to_qstring ());
+
+  // Construct all commands before pushing any: a failing clone refuses the
+  // whole operation instead of leaving a half-applied macro
+  std::vector<std::unique_ptr<QUndoCommand>> add_commands;
+  for (const auto &added : result->added_notes_)
+    {
+      auto clone = clone_and_attach (
+        utils::convert_to_variant_qobj<
+          structure::arrangement::ArrangerObjectPtrVariant> (
+          objects[added.source_index_].get ()),
+        [&state = added.state_] (structure::arrangement::ArrangerObject &object) {
+          auto * note =
+            qobject_cast<structure::arrangement::MidiNote *> (&object);
+          note->setPitch (state.pitch_);
+          note->setVelocity (state.velocity_);
+          note->position ()->set_ticks (state.position_ticks_);
+          note->length ()->set_ticks (state.length_ticks_);
+        });
+      if (!clone)
+        {
+          refuse_operation (
+            QObject::tr ("Cannot add the notes the function requires"));
+          return false;
+        }
+      add_commands.push_back (std::move (clone->command));
+    }
+
+  undo::UndoStack::ScopedMacro macro (undo_stack_, text);
+  if (!changed_objects.empty ())
+    {
+      undo_stack_.push (new commands::TransformArrangerObjectsCommand (
+        std::move (changed_objects), std::move (changed_states), text));
+    }
+  for (auto &command : add_commands)
+    {
+      undo_stack_.push (command.release ());
+    }
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::applyAutomationFunction (
+  QItemSelectionModel * selectionModel,
+  const QString        &function_id)
+{
+  using structure::arrangement::AutomationFunction;
+  using structure::arrangement::AutomationPoint;
+
+  const auto kind = AutomationFunction::kind_from_id (
+    utils::Utf8String::from_qstring (function_id).view ());
+  if (!kind)
+    {
+      refuse_operation (QObject::tr ("Unknown function %1").arg (function_id));
+      return false;
+    }
+
+  std::vector<structure::arrangement::ArrangerObjectUuidReference> objects;
+  std::vector<AutomationPoint *>                                   points;
+  for (const auto &obj_ref : extractSelectedObjects (selectionModel))
+    {
+      if (
+        auto * point = obj_ref.template get_object_as<AutomationPoint> ();
+        point != nullptr)
+        {
+          objects.push_back (obj_ref);
+          points.push_back (point);
+        }
+    }
+  if (points.empty ())
+    {
+      refuse_operation (QObject::tr ("No automation points selected"));
+      return false;
+    }
+
+  const auto result = AutomationFunction::compute (points, *kind);
+
+  const auto to_command_state = [] (const AutomationFunction::PointState &st) {
+    commands::TransformableObjectState command_state;
+    command_state.position_ticks_ = st.position_ticks_;
+    command_state.automation_value_ = st.value_;
+    command_state.curve_algorithm_ = st.curve_algorithm_;
+    command_state.curve_curviness_ = st.curve_curviness_;
+    return command_state;
+  };
+  const auto current_state = [] (const AutomationPoint &point) {
+    commands::TransformableObjectState state;
+    state.position_ticks_ = point.position ()->asTick ();
+    state.automation_value_ = point.value ();
+    state.curve_algorithm_ = point.curveOpts ()->algorithm ();
+    state.curve_curviness_ = point.curveOpts ()->curviness ();
+    return state;
+  };
+
+  // Skip points the function leaves unchanged, so that no-op functions push
+  // nothing
+  std::vector<structure::arrangement::ArrangerObjectUuidReference>
+                                                  changed_objects;
+  std::vector<commands::TransformableObjectState> changed_states;
+  for (
+    const auto &[obj_ref, point, state] :
+    std::views::zip (objects, points, result.new_states_))
+    {
+      const auto after = to_command_state (state);
+      if (after == current_state (*point))
+        continue;
+      changed_objects.push_back (obj_ref);
+      changed_states.push_back (after);
+    }
+  if (changed_objects.empty ())
+    {
+      return true;
+    }
+
+  const QString text =
+    QObject::tr ("Apply %1")
+      .arg (AutomationFunction::label (*kind, true).to_qstring ());
+
+  undo_stack_.push (new commands::TransformArrangerObjectsCommand (
+    std::move (changed_objects), std::move (changed_states), text));
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::applyAudioFunction (
+  structure::arrangement::Clip * clip,
+  double                         selection_start_tick,
+  double                         selection_end_tick,
+  const QString                 &function_id,
+  const QVariantMap             &options)
+{
+  using structure::arrangement::AudioClip;
+  using structure::arrangement::AudioSourceObject;
+  namespace AudioFunction = structure::arrangement::AudioFunction;
+
+  auto * audio_clip = qobject_cast<AudioClip *> (clip);
+  if (audio_clip == nullptr)
+    {
+      refuse_operation (QObject::tr ("The clip is not an audio clip"));
+      return false;
+    }
+
+  if (
+    audio_clip
+      ->structure::arrangement::ArrangerObjectOwner<
+        AudioSourceObject>::get_children_view ()
+      .empty ())
+    {
+      refuse_operation (QObject::tr ("The clip has no audio"));
+      return false;
+    }
+
+  const auto kind = AudioFunction::kind_from_id (
+    utils::Utf8String::from_qstring (function_id).view ());
+  if (!kind)
+    {
+      refuse_operation (QObject::tr ("Unknown function %1").arg (function_id));
+      return false;
+    }
+
+  // Fades need a selected range; the other functions default to the
+  // clip's audible span
+  const bool has_selection =
+    selection_start_tick >= 0.0 && selection_end_tick > selection_start_tick;
+  if (
+    !has_selection
+    && (std::holds_alternative<AudioFunction::FadeIn> (*kind) || std::holds_alternative<AudioFunction::FadeOut> (*kind)))
+    {
+      refuse_operation (
+        QObject::tr ("%1 needs a selected range")
+          .arg (AudioFunction::label (*kind, true).to_qstring ()));
+      return false;
+    }
+
+  AudioFunction::Entry entry = *kind;
+  const auto           applied = std::visit (
+    [&options] (auto &k) {
+      using K = std::decay_t<decltype (k)>;
+      return apply_options (options, k, K::params ());
+    },
+    entry);
+  if (!applied)
+    {
+      refuse_operation (applied.error ().to_qstring ());
+      return false;
+    }
+
+  const auto range_start =
+    has_selection
+      ? dsp::ContentTick{ units::ticks (selection_start_tick) }
+      : audio_clip->clipStartPosition ()->asTick ();
+  const auto range_end =
+    has_selection
+      ? dsp::ContentTick{ units::ticks (selection_end_tick) }
+      : (audio_clip->looped ()
+           ? audio_clip->loopEndPosition ()->asTick ()
+           : audio_clip->clipStartPosition ()->asTick ()
+               + audio_clip->length ()->asTick ());
+  std::visit (
+    [&] (auto &k) {
+      using K = std::decay_t<decltype (k)>;
+      k.start = range_start;
+      k.end = range_end;
+      if constexpr (
+        std::same_as<K, AudioFunction::NormalizePeak>
+        || std::same_as<K, AudioFunction::NormalizeRms>)
+        {
+          k.gain = AudioFunction::normalize_gain (
+            *audio_clip, range_start, range_end,
+            std::same_as<K, AudioFunction::NormalizeRms>);
+        }
+    },
+    entry);
+
+  auto after_entries =
+    audio_clip->transform_entries () | std::ranges::to<std::vector> ();
+  after_entries.push_back (entry);
+
+  const QString text =
+    QObject::tr ("Apply %1")
+      .arg (AudioFunction::label (entry, true).to_qstring ());
+
+  undo_stack_.push (new commands::SetAudioClipTransformsCommand (
+    structure::arrangement::ArrangerObjectUuidReference (
+      audio_clip->get_uuid (), project_registry_),
+    std::move (after_entries), text));
 
   return true;
 }

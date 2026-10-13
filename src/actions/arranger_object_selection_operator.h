@@ -146,6 +146,74 @@ public:
     QItemSelectionModel * selectionModel,
     double                delta);
 
+  /**
+   * @brief Applies a transformative function to the selected MIDI notes,
+   * in a single undo step.
+   *
+   * Non-note objects in the selection are skipped. Functions that add
+   * notes (Flam) push one add command per new note inside the same undo
+   * macro, with each new note cloned from its source note and given the
+   * computed grace-note state. When the function would change nothing, no
+   * command is pushed.
+   *
+   * @param selectionModel The editor's selection.
+   * @param function_id The id of the structure::arrangement::MidiFunction
+   * kind to apply.
+   * @param options Parameter values by key, as declared by the kind;
+   * values outside the declared ranges are refused.
+   * @return false if no MIDI notes are selected, @p function_id is not a
+   * known function or @p options holds an invalid value.
+   */
+  Q_INVOKABLE bool applyMidiFunction (
+    QItemSelectionModel * selectionModel,
+    const QString        &function_id,
+    const QVariantMap    &options);
+
+  /**
+   * @brief Applies a transformative function to the selected automation
+   * points, in a single undo step.
+   *
+   * Non-point objects in the selection are skipped. When the function would
+   * change nothing, no command is pushed.
+   *
+   * @param selectionModel The editor's selection.
+   * @param function_id The id of the structure::arrangement::AutomationFunction
+   * kind to apply.
+   * @return false if no automation points are selected or @p function_id is
+   * not a known function.
+   */
+  Q_INVOKABLE bool applyAutomationFunction (
+    QItemSelectionModel * selectionModel,
+    const QString        &function_id);
+
+  /**
+   * @brief Applies a transformative function to @p clip's audio by
+   * appending a transform entry to the clip, in a single undo step.
+   *
+   * @p selection_start_tick and @p selection_end_tick give the edited range
+   * in clip content ticks; pass a negative start tick to apply the function
+   * to the clip's audible span. Fade functions require a selected range.
+   *
+   * @param clip The audio clip being edited.
+   * @param selection_start_tick First content tick of the edited range, or a
+   * negative value for the clip's audible span.
+   * @param selection_end_tick Last content tick of the edited range
+   * (exclusive).
+   * @param function_id The id of the structure::arrangement::AudioFunction
+   * kind to apply.
+   * @param options Function options by key ("curveAlgorithm",
+   * "curviness" for the fades).
+   * @return false if the clip is not an audio clip, has no audio, @p
+   * function_id is not a known function, a fade is requested without a
+   * selected range, or an option is invalid.
+   */
+  Q_INVOKABLE bool applyAudioFunction (
+    structure::arrangement::Clip * clip,
+    double                         selection_start_tick,
+    double                         selection_end_tick,
+    const QString                 &function_id,
+    const QVariantMap             &options);
+
   Q_INVOKABLE bool resizeObjects (
     QItemSelectionModel *     selectionModel,
     commands::ResizeType      type,

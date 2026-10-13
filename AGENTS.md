@@ -434,6 +434,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - Test filenames end in `_test.cpp`
 - If a header is needed (to make qmoc happy for example when defining test QObjects), put it in `_test.h`
 - Enclose the unit test classes and functions inside the namespace of the class being tested (avoid `using namespace`)
+- QML (Qt Quick Test) tests live flat in `tests/unit/gui/qml/` (auto-discovered `tst_*.qml`, one `QmlTests` module) and are named by kind: component tests after the component (`tst_DestructiveButton.qml`), style-template tests after the stock control (`tst_Menu.qml`), and theme/derivation contract tests (pure-function contracts on `ZrythmTheme` and the values in DESIGN.md) go in `tst_ZrythmTheme.qml`
 
 ### Flaky Test Prevention
 

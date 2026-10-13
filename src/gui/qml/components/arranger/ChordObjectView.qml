@@ -12,6 +12,8 @@ import ZrythmGui
 ArrangerObjectBaseView {
   id: root
 
+  colorRole: ArrangerObjectBaseView.ColorRole.Label
+
   readonly property ChordObject chordObject: arrangerObject as ChordObject
   property ChordTrack chordTrack: null
   required property ArrangerObjectCreator objectCreator
@@ -25,14 +27,16 @@ ArrangerObjectBaseView {
 
   Rectangle {
     anchors.fill: parent
-    color: root.objectColor
+    color: Qt.alpha (root.objectColor, ZrythmTheme.bodyAlpha)
+    border.color: root.objectBorderColor
+    border.width: 1
     radius: ZrythmTheme.toolButtonRadius
   }
 
   Label {
     anchors.fill: parent
     anchors.leftMargin: 6
-    color: root.palette.highlightedText
+    color: root.palette.text
     elide: Text.ElideRight
     font: root.font
     horizontalAlignment: Text.AlignLeft

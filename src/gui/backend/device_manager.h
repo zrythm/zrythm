@@ -96,6 +96,10 @@ public:
    * This calls `juce::AudioDeviceManager::initialise()` internally and passes
    * the state obtained from @ref state_getter_.
    *
+   * If opening fails and input channels were requested, a second attempt is
+   * made with output channels only (with default device settings), so that
+   * systems without usable input devices still get playback.
+   *
    * @exception ZrythmException Error occurred in opening the device(s).
    */
   void initialize (

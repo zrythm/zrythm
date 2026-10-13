@@ -3,8 +3,11 @@
 
 #pragma once
 
+#include <span>
+
 #include "dsp/timestretch_engine.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/arrangement/audio_function.h"
 #include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/clip.h"
 #include "structure/arrangement/fadeable_object.h"
@@ -77,6 +80,24 @@ public:
 
   void set_source (const ArrangerObjectUuidReference &source);
 
+  /**
+   * @brief The clip's ordered non-destructive transform entries.
+   *
+   * The entries are evaluated in list order whenever the clip's audio is
+   * serialized for playback or display.
+   */
+  std::span<const AudioFunction::Entry> transform_entries () const;
+
+  /**
+   * @brief Replaces the transform entries.
+   *
+   * Emits @ref renderedAudioChanged and propertiesChanged so playback
+   * caches and waveforms rebuild.
+   */
+  void set_transform_entries (std::vector<AudioFunction::Entry> entries);
+
+  Q_SIGNAL void renderedAudioChanged ();
+
   juce::PositionableAudioSource &get_audio_source () const;
 
   std::string
@@ -106,6 +127,7 @@ private:
   static constexpr auto kGainKey = "gain"sv;
   static constexpr auto kAlgorithmKey = "stretchAlgorithm"sv;
   static constexpr auto kFadeRangeKey = "fadeRange"sv;
+  static constexpr auto kTransformEntriesKey = "transformEntries"sv;
 
   friend void to_json (nlohmann::json &j, const AudioClip &clip);
   friend void from_json (const nlohmann::json &j, AudioClip &clip);
@@ -115,6 +137,7 @@ private:
     dsp::StretchOptions::Algorithm::Polyphonic
   };
   utils::QObjectUniquePtr<ArrangerObjectFadeRange> fade_range_;
+  std::vector<AudioFunction::Entry>                transform_entries_;
 
   BOOST_DESCRIBE_CLASS (AudioClip, (Clip), (), (), (gain_, algorithm_))
 };

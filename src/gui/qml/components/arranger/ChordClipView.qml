@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Zrythm
+import ZrythmStyle
 
 ClipBaseView {
   id: root
@@ -15,6 +16,7 @@ ClipBaseView {
     chordClip: root.chordClip
     contentHeight: root.contentHeight
     contentWidth: root.contentWidth
+    textColor: ZrythmTheme.polarityTextColor(root.clipBodyColor)
     loopPreview: root.loopPreview
     referenceWidth: root.referenceWidth
     referenceX: root.referenceX

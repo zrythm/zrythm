@@ -50,7 +50,13 @@ QtObject {
       "pixelSize": 9,
       "bold": true
     })
-  readonly property color clipContentColor: Qt.rgba(colorPalette.highlightedText.r, colorPalette.highlightedText.g, colorPalette.highlightedText.b, 0.85)
+  // Body fill opacity of the arranger color recipe, shared by clip
+  // bodies and label-object surfaces over the lane grid; a
+  // transparent body washes out its chroma too, so this stays well
+  // above half (DESIGN.md "Clips")
+  readonly property real bodyAlpha: 0.75
+  // Whole-clip opacity of clips on muted tracks (DESIGN.md "Clips")
+  readonly property real mutedClipOpacity: 0.5
   // Height of dense inline controls (channel state chips and compact
   // word-mode selectors); DESIGN.md "Channel state buttons"
   readonly property real compactControlHeight: 18
@@ -268,6 +274,131 @@ QtObject {
     const la = luminance(a);
     const lb = luminance(b);
     return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  }
+
+  // A linear-light channel converted back to its sRGB value
+  function srgbChannel(v: real): real {
+    return v <= 0.0031308 ? 12.92 * v : Math.min(1.0, 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+  }
+
+  // sRGB color converted to OKLCH as [L, chroma, hue in degrees].
+  // Coefficients from Ottosson's OKLab reference implementation
+  // (bottosson.github.io/posts/oklab)
+  function rgbToOklch(c: color): var {
+    const r = linearChannel(c.r);
+    const g = linearChannel(c.g);
+    const b = linearChannel(c.b);
+    const lms0 = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+    const lms1 = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+    const lms2 = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    const lightness = 0.2104542553 * lms0 + 0.7936177850 * lms1 - 0.0040720468 * lms2;
+    const a = 1.9779984951 * lms0 - 2.4285922050 * lms1 + 0.4505937099 * lms2;
+    const bb = 0.0259040371 * lms0 + 0.7827717662 * lms1 - 0.8086757660 * lms2;
+    const chroma = Math.sqrt(a * a + bb * bb);
+    let hue = Math.atan2(bb, a) * 180 / Math.PI;
+    if (hue < 0)
+      hue += 360;
+    return [lightness, chroma, hue];
+  }
+
+  // OKLCH converted back to sRGB, with the chroma reduced until the
+  // color fits the sRGB gamut. Coefficients from Ottosson's OKLab
+  // reference implementation (bottosson.github.io/posts/oklab)
+  function oklchColor(l: real, c: real, h: real): color {
+    const toLinear = (ll, aa, bb) => {
+      const lms0 = Math.pow(0.9999999985 * ll + 0.3963377922 * aa + 0.2158037581 * bb, 3);
+      const lms1 = Math.pow(1.0000000089 * ll - 0.1055613423 * aa - 0.0638541748 * bb, 3);
+      const lms2 = Math.pow(1.0000000547 * ll - 0.0894841821 * aa - 1.2914855379 * bb, 3);
+      return [
+        4.0767416613 * lms0 - 3.3077115904 * lms1 + 0.2309699287 * lms2,
+        -1.2684380041 * lms0 + 2.6097574007 * lms1 - 0.3413193963 * lms2,
+        -0.0041960865 * lms0 - 0.7034186145 * lms1 + 1.7076147009 * lms2];
+    };
+    const rad = h * Math.PI / 180;
+    const inGamut = rgb => rgb.every(v => v >= -0.001 && v <= 1.001);
+    let chroma = c;
+    let rgb = toLinear(l, chroma * Math.cos(rad), chroma * Math.sin(rad));
+    if (!inGamut(rgb)) {
+      let lo = 0;
+      let hi = c;
+      for (let i = 0; i < 24; i++) {
+        chroma = (lo + hi) / 2;
+        rgb = toLinear(l, chroma * Math.cos(rad), chroma * Math.sin(rad));
+        if (inGamut(rgb))
+          lo = chroma;
+        else
+          hi = chroma;
+      }
+      rgb = toLinear(l, lo * Math.cos(rad), lo * Math.sin(rad));
+    }
+    return Qt.rgba(srgbChannel(rgb[0]), srgbChannel(rgb[1]), srgbChannel(rgb[2]), 1);
+  }
+
+  // The arranger color recipe's OKLCH anchors (DESIGN.md "Clips").
+  // Every surface keeps the source hue and pins it to a fixed
+  // lightness/chroma pair per theme, given as [dark, light]; the
+  // border and the name scrim shift the body lightness by a delta.
+  readonly property var _recipe: {
+    // Content ink: the deepest chroma holding >= 3:1 against every
+    // body the recipe produces
+    "inkL": [0.60, 0.44],
+    "inkC": [0.21, 0.18],
+    // Quiet surface shared by clip bodies and label objects
+    "bodyL": [0.30, 0.89],
+    "bodyC": [0.065, 0.06],
+    "borderDeltaL": [0.08, -0.05],
+    "scrimDeltaL": [-0.08, -0.08],
+    // HSL saturation below which a source renders gray
+    "achromaticSaturation": 0.05,
+  }
+
+  // All recipe surfaces for a source color in one OKLCH pass
+  function _recipeColors (source: color, forceAchromatic: bool): var {
+    const [, , hue] = rgbToOklch (source);
+    const achromatic = forceAchromatic
+      || source.hslSaturation < _recipe.achromaticSaturation;
+    const mode = darkMode ? 0 : 1;
+    const bodyL = _recipe.bodyL[mode];
+    const bodyC = achromatic ? 0 : _recipe.bodyC[mode];
+    const inkC = achromatic ? 0 : _recipe.inkC[mode];
+    return {
+      body: oklchColor (bodyL, bodyC, hue),
+      border: oklchColor (bodyL + _recipe.borderDeltaL[mode], bodyC, hue),
+      scrim: oklchColor (bodyL + _recipe.scrimDeltaL[mode], bodyC, hue),
+      ink: oklchColor (_recipe.inkL[mode], inkC, hue),
+    };
+  }
+
+  // Musical-content color for arranger objects outside clips (notes,
+  // chords, automation curves, editor waveforms): the source's hue at
+  // the clip content ink's lightness and chroma, so in-clip and
+  // out-of-clip content render identically (DESIGN.md "Clips").
+  // Achromatic sources yield gray.
+  function contentColor (source: color, forceAchromatic: bool): color {
+    return _recipeColors (source, forceAchromatic).ink;
+  }
+
+  // Label-object surface colors (markers, tempo/time-signature
+  // objects): the clip body treatment — the source's hue at the clip
+  // body's lightness and chroma. Achromatic sources yield gray.
+  // Returns { body, border }.
+  function labelColors (source: color, forceAchromatic: bool): var {
+    const colors = _recipeColors (source, forceAchromatic);
+    return { body: colors.body, border: colors.border };
+  }
+
+  // Clip surface colors derived from the clip/track color in a single
+  // pass (DESIGN.md "Clips"): the source's hue at the recipe lightness
+  // and chroma, for the body, border, name scrim and content ink.
+  // Achromatic sources yield gray. Ink sits at a fixed lightness
+  // holding ≥ 3:1 (WCAG graphics contrast) against every body the
+  // recipe can produce; text on the body takes the polarity rule
+  // instead (polarityTextColor). Muted clips come out fully
+  // achromatic — every part at zero chroma — so the loss of color
+  // itself signals that the clip is not playing. Returns
+  // { body, border, scrim, ink }.
+  function clipColors (source: color, muted: bool): var {
+    return _recipeColors (source, muted);
   }
 
   // The ink polarity that passes contrast against the given fill: white

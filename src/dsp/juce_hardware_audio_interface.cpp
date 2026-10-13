@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include "dsp/juce_hardware_audio_interface.h"
+#include "utils/exceptions.h"
 #include "utils/format_juce.h"
 #include "utils/logger.h"
 
@@ -53,7 +54,10 @@ JuceHardwareAudioInterface::~JuceHardwareAudioInterface ()
 JuceHardwareAudioInterface::get_device_info () const
 {
   auto * dev = device_manager_->getCurrentAudioDevice ();
-  assert (dev != nullptr);
+  if (dev == nullptr)
+    {
+      throw utils::ZrythmException ("no audio device is open");
+    }
   return {
     .device_name = utils::Utf8String::from_juce_string (dev->getName ()),
     .sample_rate =
