@@ -16,6 +16,8 @@ target_sources(zrythm_gui_lib
     file_system_model.h
     file_system_model.cpp
     global_state.h
+    juce_event_loop_bridge.h
+    juce_event_loop_bridge.cpp
     notification.h
     notification.cpp
     notification_center.h
