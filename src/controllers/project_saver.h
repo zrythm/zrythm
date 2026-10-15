@@ -56,7 +56,7 @@ public:
    *          - Wait from a non-main thread
    */
   [[nodiscard]] static QFuture<QString> save (
-    const structure::project::Project        &project,
+    structure::project::Project              &project,
     const structure::project::ProjectUiState &ui_state,
     const undo::UndoStack                    &undo_stack,
     utils::Version                            app_version,

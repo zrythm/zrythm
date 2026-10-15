@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -56,12 +56,10 @@ public:
 
   // ========================================================================
 
-  juce::PositionableAudioSource &get_audio_source () const;
-
   /**
    * @brief Returns the underlying FileAudioSource.
    *
-   * Carries the raw samples and the clip's permanent source BPM, which the
+   * Carries the manifest and the clip's permanent source BPM, which the
    * clip needs to compute its musical length and stretch ratios.
    */
   dsp::FileAudioSource &file_audio_source () const;
@@ -80,13 +78,9 @@ private:
   friend void to_json (nlohmann::json &j, const AudioSourceObject &obj);
   friend void from_json (const nlohmann::json &j, AudioSourceObject &obj);
 
-  Q_SLOT void generate_audio_source ();
-  void        connect_file_audio_source_signals ();
-
 private:
-  utils::IObjectRegistry                        &registry_;
-  dsp::FileAudioSourceUuidReference              source_id_;
-  std::unique_ptr<juce::PositionableAudioSource> source_;
+  utils::IObjectRegistry           &registry_;
+  dsp::FileAudioSourceUuidReference source_id_;
 
   BOOST_DESCRIBE_CLASS (AudioSourceObject, (ArrangerObject), (), (), ())
 };

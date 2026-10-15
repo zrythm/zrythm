@@ -68,8 +68,8 @@ Project::Project (
       pool_ (
         std::make_unique<dsp::AudioPool> (
           project_registry_,
-          [this] (bool backup) {
-            return project_directory_path_provider_ (backup)
+          [this] () {
+            return project_directory_path_provider_ ()
                    / structure::project::ProjectPathProvider::get_path (
                      zrythm::structure::project::ProjectPathProvider::
                        ProjectPath::AudioFilePoolDir);
@@ -119,7 +119,10 @@ Project::Project (
                   app_settings_.automationCurveAlgorithm ());
               } },
           [&] () { return audio_engine_->sample_rate (); },
-          [&] () { return tempo_map ().tempo_at_tick (units::ticks (0)); })),
+          [&] () { return tempo_map ().tempo_at_tick (units::ticks (0)); },
+          [this] () -> std::shared_ptr<dsp::AudioBlockStore> {
+            return pool_->get_block_store ();
+          })),
       plugin_factory_ (
         utils::make_qobject_unique<plugins::PluginFactory> (
           plugins::PluginFactory::CommonFactoryDependencies{
@@ -447,8 +450,8 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   //   *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
   obj.pool_ = utils::clone_unique (
     *other.pool_, clone_type, obj.project_registry_,
-    [&obj] (bool backup) {
-      return obj.project_directory_path_provider_ (backup)
+    [&obj] () {
+      return obj.project_directory_path_provider_ ()
              / structure::project::ProjectPathProvider::get_path (
                structure::project::ProjectPathProvider::ProjectPath::
                  AudioFilePoolDir);
@@ -511,12 +514,22 @@ Project::tempoObjectManager () const
 }
 
 void
+Project::set_project_directory (const std::filesystem::path &dir)
+{
+  if (project_directory_path_provider_ () == dir)
+    {
+      return;
+    }
+  project_directory_path_provider_ = [dir] () { return dir; };
+  pool_->rebuild_block_store ();
+}
+
+void
 to_json (nlohmann::json &j, const Project &project)
 {
   j[Project::kProjectIdKey] = project.project_id_;
   j[Project::kTempoMapKey] = project.tempo_map_;
   j[Project::kTransportKey] = project.transport_;
-  j[Project::kAudioPoolKey] = project.pool_;
   j[Project::kTracklistKey] = project.tracklist_;
   // j[Project::kClipLinkGroupManagerKey] =
   // project.clip_link_group_manager_;
@@ -553,12 +566,6 @@ from_json (const nlohmann::json &j, Project &project)
 
   // Transport is required
   j.at (Project::kTransportKey).get_to (*project.transport_);
-
-  // AudioPool - optional
-  if (j.contains (Project::kAudioPoolKey))
-    {
-      j.at (Project::kAudioPoolKey).get_to (*project.pool_);
-    }
 
   // Tracklist is required
   j.at (Project::kTracklistKey).get_to (*project.tracklist_);

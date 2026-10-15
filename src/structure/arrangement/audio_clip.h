@@ -98,8 +98,6 @@ public:
 
   Q_SIGNAL void renderedAudioChanged ();
 
-  juce::PositionableAudioSource &get_audio_source () const;
-
   std::string
   get_field_name_for_serialization (const AudioSourceObject *) const override
   {

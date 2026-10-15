@@ -75,13 +75,7 @@ protected:
   std::unique_ptr<Project> create_minimal_project ()
   {
     structure::project::Project::ProjectDirectoryPathProvider path_provider =
-      [this] (bool for_backup) {
-        if (for_backup)
-          {
-            return project_dir / "backups";
-          }
-        return project_dir;
-      };
+      [this] () { return project_dir; };
 
     plugins::PluginHostWindowFactory window_factory =
       [] (plugins::Plugin &) -> std::unique_ptr<plugins::PluginHostWindow> {
@@ -377,7 +371,7 @@ TEST_F (ProjectTest, RecordingCallbackPropagatedToCreatedTracks)
 TEST_F (ProjectTest, GetFinalTrackDependenciesThrowsWhenNotInstalled)
 {
   auto project = std::make_unique<Project> (
-    *app_settings, [this] (bool) { return project_dir; }, *hw_interface,
+    *app_settings, [this] () { return project_dir; }, *hw_interface,
     midi_interface_, plugin_format_manager,
     [] (plugins::Plugin &) -> std::unique_ptr<plugins::PluginHostWindow> {
       return nullptr;

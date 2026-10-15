@@ -114,8 +114,7 @@ AudioClip::init_length_from_clip ()
       : get_tempo_map ().tempo_at_tick (
           units::ticks (static_cast<int64_t> (position ()->ticks ())));
   const auto musical_ticks =
-    ((units::samples (static_cast<double> (num_frames)) / sr) * bpm)
-      .as (units::ticks);
+    ((units::precise_sample_t{ num_frames } / sr) * bpm).as (units::ticks);
   len->setTicks (musical_ticks.in (units::ticks));
 }
 
@@ -137,14 +136,6 @@ init_from (
   if (obj.fade_range_ && other.fade_range_)
     init_from (*obj.fade_range_, *other.fade_range_, clone_type);
   obj.update_warp_configuration ();
-}
-
-juce::PositionableAudioSource &
-AudioClip::get_audio_source () const
-{
-  assert (get_children_vector ().size () == 1);
-  auto * audio_source_obj = get_children_view ().front ();
-  return audio_source_obj->get_audio_source ();
 }
 
 void

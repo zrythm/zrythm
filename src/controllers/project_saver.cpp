@@ -306,7 +306,7 @@ ProjectSaver::autosave_cb (void * data)
 
 QFuture<QString>
 ProjectSaver::save (
-  const structure::project::Project        &project,
+  structure::project::Project              &project,
   const structure::project::ProjectUiState &ui_state,
   const undo::UndoStack                    &undo_stack,
   utils::Version                            app_version,
@@ -355,16 +355,28 @@ ProjectSaver::save (
     make_project_dirs (path);
   };
 
-  const auto write_pool_task = [&project, is_backup] () {
-// TODO
-#if 0
-    if (this == get_active_instance ())
+  const auto write_pool_task = [&project, is_backup, path] () {
+    // Pending tail data becomes blocks before the project JSON is built,
+    // so the saved manifests are complete. Recording packets delivered
+    // after the pool write and serialization event stay in memory until
+    // the next save: the saved manifests trail the in-memory state by
+    // the packets still in flight.
+    //
+    // When the save target is another directory (backups, Save As), the
+    // referenced blocks are copied into the target's pool. The target
+    // pool of a backup save is pruned as well; the main pool's sweep is
+    // deferred to after the save (see below).
+    project.pool_->flush_pending_tails ();
+    const auto target_blocks_dir =
+      path
+      / structure::project::ProjectPathProvider::get_path (
+        structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir)
+      / "blocks";
+    project.pool_->copy_blocks_to_directory (target_blocks_dir);
+    if (is_backup)
       {
-        /* write the pool */
-        pool_->remove_unused (is_backup);
+        project.pool_->remove_unused_in_directory (target_blocks_dir);
       }
-#endif
-    project.pool_->write_to_disk (is_backup);
   };
 
   const auto build_json_task =
@@ -438,10 +450,13 @@ ProjectSaver::save (
 
   return QtConcurrent::run (
     [engine, resume_engine, create_dirs_task, write_pool_task, build_json_task,
-     validate_json_task, write_json_task, rename_file_task, path,
-     is_backup] (QPromise<QString> &promise) {
+     validate_json_task, write_json_task, rename_file_task, path, is_backup,
+     &project] (QPromise<QString> &promise) {
       // The pool write and serialization access live project data, so they
-      // must run on the engine's thread. Any exception is rethrown on this
+      // must run on the engine's thread. The engine lives on the main
+      // thread: each posted task runs as a single main-thread event, so
+      // recording drains (also main-thread) can only land between posted
+      // tasks, never inside one. Any exception is rethrown on this
       // thread: exceptions must not escape into the main event loop
       const auto run_on_engine_thread = [engine] (const auto &func) {
         std::exception_ptr eptr;
@@ -481,16 +496,18 @@ ProjectSaver::save (
 
           promise.setProgressValueAndText (
             kStageCreateDirs, QObject::tr ("Writing audio files..."));
-          run_on_engine_thread (write_pool_task);
-          if (cancel_if_requested ())
-            return;
-
-          promise.setProgressValueAndText (
-            kStageWritePool, QObject::tr ("Serializing project..."));
           nlohmann::json json;
-          run_on_engine_thread ([&json, &build_json_task] {
-            json = build_json_task ();
-          });
+          run_on_engine_thread (
+            [&json, &write_pool_task, &build_json_task, &promise] {
+              // The pool write and the serialization run as a single
+              // event: recording drains can only land before or after
+              // both, so the serialized manifests reference exactly the
+              // blocks the pool copy saw.
+              write_pool_task ();
+              promise.setProgressValueAndText (
+                kStageWritePool, QObject::tr ("Serializing project..."));
+              json = build_json_task ();
+            });
           if (cancel_if_requested ())
             return;
 
@@ -512,6 +529,30 @@ ProjectSaver::save (
               is_backup);
             resume_engine ();
           });
+
+          // The main pool's garbage collection runs after the save
+          // completes, on the main thread where all source mutations
+          // happen: any block written while the save task was still
+          // running is part of the sweep's mark set, so a block the
+          // just-saved manifest references is never deleted. Blocks
+          // referenced only by sources deleted between serialization and
+          // this sweep (e.g. a cleared undo history) are collected: the
+          // live project is authoritative, not the saved file. The
+          // project is the invocation context, so a project destroyed
+          // before delivery cancels the pending call.
+          QMetaObject::invokeMethod (
+            &project,
+            [project_ptr = &project] () {
+              try
+                {
+                  project_ptr->pool_->sweep_unused_blocks ();
+                }
+              catch (const std::exception &e)
+                {
+                  utils::log_exception (e, "Failed to sweep unused blocks");
+                }
+            },
+            Qt::QueuedConnection);
 
           promise.setProgressValueAndText (
             kStageDone, QObject::tr ("Project saved"));

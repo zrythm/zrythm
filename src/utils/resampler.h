@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -17,8 +17,7 @@
 /**
  * Audio resampler.
  *
- * This currently only supports 32-bit interleaved floats for
- * input and output.
+ * Takes and returns planar 32-bit float audio buffers.
  */
 class Resampler
 {
@@ -64,7 +63,7 @@ public:
   bool is_done () const;
 
   /**
-   * @brief Gets the interleaved output frames.
+   * @brief Gets the planar output frames.
    *
    * @ref is_done() must be true before calling this.
    */

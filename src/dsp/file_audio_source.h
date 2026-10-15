@@ -1,26 +1,34 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include <memory>
+#include <shared_mutex>
+#include <vector>
+
+#include "dsp/audio_block_store.h"
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/icloneable.h"
-#include "utils/monotonic_time_provider.h"
 #include "utils/typed_uuid_reference.h"
 #include "utils/units.h"
 #include "utils/utf8_string.h"
 #include "utils/uuid_identifiable_object.h"
 
-#include <juce_audio_formats/juce_audio_formats.h>
-
 namespace zrythm::dsp
 {
 
 /**
- * Audio clips for the pool.
+ * Pooled audio media referenced by audio clips.
  *
- * These should be loaded in the project's sample rate.
+ * A source is a manifest: an ordered list of block spans referencing
+ * immutable, content-addressed blocks in an AudioBlockStore, plus a small
+ * in-memory tail of frames not yet written to a block. Frames are read back
+ * through read_span() and written to blocks as audio arrives (append_frames,
+ * flush_tail).
+ *
+ * Sources are kept in the project's sample rate and stereo.
  */
 class FileAudioSource final
     : public utils::UuidIdentifiableObject<FileAudioSource>
@@ -32,14 +40,31 @@ public:
   using AudioFile = zrythm::utils::audio::AudioFile;
   using channels_t = uint_fast8_t;
 
+  /**
+   * Maps a frame range of a block into this source's frame space.
+   *
+   * Spans are ordered by dest_start_frame and tile the source's frame space
+   * contiguously from frame 0.
+   */
+  struct BlockSpan
+  {
+    BlockId         block;
+    units::sample_t src_start_frame{};
+    units::sample_t num_frames{};
+    units::sample_t dest_start_frame{};
+  };
+
 public:
+  /** Creates an empty source. Used by deserialization. */
   FileAudioSource (QObject * parent = nullptr);
 
   /**
-   * Creates an audio clip from a file.
+   * Creates a source by decoding the given audio file.
    *
-   * The clip's source BPM (@ref bpm_) is initialized from the file. The
-   * basename of the file is used as the clip name.
+   * The audio is resampled to the project sample rate and mono files are
+   * converted to stereo. The clip's source BPM (@ref bpm_) is initialized
+   * from the file. The basename of the file is used as the clip name. The
+   * frames are held in the in-memory tail until written to blocks.
    *
    * @throw ZrythmException on error.
    */
@@ -49,7 +74,10 @@ public:
     QObject *                    parent = nullptr);
 
   /**
-   * Creates an audio clip by copying the given buffer.
+   * Creates a source by copying the given buffer.
+   *
+   * Mono buffers are converted to stereo. The frames are held in the
+   * in-memory tail until written to blocks.
    *
    * @param source_bpm The clip's permanent source BPM. For material captured
    *                   in-project (e.g. recording) this is the project tempo at
@@ -64,34 +92,6 @@ public:
     const utils::Utf8String         &name,
     QObject *                        parent = nullptr);
 
-  /**
-   * Creates an audio clip by copying the given interleaved float array.
-   *
-   * @param arr Interleaved array.
-   * @param nframes Number of frames per channel.
-   * @param channels Number of channels.
-   * @param name A name for this clip.
-   */
-  FileAudioSource (
-    const float *                  arr,
-    units::sample_u64_t            nframes,
-    channels_t                     channels,
-    zrythm::utils::audio::BitDepth bit_depth,
-    units::sample_rate_t           project_sample_rate,
-    units::bpm_t                   source_bpm,
-    const utils::Utf8String       &name,
-    QObject *                      parent = nullptr)
-      : FileAudioSource (
-          *utils::audio::AudioBuffer::
-            from_interleaved (arr, nframes.in (units::samples), channels),
-          bit_depth,
-          project_sample_rate,
-          source_bpm,
-          name,
-          parent)
-  {
-  }
-
   // ========================================================================
   // QML Interface
   // ========================================================================
@@ -104,7 +104,11 @@ public:
   // ========================================================================
 
   auto get_bit_depth () const { return bit_depth_; }
-  auto get_name () const { return name_; }
+  auto get_name () const
+  {
+    const std::shared_lock lock (mutex_);
+    return name_;
+  }
   /**
    * @brief The clip's permanent source BPM (its intrinsic musical tempo).
    *
@@ -113,75 +117,84 @@ public:
    *
    * @see bpm_ for how this is initialized.
    */
-  auto        source_bpm () const { return bpm_; }
-  const auto &get_samples () const { return ch_frames_; }
-  auto        get_samplerate () const { return samplerate_; }
-
-  void set_name (const utils::Utf8String &name) { name_ = name; }
-
-  /**
-   * @brief Expands (appends to the end) the frames in the clip by the given
-   * frames.
-   *
-   * @param frames Non-interleaved frames.
-   */
-  void expand_with_frames (const utils::audio::AudioBuffer &frames);
-
-  /**
-   * Replaces the clip's frames starting from @p start_frame with @p frames.
-   *
-   * @warning Not realtime safe.
-   *
-   * @param src_frames Frames to copy.
-   * @param start_frame Frame to start copying to (@p src_frames are always
-   * copied from the start).
-   */
-  void replace_frames (
-    const utils::audio::AudioBuffer &src_frames,
-    units::sample_u64_t              start_frame);
-
-  /**
-   * Replaces the clip's frames starting from @p start_frame with @p frames.
-   *
-   * @warning Not realtime safe.
-   *
-   * @param frames Frames, interleaved.
-   * @param start_frame Frame to start copying to (@p src_frames are always
-   * copied from the start).
-   */
-  void replace_frames_from_interleaved (
-    const float *       frames,
-    units::sample_u64_t start_frame,
-    units::sample_u64_t num_frames_per_channel,
-    channels_t          channels);
-
-  /**
-   * @brief Unloads the clip's frames from memory.
-   */
-  void clear_frames ()
+  units::sample_rate_t get_samplerate () const
   {
-    ch_frames_.setSize (ch_frames_.getNumChannels (), 0, false, true);
-    Q_EMIT samplesChanged ();
+    const std::shared_lock lock (mutex_);
+    return samplerate_;
+  }
+  units::bpm_t source_bpm () const { return bpm_; }
+
+  void set_name (const utils::Utf8String &name)
+  {
+    const std::unique_lock lock (mutex_);
+    name_ = name;
   }
 
-  auto get_num_channels () const { return ch_frames_.getNumChannels (); };
-  auto get_num_frames () const { return ch_frames_.getNumSamples (); };
+  // ========================================================================
+  // Manifest
+  // ========================================================================
 
   /**
-   * @brief Initializes members from an audio file.
+   * @brief Sets the store used for all block I/O.
    *
-   * @param full_path Path to the file.
-   * @param bpm_to_set Optional source BPM override. Used when reloading a
-   *                   project to preserve the previously stored value. If
-   *                   nullopt, the BPM is auto-detected from the file (see
-   *                   @ref bpm_).
-   *
-   * @throw ZrythmException on I/O error.
+   * Required before appending frames, writing pending data or reading
+   * spans. The store is shared with the pool: sources keep it alive even
+   * when the pool rebuilds its own instance.
    */
-  void init_from_file (
-    const std::filesystem::path &full_path,
-    units::sample_rate_t         project_sample_rate,
-    std::optional<units::bpm_t>  bpm_to_set);
+  void set_store (std::shared_ptr<AudioBlockStore> store);
+
+  /**
+   * @brief Appends frames to the end of the source.
+   *
+   * Full blocks are written as they accumulate; the remaining partial
+   * block stays in memory until flush_tail().
+   */
+  void append_frames (const utils::audio::AudioBuffer &frames);
+
+  /**
+   * @brief Writes all pending tail frames (including the partial block) to
+   * the store.
+   */
+  void flush_tail ();
+
+  /** Returns whether frames not yet written to a block exist. */
+  bool has_pending_tail () const;
+
+  /**
+   * @brief Reads the frame range [start_frame, start_frame + num_frames)
+   * into @p out.
+   *
+   * @param out Buffer to read into; must already be sized to num_frames
+   * with the source's channel count.
+   */
+  void read_span (
+    units::sample_t            start_frame,
+    units::sample_t            num_frames,
+    utils::audio::AudioBuffer &out) const;
+
+  /**
+   * @brief Replaces the whole content with @p frames at @p sample_rate,
+   * written to blocks immediately.
+   *
+   * Empty @p frames clear the source to an empty one. Any blocks the
+   * previous content referenced are left on disk for the garbage
+   * collector.
+   */
+  void set_content (
+    const utils::audio::AudioBuffer &frames,
+    units::sample_rate_t             sample_rate);
+
+  /**
+   * The source's block spans, in frame order.
+   */
+  std::vector<BlockSpan> get_spans () const;
+
+  int get_num_channels () const
+  {
+    const std::shared_lock lock (mutex_);
+    return channels_;
+  }
+  [[nodiscard]] units::sample_t get_num_frames () const;
 
 private:
   friend void init_from (
@@ -189,19 +202,33 @@ private:
     const FileAudioSource &other,
     utils::ObjectCloneType clone_type);
 
-  void convert_mono_to_stereo ();
-
   friend void to_json (nlohmann::json &j, const FileAudioSource &clip);
   friend void from_json (const nlohmann::json &j, FileAudioSource &clip);
+
+  /** Writes whole blocks from the tail while enough frames are pending. */
+  void flush_full_blocks ();
+
+  /** Frame count of a full block at the source's channel count. */
+  [[nodiscard]] units::sample_t block_frames () const;
+
+  /** Appends a span covering @p num_frames of @p id's block and advances
+   * @p dest_start_frame past it. */
+  void append_block_span (
+    const BlockId   &id,
+    units::sample_t  num_frames,
+    units::sample_t &dest_start_frame);
+
+  [[nodiscard]] units::sample_t tail_frames () const;
+
+  /** Total frames covered by the block spans. */
+  [[nodiscard]] units::sample_t frames_in_spans () const;
+
+  /** Total frames covered by spans plus pending tail frames. */
+  [[nodiscard]] units::sample_t total_frames () const;
 
 private:
   /** Name of the clip. */
   utils::Utf8String name_;
-
-  /**
-   * Per-channel frames.
-   */
-  utils::audio::AudioBuffer ch_frames_;
 
   /**
    * The clip's permanent source BPM — its intrinsic musical tempo.
@@ -219,82 +246,35 @@ private:
    * Samplerate of the clip, or samplerate when the clip was imported into the
    * project.
    */
-  units::sample_rate_t samplerate_;
+  units::sample_rate_t samplerate_{};
 
   /**
    * Bit depth of the clip when the clip was imported into the project.
+   * Round-trip metadata only: blocks always store float32 samples, so this
+   * does not affect storage.
    */
   utils::audio::BitDepth bit_depth_{};
+
+  /** Channel count of the source's audio. */
+  int channels_ = 0;
+
+  /** Block spans tiling the source's frame space from frame 0. */
+  std::vector<BlockSpan> spans_;
+
+  /** Frames not yet written to a block. */
+  utils::audio::AudioBuffer tail_;
+
+  /** Store used for all block I/O; shared with the owning pool. */
+  std::shared_ptr<AudioBlockStore> store_;
+
+  /**
+   * Guards @ref spans_, @ref tail_, @ref samplerate_, @ref channels_ and
+   * @ref store_: reads take it shared, appends and flushes take it unique.
+   */
+  mutable std::shared_mutex mutex_;
 };
 
 // ========================================================================
-
-/**
- * Handles all file I/O operations for FileAudioSource
- */
-class FileAudioSourceWriter : private utils::QElapsedTimeProvider
-{
-public:
-  /**
-   * Writes the given audio clip data to a file.
-   *
-   * @param parts If true, only write new data. @see
-   * FileAudioSource.frames_written.
-   *
-   * @throw ZrythmException on error.
-   */
-  explicit FileAudioSourceWriter (
-    const FileAudioSource &source,
-    std::filesystem::path  path,
-    bool                   parts);
-
-  /**
-   * @brief Write the file either in parts or whole (depending on constructor
-   * param).
-   *
-   * If parts, this should be called periodically while the source is expanding
-   * in memory to write any unwritten data to the file.
-   */
-  void write_to_file ();
-
-  /**
-   * @brief To be called after the file has been written via
-   * write_file_buffered().
-   */
-  void finalize_buffered_write ();
-
-  /**
-   * @brief Returns whether enough time has elapsed since the last write to
-   * file. This is used so that writing to file is done in chunks.
-   */
-  bool enough_time_elapsed_since_last_write () const;
-
-private:
-  /**
-   * @brief Whether we are writing in parts.
-   */
-  bool parts_;
-
-  const FileAudioSource                   &source_;
-  std::unique_ptr<juce::AudioFormatWriter> writer_;
-  std::filesystem::path                    writer_path_;
-
-  /**
-   * Frames already written to the file, per channel.
-   *
-   * Used when writing in chunks/parts.
-   */
-  units::sample_u64_t frames_written_;
-
-  /**
-   * Time the last write took place.
-   *
-   * This is used so that we can write every x ms instead of all the time.
-   *
-   * @see FileAudioSource.frames_written.
-   */
-  utils::MonotonicTime last_write_{};
-};
 
 using FileAudioSourcePtrVariant = std::variant<FileAudioSource *>;
 using FileAudioSourceUuidReference = utils::TypedUuidReference<FileAudioSource>;

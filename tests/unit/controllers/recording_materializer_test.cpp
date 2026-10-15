@@ -2,14 +2,18 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "controllers/recording_materializer.h"
+#include "dsp/audio_block_store.h"
+#include "dsp/file_audio_source.h"
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_fwd.h"
 #include "utils/app_settings.h"
+#include "utils/io_utils.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+#include "utils/utf8_string.h"
 
 #include "helpers/in_memory_settings_backend.h"
 #include "helpers/scoped_qcoreapplication.h"
@@ -62,6 +66,10 @@ protected:
       std::make_unique<test_helpers::InMemorySettingsBackend> ());
     coordinator_ = std::make_unique<RecordingCoordinator> ();
     undo_stack_ = zrythm::actions::create_mock_undo_stack ();
+    temp_dir_obj_ = utils::io::make_tmp_dir ();
+    block_store_ = std::make_shared<dsp::AudioBlockStore> (
+      utils::Utf8String::from_qstring (temp_dir_obj_->path ()).to_path ()
+      / "blocks");
   }
 
   void TearDown () override
@@ -87,6 +95,8 @@ protected:
     auto audio_source_ref = utils::create_object<dsp::FileAudioSource> (
       registry_, initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), units::bpm (120.0), u8"RecordingClip");
+    audio_source_ref.get_object_as<dsp::FileAudioSource> ()->set_store (
+      block_store_);
 
     auto source_obj_ref =
       utils::create_object<structure::arrangement::AudioSourceObject> (
@@ -284,8 +294,10 @@ protected:
   std::unique_ptr<undo::UndoStack>       undo_stack_;
   std::unique_ptr<RecordingMaterializer> materializer_;
 
-  utils::ObjectRegistry               registry_;
-  std::unique_ptr<utils::AppSettings> app_settings_;
+  utils::ObjectRegistry                 registry_;
+  std::unique_ptr<QTemporaryDir>        temp_dir_obj_;
+  std::shared_ptr<dsp::AudioBlockStore> block_store_;
+  std::unique_ptr<utils::AppSettings>   app_settings_;
 
   std::vector<structure::arrangement::ArrangerObjectUuidReference> clip_refs_;
   std::vector<structure::arrangement::ArrangerObjectUuidReference>
@@ -340,7 +352,7 @@ TEST_F (RecordingMaterializerTest, SingleClipCreatedOnFirstPacket)
   ASSERT_NE (clip, nullptr);
   auto * source = get_audio_source_for_clip (clip);
   ASSERT_NE (source, nullptr);
-  EXPECT_EQ (source->get_num_frames (), 256);
+  EXPECT_EQ (source->get_num_frames (), units::samples (256));
   const auto expected_ticks =
     tempo_map_->samples_to_tick (units::samples (256.0));
   EXPECT_DOUBLE_EQ (clip->length ()->ticks (), expected_ticks.asDouble ());
@@ -366,7 +378,7 @@ TEST_F (RecordingMaterializerTest, AudioClipLengthWithTempoChangeBeforePosition)
   ASSERT_NE (clip, nullptr);
   auto * source = get_audio_source_for_clip (clip);
   ASSERT_NE (source, nullptr);
-  EXPECT_EQ (source->get_num_frames (), 256);
+  EXPECT_EQ (source->get_num_frames (), units::samples (256));
 
   // Correct length: tick span of [88200, 88456] at the recording tempo.
   const auto correct_length =
@@ -395,7 +407,7 @@ TEST_F (RecordingMaterializerTest, ContinuousPacketsSameClip)
   ASSERT_NE (clip, nullptr);
   auto * source = get_audio_source_for_clip (clip);
   ASSERT_NE (source, nullptr);
-  EXPECT_EQ (source->get_num_frames (), 768);
+  EXPECT_EQ (source->get_num_frames (), units::samples (768));
   const auto expected_ticks =
     tempo_map_->samples_to_tick (units::samples (768.0));
   EXPECT_DOUBLE_EQ (clip->length ()->ticks (), expected_ticks.asDouble ());
@@ -415,7 +427,7 @@ TEST_F (RecordingMaterializerTest, DiscontinuityCreatesNewClip)
   ASSERT_NE (first_clip, nullptr);
   auto * first_source = get_audio_source_for_clip (first_clip);
   ASSERT_NE (first_source, nullptr);
-  EXPECT_EQ (first_source->get_num_frames (), 256);
+  EXPECT_EQ (first_source->get_num_frames (), units::samples (256));
 
   write_and_drain (track_id, units::samples (1000), true);
   EXPECT_EQ (clip_create_count_, 2);
@@ -425,7 +437,7 @@ TEST_F (RecordingMaterializerTest, DiscontinuityCreatesNewClip)
   ASSERT_NE (second_clip, nullptr);
   auto * second_source = get_audio_source_for_clip (second_clip);
   ASSERT_NE (second_source, nullptr);
-  EXPECT_EQ (second_source->get_num_frames (), 256);
+  EXPECT_EQ (second_source->get_num_frames (), units::samples (256));
   const auto expected_ticks =
     tempo_map_->samples_to_tick (units::samples (256.0));
   EXPECT_DOUBLE_EQ (

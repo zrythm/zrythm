@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/file_audio_source.h"
@@ -48,13 +48,7 @@ protected:
 TEST_F (AudioSourceObjectTest, InitialState)
 {
   EXPECT_EQ (source_object->type (), ArrangerObject::Type::AudioSourceObject);
-  EXPECT_NE (&source_object->get_audio_source (), nullptr);
-}
-
-TEST_F (AudioSourceObjectTest, GetAudioSource)
-{
-  auto &audio_source = source_object->get_audio_source ();
-  EXPECT_EQ (audio_source.getTotalLength (), 512);
+  EXPECT_EQ (&source_object->file_audio_source (), source_ref->get ());
 }
 
 TEST_F (AudioSourceObjectTest, Serialization)
@@ -77,8 +71,7 @@ TEST_F (AudioSourceObjectTest, Serialization)
 
   // Verify deserialization
   EXPECT_EQ (new_source_object->get_uuid (), source_object->get_uuid ());
-  auto &new_audio_source = new_source_object->get_audio_source ();
-  EXPECT_EQ (new_audio_source.getTotalLength (), 512);
+  EXPECT_EQ (&new_source_object->file_audio_source (), source_ref->get ());
 }
 
 TEST_F (AudioSourceObjectTest, ObjectCloning)
@@ -91,47 +84,7 @@ TEST_F (AudioSourceObjectTest, ObjectCloning)
 
   // Verify cloning
   EXPECT_NE (cloned_object->get_uuid (), source_object->get_uuid ());
-  auto &cloned_audio_source = cloned_object->get_audio_source ();
-  EXPECT_EQ (cloned_audio_source.getTotalLength (), 512);
-}
-
-// When the buffer is cleared and repopulated, the internal audio source must be
-// rebuilt to reflect the new buffer state.
-TEST_F (AudioSourceObjectTest, AudioSourceReflectsRepopulatedBuffer)
-{
-  auto * file_source = source_ref->get ();
-  ASSERT_EQ (file_source->get_num_frames (), 512);
-  ASSERT_EQ (source_object->get_audio_source ().getTotalLength (), 512);
-
-  // Clear and repopulate the buffer with a different size, as happens when
-  // the underlying audio data is reloaded from disk
-  file_source->clear_frames ();
-  ASSERT_EQ (file_source->get_num_frames (), 0);
-
-  utils::audio::AudioBuffer new_buffer (2, 1024);
-  file_source->expand_with_frames (new_buffer);
-  ASSERT_EQ (file_source->get_num_frames (), 1024);
-
-  EXPECT_EQ (source_object->get_audio_source ().getTotalLength (), 1024);
-}
-
-// When the underlying audio buffer changes, AudioSourceObject must emit
-// propertiesChanged.
-TEST_F (AudioSourceObjectTest, BufferChangeEmitsPropertiesChanged)
-{
-  test_helpers::ScopedQCoreApplication app;
-
-  QSignalSpy spy (source_object.get (), &ArrangerObject::propertiesChanged);
-  ASSERT_TRUE (spy.isValid ());
-
-  auto * file_source = source_ref->get ();
-
-  // Simulate buffer change as happens during init_loaded()
-  file_source->clear_frames ();
-  utils::audio::AudioBuffer new_buffer (2, 256);
-  file_source->expand_with_frames (new_buffer);
-
-  EXPECT_GT (spy.count (), 0);
+  EXPECT_EQ (&cloned_object->file_audio_source (), source_ref->get ());
 }
 
 } // namespace zrythm::structure::arrangement

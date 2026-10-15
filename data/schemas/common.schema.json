@@ -215,7 +215,8 @@
         {
           "required": [
             "name",
-            "bpm"
+            "bpm",
+            "manifest"
           ],
           "properties": {
             "name": {
@@ -224,9 +225,75 @@
             },
             "bpm": {
               "type": "number",
-              "minimum": 1,
+              "minimum": 0,
               "maximum": 1000,
-              "description": "Reference BPM for musical mode (BPM when imported)"
+              "description": "Reference BPM for musical mode (BPM when imported); 0 means unknown"
+            },
+            "manifest": {
+              "type": "object",
+              "description": "The source's block layout",
+              "required": [
+                "channels",
+                "sampleRate",
+                "bitDepth",
+                "blocks"
+              ],
+              "properties": {
+                "channels": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 64,
+                  "description": "Channel count of the source's audio"
+                },
+                "sampleRate": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 768000,
+                  "description": "Sample rate the blocks were written at"
+                },
+                "bitDepth": {
+                  "type": "integer",
+                  "enum": [8, 16, 24, 32],
+                  "description": "Bit depth of the imported material"
+                },
+                "blocks": {
+                  "type": "array",
+                  "description": "Block spans tiling the source's frame space contiguously from frame 0",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "srcStart",
+                      "numFrames",
+                      "destStart"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$",
+                        "description": "SHA-256 content hash naming the block file in the pool's blocks directory"
+                      },
+                      "srcStart": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "First frame of the referenced range within the block"
+                      },
+                      "numFrames": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Number of frames the span maps"
+                      },
+                      "destStart": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Position of the range in the source's frame space"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
             }
           }
         }

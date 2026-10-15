@@ -9,6 +9,7 @@
 #include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/midi_control_event.h"
 #include "utils/audio.h"
+#include "utils/debug.h"
 #include "utils/logger.h"
 #include "utils/midi.h"
 
@@ -103,7 +104,7 @@ RecordingMaterializer::on_audio_data_ready (
 
       if (!newly_created)
         {
-          source->expand_with_frames (scratch_buf_);
+          source->append_frames (scratch_buf_);
         }
 
       // Length is the tick span of the recorded audio at its timeline
@@ -112,8 +113,7 @@ RecordingMaterializer::on_audio_data_ready (
       const auto  clip_start_samples =
         tm.tick_to_samples_rounded (clip->position ()->asTick ());
       const auto clip_end_samples =
-        clip_start_samples
-        + units::samples (static_cast<int64_t> (source->get_num_frames ()));
+        clip_start_samples + source->get_num_frames ();
       clip->length ()->setTicks (
         (tm.samples_to_tick (clip_end_samples) - clip->position ()->asTick ())
           .asDouble ());
@@ -153,6 +153,27 @@ RecordingMaterializer::get_audio_source_for_clip (
 }
 
 void
+RecordingMaterializer::flush_current_clip_tail (TrackRecordingState &state)
+{
+  if (!state.current_clip.has_value ())
+    {
+      return;
+    }
+  auto * clip =
+    state.current_clip->get_object_as<structure::arrangement::AudioClip> ();
+  if (clip == nullptr)
+    {
+      return;
+    }
+  auto * source = get_audio_source_for_clip (*clip);
+  z_return_if_fail (source != nullptr);
+  if (source->has_pending_tail ())
+    {
+      source->flush_tail ();
+    }
+}
+
+void
 RecordingMaterializer::finalize_recording_macro ()
 {
   if (!recording_macro_active_)
@@ -161,6 +182,7 @@ RecordingMaterializer::finalize_recording_macro ()
   for (auto &[track_id, state] : track_states_)
     {
       force_complete_pending_notes (state);
+      flush_current_clip_tail (state);
     }
 
   if (!undo_stack_.isNull ())
@@ -192,6 +214,8 @@ RecordingMaterializer::handle_discontinuity (TrackRecordingState &state)
 
   if (!state.current_clip.has_value ())
     return;
+
+  flush_current_clip_tail (state);
 
   const auto mode = recording_mode_provider_ ();
   switch (mode)

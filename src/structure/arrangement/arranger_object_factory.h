@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object_all.h"
+#include "utils/logger.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
 
@@ -17,6 +18,8 @@ class ArrangerObjectFactory
 public:
   using SampleRateProvider = std::function<units::sample_rate_t ()>;
   using BpmProvider = std::function<units::bpm_t ()>;
+  using BlockStoreProvider =
+    std::function<std::shared_ptr<dsp::AudioBlockStore> ()>;
 
   struct Dependencies
   {
@@ -35,10 +38,12 @@ public:
   ArrangerObjectFactory (
     Dependencies       dependencies,
     SampleRateProvider sample_rate_provider,
-    BpmProvider        bpm_provider)
+    BpmProvider        bpm_provider,
+    BlockStoreProvider block_store_provider = {})
       : dependencies_ (std::move (dependencies)),
         sample_rate_provider_ (std::move (sample_rate_provider)),
-        bpm_provider_ (std::move (bpm_provider))
+        bpm_provider_ (std::move (bpm_provider)),
+        block_store_provider_ (std::move (block_store_provider))
   {
   }
 
@@ -366,6 +371,7 @@ public:
     auto clip = utils::create_object<dsp::FileAudioSource> (
       dependencies_.registry_, utils::Utf8String::from_qstring (absPath),
       sample_rate_provider_ ());
+    attach_store_and_flush (clip);
     return create_audio_clip_with_clip (std::move (clip), startTicks);
   }
 
@@ -384,9 +390,35 @@ public:
     auto clip = utils::create_object<dsp::FileAudioSource> (
       dependencies_.registry_, buf, bit_depth, sample_rate_provider_ (),
       bpm_provider_ (), clip_name);
+    attach_store_and_flush (clip);
     return create_audio_clip_with_clip (std::move (clip), start_ticks);
   }
 
+private:
+  /**
+   * Wires the factory's block store to the new source and writes its
+   * pending frames as blocks. Without a configured store, the frames stay
+   * pending in the source's in-memory tail.
+   */
+  void
+  attach_store_and_flush (dsp::FileAudioSourceUuidReference &source_ref) const
+  {
+    if (block_store_provider_)
+      {
+        const auto store = block_store_provider_ ();
+        auto *     source = source_ref.get_object_as<dsp::FileAudioSource> ();
+        source->set_store (store);
+        source->flush_tail ();
+      }
+    else
+      {
+        z_warning (
+          "creating a source without a block store - frames stay in memory "
+          "until one is attached");
+      }
+  }
+
+public:
   /**
    * @brief Used to create and add editor objects.
    *
@@ -483,5 +515,6 @@ private:
   Dependencies       dependencies_;
   SampleRateProvider sample_rate_provider_;
   BpmProvider        bpm_provider_;
+  BlockStoreProvider block_store_provider_;
 };
 }

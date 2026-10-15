@@ -781,6 +781,9 @@ ProjectSession::saveAs (const QString &path)
       if (!saved_path.isEmpty ())
         {
           setProjectDirectory (saved_path);
+          // The saved copy's pool holds the blocks from now on.
+          project_->set_project_directory (
+            utils::Utf8String::from_qstring (saved_path).to_path ());
           setTitle (
             utils::Utf8String::from_path (utils::io::path_get_basename (new_path))
               .to_qstring ());

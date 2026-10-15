@@ -1,19 +1,18 @@
 // SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <condition_variable>
-#include <mutex>
-#include <queue>
-#include <thread>
+#include <limits>
 #include <utility>
 
 #include <fmt/std.h>
 
 #include "dsp/audio_pool.h"
+#include "utils/audio.h"
 #include "utils/exceptions.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 #include "utils/registry_utils.h"
+#include "utils/resampler.h"
 #include "utils/serialization.h"
 #include "utils/utf8_string.h"
 #include "utils/uuid_identifiable_object.h"
@@ -42,12 +41,51 @@ AudioPool::for_each_clip (
 void
 AudioPool::init_loaded ()
 {
-  for_each_clip ([&] (dsp::FileAudioSource &clip) {
-    const auto name = clip.get_name ();
-    clip.init_from_file (
-      get_clip_path (clip.get_uuid (), false), sample_rate_getter_ (),
-      clip.source_bpm ());
-    clip.set_name (name);
+  const auto store = get_block_store ();
+  for_each_clip ([&] (dsp::FileAudioSource &src) {
+    src.set_store (store);
+
+    const auto current_rate = sample_rate_getter_ ();
+    if (src.get_samplerate () == current_rate)
+      {
+        return;
+      }
+
+    // The source's blocks were written at a different rate: read them back,
+    // resample and write new blocks at the current rate.
+    // TODO: stream the rematerialization through windowed reads and
+    // incremental resampling instead of materializing the whole source.
+    const auto num_frames = src.get_num_frames ();
+    if (num_frames > units::samples (std::numeric_limits<int>::max ()))
+      {
+        throw ZrythmException (
+          fmt::format (
+            "Source '{}' is too large to resample ({} frames)",
+            src.get_name ().str (), num_frames.in (units::samples)));
+      }
+    utils::audio::AudioBuffer frames (
+      src.get_num_channels (),
+      static_cast<int> (num_frames.in (units::samples)));
+    src.read_span (units::samples (0), num_frames, frames);
+
+    Resampler resampler (
+      frames,
+      static_cast<double> (src.get_samplerate ().in (units::sample_rate)),
+      static_cast<double> (current_rate.in (units::sample_rate)),
+      Resampler::Quality::High);
+    while (!resampler.is_done ())
+      {
+        resampler.process ();
+      }
+    const auto &resampled = resampler.get_out_frames ();
+    if (resampled.getNumSamples () == 0)
+      {
+        z_warning (
+          "resampling source '{}' discarded all of its frames - the source "
+          "becomes empty",
+          src.get_name ().str ());
+      }
+    src.set_content (resampled, current_rate);
   });
 }
 
@@ -57,278 +95,170 @@ init_from (
   const AudioPool       &other,
   utils::ObjectCloneType clone_type)
 {
-  // nothing needed
+  // The pool's getters and registry are constructor-injected per
+  // instance: nothing is copied from the source pool.
 }
 
-std::filesystem::path
-AudioPool::get_clip_path (const dsp::FileAudioSource::Uuid &id, bool is_backup)
-  const
+std::shared_ptr<AudioBlockStore>
+AudioPool::get_block_store ()
 {
-  auto prj_pool_dir = project_pool_path_getter_ (is_backup);
-  if (!utils::io::path_exists (prj_pool_dir))
+  const std::lock_guard lock (store_init_mutex_);
+  // The store is created lazily because the pool path is only resolvable
+  // once the owning project knows its directory.
+  if (!store_)
     {
-      z_error ("{} does not exist", prj_pool_dir);
-      return {};
+      store_ = std::make_shared<AudioBlockStore> (
+        project_pool_path_getter_ () / "blocks");
     }
-  const auto basename =
-    utils::Utf8String::from_qstring (id.value_.toString (QUuid::WithoutBraces))
-    + u8".wav";
-  return prj_pool_dir / basename;
-}
-
-void
-AudioPool::write_clip (const FileAudioSource * clip, bool parts, bool backup)
-{
-  z_debug (
-    "attempting to write clip {} ({}) to pool...", clip->get_name (),
-    clip->get_uuid ());
-  const auto clip_id = clip->get_uuid ();
-
-  /* generate a copy of the given filename in the project dir */
-  auto path_in_main_project = get_clip_path (clip_id, false);
-  auto new_path = get_clip_path (clip_id, backup);
-  z_return_if_fail (!path_in_main_project.empty ());
-  z_return_if_fail (!new_path.empty ());
-
-  // get last known hash
-  std::optional<utils::hash::HashT> last_known_hash_for_clip;
-  {
-    last_known_file_hashes_.cvisit (
-      clip_id, [&last_known_hash_for_clip] (const auto &hash) {
-        last_known_hash_for_clip = hash.second;
-      });
-  }
-
-  /* skip if file with same hash already exists */
-  if (
-    last_known_hash_for_clip.has_value () && !parts
-    && utils::io::path_exists (new_path)
-    && last_known_hash_for_clip.value () == utils::hash::get_file_hash (new_path))
-    {
-      z_debug ("skipping writing to existing clip {} in pool", new_path);
-      return;
-    }
-
-  /* if writing to backup and same file exists in main project dir, copy (first
-   * try reflink) */
-  if (last_known_hash_for_clip.has_value () && backup)
-    {
-      bool exists_in_main_project = false;
-      if (utils::io::path_exists (path_in_main_project))
-        {
-          exists_in_main_project =
-            last_known_hash_for_clip.value ()
-            == utils::hash::get_file_hash (path_in_main_project);
-        }
-
-      if (exists_in_main_project)
-        {
-          /* try reflink and fall back to normal copying */
-          z_debug (
-            "reflinking clip from main project ('{}' to '{}')",
-            path_in_main_project, new_path);
-
-          if (!utils::io::reflink_file (new_path, path_in_main_project))
-            {
-              z_debug ("failed to reflink, copying instead");
-              z_debug (
-                "copying clip from main project ('{}' to '{}')",
-                path_in_main_project, new_path);
-              utils::io::copy_file (new_path, path_in_main_project);
-            }
-        }
-    }
-
-  z_debug (
-    "writing clip {} to pool (parts {}, is backup  {}): '{}'",
-    clip->get_name (), parts, backup, new_path);
-  dsp::FileAudioSourceWriter writer{ *clip, new_path, parts };
-  writer.write_to_file ();
-  if (!parts)
-    {
-      /* store file hash */
-      last_known_file_hashes_.emplace (
-        clip_id, utils::hash::get_file_hash (new_path));
-    }
-}
-
-auto
-AudioPool::duplicate_clip (const FileAudioSource::Uuid &clip_id, bool write_file)
-  -> FileAudioSourceUuidReference
-{
-  auto &clip = utils::get_typed<dsp::FileAudioSource> (registry_, clip_id);
-
-  auto new_clip_ref = utils::create_object<FileAudioSource> (
-    registry_, clip.get_samples (), clip.get_bit_depth (),
-    sample_rate_getter_ (), clip.source_bpm (), clip.get_name ());
-
-  z_debug ("duplicating clip {} to {}...", clip.get_name (), new_clip_ref.id ());
-
-  if (write_file)
-    {
-      write_clip (
-        new_clip_ref.get_object_as<dsp::FileAudioSource> (), false, false);
-    }
-
-  return new_clip_ref;
+  return store_;
 }
 
 void
-AudioPool::remove_unused (bool backup)
+AudioPool::rebuild_block_store ()
 {
-  z_debug ("--- removing unused files from pool ---");
+  const std::lock_guard lock (store_init_mutex_);
+  const auto            replacement =
+    std::make_shared<AudioBlockStore> (project_pool_path_getter_ () / "blocks");
 
-  // remove untracked files from pool directory
-  // TODO: check the registry
-  auto prj_pool_dir = project_pool_path_getter_ (backup);
-  auto files =
-    utils::io::get_files_in_dir_ending_in (prj_pool_dir, true, std::nullopt);
-  auto removed_clips = 0;
-  for (const auto &path : files)
-    {
-      bool found = false;
-      for_each_clip ([&] (dsp::FileAudioSource &clip) {
-        if (get_clip_path (clip.get_uuid (), backup) == path)
-          found = true;
-      });
-
-      /* if file not found in pool clips, delete */
-      if (!found)
-        {
-          utils::io::remove (path);
-          ++removed_clips;
-        }
-    }
-
-  z_info ("removed {} clips", removed_clips);
-}
-
-void
-AudioPool::reload_clip_frame_bufs ()
-{
-  for_each_clip ([&] (dsp::FileAudioSource &clip) {
-    if (clip.get_num_frames () == 0)
+  // Pending data is flushed to the previous store and each source is
+  // rewired, so the migration below sees every block the sources
+  // reference.
+  for_each_clip ([&replacement] (dsp::FileAudioSource &src) {
+    if (src.has_pending_tail ())
       {
-        clip.init_from_file (
-          get_clip_path (clip.get_uuid (), false), sample_rate_getter_ (),
-          std::nullopt);
+        src.flush_tail ();
+      }
+    src.set_store (replacement);
+  });
+
+  // Blocks written to the previous directory after a save copied the pool
+  // (recording continuing during Save As) are migrated here.
+  if (
+    store_
+    && store_->get_blocks_directory () != replacement->get_blocks_directory ())
+    {
+      copy_referenced_blocks (
+        store_->get_blocks_directory (), replacement->get_blocks_directory ());
+    }
+
+  store_ = std::move (replacement);
+}
+
+void
+AudioPool::flush_pending_tails ()
+{
+  const auto store = get_block_store ();
+  for_each_clip ([&] (dsp::FileAudioSource &src) {
+    src.set_store (store);
+    if (src.has_pending_tail ())
+      {
+        src.flush_tail ();
       }
   });
 }
 
-struct WriteClipData
+std::unordered_set<BlockId, BlockIdHash>
+AudioPool::collect_referenced_blocks () const
 {
-  FileAudioSource * clip;
-  bool              is_backup;
-
-  /** To be set after writing the file. */
-  bool        successful = false;
-  std::string error;
-};
-
-void
-AudioPool::write_to_disk (bool is_backup)
-{
-  /* ensure pool dir exists */
-  auto prj_pool_dir = project_pool_path_getter_ (is_backup);
-  if (!utils::io::path_exists (prj_pool_dir))
-    {
-      try
-        {
-          utils::io::mkdir (prj_pool_dir);
-        }
-      catch (const ZrythmException &e)
-        {
-          std::throw_with_nested (
-            ZrythmException ("Failed to create pool directory"));
-        }
-    }
-
-  // write clips in parallel
-  std::vector<FileAudioSource *> clips;
-  for_each_clip ([&] (dsp::FileAudioSource &clip) { clips.push_back (&clip); });
-  std::vector<std::exception_ptr> exceptions;
-  std::mutex                      error_mutex;
-  const unsigned                  num_workers =
-    std::max (1u, std::thread::hardware_concurrency ());
-  std::queue<FileAudioSource *> clip_queue;
-  for (auto * clip : clips)
-    {
-      clip_queue.push (clip);
-    }
-
-  std::mutex                queue_mutex;
-  std::condition_variable   cv;
-  std::vector<std::jthread> workers;
-
-  workers.reserve (num_workers);
-  for (unsigned i = 0; i < num_workers; ++i)
-    {
-      workers.emplace_back ([&] {
-        while (true)
-          {
-            FileAudioSource * clip = nullptr;
-            {
-              std::unique_lock lock (queue_mutex);
-              if (clip_queue.empty ())
-                {
-                  return;
-                }
-              clip = clip_queue.front ();
-              clip_queue.pop ();
-            }
-
-            try
-              {
-                write_clip (clip, false, is_backup);
-              }
-            catch (const ZrythmException &e)
-              {
-                std::lock_guard lock (error_mutex);
-                exceptions.push_back (std::current_exception ());
-              }
-          }
-      });
-    }
-
-  // Wait for all workers to finish
-  for (auto &worker : workers)
-    {
-      worker.join ();
-    }
-
-  // Check for errors
-  for (const auto &eptr : exceptions)
-    {
-      if (eptr)
-        {
-          try
-            {
-              std::rethrow_exception (eptr);
-            }
-          catch (const std::exception &e)
-            {
-              throw ZrythmException (
-                fmt::format ("Failed to write clips: {}", e.what ()));
-            }
-        }
-    }
-
-  z_debug ("done writing clips, {}", *this);
-}
-
-static constexpr auto kLastKnownFileHashesKey = "fileHashes"sv;
-
-void
-to_json (nlohmann::json &j, const AudioPool &pool)
-{
-  j[kLastKnownFileHashesKey] = pool.last_known_file_hashes_;
+  std::unordered_set<BlockId, BlockIdHash> referenced;
+  for_each_clip ([&] (const dsp::FileAudioSource &src) {
+    for (const auto &span : src.get_spans ())
+      {
+        referenced.insert (span.block);
+      }
+  });
+  return referenced;
 }
 
 void
-from_json (const nlohmann::json &j, AudioPool &pool)
+AudioPool::copy_blocks_to_directory (
+  const std::filesystem::path &dest_blocks_dir) const
 {
-  j.at (kLastKnownFileHashesKey).get_to (pool.last_known_file_hashes_);
+  const auto main_dir = project_pool_path_getter_ () / "blocks";
+  if (dest_blocks_dir == main_dir)
+    {
+      return;
+    }
+
+  for_each_clip ([&] (const dsp::FileAudioSource &src) {
+    if (src.has_pending_tail ())
+      {
+        throw ZrythmException (
+          fmt::format (
+            "Source '{}' has pending data - flush it before copying blocks",
+            src.get_name ().str ()));
+      }
+  });
+
+  copy_referenced_blocks (main_dir, dest_blocks_dir);
+}
+
+void
+AudioPool::copy_referenced_blocks (
+  const std::filesystem::path &src_blocks_dir,
+  const std::filesystem::path &dest_blocks_dir) const
+{
+  std::filesystem::create_directories (dest_blocks_dir);
+  for (const auto &id : collect_referenced_blocks ())
+    {
+      const auto dest_path = dest_blocks_dir / id.hex;
+      if (std::filesystem::exists (dest_path))
+        {
+          continue;
+        }
+      const auto src_path = src_blocks_dir / id.hex;
+      if (!utils::io::reflink_file (dest_path, src_path))
+        {
+          utils::io::copy_file (dest_path, src_path);
+        }
+    }
+}
+
+void
+AudioPool::sweep_unused_blocks ()
+{
+  const auto store = get_block_store ();
+  if (!std::filesystem::exists (store->get_blocks_directory ()))
+    {
+      return;
+    }
+
+  const auto referenced = collect_referenced_blocks ();
+  size_t     removed = 0;
+  for (const auto &id : store->get_all_block_ids ())
+    {
+      if (!referenced.contains (id))
+        {
+          store->delete_block (id);
+          ++removed;
+        }
+    }
+  if (removed > 0)
+    {
+      z_info ("removed {} unused blocks from the pool", removed);
+    }
+}
+
+void
+AudioPool::remove_unused_in_directory (
+  const std::filesystem::path &blocks_dir) const
+{
+  if (!std::filesystem::exists (blocks_dir))
+    {
+      return;
+    }
+
+  // The sweep runs through a store limited to the given directory; the
+  // project's own store only knows the main pool.
+  AudioBlockStore dir_store (blocks_dir);
+  const auto      referenced = collect_referenced_blocks ();
+  for (const auto &id : dir_store.get_all_block_ids ())
+    {
+      if (!referenced.contains (id))
+        {
+          dir_store.delete_block (id);
+        }
+    }
 }
 
 } // namespace zrythm::dsp

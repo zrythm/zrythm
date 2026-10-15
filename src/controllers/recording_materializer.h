@@ -182,6 +182,14 @@ private:
   static dsp::FileAudioSource *
   get_audio_source_for_clip (structure::arrangement::AudioClip &clip);
 
+  /**
+   * @brief Writes the current audio clip's pending tail frames as a block.
+   *
+   * Called when a recorded clip is finished (gap or session end) so its
+   * manifest is complete on disk.
+   */
+  void flush_current_clip_tail (TrackRecordingState &state);
+
   /** Handles RecordingCoordinator::midiDataReady signal. */
   void on_midi_data_ready (
     structure::tracks::TrackUuid            track_id,

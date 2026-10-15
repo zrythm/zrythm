@@ -88,8 +88,7 @@ class Project final : public QObject
 public:
   using TrackUuid = structure::tracks::TrackUuid;
   using PluginPtrVariant = plugins::PluginPtrVariant;
-  using ProjectDirectoryPathProvider =
-    std::function<std::filesystem::path (bool for_backup)>;
+  using ProjectDirectoryPathProvider = std::function<std::filesystem::path ()>;
 
   /**
    * @brief Callback to look up audio input selection for a track.
@@ -195,6 +194,15 @@ public:
    */
   void set_project_id (const QUuid &id) { project_id_ = id; }
 
+  /**
+   * @brief Moves the project to another directory.
+   *
+   * The pool's block store is rebuilt at the new directory's pool and
+   * every source is rewired to it. Pending data is flushed and blocks
+   * already written to the old pool are copied into the new one.
+   */
+  void set_project_directory (const std::filesystem::path &dir);
+
   void set_audio_input_selection_provider (AudioInputSelectionProvider provider)
   {
     audio_input_selection_provider_ = std::move (provider);
@@ -237,7 +245,6 @@ private:
   static constexpr auto kRegistryKey = "registry"sv;
   static constexpr auto kProjectIdKey = "projectId"sv;
   static constexpr auto kTransportKey = "transport"sv;
-  static constexpr auto kAudioPoolKey = "audioPool"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
   static constexpr auto kClipLinkGroupManagerKey = "clipLinkGroupManager"sv;
   static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;

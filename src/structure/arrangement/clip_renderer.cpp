@@ -406,19 +406,34 @@ ClipRenderer::build_native_looped_buffer (
   units::sample_t  out_start,
   units::sample_t  out_end)
 {
-  auto       &fs = clip.get_children_view ().front ()->file_audio_source ();
-  const auto &samples = fs.get_samples ();
-  const int   channels = samples.getNumChannels ();
+  auto      &fs = clip.get_children_view ().front ()->file_audio_source ();
+  const int  channels = fs.get_num_channels ();
+  const auto total_frames = fs.get_num_frames ();
 
   // Transform entries are already folded into the content window (in
   // source sample space, before loop expansion), so ranged entries
   // repeat in every loop iteration.
-  const juce::AudioSampleBuffer * read_buffer = &samples;
+  utils::audio::AudioBuffer       raw_window;
   utils::audio::AudioBuffer       entry_window;
+  const juce::AudioSampleBuffer * read_buffer = nullptr;
   if (!clip.transform_entries ().empty ())
     {
       entry_window = AudioFunction::audio_clip_content_window (clip);
       read_buffer = &entry_window;
+    }
+  else
+    {
+      // Loop wraps below may read any position in [clip start, loop end),
+      // so fetch the source's whole frame range up front.
+      // TODO: read windows through read_span instead of materializing the
+      // whole source.
+      z_return_val_if_fail (
+        total_frames <= units::samples (std::numeric_limits<int32_t>::max ()),
+        {});
+      raw_window.setSize (
+        channels, static_cast<int> (total_frames.in (units::samples)));
+      fs.read_span (units::samples (0), total_frames, raw_window);
+      read_buffer = &raw_window;
     }
   const auto readable_frames = units::samples (read_buffer->getNumSamples ());
 

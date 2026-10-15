@@ -3,36 +3,31 @@
 
 #pragma once
 
-#include "dsp/file_audio_source.h"
-#include "utils/hash.h"
-#include "utils/units.h"
+#include <mutex>
+#include <unordered_set>
 
-#include <boost/unordered/concurrent_flat_map.hpp>
+#include "dsp/audio_block_store.h"
+#include "dsp/file_audio_source.h"
+#include "utils/units.h"
 
 namespace zrythm::dsp
 {
 
 /**
- * @brief A manager for a registry of FileAudioSource inside a project.
+ * @brief The audio block store of a project and the policy around it.
  *
- * An audio pool is a pool of audio files and their corresponding float arrays
- * in memory that are referenced by clips.
- *
- * Instead of associating audio files with clips, all audio files (and their
- * edited counterparts after some hard editing like stretching) are saved in
- * the pool.
+ * The pool owns the project's AudioBlockStore and coordinates its contents
+ * with the FileAudioSource objects in the registry: loading wires sources to
+ * the store, saving flushes pending data, backups copy referenced blocks
+ * and the garbage collector deletes unreferenced block files.
  */
 struct AudioPool final
 {
 public:
   /**
    * @brief Returns a path that will be used to manage audio files in.
-   *
-   * @param backup Whether this path is for a backup project (as opposed to the
-   * main project).
    */
-  using ProjectPoolPathGetter =
-    std::function<std::filesystem::path (bool backup)>;
+  using ProjectPoolPathGetter = std::function<std::filesystem::path ()>;
   using SampleRateGetter = std::function<units::sample_rate_t ()>;
 
   AudioPool (
@@ -42,72 +37,74 @@ public:
 
 public:
   /**
-   * Initializes the audio pool after deserialization.
+   * @brief The pool's block store, created lazily at the pool's current
+   * path.
    *
-   * @throw ZrythmException if an error occurred.
+   * The returned pointer shares ownership with the pool: sources hold the
+   * store alive even when the pool rebuilds its own instance, so the
+   * pointer stays valid regardless of rebuilds.
+   */
+  std::shared_ptr<AudioBlockStore> get_block_store ();
+
+  /**
+   * @brief Wires the block store to every source and rematerializes sources
+   * whose sample rate differs from the current one.
+   *
+   * @throw ZrythmException if a source could not be read or rewritten.
    */
   void init_loaded ();
 
   /**
-   * Duplicates the clip with the given ID and returns the duplicate.
+   * @brief Writes the pending tail data of every source as blocks.
    *
-   * @param write_file Whether to also write the file.
-   * @return The ID in the pool.
+   * Sources created without a block store are wired to the pool's store
+   * here.
    *
-   * @throw ZrythmException If the file could not be written.
+   * @throw ZrythmException on I/O error.
    */
-  auto duplicate_clip (const FileAudioSource::Uuid &clip_id, bool write_file)
-    -> FileAudioSourceUuidReference;
+  void flush_pending_tails ();
 
   /**
-   * Gets the path of a clip matching @ref name from the pool.
+   * @brief Copies the blocks referenced by the registry's sources into the
+   * given blocks directory.
    *
-   * @param is_backup Whether writing to a backup project.
+   * A directory equal to the pool's own blocks directory is a no-op. The
+   * directory is created if needed. Sources with pending tail data are
+   * refused: flush them first so the copied snapshot is complete.
+   *
+   * @throw ZrythmException on I/O error.
    */
-  [[nodiscard]] std::filesystem::path
-  get_clip_path (const dsp::FileAudioSource::Uuid &id, bool is_backup) const;
+  void
+  copy_blocks_to_directory (const std::filesystem::path &dest_blocks_dir) const;
 
   /**
-   * Writes the clip to the pool as a wav file.
+   * @brief Deletes block files not referenced by any source from the
+   * pool's own store.
    *
-   * @param parts If true, only write new data. @see
-   * FileAudioSource.frames_written.
-   * @param backup Whether writing to a backup project.
-   *
-   * @throw ZrythmException on error.
+   * @throw ZrythmException on I/O error.
    */
-  void write_clip (const FileAudioSource * clip, bool parts, bool backup);
+  void sweep_unused_blocks ();
 
   /**
-   * Removes and frees (and removes the files for) all clips not used by the
-   * project or undo stacks.
+   * @brief Deletes block files not referenced by any source in the given
+   * blocks directory.
    *
-   * @param backup Whether to remove from backup directory.
-   * @throw ZrythmException If any file could not be removed.
+   * @throw ZrythmException on I/O error.
    */
-  void remove_unused (bool backup);
+  void
+  remove_unused_in_directory (const std::filesystem::path &blocks_dir) const;
 
   /**
-   * Loads the frame buffers of clips currently in use in the project from their
-   * files and frees the buffers of clips not currently in use.
+   * @brief Rebuilds the block store at the pool's current path and rewires
+   * every source to it.
    *
-   * This should be called whenever there is a relevant change in the project
-   * (eg, object added/removed).
-   *
-   * @throw ZrythmException If any file could not be read.
+   * Pending data is flushed to the previous store and every referenced
+   * block missing from the new directory is copied from the previous one,
+   * so blocks written before the move (recording continuing during Save
+   * As) are migrated as well. Used when the pool moves to another
+   * directory (Save As).
    */
-  void reload_clip_frame_bufs ();
-
-  /**
-   * Writes all the clips to disk.
-   *
-   * Used when saving a project elsewhere.
-   *
-   * @param is_backup Whether this is a backup project.
-   *
-   * @throw ZrythmException If any file could not be written.
-   */
-  void write_to_disk (bool is_backup);
+  void rebuild_block_store ();
 
   void
   for_each_clip (std::function<void (dsp::FileAudioSource &)> visitor) const;
@@ -118,8 +115,17 @@ private:
     const AudioPool       &other,
     utils::ObjectCloneType clone_type);
 
-  friend void to_json (nlohmann::json &j, const AudioPool &pool);
-  friend void from_json (const nlohmann::json &j, AudioPool &pool);
+  /**
+   * Copies every referenced block missing from @p dest_blocks_dir from
+   * @p src_blocks_dir. The destination directory is created if needed.
+   */
+  void copy_referenced_blocks (
+    const std::filesystem::path &src_blocks_dir,
+    const std::filesystem::path &dest_blocks_dir) const;
+
+  /** The block ids referenced by the registry's sources. */
+  [[nodiscard]] std::unordered_set<BlockId, BlockIdHash>
+  collect_referenced_blocks () const;
 
 private:
   SampleRateGetter      sample_rate_getter_;
@@ -130,10 +136,14 @@ private:
    */
   utils::IObjectRegistry &registry_;
 
-  /** File hashes, used for checking if a clip is already written to the pool so
-   * we can save time by skipping overwriting it. */
-  boost::unordered::concurrent_flat_map<FileAudioSource::Uuid, utils::hash::HashT>
-    last_known_file_hashes_;
+  std::shared_ptr<AudioBlockStore> store_;
+
+  /**
+   * Serializes the store's construction: the pool is reached from the main
+   * thread and the save task, which would otherwise each build their own
+   * store over the same directory.
+   */
+  mutable std::mutex store_init_mutex_;
 };
 } // namespace zrythm::dsp
 
@@ -147,9 +157,9 @@ struct fmt::formatter<zrythm::dsp::AudioPool> : fmt::formatter<std::string_view>
     std::stringstream ss;
     ss << "\nAudio Pool:\n";
     pool.for_each_clip ([&] (const auto &clip) {
-      auto pool_path = pool.get_clip_path (clip.get_uuid (), false);
       ss << fmt::format (
-        "[Clip {}] {}: {}\n", clip.get_uuid (), clip.get_name (), pool_path);
+        "[Clip {}] {}: {} blocks\n", clip.get_uuid (), clip.get_name (),
+        clip.get_spans ().size ());
     });
 
     return fmt::formatter<std::string_view>::format (

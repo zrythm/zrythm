@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/audio_source_object.h"
@@ -18,14 +18,6 @@ AudioSourceObject::AudioSourceObject (
         parent),
       registry_ (registry), source_id_ (std::move (source))
 {
-  generate_audio_source ();
-  connect_file_audio_source_signals ();
-}
-
-juce::PositionableAudioSource &
-AudioSourceObject::get_audio_source () const
-{
-  return *source_;
 }
 
 dsp::FileAudioSource &
@@ -38,29 +30,6 @@ dsp::FileAudioSourceUuidReference
 AudioSourceObject::audio_source_ref () const
 {
   return source_id_;
-}
-
-void
-AudioSourceObject::generate_audio_source ()
-{
-  auto * audio_source = source_id_.get_object_as<dsp::FileAudioSource> ();
-  // juce API takes non-const reference but it doesn't seem to modify it (and it
-  // doesn't make sense to modify it...) so we const-cast
-  source_ = std::make_unique<juce::MemoryAudioSource> (
-    const_cast<juce::AudioSampleBuffer &> (
-      static_cast<const juce::AudioSampleBuffer &> (audio_source->get_samples ())),
-    false);
-
-  Q_EMIT propertiesChanged ();
-}
-
-void
-AudioSourceObject::connect_file_audio_source_signals ()
-{
-  auto * audio_source = source_id_.get_object_as<dsp::FileAudioSource> ();
-  QObject::connect (
-    audio_source, &dsp::FileAudioSource::samplesChanged, this,
-    &AudioSourceObject::generate_audio_source, Qt::UniqueConnection);
 }
 
 void
@@ -81,8 +50,6 @@ from_json (const nlohmann::json &j, AudioSourceObject &obj)
   from_json (j, static_cast<ArrangerObject &> (obj));
   obj.source_id_ = { obj.registry_ };
   j.at (AudioSourceObject::kFileAudioSourceKey).get_to (obj.source_id_);
-  obj.generate_audio_source ();
-  obj.connect_file_audio_source_signals ();
 }
 
 AudioSourceObject::~AudioSourceObject () = default;

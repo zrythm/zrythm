@@ -824,6 +824,9 @@ ClipboardPayload::import_into (ProjectRegistry &registry) const
         has_shared_file_audio_sources = true;
       else
         {
+          // TODO: block spans reference the origin project's pool; the
+          // payload carries no block data, so cross-project imports have
+          // no blocks to read. Embed or copy the blocks on import.
           z_warning (
             "Clipboard: file audio source {} not found in target project; "
             "imported audio will be silent",

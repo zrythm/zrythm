@@ -300,30 +300,6 @@
             }
           }
         },
-        "audioPool": {
-          "type": "object",
-          "description": "References to audio files used in the project",
-          "properties": {
-            "fileHashes": {
-              "type": "array",
-              "description": "File hashes used for checking if an audio file is already written to the pool",
-              "items": {
-                "type": "array",
-                "items": [
-                  {
-                    "$ref": "common.schema.json#/definitions/uuid",
-                    "description": "File audio source ID from registry.fileAudioSources"
-                  },
-                  {
-                    "type": "integer",
-                    "description": "File hash"
-                  }
-                ],
-                "additionalItems": false
-              }
-            }
-          }
-        },
         "portConnectionsManager": {
           "type": "object",
           "description": "Manual port connections (user routing)",

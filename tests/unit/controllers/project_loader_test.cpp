@@ -189,24 +189,22 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
     utils::Utf8String::from_utf8_encoded_string ("test_clip"));
   auto clip_id = clip_ref.id ();
 
-  // Save the project (this writes audio files to disk via
-  // AudioPool::write_to_disk)
+  // Save the project (this writes the source's pending frames as blocks)
   auto save_future = ProjectSaver::save (
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, project_dir, false);
   test_helpers::waitForFutureWithEvents (save_future);
 
-  // Verify the audio file was written to the pool
+  // Verify the blocks were written to the pool
   auto pool_path =
     project_dir
     / structure::project::ProjectPathProvider::get_path (
       structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir);
-  auto clip_path =
-    pool_path
-    / fmt::format (
-      "{}.wav",
-      utils::to_std_string (clip_id.value_.toString (QUuid::WithoutBraces)));
-  EXPECT_TRUE (utils::io::path_exists (clip_path))
-    << "Audio file should exist at: " << clip_path;
+  auto * saved_source = clip_ref.get_object_as<dsp::FileAudioSource> ();
+  ASSERT_FALSE (saved_source->get_spans ().empty ());
+  EXPECT_TRUE (
+    std::filesystem::exists (
+      pool_path / "blocks" / saved_source->get_spans ().front ().block.hex))
+    << "Block file should exist in the pool";
 
   // Load the project into a new Project instance
   auto loaded_project = create_minimal_project ();
@@ -235,9 +233,64 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
   EXPECT_EQ (loaded_clip.get_name ().view (), "test_clip");
   EXPECT_EQ (loaded_clip.source_bpm ().in (units::bpm), test_bpm);
 
-  // These fields are read from the audio file during init_loaded()
+  // The channel and frame counts come from the manifest
   EXPECT_EQ (loaded_clip.get_num_channels (), num_channels);
-  EXPECT_EQ (loaded_clip.get_num_frames (), num_frames);
+  EXPECT_EQ (loaded_clip.get_num_frames (), units::samples (num_frames));
+  ASSERT_FALSE (loaded_clip.get_spans ().empty ());
+  EXPECT_EQ (
+    loaded_clip.get_spans ().front ().block.hex,
+    saved_source->get_spans ().front ().block.hex);
+
+  // Sample data reads back through the loaded project's block store
+  utils::audio::AudioBuffer frames (num_channels, num_frames);
+  ASSERT_NO_THROW (loaded_clip.read_span (
+    units::samples (0), units::samples (num_frames), frames));
+  EXPECT_FLOAT_EQ (frames.getSample (0, 0), 0.5f);
+}
+
+// A source whose BPM is unknown (0) round-trips through save and load.
+TEST_F (ProjectLoaderTest, LoadsSourceWithUnknownBpm)
+{
+  auto project = create_minimal_project ();
+  create_ui_state_and_undo_stack (*project);
+
+  constexpr int             num_channels = 2;
+  constexpr int             num_frames = 100;
+  utils::audio::AudioBuffer buffer (num_channels, num_frames);
+
+  auto clip_ref = utils::create_object<dsp::FileAudioSource> (
+    project->get_registry (), buffer,
+    dsp::FileAudioSource::BitDepth::BIT_DEPTH_32,
+    project->engine ()->sample_rate (), units::bpm (0),
+    utils::Utf8String::from_utf8_encoded_string ("unknown_bpm_clip"));
+  auto clip_id = clip_ref.id ();
+
+  auto save_future = ProjectSaver::save (
+    *project, *ui_state, *undo_stack, TEST_APP_VERSION, project_dir, false);
+  test_helpers::waitForFutureWithEvents (save_future);
+
+  auto loaded_project = create_minimal_project ();
+  auto loaded_ui_state = utils::make_qobject_unique<
+    structure::project::ProjectUiState> (*loaded_project, *app_settings);
+  auto loaded_undo_stack = utils::make_qobject_unique<undo::UndoStack> (
+    [&] (const std::function<void ()> &action, bool recalculate_graph) {
+      loaded_project->engine ()
+        ->execute_function_with_paused_processing_synchronously (
+          action, recalculate_graph);
+    },
+    nullptr);
+
+  auto load_result = ProjectLoader::load_from_directory (project_dir);
+  load_result.waitForFinished ();
+
+  EXPECT_NO_THROW ({
+    ProjectLoader::deserialize (
+      load_result.result ().json, *loaded_project, *loaded_ui_state,
+      *loaded_undo_stack);
+  });
+  auto &loaded_clip = utils::get_typed<dsp::FileAudioSource> (
+    loaded_project->get_registry (), clip_id);
+  EXPECT_EQ (loaded_clip.source_bpm ().in (units::bpm), 0.0);
 }
 
 } // namespace zrythm::controllers

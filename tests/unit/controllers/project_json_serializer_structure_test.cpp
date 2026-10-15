@@ -418,33 +418,10 @@ TEST_F (ProjectSerializationTest, SerializeProject_OptionalFields)
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
   auto &pd = j["projectData"];
 
-  EXPECT_TRUE (pd.contains ("audioPool"));
+  EXPECT_FALSE (pd.contains ("audioPool"));
   EXPECT_TRUE (pd.contains ("portConnectionsManager"));
   EXPECT_TRUE (pd.contains ("tempoObjectManager"));
   EXPECT_TRUE (pd.contains ("clipLauncher"));
-}
-
-TEST_F (ProjectSerializationTest, SerializeProject_AudioPoolStructure)
-{
-  auto project = create_minimal_project ();
-  ASSERT_NE (project, nullptr);
-  create_ui_state_and_undo_stack (*project);
-
-  nlohmann::json j = ProjectJsonSerializer::serialize (
-    *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-  auto &audio_pool = j["projectData"]["audioPool"];
-
-  EXPECT_TRUE (audio_pool.contains ("fileHashes"));
-  EXPECT_TRUE (audio_pool["fileHashes"].is_array ());
-
-  for (const auto &entry : audio_pool["fileHashes"])
-    {
-      EXPECT_TRUE (entry.is_array ());
-      EXPECT_EQ (entry.size (), 2);
-      EXPECT_TRUE (entry[0].is_string ());
-      assert_valid_uuid (entry[0].get<std::string> ());
-      EXPECT_TRUE (entry[1].is_number ());
-    }
 }
 
 // ============================================================================

@@ -234,8 +234,7 @@ ProjectManager::create_default (
             throw_if_no_audio_device ();
             auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
             auto prj = utils::make_qobject_unique<structure::project::Project> (
-              app_settings_,
-              [project_dir_path] (bool for_backup) { return project_dir_path; },
+              app_settings_, [project_dir_path] () { return project_dir_path; },
               zapp->hw_audio_interface (), *zapp->deviceManager (),
               zapp->pluginManager ()->get_format_manager (),
               [this] (plugins::Plugin &plugin) {
@@ -460,8 +459,7 @@ ProjectManager::loadProject (const QString &filepath)
             // Create project with all required dependencies
             auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
             auto prj = utils::make_qobject_unique<structure::project::Project> (
-              app_settings_,
-              [project_dir] (bool /*for_backup*/) { return project_dir; },
+              app_settings_, [project_dir] () { return project_dir; },
               zapp->hw_audio_interface (), *zapp->deviceManager (),
               zapp->pluginManager ()->get_format_manager (),
               [this] (plugins::Plugin &plugin) {

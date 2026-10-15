@@ -412,6 +412,8 @@ private:
       registry, initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
       project_->engine ()->sample_rate (), units::bpm (120.0),
       u8"RecordingClip");
+    audio_source_ref.get_object_as<dsp::FileAudioSource> ()->set_store (
+      project_->pool_->get_block_store ());
 
     auto source_obj_ref =
       utils::create_object<structure::arrangement::AudioSourceObject> (
@@ -704,7 +706,7 @@ TEST_F (RecordingPipelineTest, AudioMaterializerCreatesClipFromEngineAudio)
 
   auto * clip = get_first_clip ();
   ASSERT_NE (clip, nullptr);
-  EXPECT_GT (clip->get_num_frames (), 0)
+  EXPECT_GT (clip->get_num_frames (), units::samples (0))
     << "Recorded clip should contain audio frames";
 
   auto * audio_clip =
@@ -790,7 +792,7 @@ TEST_F (RecordingPipelineTest, AudioContinuousRecordingExpandsSingleClip)
 
   drain_until ([this] {
     auto * clip = get_first_clip ();
-    return clip != nullptr && clip->get_num_frames () > 256;
+    return clip != nullptr && clip->get_num_frames () > units::samples (256);
   });
 
   ASSERT_FALSE (audio_clip_refs_.empty ());
@@ -799,7 +801,7 @@ TEST_F (RecordingPipelineTest, AudioContinuousRecordingExpandsSingleClip)
 
   auto * clip = get_first_clip ();
   ASSERT_NE (clip, nullptr);
-  EXPECT_GT (clip->get_num_frames (), 256)
+  EXPECT_GT (clip->get_num_frames (), units::samples (256))
     << "Multiple engine cycles should expand the clip beyond one block";
 }
 
@@ -995,7 +997,8 @@ TEST_F (RecordingPipelineTest, AudioRecordedAudioDataIntegrity)
   drain_until ([this, expected_min_frames] {
     auto * clip = get_first_clip ();
     return clip != nullptr
-           && clip->get_num_frames () >= static_cast<int> (expected_min_frames);
+           && clip->get_num_frames ()
+                >= units::samples (static_cast<int64_t> (expected_min_frames));
   });
 
   ASSERT_FALSE (audio_clip_refs_.empty ());
@@ -1004,8 +1007,10 @@ TEST_F (RecordingPipelineTest, AudioRecordedAudioDataIntegrity)
   ASSERT_NE (clip, nullptr);
 
   const auto num_frames = clip->get_num_frames ();
-  EXPECT_GT (num_frames, 0) << "Clip should contain audio frames";
-  EXPECT_GE (num_frames, static_cast<int> (expected_min_frames))
+  EXPECT_GT (num_frames, units::samples (0))
+    << "Clip should contain audio frames";
+  EXPECT_GE (
+    num_frames, units::samples (static_cast<int64_t> (expected_min_frames)))
     << "Clip should contain at least 2 engine cycles worth of frames";
 
   EXPECT_EQ (clip->get_num_channels (), 2)
@@ -1018,7 +1023,9 @@ TEST_F (RecordingPipelineTest, AudioRecordedAudioDataIntegrity)
       .tick_to_samples_rounded (
         timeline_end_ticks (*audio_clip) - audio_clip->position ()->asTick ())
       .in (units::samples);
-  EXPECT_NEAR (clip_length_samples, static_cast<double> (num_frames), 1.0)
+  EXPECT_NEAR (
+    clip_length_samples, static_cast<double> (num_frames.in (units::samples)),
+    1.0)
     << "Clip length in samples should match clip frame count";
 }
 

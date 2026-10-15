@@ -273,10 +273,9 @@ audio_clip_content_window (const AudioClip &clip)
   z_return_val_if_fail (
     !clip.get_children_view ().empty (), utils::audio::AudioBuffer{});
   auto       &fs = clip.get_children_view ().front ()->file_audio_source ();
-  const auto &samples = fs.get_samples ();
-  const auto  channels = samples.getNumChannels ();
-  const auto  clip_frames = units::samples (samples.getNumSamples ());
-  const auto  mapping = native_mapping_for (clip, fs);
+  const int   channels = fs.get_num_channels ();
+  const auto  clip_frames = fs.get_num_frames ();
+  const auto &mapping = native_mapping_for (clip, fs);
   const auto  native_offset = [&mapping] (const dsp::Position * pos) {
     return mapping.ticks_to_native (
       dsp::ContentTick{ units::ticks (pos->ticks ()) });
@@ -291,10 +290,7 @@ audio_clip_content_window (const AudioClip &clip)
     clip_start_s, min (clip_frames, max (loop_end_s, clip_start_s + length_s)));
 
   utils::audio::AudioBuffer window{ channels, end.in<int> (units::samples) };
-  for (const auto ch : std::views::iota (0, channels))
-    {
-      window.copyFrom (ch, 0, samples, ch, 0, end.in<int> (units::samples));
-    }
+  fs.read_span (units::samples (0), end, window);
 
   for (const auto &entry : clip.transform_entries ())
     {

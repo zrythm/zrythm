@@ -1,6 +1,9 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <filesystem>
+
+#include "dsp/audio_block_store.h"
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
@@ -9,6 +12,7 @@
 #include "structure/arrangement/midi_clip.h"
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/timeline_data_provider.h"
+#include "utils/io_utils.h"
 #include "utils/midi.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
@@ -876,6 +880,33 @@ TEST_F (TimelineDataProviderTest, GenerateAudioEventsWithEmptyClips)
       EXPECT_FLOAT_EQ (output_left[i], 0.0f);
       EXPECT_FLOAT_EQ (output_right[i], 0.0f);
     }
+}
+
+// A clip whose block file is missing is skipped by the cache builder
+TEST_F (TimelineDataProviderTest, GenerateAudioEventsSkipsClipWithMissingBlock)
+{
+  auto       temp_dir_obj = utils::io::make_tmp_dir ();
+  const auto blocks_dir =
+    utils::Utf8String::from_qstring (temp_dir_obj->path ()).to_path ()
+    / "blocks";
+  auto store = std::make_shared<dsp::AudioBlockStore> (blocks_dir);
+
+  auto * clip = create_audio_clip (0.0, 200.0);
+  auto  &source =
+    clip->ArrangerObjectOwner<AudioSourceObject>::get_children_view ()
+      .front ()
+      ->file_audio_source ();
+  source.set_store (store);
+  source.flush_tail ();
+  ASSERT_EQ (source.get_spans ().size (), 1);
+  std::filesystem::remove (
+    store->get_blocks_directory () / source.get_spans ().front ().block.hex);
+
+  std::vector<const AudioClip *> clips{ clip };
+  utils::ExpandableTickRange     range (std::pair (0.0, 960.0));
+  EXPECT_NO_THROW (
+    audio_provider_->generate_audio_events (*tempo_map_, clips, range));
+  EXPECT_TRUE (audio_provider_->audio_clips ().empty ());
 }
 
 TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithAudioClip)

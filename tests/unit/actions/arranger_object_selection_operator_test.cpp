@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <filesystem>
+
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "controllers/clipboard.h"
+#include "dsp/audio_pool.h"
 #include "dsp/content_time_warp.h"
 #include "dsp/file_audio_source.h"
 #include "plugins/plugin_factory.h"
@@ -19,6 +22,7 @@
 #include "structure/tracks/track_factory.h"
 #include "utils/app_settings.h"
 #include "utils/audio.h"
+#include "utils/io_utils.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
@@ -4309,7 +4313,9 @@ TEST_F (
   {
     auto view = audio_clip->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::AudioSourceObject>::get_children_view ();
-    const auto &samples = view.front ()->file_audio_source ().get_samples ();
+    auto                     &source = view.front ()->file_audio_source ();
+    utils::audio::AudioBuffer samples (source.get_num_channels (), 8);
+    source.read_span (units::samples (0), units::samples (8), samples);
     EXPECT_FLOAT_EQ (samples.getSample (0, 3), 3.f);
   }
 
@@ -4536,6 +4542,51 @@ TEST_F (
   EXPECT_FALSE (operator_->applyAutomationFunction (
     selection_model_.get (), function_id (AutomationFunction::Flatten::kId)));
   EXPECT_EQ (refused_spy.count (), 1);
+}
+
+// A deleted clip stays in the registry through the undo command's
+// reference, so the pool's garbage collection must keep its blocks until
+// the command leaves the stack
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DeleteAudioClipKeepsBlocksThroughSaveAndUndo)
+{
+  auto       temp_dir_obj = zrythm::utils::io::make_tmp_dir ();
+  const auto pool_dir =
+    utils::Utf8String::from_qstring (temp_dir_obj->path ()).to_path () / "pool";
+  dsp::AudioPool pool (
+    registry_, [pool_dir] () { return pool_dir; },
+    [] () { return units::sample_rate (44100); });
+
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  auto * audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  auto &source =
+    audio_clip
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioSourceObject>::get_children_view ()
+      .front ()
+      ->file_audio_source ();
+  source.set_store (pool.get_block_store ());
+  source.flush_tail ();
+  ASSERT_EQ (source.get_spans ().size (), 1);
+  const auto block_path =
+    pool.get_block_store ()->get_blocks_directory ()
+    / source.get_spans ().front ().block.hex;
+  ASSERT_TRUE (std::filesystem::exists (block_path));
+
+  EXPECT_TRUE (operator_->deleteObject (audio_clip_ref.get ()));
+
+  // The sweep the project save runs must keep the deleted clip's block:
+  // the clip is detached from its owner but still registered.
+  pool.sweep_unused_blocks ();
+  EXPECT_TRUE (std::filesystem::exists (block_path));
+
+  undo_stack_->undo ();
+  utils::audio::AudioBuffer samples (source.get_num_channels (), 8);
+  source.read_span (units::samples (0), units::samples (8), samples);
+  EXPECT_FLOAT_EQ (samples.getSample (0, 3), 3.f);
+  EXPECT_FLOAT_EQ (samples.getSample (1, 7), 7.f);
 }
 
 } // namespace zrythm::actions

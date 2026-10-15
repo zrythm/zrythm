@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_dsp_unit_tests
+  audio_block_store_test.cpp
   audio_bus_channel_routing_test.cpp
   audio_bus_configuration_test.cpp
   audio_callback_test.cpp

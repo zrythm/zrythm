@@ -208,13 +208,7 @@ protected:
   std::unique_ptr<structure::project::Project> create_minimal_project ()
   {
     structure::project::Project::ProjectDirectoryPathProvider path_provider =
-      [this] (bool for_backup) {
-        if (for_backup)
-          {
-            return project_dir / "backups";
-          }
-        return project_dir;
-      };
+      [this] () { return project_dir; };
 
     plugins::PluginHostWindowFactory window_factory =
       [] (plugins::Plugin &) -> std::unique_ptr<plugins::PluginHostWindow> {

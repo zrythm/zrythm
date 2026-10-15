@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cassert>
+#include <cstring>
 #include <exception>
 #include <limits>
 #include <mutex>
@@ -28,6 +29,34 @@ using zrythm::utils::ZrythmException;
 namespace zrythm::dsp
 {
 
+namespace
+{
+
+void
+convert_mono_to_stereo (utils::audio::AudioBuffer &buf)
+{
+  if (buf.getNumChannels () != 1)
+    {
+      return;
+    }
+
+  const auto [left_gain, _] =
+    calculate_panning (PanLaw::Minus3dB, PanAlgorithm::SquareRoot, 0.5f);
+  const auto num_samples = buf.getNumSamples ();
+  assert (num_samples >= 0);
+  const auto samples = static_cast<size_t> (num_samples);
+
+  buf.setSize (2, num_samples, true);
+
+  auto * left = buf.getWritePointer (0);
+  auto * right = buf.getWritePointer (1);
+
+  utils::float_ranges::mul_k2 ({ left, samples }, left_gain);
+  utils::float_ranges::copy ({ right, samples }, { left, samples });
+}
+
+} // namespace
+
 FileAudioSource::FileAudioSource (QObject * parent)
     : utils::UuidIdentifiableObject<FileAudioSource> (parent)
 {
@@ -39,7 +68,55 @@ FileAudioSource::FileAudioSource (
   QObject *                    parent)
     : utils::UuidIdentifiableObject<FileAudioSource> (parent)
 {
-  init_from_file (full_path, project_sample_rate, std::nullopt);
+  samplerate_ = project_sample_rate;
+  assert (samplerate_ > units::sample_rate (0));
+
+  /* read metadata */
+  AudioFile                       file (full_path);
+  utils::audio::AudioFileMetadata md;
+  try
+    {
+      md = file.read_metadata ();
+    }
+  catch (const ZrythmException &)
+    {
+      std::throw_with_nested (ZrythmException (
+        fmt::format ("Failed to read metadata from file '{}'", full_path)));
+    }
+  bit_depth_ = utils::audio::bit_depth_int_to_enum (md.bit_depth);
+  bpm_ = units::bpm (md.bpm);
+
+  utils::audio::AudioBuffer frames;
+  try
+    {
+      /* read frames into project's samplerate */
+      file.read_full (frames, samplerate_.in (units::sample_rate));
+      convert_mono_to_stereo (frames);
+    }
+  catch (const ZrythmException &)
+    {
+      std::throw_with_nested (ZrythmException (
+        fmt::format ("Failed to read frames from file '{}'", full_path)));
+    }
+
+  name_ = utils::Utf8String::from_path (
+    utils::io::path_get_basename_without_ext (full_path));
+  if (bpm_ <= units::bpm (0.0))
+    {
+      /* no BPM in metadata: attempt to estimate the tempo */
+      if (const auto estimated_bpm = estimate_loop_bpm (frames, samplerate_))
+        {
+          z_debug (
+            "estimated BPM of '{}' as {}", full_path,
+            estimated_bpm->in (units::bpm));
+          bpm_ = *estimated_bpm;
+        }
+    }
+
+  channels_ = frames.getNumChannels ();
+  tail_ = frames;
+
+  Q_EMIT samplesChanged ();
 }
 
 FileAudioSource::FileAudioSource (
@@ -60,68 +137,12 @@ FileAudioSource::FileAudioSource (
   assert (samplerate_ > units::sample_rate (0));
   name_ = name;
   bit_depth_ = bit_depth;
-  ch_frames_ = buf;
-  convert_mono_to_stereo ();
+
+  utils::audio::AudioBuffer converted = buf;
+  convert_mono_to_stereo (converted);
+  channels_ = converted.getNumChannels ();
+  tail_ = converted;
   bpm_ = source_bpm;
-}
-
-void
-FileAudioSource::init_from_file (
-  const std::filesystem::path &full_path,
-  units::sample_rate_t         project_sample_rate,
-  std::optional<units::bpm_t>  bpm_to_set)
-{
-  samplerate_ = project_sample_rate;
-  assert (samplerate_ > units::sample_rate (0));
-
-  /* read metadata */
-  AudioFile                       file (full_path);
-  utils::audio::AudioFileMetadata md;
-  try
-    {
-      md = file.read_metadata ();
-    }
-  catch (const ZrythmException &)
-    {
-      std::throw_with_nested (ZrythmException (
-        fmt::format ("Failed to read metadata from file '{}'", full_path)));
-    }
-  bit_depth_ = utils::audio::bit_depth_int_to_enum (md.bit_depth);
-  bpm_ = units::bpm (md.bpm);
-
-  try
-    {
-      /* read frames into project's samplerate */
-      file.read_full (ch_frames_, samplerate_.in (units::sample_rate));
-      convert_mono_to_stereo ();
-    }
-  catch (const ZrythmException &)
-    {
-      std::throw_with_nested (ZrythmException (
-        fmt::format ("Failed to read frames from file '{}'", full_path)));
-    }
-
-  name_ = utils::Utf8String::from_path (
-    utils::io::path_get_basename_without_ext (full_path));
-  if (bpm_to_set.has_value () && bpm_to_set.value () > units::bpm (0.0))
-    {
-      bpm_ = bpm_to_set.value ();
-    }
-  else if (!bpm_to_set.has_value () && bpm_ <= units::bpm (0.0))
-    {
-      /* no BPM in metadata and no override: attempt to estimate the tempo
-       * (only done on fresh imports - the stored value is authoritative when
-       * reloading) */
-      if (const auto estimated_bpm = estimate_loop_bpm (ch_frames_, samplerate_))
-        {
-          z_debug (
-            "estimated BPM of '{}' as {}", full_path,
-            estimated_bpm->in (units::bpm));
-          bpm_ = *estimated_bpm;
-        }
-    }
-
-  Q_EMIT samplesChanged ();
 }
 
 void
@@ -135,225 +156,375 @@ init_from (
     static_cast<const FileAudioSource::UuidIdentifiableObject &> (other),
     clone_type);
   obj.name_ = other.name_;
-  obj.ch_frames_ = other.ch_frames_;
   obj.bpm_ = other.bpm_;
   obj.samplerate_ = other.samplerate_;
   obj.bit_depth_ = other.bit_depth_;
+  obj.channels_ = other.channels_;
+  obj.spans_ = other.spans_;
+  obj.tail_ = other.tail_;
+  obj.store_ = other.store_;
 }
 
+// ========================================================================
+// Manifest
+// ========================================================================
+
 void
-FileAudioSource::replace_frames_from_interleaved (
-  const float *       frames,
-  units::sample_u64_t start_frame,
-  units::sample_u64_t num_frames_per_channel,
-  channels_t          channels)
+FileAudioSource::set_store (std::shared_ptr<AudioBlockStore> store)
 {
-  utils::audio::AudioBuffer buf (
-    1,
-    num_frames_per_channel.in<int> (units::samples)
-      * static_cast<int> (channels));
-  buf.deinterleave_samples (channels);
-  replace_frames (buf, start_frame);
+  const std::unique_lock lock (mutex_);
+  store_ = std::move (store);
 }
 
-void
-FileAudioSource::replace_frames (
-  const utils::audio::AudioBuffer &src_frames,
-  units::sample_u64_t              start_frame)
-{
-  z_return_if_fail_cmp (
-    src_frames.getNumChannels (), ==, ch_frames_.getNumChannels ());
+// The following frame-count readers require the caller to hold @ref
+// mutex_ (shared suffices).
 
-  for (int i = 0; i < src_frames.getNumChannels (); ++i)
+units::sample_t
+FileAudioSource::tail_frames () const
+{
+  return units::samples (tail_.getNumSamples ());
+}
+
+units::sample_t
+FileAudioSource::frames_in_spans () const
+{
+  auto total = units::samples (0);
+  for (const auto &span : spans_)
     {
-      ch_frames_.copyFrom (
-        i, start_frame.in<int> (units::samples),
-        src_frames.getReadPointer (i, 0), src_frames.getNumSamples ());
+      total += span.num_frames;
     }
+  return total;
+}
+
+units::sample_t
+FileAudioSource::total_frames () const
+{
+  return frames_in_spans () + tail_frames ();
+}
+
+bool
+FileAudioSource::has_pending_tail () const
+{
+  const std::shared_lock lock (mutex_);
+  return tail_frames () > units::samples (0);
+}
+
+units::sample_t
+FileAudioSource::get_num_frames () const
+{
+  const std::shared_lock lock (mutex_);
+  return total_frames ();
+}
+
+std::vector<FileAudioSource::BlockSpan>
+FileAudioSource::get_spans () const
+{
+  const std::shared_lock lock (mutex_);
+  return spans_;
+}
+
+// The following writers all assume @ref mutex_ is held uniquely.
+
+units::sample_t
+FileAudioSource::block_frames () const
+{
+  z_return_val_if_fail (channels_ > 0, units::samples (0));
+  return units::samples (
+    static_cast<int64_t> (
+      AudioBlockStore::kTargetBlockPayloadBytes
+      / (static_cast<size_t> (channels_) * sizeof (float))));
+}
+
+void
+FileAudioSource::append_block_span (
+  const BlockId   &id,
+  units::sample_t  num_frames,
+  units::sample_t &dest_start_frame)
+{
+  spans_.push_back (
+    BlockSpan{
+      .block = id,
+      .src_start_frame = units::samples (0),
+      .num_frames = num_frames,
+      .dest_start_frame = dest_start_frame });
+  dest_start_frame += num_frames;
+}
+
+void
+FileAudioSource::flush_full_blocks ()
+{
+  z_return_if_fail (store_ != nullptr);
+
+  // Full blocks are written straight out of the tail at their offsets;
+  // the unconsumed remainder is moved to the front once, after the loop.
+  const auto block = block_frames ();
+  z_return_if_fail (block > units::samples (0));
+  const auto tail_total = tail_frames ();
+  const auto num_blocks = static_cast<int64_t> (tail_total / block);
+  if (num_blocks == 0)
+    {
+      return;
+    }
+
+  // All blocks are written before any span is appended: a failed write
+  // leaves the manifest and the tail untouched (blocks already written
+  // stay unreferenced on disk and are swept by the garbage collector).
+  const auto           block_raw = block.in (units::samples);
+  const auto           consumed = units::samples (num_blocks * block_raw);
+  std::vector<BlockId> written (static_cast<size_t> (num_blocks));
+  for (int64_t i = 0; i < num_blocks; ++i)
+    {
+      written[static_cast<size_t> (i)] = store_->write_block (
+        tail_, samplerate_, units::samples (i * block_raw), block);
+    }
+
+  auto dest_start = frames_in_spans ();
+  for (const auto &id : written)
+    {
+      append_block_span (id, block, dest_start);
+    }
+
+  const auto remaining = tail_total - consumed;
+  const auto consumed_raw = consumed.in (units::samples);
+  for (int channel = 0; channel < channels_; ++channel)
+    {
+      auto * channel_data = tail_.getWritePointer (channel);
+      std::memmove (
+        channel_data, channel_data + consumed_raw,
+        static_cast<size_t> (remaining.in (units::samples)) * sizeof (float));
+    }
+  tail_.setSize (
+    channels_, static_cast<int> (remaining.in (units::samples)), true, true,
+    true);
+}
+
+void
+FileAudioSource::append_frames (const utils::audio::AudioBuffer &frames)
+{
+  z_return_if_fail (frames.getNumChannels () == channels_);
+  z_return_if_fail (frames.getNumSamples () > 0);
+
+  {
+    const std::unique_lock lock (mutex_);
+    z_return_if_fail (store_ != nullptr);
+
+    const auto num_frames = units::samples (frames.getNumSamples ());
+    const auto old_frames = tail_frames ();
+    tail_.setSize (
+      channels_,
+      static_cast<int> ((old_frames + num_frames).in (units::samples)), true,
+      true, true);
+    for (int channel = 0; channel < channels_; ++channel)
+      {
+        tail_.copyFrom (
+          channel, static_cast<int> (old_frames.in (units::samples)),
+          frames.getReadPointer (channel),
+          static_cast<int> (num_frames.in (units::samples)));
+      }
+
+    flush_full_blocks ();
+  }
 
   Q_EMIT samplesChanged ();
 }
 
 void
-FileAudioSource::expand_with_frames (const utils::audio::AudioBuffer &frames)
+FileAudioSource::flush_tail ()
 {
-  z_return_if_fail (frames.getNumChannels () == ch_frames_.getNumChannels ());
-  z_return_if_fail (frames.getNumSamples () > 0);
+  {
+    const std::unique_lock lock (mutex_);
+    z_return_if_fail (store_ != nullptr);
 
-  const auto current = static_cast<int64_t> (ch_frames_.getNumSamples ());
-  const auto added = static_cast<int64_t> (frames.getNumSamples ());
-  const auto needed = std::min (
-    current + added, static_cast<int64_t> (std::numeric_limits<int>::max ()));
-  const auto grown = std::min (
-    std::max (needed, current + (current / 2)),
-    static_cast<int64_t> (std::numeric_limits<int>::max ()));
-  units::sample_u64_t prev_end = units::samples (current);
-
-  // Geometric growth (1.5x): over-allocate to amortize reallocations across
-  // repeated expand_with_frames() calls (e.g., during recording).  JUCE's
-  // setSize with avoidReallocating=true will increase allocation when needed
-  // but never shrink it, so we first grow to `grown` (expanding the underlying
-  // allocation), then shrink the logical size back to `needed` while keeping
-  // the larger allocation intact.
-  ch_frames_.setSize (ch_frames_.getNumChannels (), grown, true, false, true);
-  ch_frames_.setSize (ch_frames_.getNumChannels (), needed, true, false, true);
-  replace_frames (frames, prev_end);
-}
-
-void
-FileAudioSource::convert_mono_to_stereo ()
-{
-  if (ch_frames_.getNumChannels () != 1)
-    {
-      return;
-    }
-
-  const auto [left_gain, _] =
-    calculate_panning (PanLaw::Minus3dB, PanAlgorithm::SquareRoot, 0.5f);
-  const auto num_samples = ch_frames_.getNumSamples ();
-  assert (num_samples >= 0);
-  const auto samples = static_cast<size_t> (num_samples);
-
-  ch_frames_.setSize (2, num_samples, true);
-
-  auto * left = ch_frames_.getWritePointer (0);
-  auto * right = ch_frames_.getWritePointer (1);
-
-  utils::float_ranges::mul_k2 ({ left, samples }, left_gain);
-  utils::float_ranges::copy ({ right, samples }, { left, samples });
-}
-
-// ========================================================================
-
-FileAudioSourceWriter::FileAudioSourceWriter (
-  const FileAudioSource &source,
-  std::filesystem::path  path,
-  bool                   parts)
-    : parts_ (parts), source_ (source), writer_path_ (std::move (path))
-{
-}
-
-bool
-FileAudioSourceWriter::enough_time_elapsed_since_last_write () const
-{
-  assert (parts_);
-
-  /* write to pool if 2 seconds passed since last write */
-  auto                           cur_time = get_monotonic_time_usecs ();
-  constexpr utils::MonotonicTime usec_to_wait = 2 * 1000 * 1000;
-  return cur_time - last_write_ > usec_to_wait;
-}
-
-void
-FileAudioSourceWriter::finalize_buffered_write ()
-{
-  assert (parts_);
-
-  if (frames_written_ == units::samples (0))
-    {
-      z_debug ("nothing to write, skipping");
-      return;
-    }
-
-  z_return_if_fail (writer_);
-  writer_->flush ();
-  writer_.reset ();
-}
-
-void
-FileAudioSourceWriter::write_to_file ()
-{
-  assert (source_.get_samplerate () > units::sample_rate (0));
-  assert (
-    frames_written_ < units::samples (std::numeric_limits<size_t>::max ()));
-
-  // Use a static mutex to protect JUCE object creation to avoid data races
-  // in LeakedObjectDetector counters during multi-threaded execution
-  static std::mutex juce_creation_mutex;
-
-  auto create_writer_for_filepath = [&] () {
-    std::lock_guard lock (juce_creation_mutex);
-
-    auto file = utils::Utf8String::from_path (writer_path_).to_juce_file ();
-    std::unique_ptr<juce::OutputStream> out_stream =
-      std::make_unique<juce::FileOutputStream> (file);
-
-    if (
-      !out_stream
-      || !dynamic_cast<juce::FileOutputStream &> (*out_stream).openedOk ())
+    flush_full_blocks ();
+    if (tail_frames () > units::samples (0))
       {
-        throw ZrythmException (
-          fmt::format ("Failed to open file '{}' for writing", writer_path_));
+        auto       dest_start = frames_in_spans ();
+        const auto num_frames = tail_frames ();
+        const auto id = store_->write_block (
+          tail_, samplerate_, units::samples (0), num_frames);
+        append_block_span (id, num_frames, dest_start);
+        tail_.setSize (channels_, 0, true, true, true);
+      }
+  }
+
+  Q_EMIT samplesChanged ();
+}
+
+void
+FileAudioSource::set_content (
+  const utils::audio::AudioBuffer &frames,
+  units::sample_rate_t             sample_rate)
+{
+  z_return_if_fail (frames.getNumChannels () == channels_);
+
+  {
+    const std::unique_lock lock (mutex_);
+    z_return_if_fail (store_ != nullptr);
+
+    // The replacement manifest is built first: a failed write leaves this
+    // source's previous content untouched.
+    const auto block = block_frames ();
+    z_return_if_fail (block > units::samples (0));
+    const auto block_raw = block.in (units::samples);
+    const auto total = units::samples (frames.getNumSamples ());
+    const auto num_blocks = static_cast<int64_t> (total / block);
+
+    std::vector<BlockSpan> new_spans;
+    units::sample_t        dest_start{};
+    const auto             add_span =
+      [&new_spans, &dest_start] (const BlockId &id, units::sample_t num_frames) {
+        new_spans.push_back (
+          BlockSpan{
+            .block = id,
+            .src_start_frame = units::samples (0),
+            .num_frames = num_frames,
+            .dest_start_frame = dest_start });
+        dest_start += num_frames;
+      };
+    for (int64_t i = 0; i < num_blocks; ++i)
+      {
+        const auto id = store_->write_block (
+          frames, sample_rate, units::samples (i * block_raw), block);
+        add_span (id, block);
       }
 
-    auto format = std::make_unique<juce::WavAudioFormat> ();
-
-    juce::AudioFormatWriterOptions options;
-    options =
-      options.withSampleRate (source_.get_samplerate ().in (units::sample_rate))
-        .withNumChannels (source_.get_num_channels ())
-        .withBitsPerSample (
-          utils::audio::bit_depth_enum_to_int (source_.get_bit_depth ()))
-        .withQualityOptionIndex (0);
-
-    auto writer = format->createWriterFor (out_stream, options);
-
-    if (writer == nullptr)
+    const auto remaining = total - units::samples (num_blocks * block_raw);
+    if (remaining > units::samples (0))
       {
-        throw ZrythmException (
-          fmt::format (
-            "Failed to create audio writer for file: {}", writer_path_));
+        const auto offset = units::samples (num_blocks * block_raw);
+        const auto id =
+          store_->write_block (frames, sample_rate, offset, remaining);
+        add_span (id, remaining);
       }
-    return writer;
-  };
 
-  const auto num_frames = source_.get_num_frames ();
-  if (parts_)
+    samplerate_ = sample_rate;
+    spans_ = std::move (new_spans);
+    tail_.setSize (channels_, 0, true, true, true);
+  }
+
+  Q_EMIT samplesChanged ();
+}
+
+void
+FileAudioSource::read_span (
+  units::sample_t            start_frame,
+  units::sample_t            num_frames,
+  utils::audio::AudioBuffer &out) const
+{
+  const std::shared_lock lock (mutex_);
+
+  z_return_if_fail (channels_ > 0);
+  z_return_if_fail (
+    start_frame >= units::samples (0) && num_frames >= units::samples (0));
+  z_return_if_fail (start_frame + num_frames <= total_frames ());
+  z_return_if_fail (out.getNumChannels () == channels_);
+  z_return_if_fail (units::samples (out.getNumSamples ()) == num_frames);
+
+  // block spans
+  for (const auto &span : spans_)
     {
-      z_return_if_fail_cmp (units::samples (num_frames), >=, frames_written_);
-      units::sample_u64_t nframes_to_write_this_time =
-        units::samples (num_frames) - frames_written_;
-      z_return_if_fail_cmp (
-        nframes_to_write_this_time, <, units::samples (SIZE_MAX));
-
-      // create writer if first time
-      if (frames_written_ == units::samples (0))
+      const auto span_dest_end = span.dest_start_frame + span.num_frames;
+      const auto overlap_start = max (start_frame, span.dest_start_frame);
+      const auto overlap_end = min (start_frame + num_frames, span_dest_end);
+      if (overlap_end <= overlap_start)
         {
-          writer_ = create_writer_for_filepath ();
+          continue;
         }
-      else
-        {
-          z_return_if_fail (writer_ != nullptr);
-        }
-      writer_->writeFromAudioSampleBuffer (
-        source_.get_samples (), frames_written_.in<int> (units::samples),
-        nframes_to_write_this_time.in<int> (units::samples));
 
-      frames_written_ = units::samples (num_frames);
-      last_write_ = get_monotonic_time_usecs ();
+      z_return_if_fail (store_ != nullptr);
+      const auto block = store_->read_block (span.block);
+      z_return_if_fail (block->getNumChannels () == channels_);
+      const auto src_start =
+        span.src_start_frame + (overlap_start - span.dest_start_frame);
+      const auto len = overlap_end - overlap_start;
+      z_return_if_fail (
+        src_start + len
+        <= units::samples (static_cast<int64_t> (block->getNumSamples ())));
+      for (int channel = 0; channel < channels_; ++channel)
+        {
+          out.copyFrom (
+            channel,
+            static_cast<int> ((overlap_start - start_frame).in (units::samples)),
+            *block, channel, static_cast<int> (src_start.in (units::samples)),
+            static_cast<int> (len.in (units::samples)));
+        }
     }
-  else
-    {
-      z_return_if_fail_cmp (num_frames, <, (int) INT_MAX);
-      size_t nframes = num_frames;
 
-      auto writer = create_writer_for_filepath ();
-      writer->writeFromAudioSampleBuffer (
-        source_.get_samples (), 0, static_cast<int> (nframes));
-      writer->flush ();
+  // pending tail
+  const auto tail_start = frames_in_spans ();
+  const auto tail_read_start = max (start_frame, tail_start);
+  const auto tail_read_end =
+    min (start_frame + num_frames, tail_start + tail_frames ());
+  if (tail_read_end > tail_read_start)
+    {
+      const auto len = tail_read_end - tail_read_start;
+      for (int channel = 0; channel < channels_; ++channel)
+        {
+          out.copyFrom (
+            channel,
+            static_cast<int> (
+              (tail_read_start - start_frame).in (units::samples)),
+            tail_, channel,
+            static_cast<int> ((tail_read_start - tail_start).in (units::samples)),
+            static_cast<int> (len.in (units::samples)));
+        }
     }
 }
 
 static constexpr auto kNameKey = "name"sv;
+/**
+ * Upper bound on the channel count a serialized source may declare.
+ * Keep in sync with the manifest schema (data/schemas/common.schema.json).
+ */
+static constexpr int  kMaxChannels = 64;
 static constexpr auto kBpmKey = "bpm"sv;
+static constexpr auto kManifestKey = "manifest"sv;
+static constexpr auto kChannelsKey = "channels"sv;
+static constexpr auto kSampleRateKey = "sampleRate"sv;
+static constexpr auto kBitDepthKey = "bitDepth"sv;
+static constexpr auto kBlocksKey = "blocks"sv;
+static constexpr auto kIdKey = "id"sv;
+static constexpr auto kSrcStartKey = "srcStart"sv;
+static constexpr auto kNumFramesKey = "numFrames"sv;
+static constexpr auto kDestStartKey = "destStart"sv;
 
 void
 to_json (nlohmann::json &j, const FileAudioSource &clip)
 {
+  // The GUI thread can be mutating the manifest while a save task
+  // serializes it.
+  const std::shared_lock lock (clip.mutex_);
+
+  if (clip.tail_frames () > units::samples (0))
+    {
+      z_warning (
+        "serializing source '{}' with pending tail frames - they are not "
+        "part of the serialized manifest",
+        clip.name_.str ());
+    }
+
   to_json (
     j, static_cast<const FileAudioSource::UuidIdentifiableObject &> (clip));
   j[kNameKey] = clip.name_;
   j[kBpmKey] = clip.bpm_;
+
+  auto blocks = nlohmann::json::array ();
+  for (const auto &span : clip.spans_)
+    {
+      blocks.push_back (
+        nlohmann::json{
+          { kIdKey,        span.block.hex                            },
+          { kSrcStartKey,  span.src_start_frame.in (units::samples)  },
+          { kNumFramesKey, span.num_frames.in (units::samples)       },
+          { kDestStartKey, span.dest_start_frame.in (units::samples) }
+      });
+    }
+  j[kManifestKey] = nlohmann::json{
+    { kChannelsKey,   clip.channels_                                        },
+    { kSampleRateKey, clip.samplerate_.in (units::sample_rate)              },
+    { kBitDepthKey,   utils::audio::bit_depth_enum_to_int (clip.bit_depth_) },
+    { kBlocksKey,     std::move (blocks)                                    }
+  };
 }
 
 void
@@ -362,6 +533,75 @@ from_json (const nlohmann::json &j, FileAudioSource &clip)
   from_json (j, static_cast<FileAudioSource::UuidIdentifiableObject &> (clip));
   j.at (kNameKey).get_to (clip.name_);
   j.at (kBpmKey).get_to (clip.bpm_);
+
+  const auto &manifest = j.at (kManifestKey);
+  clip.channels_ = manifest.at (kChannelsKey).get<int> ();
+  if (clip.channels_ < 1 || clip.channels_ > kMaxChannels)
+    {
+      throw ZrythmException (
+        fmt::format (
+          "Source '{}' declares an invalid channel count {}", clip.name_,
+          clip.channels_));
+    }
+  clip.samplerate_ =
+    units::sample_rate (manifest.at (kSampleRateKey).get<int> ());
+  if (clip.samplerate_ < units::sample_rate (1))
+    {
+      throw ZrythmException (
+        fmt::format (
+          "Source '{}' declares an invalid sample rate {}", clip.name_,
+          clip.samplerate_.in (units::sample_rate)));
+    }
+  clip.bit_depth_ = utils::audio::bit_depth_int_to_enum (
+    manifest.at (kBitDepthKey).get<int> ());
+
+  clip.spans_.clear ();
+  units::sample_t expected_dest_start = units::samples (0);
+  const auto     &blocks = manifest.at (kBlocksKey);
+  for (const auto &block : blocks)
+    {
+      FileAudioSource::BlockSpan span;
+      span.block = BlockId{ block.at (kIdKey).get<std::string> () };
+      span.src_start_frame =
+        units::samples (block.at (kSrcStartKey).get<int64_t> ());
+      span.num_frames =
+        units::samples (block.at (kNumFramesKey).get<int64_t> ());
+      span.dest_start_frame =
+        units::samples (block.at (kDestStartKey).get<int64_t> ());
+      if (!span.block.is_valid ())
+        {
+          throw ZrythmException (
+            fmt::format (
+              "Source '{}' references block '{}' with an invalid id",
+              clip.name_, span.block.hex));
+        }
+      if (span.src_start_frame < units::samples (0))
+        {
+          throw ZrythmException (
+            fmt::format (
+              "Source '{}' has a block span starting at a negative frame "
+              "inside the block",
+              clip.name_));
+        }
+      if (span.num_frames < units::samples (1))
+        {
+          throw ZrythmException (
+            fmt::format (
+              "Source '{}' has a block span with no frames starting at {}",
+              clip.name_, span.dest_start_frame.in (units::samples)));
+        }
+      if (span.dest_start_frame != expected_dest_start)
+        {
+          throw ZrythmException (
+            fmt::format (
+              "Source '{}' has non-contiguous block spans (expected destination "
+              "start {}, found {})",
+              clip.name_, expected_dest_start.in (units::samples),
+              span.dest_start_frame.in (units::samples)));
+        }
+      expected_dest_start += span.num_frames;
+      clip.spans_.push_back (std::move (span));
+    }
 }
 
 } // namespace zrythm::dsp

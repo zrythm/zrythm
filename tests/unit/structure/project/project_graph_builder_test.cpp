@@ -74,10 +74,9 @@ protected:
 
   std::unique_ptr<Project> create_project ()
   {
-    Project::ProjectDirectoryPathProvider path_provider =
-      [this] (bool for_backup) {
-        return for_backup ? project_dir_ / "backups" : project_dir_;
-      };
+    Project::ProjectDirectoryPathProvider path_provider = [this] () {
+      return project_dir_;
+    };
 
     plugins::PluginHostWindowFactory window_factory =
       [] (plugins::Plugin &) -> std::unique_ptr<plugins::PluginHostWindow> {

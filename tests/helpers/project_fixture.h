@@ -94,10 +94,9 @@ protected:
     using namespace zrythm::structure::project;
     using namespace zrythm::plugins;
 
-    Project::ProjectDirectoryPathProvider path_provider =
-      [this] (bool for_backup) {
-        return for_backup ? project_dir_ / "backups" : project_dir_;
-      };
+    Project::ProjectDirectoryPathProvider path_provider = [this] () {
+      return project_dir_;
+    };
 
     auto project = std::make_unique<Project> (
       *app_settings_, path_provider, *hw_interface_, midi_interface_,

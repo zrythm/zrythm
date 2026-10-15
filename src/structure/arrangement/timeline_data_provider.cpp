@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -12,6 +12,7 @@
 #include "structure/arrangement/automation_clip.h"
 #include "structure/arrangement/clip.h"
 #include "structure/arrangement/timeline_data_provider.h"
+#include "utils/logger.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -139,8 +140,18 @@ AudioTimelineDataProvider::cache_audio_clip (const arrangement::AudioClip &clip)
   // Audio clip processing
   auto audio_buffer = std::make_unique<juce::AudioSampleBuffer> ();
 
-  // Serialize the audio clip
-  arrangement::ClipRenderer::serialize_to_buffer (clip, *audio_buffer);
+  // Serialize the audio clip. A missing or corrupt block file skips the
+  // clip: the cache builder keeps running with the rest of the clips.
+  try
+    {
+      arrangement::ClipRenderer::serialize_to_buffer (clip, *audio_buffer);
+    }
+  catch (const std::exception &e)
+    {
+      z_warning (
+        "Failed to cache audio clip {}: {}", clip.get_uuid (), e.what ());
+      return;
+    }
 
   // Add to cache with proper timing
   audio_cache_->add_audio_clip (
