@@ -3,19 +3,20 @@
 
 add_executable(zrythm_commands_unit_tests
   add_arranger_object_command_test.cpp
-  add_plugin_command_test.cpp
   add_clip_to_clip_slot_command_test.cpp
+  add_plugin_command_test.cpp
   add_track_command_test.cpp
   arranger_object_owner_ref_test.cpp
-  delete_lane_command_test.cpp
-  delete_tracks_command_test.cpp
-  change_qobject_property_command_test.cpp
-  change_uuid_identifiable_object_property_command_test.cpp
-  edit_chord_object_command_test.cpp
+  bake_audio_clip_command_test.cpp
   change_parameter_value_command_test.cpp
-  chord_pad_commands_test.cpp
+  change_qobject_property_command_test.cpp
   change_track_color_command_test.cpp
   change_track_comment_command_test.cpp
+  change_uuid_identifiable_object_property_command_test.cpp
+  chord_pad_commands_test.cpp
+  delete_lane_command_test.cpp
+  delete_tracks_command_test.cpp
+  edit_chord_object_command_test.cpp
   move_arranger_objects_command_test.cpp
   move_plugins_command_test.cpp
   move_tracks_command_test.cpp
@@ -25,8 +26,8 @@ add_executable(zrythm_commands_unit_tests
   rename_track_command_test.cpp
   resize_arranger_objects_command_test.cpp
   route_track_command_test.cpp
-  set_clip_loop_points_command_test.cpp
   set_audio_clip_transforms_command_test.cpp
+  set_clip_loop_points_command_test.cpp
   transform_arranger_objects_command_test.cpp
 )
 

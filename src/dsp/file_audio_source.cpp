@@ -406,6 +406,112 @@ FileAudioSource::set_content (
 }
 
 void
+FileAudioSource::replace_span (
+  units::sample_t                  start_frame,
+  units::sample_t                  old_num_frames,
+  const utils::audio::AudioBuffer &frames)
+{
+  z_return_if_fail (frames.getNumChannels () == channels_);
+
+  {
+    const std::unique_lock lock (mutex_);
+    z_return_if_fail (store_ != nullptr);
+    z_return_if_fail (start_frame >= units::samples (0));
+    z_return_if_fail (old_num_frames >= units::samples (0));
+    z_return_if_fail (start_frame + old_num_frames <= frames_in_spans ());
+
+    std::vector<BlockSpan> new_spans;
+    units::sample_t        dest_start{};
+    const auto             push_span =
+      [&new_spans, &dest_start] (
+        const BlockId &block, units::sample_t src_start,
+        units::sample_t num_frames) {
+        new_spans.push_back (
+          BlockSpan{
+            .block = block,
+            .src_start_frame = src_start,
+            .num_frames = num_frames,
+            .dest_start_frame = dest_start });
+        dest_start += num_frames;
+      };
+
+    const auto replaced_end = start_frame + old_num_frames;
+    // The new content is written at block granularity once, between the
+    // span preceding the range and the span following it. The replacement
+    // content is re-blocked from the range's boundaries, so it dedupes
+    // with existing blocks only when those boundaries are block-aligned.
+    const auto insert_new = [&] {
+      const auto block = block_frames ();
+      const auto block_raw = block.in (units::samples);
+      const auto total = units::samples (frames.getNumSamples ());
+      const auto num_blocks = static_cast<int64_t> (total / block);
+      for (int64_t i = 0; i < num_blocks; ++i)
+        {
+          const auto id = store_->write_block (
+            frames, samplerate_, units::samples (i * block_raw), block);
+          push_span (id, units::samples (0), block);
+        }
+      const auto remaining = total - units::samples (num_blocks * block_raw);
+      if (remaining > units::samples (0))
+        {
+          const auto offset = units::samples (num_blocks * block_raw);
+          const auto id =
+            store_->write_block (frames, samplerate_, offset, remaining);
+          push_span (id, units::samples (0), remaining);
+        }
+    };
+
+    bool inserted = false;
+    for (const auto &span : spans_)
+      {
+        const auto span_start = span.dest_start_frame;
+        const auto span_end = span_start + span.num_frames;
+        if (span_end <= start_frame)
+          {
+            push_span (span.block, span.src_start_frame, span.num_frames);
+            continue;
+          }
+        if (span_start >= replaced_end)
+          {
+            if (!inserted)
+              {
+                insert_new ();
+                inserted = true;
+              }
+            push_span (span.block, span.src_start_frame, span.num_frames);
+            continue;
+          }
+
+        // The span overlaps the replaced range.
+        if (span_start < start_frame)
+          {
+            push_span (
+              span.block, span.src_start_frame, start_frame - span_start);
+          }
+        if (!inserted)
+          {
+            insert_new ();
+            inserted = true;
+          }
+        if (span_end > replaced_end)
+          {
+            const auto skip = replaced_end - span_start;
+            push_span (
+              span.block, span.src_start_frame + skip, span_end - replaced_end);
+          }
+      }
+    if (!inserted)
+      {
+        insert_new ();
+      }
+
+    spans_ = std::move (new_spans);
+  }
+
+  Q_EMIT samplesChanged ();
+}
+
+void
 FileAudioSource::read_span (
   units::sample_t            start_frame,
   units::sample_t            num_frames,

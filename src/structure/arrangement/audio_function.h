@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "dsp/curve.h"
+#include "dsp/file_audio_source.h"
 #include "dsp/tick_types.h"
 #include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/editor_function_param.h"
 #include "utils/audio.h"
+#include "utils/iobject_registry.h"
 #include "utils/units.h"
 #include "utils/utf8_string.h"
 
@@ -274,6 +276,19 @@ entry_from_json (const nlohmann::json &j, Entry &entry);
  */
 utils::audio::AudioBuffer
 audio_clip_content_window (const AudioClip &clip);
+
+/**
+ * @brief Materializes the clip's transform entries into a new source.
+ *
+ * The clip's source is flushed, its content window is rendered with all
+ * entries applied, and a new source is created in @p registry sharing
+ * every block outside the union of the entry ranges; that range is
+ * replaced with the rendered audio. The clip itself is not modified.
+ *
+ * @return Reference to the new source, registered in @p registry.
+ */
+dsp::FileAudioSourceUuidReference
+bake_audio_clip (const AudioClip &clip, utils::IObjectRegistry &registry);
 
 /**
  * @brief The sample multiplier that brings the clip's audio over

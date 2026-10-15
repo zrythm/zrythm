@@ -66,6 +66,12 @@ public:
 
   dsp::FileAudioSourceUuidReference audio_source_ref () const;
 
+  /** Re-points this object at another pooled source. */
+  void set_file_audio_source (dsp::FileAudioSourceUuidReference source)
+  {
+    source_id_ = std::move (source);
+  }
+
 public:
   static constexpr auto kFileAudioSourceKey = "fileAudioSource"sv;
 

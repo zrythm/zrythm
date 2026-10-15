@@ -185,6 +185,22 @@ public:
     units::sample_rate_t             sample_rate);
 
   /**
+   * @brief Replaces the frame range [start_frame, start_frame +
+   * old_num_frames) with @p frames, written to blocks immediately.
+   *
+   * The replaced range must lie within the materialized spans; flush
+   * pending data first. @p frames can have any length (empty frames
+   * delete the range) and must be at the source's sample rate. Blocks
+   * outside the range are shared; blocks straddling its boundaries are
+   * referenced as partial spans. The manifest is committed only after
+   * every block write succeeded.
+   */
+  void replace_span (
+    units::sample_t                  start_frame,
+    units::sample_t                  old_num_frames,
+    const utils::audio::AudioBuffer &frames);
+
+  /**
    * The source's block spans, in frame order.
    */
   std::vector<BlockSpan> get_spans () const;

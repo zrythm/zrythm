@@ -15,6 +15,7 @@
 #include "utils/exceptions.h"
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
+#include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
 
 #include <rubberband/rubberband-c.h>
@@ -357,6 +358,66 @@ normalize_gain (
       return rms_value > 0.0 ? 1.0 / rms_value : 1.0;
     }
   return peak > 0.F ? 1.0 / peak : 1.0;
+}
+
+dsp::FileAudioSourceUuidReference
+bake_audio_clip (const AudioClip &clip, utils::IObjectRegistry &registry)
+{
+  z_return_val_if_fail (
+    !clip.get_children_view ().empty (),
+    dsp::FileAudioSourceUuidReference{ registry });
+  auto &fs = clip.get_children_view ().front ()->file_audio_source ();
+  fs.flush_tail ();
+
+  const auto window = audio_clip_content_window (clip);
+  const auto window_frames = units::samples (window.getNumSamples ());
+
+  // The baked range is the union of the entry ranges: entries compose in
+  // list order, and audio between disjoint entries is rewritten at the
+  // union's alignment.
+  const auto &mapping = native_mapping_for (clip, fs);
+  std::optional<std::pair<units::sample_t, units::sample_t>> baked;
+  for (const auto &entry : clip.transform_entries ())
+    {
+      const auto [entry_start, entry_end] = std::visit (
+        [] (const auto &kind) { return std::pair{ kind.start, kind.end }; },
+        entry);
+      const auto start = clamp (
+        mapping.ticks_to_native (entry_start), units::samples (0),
+        window_frames);
+      const auto stop = clamp (
+        mapping.ticks_to_native (entry_end), units::samples (0), window_frames);
+      if (stop <= start)
+        continue;
+      if (!baked)
+        {
+          baked = std::make_pair (start, stop);
+        }
+      else
+        {
+          baked->first = min (baked->first, start);
+          baked->second = max (baked->second, stop);
+        }
+    }
+
+  auto new_ref =
+    utils::clone_object (fs, registry, utils::ObjectCloneType::NewIdentity);
+  if (baked)
+    {
+      const auto                num = baked->second - baked->first;
+      utils::audio::AudioBuffer baked_frames (
+        fs.get_num_channels (), static_cast<int> (num.in (units::samples)));
+      for (const auto ch : std::views::iota (0, baked_frames.getNumChannels ()))
+        {
+          baked_frames.copyFrom (
+            ch, 0, window, ch,
+            static_cast<int> (baked->first.in (units::samples)),
+            static_cast<int> (num.in (units::samples)));
+        }
+      new_ref.get_object_as<dsp::FileAudioSource> ()->replace_span (
+        baked->first, num, baked_frames);
+    }
+  return new_ref;
 }
 
 namespace

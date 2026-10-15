@@ -6,12 +6,13 @@ qt_add_library(zrythm_commands_lib STATIC)
 target_sources(zrythm_commands_lib
   PRIVATE
     arranger_object_owner_ref.cpp
+    bake_audio_clip_command.cpp
     chord_pad_commands.cpp
+    delete_lane_command.cpp
+    delete_tracks_command.cpp
     move_arranger_objects_command.cpp
     move_plugins_command.cpp
     move_tracks_command.cpp
-    delete_tracks_command.cpp
-    delete_lane_command.cpp
     remove_plugins_command.cpp
     resize_arranger_objects_command.cpp
     set_audio_clip_transforms_command.cpp
@@ -22,28 +23,29 @@ target_sources(zrythm_commands_lib
     BASE_DIRS ".."
     FILES
       add_arranger_object_command.h
-      add_plugin_command.h
       add_clip_to_clip_slot_command.h
+      add_plugin_command.h
       add_track_command.h
-      chord_pad_commands.h
-      route_track_command.h
+      bake_audio_clip_command.h
       change_parameter_value_command.h
       change_qobject_property_command.h
-      change_uuid_identifiable_object_property_command.h
-      edit_chord_object_command.h
       change_track_color_command.h
       change_track_comment_command.h
       change_timebase_override_command.h
+      change_uuid_identifiable_object_property_command.h
+      chord_pad_commands.h
+      delete_lane_command.h
+      delete_tracks_command.h
+      edit_chord_object_command.h
       move_arranger_objects_command.h
       move_plugins_command.h
       move_tracks_command.h
-      delete_tracks_command.h
-      delete_lane_command.h
-      resize_arranger_objects_command.h
       relocate_arranger_object_command.h
       remove_arranger_object_command.h
       remove_plugins_command.h
       rename_track_command.h
+      resize_arranger_objects_command.h
+      route_track_command.h
       set_audio_clip_transforms_command.h
       set_clip_loop_points_command.h
       set_folder_parent_command.h

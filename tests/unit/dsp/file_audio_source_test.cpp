@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <filesystem>
+#include <ranges>
 
 #include "dsp/audio_block_store.h"
 #include "dsp/file_audio_source.h"
@@ -574,6 +576,205 @@ TEST_F (FileAudioSourceTest, WriteFailureDuringFlushLeavesSourceUnchanged)
             result.getSample (ch, i),
             buf.getSample (ch, static_cast<int> (block_frames) + 123 + i));
         }
+    }
+}
+
+// Replacing a frame range shares the blocks outside it and references
+// boundary blocks partially.
+TEST_F (FileAudioSourceTest, ReplaceSpanSharesUntouchedBlocks)
+{
+  const auto block = static_cast<int64_t> (
+    AudioBlockStore::kTargetBlockPayloadBytes / (2 * sizeof (float)));
+  const auto total = block * 4 + block / 2;
+  const auto original = make_ramp_buffer (static_cast<int> (total), 0.f);
+
+  FileAudioSource src (
+    original, FileAudioSource::BitDepth::BIT_DEPTH_32, project_sample_rate,
+    current_bpm, u8"replace_test", nullptr);
+  src.set_store (store);
+  src.flush_tail ();
+  const auto old_spans = src.get_spans ();
+  ASSERT_EQ (old_spans.size (), 5);
+
+  const auto start = units::samples (block * 3 / 2);
+  const auto old_len = units::samples (block * 5 / 4);
+  const auto replacement = [&] {
+    utils::audio::AudioBuffer buf (
+      2, static_cast<int> (old_len.in (units::samples)));
+    for (const auto ch : std::views::iota (0, buf.getNumChannels ()))
+      {
+        for (const auto i : std::views::iota (0, buf.getNumSamples ()))
+          {
+            buf.setSample (ch, i, 999.f);
+          }
+      }
+    return buf;
+  }();
+
+  src.replace_span (start, old_len, replacement);
+
+  EXPECT_EQ (src.get_num_frames (), units::samples (total));
+  const auto new_spans = src.get_spans ();
+  ASSERT_EQ (new_spans.size (), 7);
+  // The first and last blocks are shared untouched; the blocks straddling
+  // the range boundaries are referenced partially.
+  EXPECT_EQ (new_spans.front ().block, old_spans.front ().block);
+  EXPECT_EQ (new_spans.front ().num_frames, units::samples (block));
+  EXPECT_EQ (new_spans.back ().block, old_spans.back ().block);
+  EXPECT_TRUE (std::ranges::any_of (new_spans, [] (const auto &span) {
+    return span.src_start_frame > units::samples (0);
+  }));
+
+  utils::audio::AudioBuffer result (2, static_cast<int> (total));
+  src.read_span (units::samples (0), units::samples (total), result);
+  for (const auto ch : std::views::iota (0, 2))
+    {
+      for (const auto i : std::views::iota (int64_t{ 0 }, total))
+        {
+          const auto in_replacement =
+            i >= start.in (units::samples)
+            && i < (start + old_len).in (units::samples);
+          const auto expected =
+            in_replacement ? 999.f : original.getSample (ch, static_cast<int> (i));
+          EXPECT_EQ (result.getSample (ch, static_cast<int> (i)), expected);
+        }
+    }
+}
+
+// A replacement with a different length re-tiles the following spans.
+TEST_F (FileAudioSourceTest, ReplaceSpanWithDifferentLengthRetiles)
+{
+  const auto block = static_cast<int64_t> (
+    AudioBlockStore::kTargetBlockPayloadBytes / (2 * sizeof (float)));
+  const auto total = block * 4 + block / 2;
+  const auto original = make_ramp_buffer (static_cast<int> (total), 0.f);
+
+  FileAudioSource src (
+    original, FileAudioSource::BitDepth::BIT_DEPTH_32, project_sample_rate,
+    current_bpm, u8"replace_len_test", nullptr);
+  src.set_store (store);
+  src.flush_tail ();
+
+  const auto                start = units::samples (block * 3 / 2);
+  const auto                old_len = units::samples (block * 5 / 4);
+  constexpr auto            new_len = 50000;
+  utils::audio::AudioBuffer replacement (2, new_len);
+  for (const auto ch : std::views::iota (0, replacement.getNumChannels ()))
+    {
+      for (const auto i : std::views::iota (0, replacement.getNumSamples ()))
+        {
+          replacement.setSample (ch, i, 888.f);
+        }
+    }
+
+  src.replace_span (start, old_len, replacement);
+
+  const auto new_total_raw = total - old_len.in (units::samples) + new_len;
+  EXPECT_EQ (src.get_num_frames (), units::samples (new_total_raw));
+
+  const auto                new_total = src.get_num_frames ();
+  utils::audio::AudioBuffer result (
+    2, static_cast<int> (new_total.in (units::samples)));
+  src.read_span (units::samples (0), new_total, result);
+  for (const auto ch : std::views::iota (0, 2))
+    {
+      for (
+        const auto i :
+        std::views::iota (int64_t{ 0 }, new_total.in (units::samples)))
+        {
+          const auto in_replacement =
+            i >= start.in (units::samples)
+            && i < start.in (units::samples) + new_len;
+          const auto original_index =
+            (i < start.in (units::samples))
+              ? i
+              : i - new_len + old_len.in (units::samples);
+          const auto expected =
+            in_replacement
+              ? 888.f
+              : original.getSample (ch, static_cast<int> (original_index));
+          EXPECT_EQ (result.getSample (ch, static_cast<int> (i)), expected);
+        }
+    }
+}
+
+// Empty replacement frames delete the range.
+TEST_F (FileAudioSourceTest, ReplaceSpanWithEmptyFramesDeletesRange)
+{
+  FileAudioSource src (
+    make_ramp_buffer (1000, 0.f), FileAudioSource::BitDepth::BIT_DEPTH_32,
+    project_sample_rate, current_bpm, u8"replace_del_test", nullptr);
+  src.set_store (store);
+  src.flush_tail ();
+  const auto original = make_ramp_buffer (1000, 0.f);
+
+  src.replace_span (
+    units::samples (200), units::samples (500),
+    utils::audio::AudioBuffer (2, 0));
+
+  EXPECT_EQ (src.get_num_frames (), units::samples (500));
+  utils::audio::AudioBuffer result (2, 500);
+  src.read_span (units::samples (0), units::samples (500), result);
+  for (const auto ch : std::views::iota (0, 2))
+    {
+      for (const auto i : std::views::iota (0, 200))
+        {
+          EXPECT_EQ (result.getSample (ch, i), original.getSample (ch, i));
+        }
+      for (const auto i : std::views::iota (200, 500))
+        {
+          EXPECT_EQ (result.getSample (ch, i), original.getSample (ch, i + 500));
+        }
+    }
+}
+
+// A write failure part-way through a replacement leaves the manifest
+// untouched.
+TEST_F (FileAudioSourceTest, ReplaceSpanWriteFailureLeavesSourceUnchanged)
+{
+  const auto block = static_cast<int64_t> (
+    AudioBlockStore::kTargetBlockPayloadBytes / (2 * sizeof (float)));
+  const auto total = block * 4 + block / 2;
+  const auto original = make_ramp_buffer (static_cast<int> (total), 0.f);
+
+  FileAudioSource src (
+    original, FileAudioSource::BitDepth::BIT_DEPTH_32, project_sample_rate,
+    current_bpm, u8"replace_fail_test", nullptr);
+  src.set_store (store);
+  src.flush_tail ();
+  const auto spans_before = src.get_spans ();
+
+  const auto                start = units::samples (block * 3 / 2);
+  const auto                old_len = units::samples (block * 5 / 4);
+  utils::audio::AudioBuffer replacement (
+    2, static_cast<int> (old_len.in (units::samples)));
+  for (const auto ch : std::views::iota (0, replacement.getNumChannels ()))
+    {
+      for (const auto i : std::views::iota (0, replacement.getNumSamples ()))
+        {
+          replacement.setSample (ch, i, 999.f);
+        }
+    }
+
+  // Discover the replacement's first block id so a corrupt file can
+  // occupy its name.
+  AudioBlockStore scratch (temp_dir / "scratch-blocks");
+  const auto      new_id = scratch.write_block (
+    replacement, project_sample_rate, units::samples (0),
+    units::samples (block));
+  std::ofstream corrupt (
+    store->get_blocks_directory () / new_id.hex, std::ios::binary);
+  corrupt << "corrupt";
+  corrupt.close ();
+
+  EXPECT_THROW (src.replace_span (start, old_len, replacement), ZrythmException);
+  EXPECT_EQ (src.get_num_frames (), units::samples (total));
+  const auto spans_after = src.get_spans ();
+  ASSERT_EQ (spans_after.size (), spans_before.size ());
+  for (size_t i = 0; i < spans_before.size (); ++i)
+    {
+      EXPECT_EQ (spans_after[i].block, spans_before[i].block);
+      EXPECT_EQ (spans_after[i].num_frames, spans_before[i].num_frames);
     }
 }
 
