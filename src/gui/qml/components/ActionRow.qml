@@ -114,10 +114,10 @@ ItemDelegate {
 
           required property Action modelData
 
-          Accessible.name: modelData.text
+          Accessible.name: modelData?.text ?? ""
           action: modelData
           display: AbstractButton.IconOnly
-          visible: modelData.checked || root.rowActionsHot
+          visible: (modelData?.checked ?? false) || root.rowActionsHot
 
           // Checked actions keep their resting visibility via `checked` but
           // do not light up in the accent color; any active state is carried
@@ -128,7 +128,7 @@ ItemDelegate {
           }
 
           ToolTip {
-            text: suffixButton.modelData.text
+            text: suffixButton.modelData?.text ?? ""
           }
         }
       }

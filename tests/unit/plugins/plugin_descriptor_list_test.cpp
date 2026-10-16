@@ -248,20 +248,159 @@ TEST_F (PluginDescriptorListTest, ParentMethod)
   EXPECT_FALSE (parent_of_child.isValid ());
 }
 
-// Test reset_model method
-TEST_F (PluginDescriptorListTest, ResetModel)
+// Test that cache refreshes during a scan only append rows: existing rows
+// keep their position and their descriptor object
+TEST_F (PluginDescriptorListTest, CacheRefreshAppendsOnlyNewRows)
 {
-  auto test_array = create_test_plugin_array (3);
+  QSignalSpy initial_insert (
+    descriptor_list_.get (), &QAbstractItemModel::rowsInserted);
+  add_plugins_to_list (create_test_plugin_array (3));
+  ASSERT_TRUE (initial_insert.wait (CONSERVATIVE_WAIT_MS));
+  ASSERT_EQ (descriptor_list_->rowCount (), 3);
+
+  QVector<QObject *> original_descriptors;
+  for (int i = 0; i < 3; ++i)
+    {
+      const auto descriptor_data = descriptor_list_->data (
+        descriptor_list_->index (i, 0), PluginDescriptorList::DescriptorRole);
+      original_descriptors.push_back (descriptor_data.value<QObject *> ());
+    }
+
+  QSignalSpy rows_removed (
+    descriptor_list_.get (), &QAbstractItemModel::rowsRemoved);
+  QSignalSpy rows_inserted (
+    descriptor_list_.get (), &QAbstractItemModel::rowsInserted);
+  QSignalSpy model_reset (
+    descriptor_list_.get (), &QAbstractItemModel::modelReset);
+
+  juce::Array<juce::PluginDescription> more_plugins;
+  more_plugins.add (create_test_juce_description (
+    "New Plugin A", "Test Manufacturer", "VST3", 50001));
+  more_plugins.add (create_test_juce_description (
+    "New Plugin B", "Test Manufacturer", "VST3", 50002));
+  add_plugins_to_list (more_plugins);
+
+  ASSERT_TRUE (rows_inserted.wait (CONSERVATIVE_WAIT_MS));
+  EXPECT_EQ (descriptor_list_->rowCount (), 5);
+  EXPECT_EQ (rows_removed.count (), 0);
+  EXPECT_EQ (model_reset.count (), 0);
+  EXPECT_EQ (rows_inserted.count (), 1);
+
+  for (int i = 0; i < 3; ++i)
+    {
+      const auto descriptor_data = descriptor_list_->data (
+        descriptor_list_->index (i, 0), PluginDescriptorList::DescriptorRole);
+      EXPECT_EQ (descriptor_data.value<QObject *> (), original_descriptors[i]);
+    }
+}
+
+// Test that rows of plugins removed from the known list are removed with the
+// correct row range
+TEST_F (PluginDescriptorListTest, CacheRefreshRemovesMissingRows)
+{
+  const auto test_array = create_test_plugin_array (3);
+  QSignalSpy initial_insert (
+    descriptor_list_.get (), &QAbstractItemModel::rowsInserted);
   add_plugins_to_list (test_array);
+  ASSERT_TRUE (initial_insert.wait (CONSERVATIVE_WAIT_MS));
+  ASSERT_EQ (descriptor_list_->rowCount (), 3);
 
-  // Wait for debounced update to complete
-  QTRY_COMPARE_WITH_TIMEOUT (
-    descriptor_list_->rowCount (), 3, CONSERVATIVE_WAIT_MS);
+  QSignalSpy rows_removed (
+    descriptor_list_.get (), &QAbstractItemModel::rowsRemoved);
 
-  // Reset should not crash and should maintain same row count
-  // (since underlying KnownPluginList hasn't changed)
-  EXPECT_NO_THROW (descriptor_list_->reset_model ());
+  plugin_list_->removeType (test_array[1]);
+
+  ASSERT_TRUE (rows_removed.wait (CONSERVATIVE_WAIT_MS));
+  EXPECT_EQ (descriptor_list_->rowCount (), 2);
+  ASSERT_EQ (rows_removed.count (), 1);
+  // arguments: (parent, first, last)
+  EXPECT_EQ (rows_removed.first ().at (1).toInt (), 1);
+  EXPECT_EQ (rows_removed.first ().at (2).toInt (), 1);
+
+  QStringList names;
+  for (int i = 0; i < descriptor_list_->rowCount (); ++i)
+    {
+      names
+        << descriptor_list_
+             ->data (
+               descriptor_list_->index (i, 0),
+               PluginDescriptorList::DescriptorNameRole)
+             .toString ();
+    }
+  EXPECT_TRUE (names.contains (QString ("Test Plugin 0")));
+  EXPECT_FALSE (names.contains (QString ("Test Plugin 1")));
+  EXPECT_TRUE (names.contains (QString ("Test Plugin 2")));
+}
+
+// Test that rows whose plugin information changed expose the updated data
+// through dataChanged
+TEST_F (PluginDescriptorListTest, CacheRefreshUpdatesChangedEntries)
+{
+  const auto test_array = create_test_plugin_array (2);
+  QSignalSpy initial_insert (
+    descriptor_list_.get (), &QAbstractItemModel::rowsInserted);
+  add_plugins_to_list (test_array);
+  ASSERT_TRUE (initial_insert.wait (CONSERVATIVE_WAIT_MS));
+  ASSERT_EQ (descriptor_list_->rowCount (), 2);
+
+  // re-add the first plugin with the same identity but changed channel
+  // count: addType replaces the entry in place without a change message, so
+  // a new plugin is added as well to trigger the debounced refresh
+  QSignalSpy data_changed (
+    descriptor_list_.get (), &QAbstractItemModel::dataChanged);
+  auto changed_info = create_test_juce_description (
+    "Test Plugin 0", "Test Manufacturer", "VST3", 12345);
+  changed_info.numInputChannels = 8;
+  plugin_list_->addType (changed_info);
+  juce::Array<juce::PluginDescription> another_plugin;
+  another_plugin.add (create_test_juce_description (
+    "Another Plugin", "Test Manufacturer", "VST3", 30001));
+  add_plugins_to_list (another_plugin);
+
+  ASSERT_TRUE (data_changed.wait (CONSERVATIVE_WAIT_MS));
   EXPECT_EQ (descriptor_list_->rowCount (), 3);
+  EXPECT_EQ (data_changed.count (), 1);
+
+  for (int i = 0; i < descriptor_list_->rowCount (); ++i)
+    {
+      const auto descriptor_data = descriptor_list_->data (
+        descriptor_list_->index (i, 0), PluginDescriptorList::DescriptorRole);
+      const auto * descriptor =
+        descriptor_data.value<plugins::PluginDescriptor *> ();
+      if (descriptor->name () == QString ("Test Plugin 0"))
+        {
+          EXPECT_EQ (descriptor->num_audio_ins_, 8);
+          return;
+        }
+    }
+  FAIL () << "changed plugin not found in the model";
+}
+
+// Test that rows keep their position and identity across refreshes: views
+// track their delegates through persistent model indexes
+TEST_F (PluginDescriptorListTest, PersistentIndexesSurviveCacheRefresh)
+{
+  QSignalSpy initial_insert (
+    descriptor_list_.get (), &QAbstractItemModel::rowsInserted);
+  add_plugins_to_list (create_test_plugin_array (2));
+  ASSERT_TRUE (initial_insert.wait (CONSERVATIVE_WAIT_MS));
+  ASSERT_EQ (descriptor_list_->rowCount (), 2);
+
+  const QPersistentModelIndex persistent_index = descriptor_list_->index (0, 0);
+  const auto                  original_name =
+    persistent_index.data (PluginDescriptorList::DescriptorNameRole).toString ();
+
+  QSignalSpy second_insert (
+    descriptor_list_.get (), &QAbstractItemModel::rowsInserted);
+  add_plugins_to_list (create_test_plugin_array (4));
+
+  ASSERT_TRUE (second_insert.wait (CONSERVATIVE_WAIT_MS));
+  EXPECT_EQ (descriptor_list_->rowCount (), 4);
+  EXPECT_TRUE (persistent_index.isValid ());
+  EXPECT_EQ (persistent_index.row (), 0);
+  EXPECT_EQ (
+    persistent_index.data (PluginDescriptorList::DescriptorNameRole).toString (),
+    original_name);
 }
 
 // Test data method with invalid roles

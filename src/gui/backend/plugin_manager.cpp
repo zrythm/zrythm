@@ -217,7 +217,6 @@ PluginManager::onScannerScanFinished ()
   serialize_known_plugins ();
 
   known_plugin_list_->sort (juce::KnownPluginList::sortAlphabetically, true);
-  plugin_descriptors_->reset_model ();
 
   // relay the signal
   Q_EMIT scanFinished ();

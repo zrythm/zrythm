@@ -588,8 +588,16 @@ Item {
           if (active) {
             pluginListView.currentIndex = pluginDescriptorRow.index;
             draggable.descriptor = pluginDescriptorRow.descriptor;
-            draggable.Drag.active = true;
+            // Drag.Automatic blocks in a nested event loop until the drop,
+            // so the drag is started from the event loop instead of from
+            // this handler
+            draggable.dragRequested = true;
+            Qt.callLater(() => {
+              if (draggable.dragRequested)
+                draggable.Drag.active = true;
+            });
           } else {
+            draggable.dragRequested = false;
             draggable.Drag.active = false;
           }
         }
