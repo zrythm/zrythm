@@ -25,6 +25,7 @@ recipes = [
     ("ext/conan-center-index/recipes/sord/all/conanfile.py", "0.16.22"),
     ("ext/conan-center-index/recipes/sratom/all/conanfile.py", "0.6.22"),
     ("ext/conan-center-index/recipes/lilv/all/conanfile.py", "0.28.0"),
+    ("ext/conan-center-index/recipes/scnlib/all/conanfile.py", "4.0.1"),
 ]
 
 
