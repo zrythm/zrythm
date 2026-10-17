@@ -48,15 +48,11 @@ CPMDeclarePackage(vst3sdk
   EXCLUDE_FROM_ALL YES
 )
 # juce
-# Points at the zrythm/JUCE fork (branch: zrythm_fixes) which carries the
-# VST3 parameter-cache rescan fix that used to live in
-# cmake/patches/juce-vst3-param-cache-resync.patch. Drop this fork and return
-# to juce-framework/JUCE once that fix is merged upstream.
 CPMDeclarePackage(juce
   NAME juce
-  VERSION 9.0.0
-  GIT_TAG fa3d1a09871a7e683647d95e8ed45c74769ed742
-  GITHUB_REPOSITORY zrythm/JUCE
+  VERSION 9.0.4
+  GIT_TAG 3fb5cbc0340758596dac39f7c8de47d562b4896e
+  GITHUB_REPOSITORY juce-framework/JUCE
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
 )
