@@ -14,9 +14,6 @@ CPMDeclarePackage(nlohmann_json
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
   OPTIONS
-    # The validator requires explicit conversions to be enabled
-    # See https://github.com/pboettch/json-schema-validator/issues/372
-    "JSON_ImplicitConversions ON"
     "JSON_SystemInclude ON"
 )
 # clap
@@ -341,8 +338,8 @@ CPMDeclarePackage(Boost
 )
 CPMDeclarePackage(nlohmann_json_schema_validator
   NAME nlohmann_json_schema_validator
-  VERSION 2.4.0
-  GIT_TAG c780404a84dd9ba978ba26bc58d17cb43fa7bc80
+  VERSION 2.4.1
+  GIT_TAG 9abddfa905bb4889cc4ae55f87adcaa71dd3bc23
   GITHUB_REPOSITORY pboettch/json-schema-validator
   GIT_SHALLOW TRUE
 )
