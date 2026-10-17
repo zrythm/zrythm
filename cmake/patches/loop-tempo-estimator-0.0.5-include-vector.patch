@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
+diff --git a/source/LteDsp.h b/source/LteDsp.h
+index 542943b..9d26e1b 100644
+--- a/source/LteDsp.h
++++ b/source/LteDsp.h
+@@ -26,6 +26,7 @@ quality of classifier and possibly time performance, too.
+ #pragma once
+
+ #include <functional>
++#include <vector>
+
+ namespace LTE
+ {

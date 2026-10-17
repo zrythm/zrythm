@@ -247,13 +247,14 @@ CPMDeclarePackage(farbot
 # loop-tempo-estimator
 CPMDeclarePackage(loop-tempo-estimator
   NAME loop-tempo-estimator
-  VERSION 0.0.4
-  # v0.0.4
-  GIT_TAG 6579ae01f99ba90ef47826c7ab117c6af779832e
+  VERSION 0.0.5
+  # v0.0.5
+  GIT_TAG 987981c714cf1807284b1d8a85f21532b304bea9
   GITHUB_REPOSITORY saintmatthieu/loop-tempo-estimator
   SOURCE_SUBDIR source
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
+  PATCHES cmake/patches/loop-tempo-estimator-0.0.5-include-vector.patch
 )
 # mp-units
 CPMDeclarePackage(mp-units
