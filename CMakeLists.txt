@@ -776,6 +776,12 @@ if(ZRYTHM_STRICT)
       # -Wfunction-effects
       -Wperf-constraint-implies-noexcept
     )
+    # Dangling pointer/reference/view analysis, added in clang 23
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 23)
+      target_compile_options(_zrythm_strict_warning_flags INTERFACE
+        -Werror=lifetime-safety-permissive
+      )
+    endif()
   elseif(MSVC)
   endif()
 endif()

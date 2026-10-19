@@ -6,8 +6,6 @@
 # Versions are not pinned to allow latest compatible versions
 
 # Build tools
-cmake
-ninja
 conan
 
 # CMake formatting
