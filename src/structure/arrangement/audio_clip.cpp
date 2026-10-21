@@ -47,6 +47,18 @@ AudioClip::transform_entries () const
   return transform_entries_;
 }
 
+QList<AudioFunction::Entry>
+AudioClip::audioTransformEntries () const
+{
+  QList<AudioFunction::Entry> entries;
+  entries.reserve (static_cast<qsizetype> (transform_entries_.size ()));
+  for (const auto &entry : transform_entries_)
+    {
+      entries.append (entry);
+    }
+  return entries;
+}
+
 void
 AudioClip::set_transform_entries (std::vector<AudioFunction::Entry> entries)
 {

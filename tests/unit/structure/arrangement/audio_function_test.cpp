@@ -148,36 +148,43 @@ TEST (AudioFunctionKindTest, NonFadeKindsHaveNoParams)
 TEST (AudioFunctionEntryTest, EntryJsonRoundTripsAllKinds)
 {
   const std::array<AudioFunction::Entry, 6> entries = {
-    AudioFunction::Invert{
-                          .start = dsp::ContentTick{ units::ticks (1.5) },
-                          .end = dsp::ContentTick{ units::ticks (2.5) } },
-    AudioFunction::Reverse{
-                          .start = dsp::ContentTick{ units::ticks (0.) },
-                          .end = dsp::ContentTick{ units::ticks (10.) } },
-    AudioFunction::NormalizePeak{
-                          .start = dsp::ContentTick{ units::ticks (0.) },
-                          .end = dsp::ContentTick{ units::ticks (4.) },
-                          .gain = 2.5 },
-    AudioFunction::NormalizeRms{
-                          .start = dsp::ContentTick{ units::ticks (0.) },
-                          .end = dsp::ContentTick{ units::ticks (4.) },
-                          .gain = 0.5 },
+    AudioFunction::Entry{
+                         .start = dsp::ContentTick{ units::ticks (1.5) },
+                         .end = dsp::ContentTick{ units::ticks (2.5) },
+                         .kind = AudioFunction::Invert{} },
+    AudioFunction::Entry{
+                         .start = dsp::ContentTick{ units::ticks (0.) },
+                         .end = dsp::ContentTick{ units::ticks (10.) },
+                         .enabled = false,
+                         .kind = AudioFunction::Reverse{} },
+    AudioFunction::Entry{
+                         .start = dsp::ContentTick{ units::ticks (0.) },
+                         .end = dsp::ContentTick{ units::ticks (4.) },
+                         .kind = AudioFunction::NormalizePeak{ .gain = 2.5 } },
+    AudioFunction::Entry{
+                         .start = dsp::ContentTick{ units::ticks (0.) },
+                         .end = dsp::ContentTick{ units::ticks (4.) },
+                         .kind = AudioFunction::NormalizeRms{ .gain = 0.5 } },
     [] {
       AudioFunction::FadeIn fade;
-      fade.start = dsp::ContentTick{ units::ticks (1.) };
-      fade.end = dsp::ContentTick{ units::ticks (3.) };
       fade.curve.curviness_ = -0.5;
       fade.curve.algo_ = dsp::CurveOptions::Algorithm::Exponent;
-      return fade;
-                          }
+      return AudioFunction::Entry{
+        .start = dsp::ContentTick{ units::ticks (1.) },
+        .end = dsp::ContentTick{ units::ticks (3.) },
+        .kind = fade
+      };
+                         }
     (),
     [] {
       AudioFunction::FadeOut fade;
-      fade.start = dsp::ContentTick{ units::ticks (2.) };
-      fade.end = dsp::ContentTick{ units::ticks (6.) };
       fade.curve.curviness_ = 0.75;
-      return fade;
-                          }
+      return AudioFunction::Entry{
+        .start = dsp::ContentTick{ units::ticks (2.) },
+        .end = dsp::ContentTick{ units::ticks (6.) },
+        .kind = fade
+      };
+                         }
     (),
   };
 
@@ -202,7 +209,7 @@ TEST (AudioFunctionEntryTest, EntryJsonRejectsUnknownKind)
 TEST (AudioFunctionBufferTest, InvertFlipsSign)
 {
   auto buf = make_buffer ({ 0.5f, -0.25f }, { -1.f, 0.75f });
-  AudioFunction::apply_entry_to_buffer (
+  AudioFunction::apply_kind_to_buffer (
     buf, AudioFunction::Invert{}, whole (0), whole (2));
   expect_sample (buf, 0, 0, -0.5f);
   expect_sample (buf, 0, 1, 0.25f);
@@ -217,7 +224,7 @@ TEST (AudioFunctionBufferTest, NormalizeAppliesFrozenGain)
   auto buf = make_buffer ({ 0.25f, -0.5f }, { -0.1f, 0.125f });
   AudioFunction::NormalizePeak entry;
   entry.gain = 2.0;
-  AudioFunction::apply_entry_to_buffer (buf, entry, whole (0), whole (2));
+  AudioFunction::apply_kind_to_buffer (buf, entry, whole (0), whole (2));
   expect_sample (buf, 0, 0, 0.5f);
   expect_sample (buf, 0, 1, -1.f);
   expect_sample (buf, 1, 0, -0.2f);
@@ -230,7 +237,7 @@ TEST (AudioFunctionBufferTest, FadeInLinearRunsFromZeroToOne)
     make_buffer ({ 1.f, 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f, 1.f });
   AudioFunction::FadeIn entry;
   entry.curve.curviness_ = 0.0; // linear for every algorithm
-  AudioFunction::apply_entry_to_buffer (buf, entry, whole (0), whole (5));
+  AudioFunction::apply_kind_to_buffer (buf, entry, whole (0), whole (5));
   expect_sample (buf, 0, 0, 0.f);
   expect_sample (buf, 1, 0, 0.f);
   expect_sample (buf, 0, 2, 0.5f);
@@ -244,7 +251,7 @@ TEST (AudioFunctionBufferTest, FadeOutLinearRunsFromOneToZero)
     make_buffer ({ 1.f, 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f, 1.f });
   AudioFunction::FadeOut entry;
   entry.curve.curviness_ = 0.0;
-  AudioFunction::apply_entry_to_buffer (buf, entry, whole (0), whole (5));
+  AudioFunction::apply_kind_to_buffer (buf, entry, whole (0), whole (5));
   expect_sample (buf, 0, 0, 1.f);
   expect_sample (buf, 1, 0, 1.f);
   expect_sample (buf, 0, 2, 0.5f);
@@ -262,7 +269,7 @@ TEST (AudioFunctionBufferTest, EntriesEditOnlyTheGivenRange)
     { 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f });
   AudioFunction::FadeIn fade;
   fade.curve.curviness_ = 0.0;
-  AudioFunction::apply_entry_to_buffer (
+  AudioFunction::apply_kind_to_buffer (
     fade_buf, fade, whole (kStart), whole (kLength));
   expect_sample (fade_buf, 0, 0, 1.f);
   expect_sample (fade_buf, 0, 1, 1.f);
@@ -273,7 +280,7 @@ TEST (AudioFunctionBufferTest, EntriesEditOnlyTheGivenRange)
   auto reverse_buf = make_buffer (
     { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f },
     { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f });
-  AudioFunction::apply_entry_to_buffer (
+  AudioFunction::apply_kind_to_buffer (
     reverse_buf, AudioFunction::Reverse{}, whole (kStart), whole (kLength));
   expect_sample (reverse_buf, 0, 0, 0.f);
   expect_sample (reverse_buf, 0, 1, 1.f);
@@ -289,10 +296,10 @@ TEST (AudioFunctionBufferTest, OutOfBoundsRangeIsClamped)
 {
   auto buf = make_buffer ({ 1.f, 1.f, 1.f, 1.f }, { 1.f, 1.f, 1.f, 1.f });
   // Start beyond the buffer end: nothing to edit
-  AudioFunction::apply_entry_to_buffer (
+  AudioFunction::apply_kind_to_buffer (
     buf, AudioFunction::Invert{}, whole (10), whole (2));
   // Length overrunning the buffer end is clamped to the remaining frames
-  AudioFunction::apply_entry_to_buffer (
+  AudioFunction::apply_kind_to_buffer (
     buf, AudioFunction::Invert{}, whole (2), whole (100));
   expect_sample (buf, 0, 0, 1.f);
   expect_sample (buf, 0, 1, 1.f);
@@ -329,6 +336,32 @@ TEST_F (AudioFunctionClipTest, NormalizeGainOfSourcelessClipIsUnity)
     *clip, dsp::ContentTick{ units::ticks (0.) },
     dsp::ContentTick{ units::ticks (1.) }, false);
   EXPECT_DOUBLE_EQ (gain, 1.0);
+}
+
+TEST_F (AudioFunctionClipTest, TransformEntriesPropertyExposesEntries)
+{
+  clip->set_transform_entries (
+    {
+      AudioFunction::Entry{
+                           .start = dsp::ContentTick{ units::ticks (0.) },
+                           .end = dsp::ContentTick{ units::ticks (192.) },
+                           .kind = AudioFunction::NormalizePeak{ .gain = 2.0 } },
+      AudioFunction::Entry{
+                           .start = dsp::ContentTick{ units::ticks (0.) },
+                           .end = dsp::ContentTick{ units::ticks (96.) },
+                           .enabled = false,
+                           .kind = AudioFunction::Invert{} }
+  });
+
+  const auto entries = clip->audioTransformEntries ();
+  ASSERT_EQ (entries.size (), 2);
+  EXPECT_EQ (entries.front ().kindId (), QStringLiteral ("normalize-peak"));
+  EXPECT_EQ (entries.front ().detail (), QStringLiteral ("Gain: +6.0 dB"));
+  EXPECT_DOUBLE_EQ (entries.front ().start_ticks (), 0.);
+  EXPECT_DOUBLE_EQ (entries.front ().end_ticks (), 192.);
+  EXPECT_TRUE (entries.front ().is_enabled ());
+  EXPECT_FALSE (entries.back ().is_enabled ());
+  EXPECT_EQ (entries.back ().label (), QStringLiteral ("Invert Polarity"));
 }
 
 } // namespace zrythm::structure::arrangement

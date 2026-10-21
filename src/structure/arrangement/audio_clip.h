@@ -32,6 +32,9 @@ class AudioClip final : public Clip, public ArrangerObjectOwner<AudioSourceObjec
       stretchAlgorithm WRITE setStretchAlgorithm NOTIFY stretchAlgorithmChanged)
   Q_PROPERTY (float gain READ gain WRITE setGain NOTIFY gainChanged)
   Q_PROPERTY (
+    QList<zrythm::structure::arrangement::AudioFunction::Entry> audioTransformEntries
+      READ audioTransformEntries NOTIFY renderedAudioChanged)
+  Q_PROPERTY (
     zrythm::structure::arrangement::ArrangerObjectFadeRange * fadeRange READ
       fadeRange CONSTANT)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
@@ -87,6 +90,13 @@ public:
    * serialized for playback or display.
    */
   std::span<const AudioFunction::Entry> transform_entries () const;
+
+  /**
+   * @brief The clip's transform entries as QML-visible values.
+   *
+   * Each value is an AudioFunction::Entry gadget.
+   */
+  QList<AudioFunction::Entry> audioTransformEntries () const;
 
   /**
    * @brief Replaces the transform entries.

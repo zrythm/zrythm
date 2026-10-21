@@ -6,6 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import Zrythm
+import ZrythmArrangement
 import ZrythmGui
 import ZrythmStyle
 
@@ -14,6 +15,8 @@ Arranger {
 
   readonly property AudioClip audioClip: clipEditor.clipObject as AudioClip
   required property AudioClipEditor audioEditor
+  /** Index of the transform entry selected in the stack panel, or -1 when none. */
+  required property int selectedTransformEntryIndex
   readonly property real clipWidth: root.audioClip ? root.audioClip.timelineLengthTicks * root.ruler.pxPerTick : 0
   readonly property real clipX: root.audioClip ? root.audioClip.position.ticks * root.ruler.pxPerTick : 0
   readonly property real fadeInPx: root.audioClip && root.audioClip.fadeRange ? root.audioClip.fadeRange.startOffset.ticks * root.ruler.pxPerTick : 0
@@ -138,6 +141,29 @@ Arranger {
       color: Qt.alpha(palette.accent, 0.12)
       height: parent.height
       visible: startTick >= 0 && endTick > startTick
+      width: (endRelativeTicks - startRelativeTicks) * root.ruler.pxPerTick
+      x: root.clipX + startRelativeTicks * root.ruler.pxPerTick
+      y: 0
+    }
+
+    // Highlights the content range of the transform entry selected in the
+    // stack panel, in the entry's kind color. Dimmed when the entry is
+    // disabled. Hidden when no entry is selected.
+    Rectangle {
+      id: transformEntryOverlay
+
+      readonly property var selectedEntry: root.selectedTransformEntryIndex >= 0 && root.audioClip && root.selectedTransformEntryIndex < root.audioClip.audioTransformEntries.length ? root.audioClip.audioTransformEntries[root.selectedTransformEntryIndex] : null
+      readonly property double startTick: selectedEntry ? selectedEntry.startTicks : 0
+      readonly property double endTick: selectedEntry ? selectedEntry.endTicks : 0
+      readonly property var warp: root.audioClip ? root.audioClip.contentWarp : null
+      readonly property double startRelativeTicks: warp ? warp.contentToTimelineTicksRelative(startTick) : startTick
+      readonly property double endRelativeTicks: warp ? warp.contentToTimelineTicksRelative(endTick) : endTick
+
+      border.color: selectedEntry ? AudioTransformKindColors.kindColor (selectedEntry.kindId) : "transparent"
+      color: Qt.alpha (border.color, 0.15)
+      height: parent.height
+      opacity: selectedEntry && selectedEntry.enabled ? 1 : ZrythmTheme.disabledOpacityFactor
+      visible: endTick > startTick
       width: (endRelativeTicks - startRelativeTicks) * root.ruler.pxPerTick
       x: root.clipX + startRelativeTicks * root.ruler.pxPerTick
       y: 0

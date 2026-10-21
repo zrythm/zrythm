@@ -128,7 +128,7 @@ EditorFunctionRegistry::EditorFunctionRegistry (QObject * parent)
     definitions_for_family<structure::arrangement::AutomationFunction::Kind> (
       *this, Family::Automation);
   audio_functions_ = definitions_for_family<
-    structure::arrangement::AudioFunction::Entry> (*this, Family::Audio);
+    structure::arrangement::AudioFunction::Kind> (*this, Family::Audio);
 }
 
 } // namespace zrythm::gui

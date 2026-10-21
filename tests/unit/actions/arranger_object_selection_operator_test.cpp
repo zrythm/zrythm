@@ -4295,13 +4295,13 @@ TEST_F (
   // The function appended one entry covering the clip's audible span
   const auto &entries = audio_clip->transform_entries ();
   ASSERT_EQ (entries.size (), 1u);
-  const auto * invert = std::get_if<AudioFunction::Invert> (&entries.front ());
-  ASSERT_NE (invert, nullptr);
+  const auto &entry = entries.front ();
+  ASSERT_NE (std::get_if<AudioFunction::Invert> (&entry.kind), nullptr);
   EXPECT_DOUBLE_EQ (
-    invert->start.asDouble (),
+    entry.start.asDouble (),
     audio_clip->clipStartPosition ()->asTick ().asDouble ());
   EXPECT_DOUBLE_EQ (
-    invert->end.asDouble (),
+    entry.end.asDouble (),
     (audio_clip->clipStartPosition ()->asTick ()
      + audio_clip->length ()->asTick ())
       .asDouble ());
@@ -4344,10 +4344,11 @@ TEST_F (
 
   const auto &entries = audio_clip->transform_entries ();
   ASSERT_EQ (entries.size (), 1u);
-  const auto * fade = std::get_if<AudioFunction::FadeIn> (&entries.front ());
+  const auto  &entry = entries.front ();
+  const auto * fade = std::get_if<AudioFunction::FadeIn> (&entry.kind);
   ASSERT_NE (fade, nullptr);
-  EXPECT_DOUBLE_EQ (fade->start.asDouble (), 10.0);
-  EXPECT_DOUBLE_EQ (fade->end.asDouble (), 20.0);
+  EXPECT_DOUBLE_EQ (entry.start.asDouble (), 10.0);
+  EXPECT_DOUBLE_EQ (entry.end.asDouble (), 20.0);
   EXPECT_DOUBLE_EQ (fade->curve.curviness_, 0.25);
 }
 
@@ -4366,8 +4367,9 @@ TEST_F (
     -1.0, function_id (AudioFunction::NormalizePeak::kId), {});
   EXPECT_TRUE (result);
 
-  const auto * normalize = std::get_if<AudioFunction::NormalizePeak> (
-    &audio_clip->transform_entries ().front ());
+  const auto  &entry = audio_clip->transform_entries ().front ();
+  const auto * normalize =
+    std::get_if<AudioFunction::NormalizePeak> (&entry.kind);
   ASSERT_NE (normalize, nullptr);
   EXPECT_NEAR (normalize->gain, 1.0 / 7.0, 1e-6);
 }
@@ -4397,15 +4399,189 @@ TEST_F (
     qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
     -1.0, function_id (AudioFunction::NormalizePeak::kId), {}));
 
-  const auto * normalize = std::get_if<AudioFunction::NormalizePeak> (
-    &audio_clip->transform_entries ().front ());
+  const auto  &entry = audio_clip->transform_entries ().front ();
+  const auto * normalize =
+    std::get_if<AudioFunction::NormalizePeak> (&entry.kind);
   ASSERT_NE (normalize, nullptr);
   EXPECT_DOUBLE_EQ (
-    normalize->start.asDouble (),
+    entry.start.asDouble (),
     audio_clip->clipStartPosition ()->asTick ().asDouble ());
   EXPECT_DOUBLE_EQ (
-    normalize->end.asDouble (),
+    entry.end.asDouble (),
     audio_clip->loopEndPosition ()->asTick ().asDouble ());
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  MoveAudioTransformEntryReordersTheList)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {}));
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Reverse::kId), {}));
+  ASSERT_EQ (audio_clip->transform_entries ().size (), 2u);
+  EXPECT_EQ (
+    audio_clip->transform_entries ().front ().kindId (),
+    QStringLiteral ("invert-polarity"));
+
+  EXPECT_TRUE (operator_->moveAudioTransformEntry (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), 0, 1));
+  EXPECT_EQ (
+    audio_clip->transform_entries ().front ().kindId (),
+    QStringLiteral ("reverse"));
+  EXPECT_EQ (undo_stack_->index (), 3);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    audio_clip->transform_entries ().front ().kindId (),
+    QStringLiteral ("invert-polarity"));
+
+  // Out-of-range indices are refused
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+  EXPECT_FALSE (operator_->moveAudioTransformEntry (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), 0, 2));
+  EXPECT_EQ (refused_spy.count (), 1);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  RemoveAudioTransformEntryDeletesFromTheList)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {}));
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Reverse::kId), {}));
+
+  EXPECT_TRUE (operator_->removeAudioTransformEntry (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), 0));
+  ASSERT_EQ (audio_clip->transform_entries ().size (), 1u);
+  EXPECT_EQ (
+    audio_clip->transform_entries ().front ().kindId (),
+    QStringLiteral ("reverse"));
+
+  undo_stack_->undo ();
+  EXPECT_EQ (audio_clip->transform_entries ().size (), 2u);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  SetAudioTransformEntryEnabledTogglesTheEntry)
+{
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  const auto audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {}));
+
+  EXPECT_TRUE (operator_->setAudioTransformEntryEnabled (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), 0,
+    false));
+  EXPECT_FALSE (audio_clip->transform_entries ().front ().is_enabled ());
+  EXPECT_EQ (undo_stack_->index (), 2);
+
+  // Setting the state the entry already has pushes nothing
+  EXPECT_TRUE (operator_->setAudioTransformEntryEnabled (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), 0,
+    false));
+  EXPECT_EQ (undo_stack_->index (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (audio_clip->transform_entries ().front ().is_enabled ());
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  BakeAudioClipRepointsClipAtBakedSourceAndClearsEntries)
+{
+  auto       temp_dir_obj = zrythm::utils::io::make_tmp_dir ();
+  const auto pool_dir =
+    utils::Utf8String::from_qstring (temp_dir_obj->path ()).to_path () / "pool";
+  dsp::AudioPool pool (
+    registry_, [pool_dir] () { return pool_dir; },
+    [] () { return units::sample_rate (44100); });
+
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  auto * audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  audio_clip->get_children_view ().front ()->file_audio_source ().set_store (
+    pool.get_block_store ());
+  const auto source_id =
+    audio_clip->get_children_view ().front ()->audio_source_ref ().id ();
+
+  // Baking without entries is refused
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+  EXPECT_FALSE (operator_->bakeAudioClip (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ())));
+  EXPECT_EQ (refused_spy.count (), 1);
+
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {}));
+  EXPECT_TRUE (operator_->bakeAudioClip (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ())));
+
+  EXPECT_TRUE (audio_clip->transform_entries ().empty ());
+  EXPECT_NE (
+    audio_clip->get_children_view ().front ()->audio_source_ref ().id (),
+    source_id);
+  auto &new_source =
+    audio_clip->get_children_view ().front ()->file_audio_source ();
+  utils::audio::AudioBuffer baked (2, 8);
+  new_source.read_span (units::samples (0), units::samples (8), baked);
+  EXPECT_FLOAT_EQ (baked.getSample (0, 3), -3.f);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    audio_clip->get_children_view ().front ()->audio_source_ref ().id (),
+    source_id);
+  ASSERT_EQ (audio_clip->transform_entries ().size (), 1u);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  BakeAudioClipRefusedWhenNoEntriesAreEnabled)
+{
+  auto       temp_dir_obj = zrythm::utils::io::make_tmp_dir ();
+  const auto pool_dir =
+    utils::Utf8String::from_qstring (temp_dir_obj->path ()).to_path () / "pool";
+  dsp::AudioPool pool (
+    registry_, [pool_dir] () { return pool_dir; },
+    [] () { return units::sample_rate (44100); });
+
+  attach_ramp_source (registry_, *tempo_map_wrapper, *audio_clip_ref.get (), 8);
+  auto * audio_clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  audio_clip->get_children_view ().front ()->file_audio_source ().set_store (
+    pool.get_block_store ());
+
+  EXPECT_TRUE (operator_->applyAudioFunction (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), -1.0,
+    -1.0, function_id (AudioFunction::Invert::kId), {}));
+  EXPECT_TRUE (operator_->setAudioTransformEntryEnabled (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ()), 0,
+    false));
+
+  QSignalSpy refused_spy (
+    operator_.get (), &ArrangerObjectSelectionOperator::operationRefused);
+  const auto undo_index = undo_stack_->index ();
+  EXPECT_FALSE (operator_->bakeAudioClip (
+    qobject_cast<structure::arrangement::Clip *> (audio_clip_ref.get ())));
+  EXPECT_EQ (refused_spy.count (), 1);
+  EXPECT_EQ (undo_stack_->index (), undo_index);
+  EXPECT_EQ (audio_clip->transform_entries ().size (), 1u);
 }
 
 TEST_F (

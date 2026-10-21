@@ -17,6 +17,7 @@ target_sources(zrythm_arrangement_lib
     audio_clip.cpp
     audio_function.cpp
     audio_source_object.cpp
+    audio_transform_entry_list_model.cpp
     automation_point.cpp
     automation_clip.cpp
     automation_function.cpp
@@ -51,6 +52,7 @@ target_sources(zrythm_arrangement_lib
       audio_clip.h
       audio_function.h
       audio_source_object.h
+      audio_transform_entry_list_model.h
       automation_point.h
       automation_clip.h
       automation_function.h
@@ -91,6 +93,8 @@ target_precompile_headers(zrythm_arrangement_lib PUBLIC
 qt_add_qml_module(zrythm_arrangement_lib
   URI ZrythmArrangement
   VERSION 1.0
+  DEPENDENCIES
+    QtCore # Needed for QAbstractItemModel-derived types
   IMPORTS
     TARGET zrythm_utils_lib
     TARGET zrythm_dsp_lib

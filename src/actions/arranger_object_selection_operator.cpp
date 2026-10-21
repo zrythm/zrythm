@@ -6,6 +6,7 @@
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/add_arranger_object_command.h"
 #include "commands/arranger_object_owner_ref.h"
+#include "commands/bake_audio_clip_command.h"
 #include "commands/change_timebase_override_command.h"
 #include "commands/change_uuid_identifiable_object_property_command.h"
 #include "commands/delete_lane_command.h"
@@ -137,7 +138,7 @@ next_chord_content_position (const structure::arrangement::ChordObject &chord)
   return next;
 }
 
-ArrangerObjectSelectionOperator ::ArrangerObjectSelectionOperator (
+ArrangerObjectSelectionOperator::ArrangerObjectSelectionOperator (
   undo::UndoStack                               &undoStack,
   ObjectOwnerProvider                            objectOwnerProvider,
   structure::arrangement::ArrangerObjectFactory &objectFactory,
@@ -617,13 +618,13 @@ ArrangerObjectSelectionOperator::applyAudioFunction (
       return false;
     }
 
-  AudioFunction::Entry entry = *kind;
-  const auto           applied = std::visit (
+  AudioFunction::Kind payload = *kind;
+  const auto          applied = std::visit (
     [&options] (auto &k) {
       using K = std::decay_t<decltype (k)>;
       return apply_options (options, k, K::params ());
     },
-    entry);
+    payload);
   if (!applied)
     {
       refuse_operation (applied.error ().to_qstring ());
@@ -644,8 +645,6 @@ ArrangerObjectSelectionOperator::applyAudioFunction (
   std::visit (
     [&] (auto &k) {
       using K = std::decay_t<decltype (k)>;
-      k.start = range_start;
-      k.end = range_end;
       if constexpr (
         std::same_as<K, AudioFunction::NormalizePeak>
         || std::same_as<K, AudioFunction::NormalizeRms>)
@@ -655,7 +654,11 @@ ArrangerObjectSelectionOperator::applyAudioFunction (
             std::same_as<K, AudioFunction::NormalizeRms>);
         }
     },
-    entry);
+    payload);
+
+  AudioFunction::Entry entry{
+    .start = range_start, .end = range_end, .kind = std::move (payload)
+  };
 
   auto after_entries =
     audio_clip->transform_entries () | std::ranges::to<std::vector> ();
@@ -669,6 +672,175 @@ ArrangerObjectSelectionOperator::applyAudioFunction (
     structure::arrangement::ArrangerObjectUuidReference (
       audio_clip->get_uuid (), project_registry_),
     std::move (after_entries), text));
+
+  return true;
+}
+
+structure::arrangement::AudioClip *
+ArrangerObjectSelectionOperator::audio_clip_for_transform_entries (
+  structure::arrangement::Clip * clip)
+{
+  auto * audio_clip = qobject_cast<structure::arrangement::AudioClip *> (clip);
+  if (audio_clip == nullptr)
+    {
+      refuse_operation (QObject::tr ("The clip is not an audio clip"));
+      return nullptr;
+    }
+  return audio_clip;
+}
+
+void
+ArrangerObjectSelectionOperator::push_transform_entries (
+  structure::arrangement::AudioClip                        &audio_clip,
+  std::vector<structure::arrangement::AudioFunction::Entry> entries,
+  const QString                                            &text)
+{
+  undo_stack_.push (new commands::SetAudioClipTransformsCommand (
+    structure::arrangement::ArrangerObjectUuidReference (
+      audio_clip.get_uuid (), project_registry_),
+    std::move (entries), text));
+}
+
+bool
+ArrangerObjectSelectionOperator::moveAudioTransformEntry (
+  structure::arrangement::Clip * clip,
+  int                            from_index,
+  int                            to_index)
+{
+  auto * audio_clip = audio_clip_for_transform_entries (clip);
+  if (audio_clip == nullptr)
+    return false;
+
+  auto entries =
+    audio_clip->transform_entries () | std::ranges::to<std::vector> ();
+  if (
+    from_index < 0 || from_index >= static_cast<int> (entries.size ())
+    || to_index < 0 || to_index >= static_cast<int> (entries.size ()))
+    {
+      refuse_operation (
+        QObject::tr ("Invalid transform entry index %1 → %2")
+          .arg (from_index)
+          .arg (to_index));
+      return false;
+    }
+  if (from_index == to_index)
+    return true;
+
+  auto entry = std::move (entries[from_index]);
+  entries.erase (entries.begin () + from_index);
+  entries.insert (entries.begin () + to_index, std::move (entry));
+
+  push_transform_entries (
+    *audio_clip, std::move (entries), QObject::tr ("Reorder Transform Entries"));
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::removeAudioTransformEntry (
+  structure::arrangement::Clip * clip,
+  int                            index)
+{
+  namespace AudioFunction = structure::arrangement::AudioFunction;
+  auto * audio_clip = audio_clip_for_transform_entries (clip);
+  if (audio_clip == nullptr)
+    return false;
+
+  auto entries =
+    audio_clip->transform_entries () | std::ranges::to<std::vector> ();
+  if (index < 0 || index >= static_cast<int> (entries.size ()))
+    {
+      refuse_operation (
+        QObject::tr ("Invalid transform entry index %1").arg (index));
+      return false;
+    }
+  const auto text =
+    QObject::tr ("Remove %1")
+      .arg (AudioFunction::label (entries[index], true).to_qstring ());
+  entries.erase (entries.begin () + index);
+
+  push_transform_entries (*audio_clip, std::move (entries), text);
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::setAudioTransformEntryEnabled (
+  structure::arrangement::Clip * clip,
+  int                            index,
+  bool                           enabled)
+{
+  namespace AudioFunction = structure::arrangement::AudioFunction;
+  auto * audio_clip = audio_clip_for_transform_entries (clip);
+  if (audio_clip == nullptr)
+    return false;
+
+  auto entries =
+    audio_clip->transform_entries () | std::ranges::to<std::vector> ();
+  if (index < 0 || index >= static_cast<int> (entries.size ()))
+    {
+      refuse_operation (
+        QObject::tr ("Invalid transform entry index %1").arg (index));
+      return false;
+    }
+  if (entries[index].enabled == enabled)
+    return true;
+
+  const auto text =
+    (enabled ? QObject::tr ("Enable %1") : QObject::tr ("Bypass %1"))
+      .arg (AudioFunction::label (entries[index], true).to_qstring ());
+  entries[index].enabled = enabled;
+
+  push_transform_entries (*audio_clip, std::move (entries), text);
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::bakeAudioClip (
+  structure::arrangement::Clip * clip)
+{
+  namespace AudioFunction = structure::arrangement::AudioFunction;
+  using structure::arrangement::AudioSourceObject;
+  auto * audio_clip = audio_clip_for_transform_entries (clip);
+  if (audio_clip == nullptr)
+    return false;
+
+  if (
+    audio_clip
+      ->structure::arrangement::ArrangerObjectOwner<
+        AudioSourceObject>::get_children_view ()
+      .empty ())
+    {
+      refuse_operation (QObject::tr ("The clip has no audio"));
+      return false;
+    }
+  if (audio_clip->transform_entries ().empty ())
+    {
+      refuse_operation (QObject::tr ("The clip has no transform entries"));
+      return false;
+    }
+  const auto has_enabled_entry = std::ranges::any_of (
+    audio_clip->transform_entries (),
+    [] (const AudioFunction::Entry &entry) { return entry.enabled; });
+  if (!has_enabled_entry)
+    {
+      refuse_operation (
+        QObject::tr ("The clip has no enabled transform entries"));
+      return false;
+    }
+  const auto baked_ref =
+    AudioFunction::bake_audio_clip (*audio_clip, project_registry_);
+  if (!baked_ref.has_value ())
+    {
+      refuse_operation (QObject::tr ("Baking failed"));
+      return false;
+    }
+
+  undo_stack_.push (new commands::BakeAudioClipCommand (
+    structure::arrangement::ArrangerObjectUuidReference (
+      audio_clip->get_uuid (), project_registry_),
+    baked_ref, QObject::tr ("Bake Transform Entries")));
 
   return true;
 }

@@ -214,6 +214,59 @@ public:
     const QString                 &function_id,
     const QVariantMap             &options);
 
+  /**
+   * @brief Moves a transform entry within an audio clip's entry list.
+   *
+   * @param clip The audio clip being edited.
+   * @param from_index Current index of the entry.
+   * @param to_index Index the entry is moved to.
+   * @return false if @p clip is not an audio clip or an index is out of
+   * range.
+   */
+  Q_INVOKABLE bool moveAudioTransformEntry (
+    structure::arrangement::Clip * clip,
+    int                            from_index,
+    int                            to_index);
+
+  /**
+   * @brief Removes a transform entry from an audio clip.
+   *
+   * @param clip The audio clip being edited.
+   * @param index Index of the entry.
+   * @return false if @p clip is not an audio clip or @p index is out of
+   * range.
+   */
+  Q_INVOKABLE bool
+  removeAudioTransformEntry (structure::arrangement::Clip * clip, int index);
+
+  /**
+   * @brief Enables or disables a transform entry.
+   *
+   * @param clip The audio clip being edited.
+   * @param index Index of the entry.
+   * @param enabled Whether the entry is applied when the clip is
+   * rendered.
+   * @return false if @p clip is not an audio clip or @p index is out of
+   * range.
+   */
+  Q_INVOKABLE bool setAudioTransformEntryEnabled (
+    structure::arrangement::Clip * clip,
+    int                            index,
+    bool                           enabled);
+
+  /**
+   * @brief Materializes an audio clip's transform entries into its
+   * audio, in a single undo step.
+   *
+   * The clip's entries are replaced with the baked audio; undo restores
+   * both the entry list and the clip's original audio.
+   *
+   * @param clip The audio clip being edited.
+   * @return false if @p clip is not an audio clip, has no audio, has no
+   * entries, or the bake fails.
+   */
+  Q_INVOKABLE bool bakeAudioClip (structure::arrangement::Clip * clip);
+
   Q_INVOKABLE bool resizeObjects (
     QItemSelectionModel *     selectionModel,
     commands::ResizeType      type,
@@ -530,6 +583,22 @@ private:
    * @brief Logs @p reason and emits operationRefused().
    */
   void refuse_operation (const QString &reason);
+
+  /**
+   * @brief Returns @p clip as an audio clip, or refuses the operation
+   * and returns null when the clip is of another type.
+   */
+  structure::arrangement::AudioClip *
+  audio_clip_for_transform_entries (structure::arrangement::Clip * clip);
+
+  /**
+   * @brief Pushes a command replacing the clip's transform entries with
+   * @p entries.
+   */
+  void push_transform_entries (
+    structure::arrangement::AudioClip                        &audio_clip,
+    std::vector<structure::arrangement::AudioFunction::Entry> entries,
+    const QString                                            &text);
 
   /**
    * @brief Returns the shift duplicates of @p objects are placed at: the

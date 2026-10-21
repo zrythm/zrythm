@@ -263,6 +263,7 @@ set(rel_qml_file_paths
   components/dialogs/FunctionDialog.qml
   components/dialogs/FunctionParameterControl.qml
   components/editors/AudioEditorPane.qml
+  components/editors/AudioTransformStackPanel.qml
   components/editors/AutomationEditorPane.qml
   components/editors/ClipEditorGrid.qml
   components/editors/MidiEditorPane.qml
@@ -332,6 +333,7 @@ set(rel_qml_file_paths
   components/WaveformViewer.qml
   Greeter.qml
   DemoView.qml
+  utils/AudioTransformKindColors.qml
   utils/DragUtils.qml
   utils/SelectionTracker.qml
   views/ExportDialog.qml
@@ -350,6 +352,7 @@ endforeach()
 # Singleton types defined in QML need to have this
 # see https://doc.qt.io/qt-6/cmake-source-file-property-qt-qml-singleton-type.html
 set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/AudioTransformKindColors.qml
   ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/DragUtils.qml
   PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 )

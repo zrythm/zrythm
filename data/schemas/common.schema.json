@@ -1286,6 +1286,11 @@
           "type": "number",
           "description": "Content tick where the entry ends (exclusive)"
         },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the entry is applied when the clip is rendered"
+        },
         "gain": {
           "type": "number",
           "minimum": 0,

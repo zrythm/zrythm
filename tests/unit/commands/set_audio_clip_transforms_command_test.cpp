@@ -52,20 +52,21 @@ TEST_F (SetAudioClipTransformsCommandTest, RedoAndUndoSwapEntryLists)
 
   std::vector<structure::arrangement::AudioFunction::Entry> after;
   after.push_back (
-    structure::arrangement::AudioFunction::Invert{
+    structure::arrangement::AudioFunction::Entry{
       .start = dsp::ContentTick{ units::ticks (0.0) },
-      .end = dsp::ContentTick{ units::ticks (1920.0) } });
+      .end = dsp::ContentTick{ units::ticks (1920.0) },
+      .kind = structure::arrangement::AudioFunction::Invert{} });
   SetAudioClipTransformsCommand command (
     clip_ref, std::move (after), QStringLiteral ("Apply Invert Polarity"));
 
   command.redo ();
   EXPECT_EQ (clip->transform_entries ().size (), 1u);
   EXPECT_EQ (rendered_spy.count (), 1);
+  const auto  &entry = clip->transform_entries ().front ();
   const auto * invert =
-    std::get_if<structure::arrangement::AudioFunction::Invert> (
-      &clip->transform_entries ().front ());
+    std::get_if<structure::arrangement::AudioFunction::Invert> (&entry.kind);
   ASSERT_NE (invert, nullptr);
-  EXPECT_DOUBLE_EQ (invert->end.asDouble (), 1920.);
+  EXPECT_DOUBLE_EQ (entry.end.asDouble (), 1920.);
 
   command.undo ();
   EXPECT_TRUE (clip->transform_entries ().empty ());

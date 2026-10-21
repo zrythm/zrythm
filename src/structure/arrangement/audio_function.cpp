@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
+#include <concepts>
 #include <optional>
 #include <ranges>
 #include <variant>
@@ -49,6 +50,28 @@ namespace zrythm::structure::arrangement
 namespace AudioFunction
 {
 
+namespace
+{
+/// Formats a linear gain relative to unity as decibels.
+QString
+gain_detail (double gain)
+{
+  const auto db = 20.0 * std::log10 ((std::max) (gain, 1e-9));
+  return QObject::tr ("Gain: %1%2 dB")
+    .arg (db >= 0.0 ? QStringLiteral ("+") : QString ())
+    .arg (db, 0, 'f', 1);
+}
+
+/// Names a fade curve's algorithm and curviness.
+QString
+curve_detail (const dsp::CurveOptions &curve)
+{
+  return QObject::tr ("Curve: %1, Curviness %2")
+    .arg (CurveOptions_Algorithm_to_string (curve.algo_, true).to_qstring ())
+    .arg (curve.curviness_, 0, 'f', 2);
+}
+} // namespace
+
 utils::Utf8String
 Invert::label (bool translate)
 {
@@ -63,6 +86,12 @@ Invert::params ()
   return {};
 }
 
+QString
+Invert::detail () const
+{
+  return {};
+}
+
 utils::Utf8String
 Reverse::label (bool translate)
 {
@@ -72,6 +101,12 @@ Reverse::label (bool translate)
 
 std::vector<EditorFunctionParam<Reverse>>
 Reverse::params ()
+{
+  return {};
+}
+
+QString
+Reverse::detail () const
 {
   return {};
 }
@@ -90,6 +125,12 @@ NormalizePeak::params ()
   return {};
 }
 
+QString
+NormalizePeak::detail () const
+{
+  return gain_detail (gain);
+}
+
 utils::Utf8String
 NormalizeRms::label (bool translate)
 {
@@ -102,6 +143,12 @@ std::vector<EditorFunctionParam<NormalizeRms>>
 NormalizeRms::params ()
 {
   return {};
+}
+
+QString
+NormalizeRms::detail () const
+{
+  return gain_detail (gain);
 }
 
 utils::Utf8String
@@ -138,6 +185,12 @@ FadeIn::params ()
   };
 }
 
+QString
+FadeIn::detail () const
+{
+  return curve_detail (curve);
+}
+
 utils::Utf8String
 FadeOut::label (bool translate)
 {
@@ -172,16 +225,51 @@ FadeOut::params ()
   };
 }
 
-std::optional<Entry>
+QString
+FadeOut::detail () const
+{
+  return curve_detail (curve);
+}
+
+std::optional<Kind>
 kind_from_id (std::string_view id)
 {
-  return detail::kind_from_id<Entry> (id);
+  return detail::kind_from_id<Kind> (id);
+}
+
+utils::Utf8String
+label (const Kind &kind, bool translate)
+{
+  return detail::label<Kind> (kind, translate);
 }
 
 utils::Utf8String
 label (const Entry &entry, bool translate)
 {
-  return detail::label<Entry> (entry, translate);
+  return label (entry.kind, translate);
+}
+
+QString
+Entry::label () const
+{
+  return AudioFunction::label (kind, true).to_qstring ();
+}
+
+QString
+Entry::kindId () const
+{
+  return std::visit (
+    [] (const auto &k) {
+      using K = std::decay_t<decltype (k)>;
+      return utils::Utf8String::from_utf8_encoded_string (K::kId).to_qstring ();
+    },
+    kind);
+}
+
+QString
+Entry::detail () const
+{
+  return std::visit ([] (const auto &k) { return k.detail (); }, kind);
 }
 
 namespace
@@ -191,6 +279,7 @@ constexpr auto kStartKey = "start"sv;
 constexpr auto kEndKey = "end"sv;
 constexpr auto kGainKey = "gain"sv;
 constexpr auto kCurveKey = "curve"sv;
+constexpr auto kEnabledKey = "enabled"sv;
 }
 
 void
@@ -200,14 +289,16 @@ entry_to_json (nlohmann::json &j, const Entry &entry)
     [&] (const auto &k) {
       using K = std::decay_t<decltype (k)>;
       j[kKindKey] = std::string (K::kId);
-      j[kStartKey] = k.start.asDouble ();
-      j[kEndKey] = k.end.asDouble ();
       if constexpr (requires { k.gain; })
         j[kGainKey] = k.gain;
       if constexpr (requires { k.curve; })
         to_json (j[kCurveKey], k.curve);
     },
-    entry);
+    entry.kind);
+  j[kStartKey] = entry.start.asDouble ();
+  j[kEndKey] = entry.end.asDouble ();
+  if (!entry.enabled)
+    j[kEnabledKey] = false;
 }
 
 void
@@ -220,18 +311,21 @@ entry_from_json (const nlohmann::json &j, Entry &entry)
       throw ZrythmException (
         fmt::format ("Unknown audio transform entry kind: {}", kind_tag));
     }
-  entry = *kind;
+  entry.kind = *kind;
+  entry.start =
+    dsp::ContentTick{ units::ticks (j.at (kStartKey).get<double> ()) };
+  entry.end = dsp::ContentTick{ units::ticks (j.at (kEndKey).get<double> ()) };
+  entry.enabled = true;
+  if (j.contains (kEnabledKey))
+    entry.enabled = j.at (kEnabledKey).get<bool> ();
   std::visit (
     [&] (auto &k) {
-      k.start =
-        dsp::ContentTick{ units::ticks (j.at (kStartKey).get<double> ()) };
-      k.end = dsp::ContentTick{ units::ticks (j.at (kEndKey).get<double> ()) };
       if constexpr (requires { k.gain; })
         j.at (kGainKey).get_to (k.gain);
       if constexpr (requires { k.curve; })
         from_json (j.at (kCurveKey), k.curve);
     },
-    entry);
+    entry.kind);
 }
 
 namespace
@@ -295,16 +389,16 @@ audio_clip_content_window (const AudioClip &clip)
 
   for (const auto &entry : clip.transform_entries ())
     {
-      const auto [entry_start, entry_end] = std::visit (
-        [] (const auto &k) { return std::pair{ k.start, k.end }; }, entry);
+      if (!entry.enabled)
+        continue;
       const auto start =
-        clamp (mapping.ticks_to_native (entry_start), units::samples (0), end);
+        clamp (mapping.ticks_to_native (entry.start), units::samples (0), end);
       const auto stop =
-        clamp (mapping.ticks_to_native (entry_end), units::samples (0), end);
+        clamp (mapping.ticks_to_native (entry.end), units::samples (0), end);
       if (stop <= start)
         continue;
-      apply_entry_to_buffer (
-        window, entry,
+      apply_kind_to_buffer (
+        window, entry.kind,
         units::samples (static_cast<uint64_t> (start.in (units::samples))),
         units::samples (
           static_cast<uint64_t> ((stop - start).in (units::samples))));
@@ -372,21 +466,20 @@ bake_audio_clip (const AudioClip &clip, utils::IObjectRegistry &registry)
   const auto window = audio_clip_content_window (clip);
   const auto window_frames = units::samples (window.getNumSamples ());
 
-  // The baked range is the union of the entry ranges: entries compose in
-  // list order, and audio between disjoint entries is rewritten at the
-  // union's alignment.
+  // The baked range is the union of the enabled entry ranges: entries
+  // compose in list order, and audio between disjoint entries is
+  // rewritten at the union's alignment.
   const auto &mapping = native_mapping_for (clip, fs);
   std::optional<std::pair<units::sample_t, units::sample_t>> baked;
   for (const auto &entry : clip.transform_entries ())
     {
-      const auto [entry_start, entry_end] = std::visit (
-        [] (const auto &kind) { return std::pair{ kind.start, kind.end }; },
-        entry);
+      if (!entry.enabled)
+        continue;
       const auto start = clamp (
-        mapping.ticks_to_native (entry_start), units::samples (0),
+        mapping.ticks_to_native (entry.start), units::samples (0),
         window_frames);
       const auto stop = clamp (
-        mapping.ticks_to_native (entry_end), units::samples (0), window_frames);
+        mapping.ticks_to_native (entry.end), units::samples (0), window_frames);
       if (stop <= start)
         continue;
       if (!baked)
@@ -492,9 +585,9 @@ FadeOut::apply (std::span<float> range, const FadeOut &kind)
 }
 
 void
-apply_entry_to_buffer (
+apply_kind_to_buffer (
   utils::audio::AudioBuffer &buffer,
-  const Entry               &entry,
+  const Kind                &kind,
   units::sample_u64_t        start_frame,
   units::sample_u64_t        num_frames)
 {
@@ -518,7 +611,7 @@ apply_entry_to_buffer (
           using K = std::decay_t<decltype (k)>;
           K::apply (range, k);
         },
-        entry);
+        kind);
     }
 }
 

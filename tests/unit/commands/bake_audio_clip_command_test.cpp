@@ -117,9 +117,10 @@ TEST_F (BakeAudioClipCommandTest, RedoPointsClipAtBakedSourceAndClearsEntries)
   auto &clip = make_clip (source_ref);
   clip.set_transform_entries (
     {
-      structure::arrangement::AudioFunction::Invert{
-                                                    .start = dsp::ContentTick{ units::ticks (0.0) },
-                                                    .end = dsp::ContentTick{ units::ticks (384.0) } }
+      structure::arrangement::AudioFunction::Entry{
+                                                   .start = dsp::ContentTick{ units::ticks (0.0) },
+                                                   .end = dsp::ContentTick{ units::ticks (384.0) },
+                                                   .kind = structure::arrangement::AudioFunction::Invert{} }
   });
 
   const auto baked_ref =
@@ -151,9 +152,10 @@ TEST_F (BakeAudioClipCommandTest, BakeSharesBlocksOutsideEntryRanges)
   auto &clip = make_clip (source_ref);
   clip.set_transform_entries (
     {
-      structure::arrangement::AudioFunction::Invert{
-                                                    .start = dsp::ContentTick{ units::ticks (0.0) },
-                                                    .end = dsp::ContentTick{ units::ticks (192.0) } }
+      structure::arrangement::AudioFunction::Entry{
+                                                   .start = dsp::ContentTick{ units::ticks (0.0) },
+                                                   .end = dsp::ContentTick{ units::ticks (192.0) },
+                                                   .kind = structure::arrangement::AudioFunction::Invert{} }
   });
 
   const auto baked_ref =
@@ -179,15 +181,44 @@ TEST_F (BakeAudioClipCommandTest, BakeSharesBlocksOutsideEntryRanges)
   EXPECT_EQ (new_spans[1].num_frames, units::samples (4410));
 }
 
+TEST_F (BakeAudioClipCommandTest, BakeMaterializesOnlyEnabledEntries)
+{
+  auto  source_ref = make_ramp_source (u8"BakeDisabledSource", 8820);
+  auto &clip = make_clip (source_ref);
+  clip.set_transform_entries (
+    {
+      structure::arrangement::AudioFunction::Entry{
+                                                   .start = dsp::ContentTick{ units::ticks (0.0) },
+                                                   .end = dsp::ContentTick{ units::ticks (384.0) },
+                                                   .enabled = false,
+                                                   .kind = structure::arrangement::AudioFunction::Invert{} }
+  });
+
+  const auto baked_ref =
+    structure::arrangement::AudioFunction::bake_audio_clip (clip, registry);
+  auto * new_source = baked_ref.get_object_as<dsp::FileAudioSource> ();
+  ASSERT_NE (new_source, nullptr);
+  expect_source_reads_ramp (*new_source, 0);
+
+  // No enabled entries: the baked source shares the original's block
+  const auto original_spans =
+    source_ref.get_object_as<dsp::FileAudioSource> ()->get_spans ();
+  ASSERT_EQ (original_spans.size (), 1u);
+  const auto new_spans = new_source->get_spans ();
+  ASSERT_EQ (new_spans.size (), 1u);
+  EXPECT_EQ (new_spans[0].block, original_spans[0].block);
+}
+
 TEST_F (BakeAudioClipCommandTest, UndoRestoresSourceAndEntries)
 {
   auto  source_ref = make_ramp_source (u8"BakeUndoSource", 8820);
   auto &clip = make_clip (source_ref);
   clip.set_transform_entries (
     {
-      structure::arrangement::AudioFunction::Invert{
-                                                    .start = dsp::ContentTick{ units::ticks (0.0) },
-                                                    .end = dsp::ContentTick{ units::ticks (384.0) } }
+      structure::arrangement::AudioFunction::Entry{
+                                                   .start = dsp::ContentTick{ units::ticks (0.0) },
+                                                   .end = dsp::ContentTick{ units::ticks (384.0) },
+                                                   .kind = structure::arrangement::AudioFunction::Invert{} }
   });
 
   const auto baked_ref =
@@ -222,9 +253,10 @@ TEST_F (BakeAudioClipCommandTest, OtherClipsSharingTheSourceAreUnaffected)
   auto &other_clip = make_clip (source_ref);
   editing_clip.set_transform_entries (
     {
-      structure::arrangement::AudioFunction::Invert{
-                                                    .start = dsp::ContentTick{ units::ticks (0.0) },
-                                                    .end = dsp::ContentTick{ units::ticks (384.0) } }
+      structure::arrangement::AudioFunction::Entry{
+                                                   .start = dsp::ContentTick{ units::ticks (0.0) },
+                                                   .end = dsp::ContentTick{ units::ticks (384.0) },
+                                                   .kind = structure::arrangement::AudioFunction::Invert{} }
   });
 
   const auto baked_ref = structure::arrangement::AudioFunction::bake_audio_clip (
@@ -241,6 +273,39 @@ TEST_F (BakeAudioClipCommandTest, OtherClipsSharingTheSourceAreUnaffected)
     source_ref.id ());
   expect_source_reads_ramp (
     other_clip.get_children_view ().front ()->file_audio_source (), 0);
+}
+
+TEST_F (BakeAudioClipCommandTest, SecondBakeAfterUndoAppliesToRestoredClip)
+{
+  auto  source_ref = make_ramp_source (u8"BakeTwiceSource", 8820);
+  auto &clip = make_clip (source_ref);
+  clip.set_transform_entries (
+    {
+      structure::arrangement::AudioFunction::Entry{
+                                                   .start = dsp::ContentTick{ units::ticks (0.0) },
+                                                   .end = dsp::ContentTick{ units::ticks (384.0) },
+                                                   .kind = structure::arrangement::AudioFunction::Invert{} }
+  });
+
+  const auto baked_ref =
+    structure::arrangement::AudioFunction::bake_audio_clip (clip, registry);
+  BakeAudioClipCommand first (
+    clip_refs.back (), baked_ref, QStringLiteral ("Bake Clip"));
+  first.redo ();
+  first.undo ();
+
+  const auto rebaked_ref =
+    structure::arrangement::AudioFunction::bake_audio_clip (clip, registry);
+  BakeAudioClipCommand second (
+    clip_refs.back (), rebaked_ref, QStringLiteral ("Bake Clip"));
+  second.redo ();
+
+  EXPECT_TRUE (clip.transform_entries ().empty ());
+  const auto &new_source =
+    clip.get_children_view ().front ()->file_audio_source ();
+  expect_source_reads_ramp (new_source, 8820);
+  expect_source_reads_ramp (
+    *source_ref.get_object_as<dsp::FileAudioSource> (), 0);
 }
 
 } // namespace zrythm::commands

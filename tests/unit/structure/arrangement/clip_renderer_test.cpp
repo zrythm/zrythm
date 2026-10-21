@@ -655,11 +655,13 @@ TEST_F (ClipRendererTest, SerializeAudioClipAppliesWholeClipInvertEntry)
 
   // Invert the clip's audible span; the entry applies before gain and
   // fades, which are all multiplicative, so every sample negates exactly
-  AudioFunction::Invert entry;
-  entry.start = dsp::ContentTick{ units::ticks (0.) };
-  entry.end =
-    audio_clip->clipStartPosition ()->asTick ()
-    + audio_clip->length ()->asTick ();
+  AudioFunction::Entry entry{
+    .start = dsp::ContentTick{ units::ticks (0.) },
+    .end =
+      audio_clip->clipStartPosition ()->asTick ()
+      + audio_clip->length ()->asTick (),
+    .kind = AudioFunction::Invert{}
+  };
   audio_clip->set_transform_entries ({ entry });
 
   juce::AudioSampleBuffer transformed;
@@ -672,6 +674,37 @@ TEST_F (ClipRendererTest, SerializeAudioClipAppliesWholeClipInvertEntry)
         {
           EXPECT_NEAR (
             transformed.getSample (ch, i), -base.getSample (ch, i), 1e-6)
+            << "ch " << ch << " frame " << i;
+        }
+    }
+}
+
+TEST_F (ClipRendererTest, SerializeAudioClipSkipsDisabledEntries)
+{
+  // Baseline without entries
+  juce::AudioSampleBuffer base;
+  ClipRenderer::serialize_to_buffer (*audio_clip, base);
+
+  // The same whole-clip invert as the test above, disabled
+  AudioFunction::Entry entry{
+    .start = dsp::ContentTick{ units::ticks (0.) },
+    .end =
+      audio_clip->clipStartPosition ()->asTick ()
+      + audio_clip->length ()->asTick (),
+    .enabled = false,
+    .kind = AudioFunction::Invert{}
+  };
+  audio_clip->set_transform_entries ({ entry });
+
+  juce::AudioSampleBuffer transformed;
+  ClipRenderer::serialize_to_buffer (*audio_clip, transformed);
+
+  ASSERT_EQ (transformed.getNumSamples (), base.getNumSamples ());
+  for (const auto ch : std::views::iota (0, 2))
+    {
+      for (const auto i : std::views::iota (0, base.getNumSamples ()))
+        {
+          EXPECT_FLOAT_EQ (transformed.getSample (ch, i), base.getSample (ch, i))
             << "ch " << ch << " frame " << i;
         }
     }
@@ -704,9 +737,11 @@ TEST_F (ClipRendererTest, SerializeAudioClipRangedReverseRepeatsPerLoopIteration
   constexpr int loop_end_frame = 750;
   constexpr int loop_start_frame = 250;
 
-  AudioFunction::Reverse entry;
-  entry.start = looped_clip->clipStartPosition ()->asTick ();
-  entry.end = looped_clip->loopEndPosition ()->asTick ();
+  AudioFunction::Entry entry{
+    .start = looped_clip->clipStartPosition ()->asTick (),
+    .end = looped_clip->loopEndPosition ()->asTick (),
+    .kind = AudioFunction::Reverse{}
+  };
   looped_clip->set_transform_entries ({ entry });
 
   juce::AudioSampleBuffer transformed;

@@ -329,16 +329,19 @@ TEST_F (
     // curve payload shapes
     clip->set_transform_entries (
       {
-        structure::arrangement::AudioFunction::Invert{
-                                                      .start = dsp::ContentTick{ units::ticks (0.) },
-                                                      .end = dsp::ContentTick{ units::ticks (100.) } },
-        structure::arrangement::AudioFunction::NormalizePeak{
-                                                      .start = dsp::ContentTick{ units::ticks (0.) },
-                                                      .end = dsp::ContentTick{ units::ticks (100.) },
-                                                      .gain = 0.5 },
-        structure::arrangement::AudioFunction::FadeOut{
-                                                      .start = dsp::ContentTick{ units::ticks (0.) },
-                                                      .end = dsp::ContentTick{ units::ticks (100.) } },
+        structure::arrangement::AudioFunction::Entry{
+                                                     .start = dsp::ContentTick{ units::ticks (0.) },
+                                                     .end = dsp::ContentTick{ units::ticks (100.) },
+                                                     .kind = structure::arrangement::AudioFunction::Invert{}  },
+        structure::arrangement::AudioFunction::Entry{
+                                                     .start = dsp::ContentTick{ units::ticks (0.) },
+                                                     .end = dsp::ContentTick{ units::ticks (100.) },
+                                                     .kind =
+            structure::arrangement::AudioFunction::NormalizePeak{ .gain = 0.5 }                               },
+        structure::arrangement::AudioFunction::Entry{
+                                                     .start = dsp::ContentTick{ units::ticks (0.) },
+                                                     .end = dsp::ContentTick{ units::ticks (100.) },
+                                                     .kind = structure::arrangement::AudioFunction::FadeOut{} },
     });
     track->lanes ()->at (0)->structure::arrangement::
       ArrangerObjectOwner<structure::arrangement::AudioClip>::add_object (

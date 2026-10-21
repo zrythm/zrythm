@@ -108,8 +108,8 @@ audio_function_apply (
   std::optional<utils::Utf8String>                        uri);
 
 // ==========================================================================
-// Function kinds. Each kind's instance is also the persisted transform
-// entry an audio clip stores, carrying the content range it applies to.
+// Function kinds. A transform entry stores one kind instance, together
+// with the content range it applies to.
 // ==========================================================================
 
 namespace AudioFunction
@@ -121,13 +121,10 @@ struct Invert
   static constexpr std::string_view kId = "invert-polarity";
   static constexpr int              kMinimumSelectionCount = 0;
 
-  /// Content time range the entry applies to, [start, end).
-  dsp::ContentTick start{};
-  dsp::ContentTick end{};
-
   static utils::Utf8String label (bool translate = false);
   static std::vector<EditorFunctionParam<Invert>> params ();
   static void apply (std::span<float> range, const Invert &kind);
+  QString     detail () const;
 
   bool operator== (const Invert &) const = default;
 };
@@ -138,13 +135,10 @@ struct Reverse
   static constexpr std::string_view kId = "reverse";
   static constexpr int              kMinimumSelectionCount = 0;
 
-  /// Content time range the entry applies to, [start, end).
-  dsp::ContentTick start{};
-  dsp::ContentTick end{};
-
   static utils::Utf8String label (bool translate = false);
   static std::vector<EditorFunctionParam<Reverse>> params ();
   static void apply (std::span<float> range, const Reverse &kind);
+  QString     detail () const;
 
   bool operator== (const Reverse &) const = default;
 };
@@ -156,16 +150,13 @@ struct NormalizePeak
   static constexpr std::string_view kId = "normalize-peak";
   static constexpr int              kMinimumSelectionCount = 0;
 
-  /// Content time range the entry applies to, [start, end).
-  dsp::ContentTick start{};
-  dsp::ContentTick end{};
-
   /// Sample multiplier applied by the entry.
   double gain = 1.0;
 
   static utils::Utf8String label (bool translate = false);
   static std::vector<EditorFunctionParam<NormalizePeak>> params ();
   static void apply (std::span<float> range, const NormalizePeak &kind);
+  QString     detail () const;
 
   bool operator== (const NormalizePeak &) const = default;
 };
@@ -177,16 +168,13 @@ struct NormalizeRms
   static constexpr std::string_view kId = "normalize-rms";
   static constexpr int              kMinimumSelectionCount = 0;
 
-  /// Content time range the entry applies to, [start, end).
-  dsp::ContentTick start{};
-  dsp::ContentTick end{};
-
   /// Sample multiplier applied by the entry.
   double gain = 1.0;
 
   static utils::Utf8String label (bool translate = false);
   static std::vector<EditorFunctionParam<NormalizeRms>> params ();
   static void apply (std::span<float> range, const NormalizeRms &kind);
+  QString     detail () const;
 
   bool operator== (const NormalizeRms &) const = default;
 };
@@ -197,16 +185,13 @@ struct FadeIn
   static constexpr std::string_view kId = "fade-in";
   static constexpr int              kMinimumSelectionCount = 0;
 
-  /// Content time range the entry applies to, [start, end).
-  dsp::ContentTick start{};
-  dsp::ContentTick end{};
-
   /// Curve shape of the ramp.
   dsp::CurveOptions curve{};
 
   static utils::Utf8String label (bool translate = false);
   static std::vector<EditorFunctionParam<FadeIn>> params ();
   static void apply (std::span<float> range, const FadeIn &kind);
+  QString     detail () const;
 
   bool operator== (const FadeIn &) const = default;
 };
@@ -217,28 +202,73 @@ struct FadeOut
   static constexpr std::string_view kId = "fade-out";
   static constexpr int              kMinimumSelectionCount = 0;
 
-  /// Content time range the entry applies to, [start, end).
-  dsp::ContentTick start{};
-  dsp::ContentTick end{};
-
   /// Curve shape of the ramp.
   dsp::CurveOptions curve{};
 
   static utils::Utf8String label (bool translate = false);
   static std::vector<EditorFunctionParam<FadeOut>> params ();
   static void apply (std::span<float> range, const FadeOut &kind);
+  QString     detail () const;
 
   bool operator== (const FadeOut &) const = default;
 };
 
-using Entry =
+/// The function kind of a transform entry, with its parameters.
+using Kind =
   std::variant<Invert, Reverse, NormalizePeak, NormalizeRms, FadeIn, FadeOut>;
+
+/**
+ * @brief One entry in a clip's transform stack.
+ *
+ * An entry applies one function kind to a content time range. Entries
+ * compose in list order; disabled entries are skipped when the clip is
+ * rendered.
+ */
+struct Entry
+{
+  Q_GADGET
+  QML_VALUE_TYPE (audioTransformEntry)
+  QML_UNCREATABLE ("")
+  Q_PROPERTY (QString label READ label CONSTANT)
+  Q_PROPERTY (QString kindId READ kindId CONSTANT)
+  Q_PROPERTY (bool enabled READ is_enabled CONSTANT)
+  Q_PROPERTY (double startTicks READ start_ticks CONSTANT)
+  Q_PROPERTY (double endTicks READ end_ticks CONSTANT)
+  Q_PROPERTY (QString detail READ detail CONSTANT)
+
+public:
+  /// Content time range the entry applies to, [start, end).
+  dsp::ContentTick start{};
+  dsp::ContentTick end{};
+
+  /// Whether the entry is applied when the clip is rendered.
+  bool enabled = true;
+
+  /// Function kind with its parameters.
+  Kind kind{};
+
+  bool operator== (const Entry &) const = default;
+
+  /// User-visible name of the entry's function kind.
+  QString label () const;
+
+  /// Function id of the entry's kind, e.g. "fade-in".
+  QString kindId () const;
+
+  /// Short summary of the kind's parameters, empty for kinds without
+  /// parameters.
+  QString detail () const;
+
+  bool   is_enabled () const { return enabled; }
+  double start_ticks () const { return start.asDouble (); }
+  double end_ticks () const { return end.asDouble (); }
+};
 
 /**
  * @brief The contract every audio function kind fulfills.
  *
- * A kind declares its identity, dialog parameters, and its in-place
- * effect on one channel's sample range.
+ * A kind declares its identity, dialog parameters, its in-place effect
+ * on one channel's sample range, and a short summary of its parameters.
  */
 template <typename KindT>
 concept AudioFunctionKind = requires (std::span<float> range, const KindT &kind) {
@@ -247,11 +277,16 @@ concept AudioFunctionKind = requires (std::span<float> range, const KindT &kind)
   { KindT::label (false) } -> std::same_as<utils::Utf8String>;
   { KindT::params () };
   { KindT::apply (range, kind) } -> std::same_as<void>;
+  { kind.detail () } -> std::convertible_to<QString>;
 };
 
 /// Returns the kind with the given function id, if any.
-std::optional<Entry>
+std::optional<Kind>
 kind_from_id (std::string_view id);
+
+/// Returns the user-visible name of the given function kind.
+utils::Utf8String
+label (const Kind &kind, bool translate = false);
 
 /// Returns the user-visible name of the kind held by @p entry.
 utils::Utf8String
@@ -267,8 +302,8 @@ void
 entry_from_json (const nlohmann::json &j, Entry &entry);
 
 /**
- * @brief Returns the clip's un-looped content window with all of the
- * clip's transform entries applied.
+ * @brief Returns the clip's un-looped content window with each enabled
+ * transform entry applied.
  *
  * The window starts at source frame 0 and ends at the clip's audible end,
  * in source sample space. A content tick maps to the same source frame
@@ -280,10 +315,11 @@ audio_clip_content_window (const AudioClip &clip);
 /**
  * @brief Materializes the clip's transform entries into a new source.
  *
- * The clip's source is flushed, its content window is rendered with all
- * entries applied, and a new source is created in @p registry sharing
- * every block outside the union of the entry ranges; that range is
- * replaced with the rendered audio. The clip itself is not modified.
+ * The clip's source is flushed, its content window is rendered with
+ * each enabled entry applied, and a new source is created in @p registry
+ * sharing every block outside the union of the enabled entry ranges;
+ * that range is replaced with the rendered audio. The clip itself is
+ * not modified.
  *
  * @return Reference to the new source, registered in @p registry.
  */
@@ -305,16 +341,16 @@ normalize_gain (
   bool             rms);
 
 /**
- * @brief Applies one entry to a frame range of a buffer.
+ * @brief Applies one function kind to a frame range of a buffer.
  *
- * The entry applies to the samples in [start_frame, start_frame +
+ * The kind applies to the samples in [start_frame, start_frame +
  * num_frames) of every channel, in place. The range is clamped to the
  * buffer's bounds; an empty clamped range is a no-op.
  */
 void
-apply_entry_to_buffer (
+apply_kind_to_buffer (
   utils::audio::AudioBuffer &buffer,
-  const Entry               &entry,
+  const Kind                &kind,
   units::sample_u64_t        start_frame,
   units::sample_u64_t        num_frames);
 
@@ -329,7 +365,7 @@ inline constexpr bool all_kinds_fulfilled_v<std::variant<Kinds...>> =
 } // namespace detail
 
 static_assert (
-  detail::all_kinds_fulfilled_v<AudioFunction::Entry>,
+  detail::all_kinds_fulfilled_v<AudioFunction::Kind>,
   "every audio function kind must fulfill the AudioFunctionKind contract");
 
 }

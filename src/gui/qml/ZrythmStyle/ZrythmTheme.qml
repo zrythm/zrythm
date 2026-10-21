@@ -334,6 +334,28 @@ QtObject {
     return Qt.rgba(srgbChannel(rgb[0]), srgbChannel(rgb[1]), srgbChannel(rgb[2]), 1);
   }
 
+  // A palette of @p total colors with hues evenly spread from the
+  // accent hue: slot 0 shares the accent's hue, and slot i steps by
+  // 360/@p total degrees. Fills keep the vivid base lightness in both
+  // modes; in light mode the lightness shifts darker away from the
+  // light surface only until the fill passes 3:1 against it
+  // (DESIGN.md "Colors", non-text elements / mode-exempt hues).
+  function distinctColor(index: int, total: int): color {
+    if (total <= 0)
+      return primaryColor;
+    const baseHue = rgbToOklch(primaryColor)[2];
+    const hue = (baseHue + index * 360 / total) % 360;
+    let l = 0.72;
+    let color = oklchColor(l, 0.15, hue);
+    if (!darkMode) {
+      while (l > 0.45 && contrastRatio(color, pageColor) < 3.0) {
+        l -= 0.02;
+        color = oklchColor(l, 0.15, hue);
+      }
+    }
+    return color;
+  }
+
   // The arranger color recipe's OKLCH anchors (DESIGN.md "Clips").
   // Every surface keeps the source hue and pins it to a fixed
   // lightness/chroma pair per theme, given as [dark, light]; the
