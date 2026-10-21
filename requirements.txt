@@ -1,5 +1,6 @@
 accessible-pygments==0.0.5
 alabaster==1.0.0
+attrs==26.1.0
 babel==2.18.0
 beautifulsoup4==4.15.0
 boolean.py==5.0
@@ -31,6 +32,8 @@ imagesize==2.0.1
 iniconfig==2.3.1
 Jinja2==3.1.6
 jmespath==1.1.0
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
 license-expression==30.4.4
 MarkupSafe==3.0.4
 nodeenv==1.11.0
@@ -50,8 +53,10 @@ pytest==9.1.1
 python-dateutil==2.9.0.post0
 python-discovery==1.6.4
 PyYAML==6.0.3
+referencing==0.37.0
 requests==2.34.2
 roman-numerals==4.1.0
+rpds-py==2026.9.1
 s3transfer==0.19.2
 six==1.17.0
 snowballstemmer==3.1.1

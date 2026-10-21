@@ -24,6 +24,7 @@ sphinxcontrib-svg2pdfconverter
 
 # Code quality
 pre_commit
+jsonschema
 
 # AWS/S3 operations
 boto3
