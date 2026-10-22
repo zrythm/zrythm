@@ -57,6 +57,7 @@ target_sources(zrythm_utils_lib
       bidirectional_map.h
       chromaprint.h
       color.h
+      color_math.h
       compression.h
       concurrency.h
       datetime.h

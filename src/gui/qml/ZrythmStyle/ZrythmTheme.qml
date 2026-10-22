@@ -8,6 +8,7 @@ pragma Singleton
 
 import QtQuick
 import QtQuick.Templates as T
+import ZrythmUtils
 
 QtObject {
   id: root
@@ -259,79 +260,20 @@ QtObject {
     return arg.hslLightness < 0.5;
   }
 
-  // WCAG 2.x relative luminance of a color
-  function luminance(arg: color): real {
-    return 0.2126 * linearChannel(arg.r) + 0.7152 * linearChannel(arg.g) + 0.0722 * linearChannel(arg.b);
-  }
-
-  // A color channel converted to its WCAG 2.x linear-light value
-  function linearChannel(v: real): real {
-    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-  }
-
   // WCAG 2.x contrast ratio between two colors (1 to 21)
   function contrastRatio(a: color, b: color): real {
-    const la = luminance(a);
-    const lb = luminance(b);
-    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+    return ColorMath.contrastRatio(a, b);
   }
 
-  // A linear-light channel converted back to its sRGB value
-  function srgbChannel(v: real): real {
-    return v <= 0.0031308 ? 12.92 * v : Math.min(1.0, 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
-  }
-
-  // sRGB color converted to OKLCH as [L, chroma, hue in degrees].
-  // Coefficients from Ottosson's OKLab reference implementation
-  // (bottosson.github.io/posts/oklab)
+  // sRGB color converted to OKLCH as [L, chroma, hue in degrees]
   function rgbToOklch(c: color): var {
-    const r = linearChannel(c.r);
-    const g = linearChannel(c.g);
-    const b = linearChannel(c.b);
-    const lms0 = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
-    const lms1 = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
-    const lms2 = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
-    const lightness = 0.2104542553 * lms0 + 0.7936177850 * lms1 - 0.0040720468 * lms2;
-    const a = 1.9779984951 * lms0 - 2.4285922050 * lms1 + 0.4505937099 * lms2;
-    const bb = 0.0259040371 * lms0 + 0.7827717662 * lms1 - 0.8086757660 * lms2;
-    const chroma = Math.sqrt(a * a + bb * bb);
-    let hue = Math.atan2(bb, a) * 180 / Math.PI;
-    if (hue < 0)
-      hue += 360;
-    return [lightness, chroma, hue];
+    return ColorMath.rgbToOklch(c);
   }
 
   // OKLCH converted back to sRGB, with the chroma reduced until the
-  // color fits the sRGB gamut. Coefficients from Ottosson's OKLab
-  // reference implementation (bottosson.github.io/posts/oklab)
+  // color fits the sRGB gamut
   function oklchColor(l: real, c: real, h: real): color {
-    const toLinear = (ll, aa, bb) => {
-      const lms0 = Math.pow(0.9999999985 * ll + 0.3963377922 * aa + 0.2158037581 * bb, 3);
-      const lms1 = Math.pow(1.0000000089 * ll - 0.1055613423 * aa - 0.0638541748 * bb, 3);
-      const lms2 = Math.pow(1.0000000547 * ll - 0.0894841821 * aa - 1.2914855379 * bb, 3);
-      return [
-        4.0767416613 * lms0 - 3.3077115904 * lms1 + 0.2309699287 * lms2,
-        -1.2684380041 * lms0 + 2.6097574007 * lms1 - 0.3413193963 * lms2,
-        -0.0041960865 * lms0 - 0.7034186145 * lms1 + 1.7076147009 * lms2];
-    };
-    const rad = h * Math.PI / 180;
-    const inGamut = rgb => rgb.every(v => v >= -0.001 && v <= 1.001);
-    let chroma = c;
-    let rgb = toLinear(l, chroma * Math.cos(rad), chroma * Math.sin(rad));
-    if (!inGamut(rgb)) {
-      let lo = 0;
-      let hi = c;
-      for (let i = 0; i < 24; i++) {
-        chroma = (lo + hi) / 2;
-        rgb = toLinear(l, chroma * Math.cos(rad), chroma * Math.sin(rad));
-        if (inGamut(rgb))
-          lo = chroma;
-        else
-          hi = chroma;
-      }
-      rgb = toLinear(l, lo * Math.cos(rad), lo * Math.sin(rad));
-    }
-    return Qt.rgba(srgbChannel(rgb[0]), srgbChannel(rgb[1]), srgbChannel(rgb[2]), 1);
+    return ColorMath.oklchColor(l, c, h);
   }
 
   // A palette of @p total colors with hues evenly spread from the

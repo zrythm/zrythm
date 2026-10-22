@@ -7,6 +7,7 @@ add_executable(zrythm_utils_unit_tests
   audio_file_test.cpp
   audio_file_writer_test.cpp
   audio_test.cpp
+  color_test.cpp
   compression_test.cpp
   concurrency_test.cpp
   datetime_test.cpp

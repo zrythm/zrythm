@@ -12,6 +12,8 @@ qt_add_qml_module(zrythm_style
   URI ZrythmStyle
   VERSION 1.0
   IMPORTS QtQuick.Controls.Basic/6.11 # fallback to Basic
+  DEPENDENCIES
+    TARGET zrythm_utils_lib
   SOURCES
     shortcututils.h
   QML_FILES

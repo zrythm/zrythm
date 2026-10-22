@@ -11,6 +11,16 @@
 namespace zrythm::utils
 {
 
+/**
+ * A color in OKLCH space: lightness, chroma, and hue in degrees in [0, 360).
+ */
+struct Oklch
+{
+  double lightness = 0.0;
+  double chroma = 0.0;
+  double hue = 0.0;
+};
+
 class Color final
 {
 public:
@@ -118,6 +128,47 @@ public:
   Color get_contrast_color () const;
 
   QColor to_qcolor () const;
+
+  /**
+   * @brief Returns the color's OKLCH representation.
+   *
+   * Coefficients from Ottosson's OKLab reference implementation
+   * (bottosson.github.io/posts/oklab).
+   */
+  [[nodiscard]] Oklch to_oklch () const;
+
+  /**
+   * @brief Converts OKLCH coordinates to a color.
+   *
+   * The chroma is reduced until the color fits the sRGB gamut. The result
+   * is opaque; a negative chroma yields opaque black.
+   * Coefficients from Ottosson's OKLab reference implementation
+   * (bottosson.github.io/posts/oklab).
+   *
+   * @param lightness Lightness.
+   * @param chroma Chroma; must be >= 0, and reduced as needed to fit the
+   * sRGB gamut.
+   * @param hue Hue in degrees.
+   */
+  [[nodiscard]] static Color
+  from_oklch (double lightness, double chroma, double hue);
+
+  /**
+   * @brief Converts @p oklch to a color.
+   *
+   * The chroma is reduced until the color fits the sRGB gamut.
+   */
+  [[nodiscard]] static Color from_oklch (const Oklch &oklch);
+
+  /**
+   * @brief Returns the WCAG 2.x relative luminance of the color (0 to 1).
+   */
+  [[nodiscard]] double luminance () const;
+
+  /**
+   * @brief Returns the WCAG 2.x contrast ratio between two colors (1 to 21).
+   */
+  [[nodiscard]] static double contrast_ratio (const Color &a, const Color &b);
 
   /**
    * Gets the color the widget should be.

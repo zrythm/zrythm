@@ -8,24 +8,6 @@ import ZrythmStyle
 TestCase {
   name: "ZrythmTheme"
 
-  // The OKLCH conversion matrices round-trip through sRGB (in-gamut
-  // samples; out-of-gamut chroma clamps by design)
-  function test_oklch_round_trip() {
-    const samples = [
-      [0.40, 0.04, 185], [0.40, 0.05, 70], [0.89, 0.03, 300],
-      [0.82, 0.10, 145], [0.50, 0.05, 0],
-    ];
-    for (const [l, c, h] of samples) {
-      const rgb = ZrythmTheme.oklchColor(l, c, h);
-      const [rl, rc, rh] = ZrythmTheme.rgbToOklch(rgb);
-      verify(Math.abs(rl - l) < 0.005, "lightness " + rl + " != " + l);
-      verify(Math.abs(rc - c) < 0.008, "chroma " + rc + " != " + c);
-      const hueDelta = Math.abs(rh - h) % 360;
-      verify(Math.min(hueDelta, 360 - hueDelta) < 0.5,
-             "hue " + rh + " != " + h);
-    }
-  }
-
   // Compares with a ±1/255 tolerance: QColor quantizes through
   // 16-bit channels
   function compareNear(actualColor: color, expectedHex: string): void {
@@ -37,26 +19,6 @@ TestCase {
            && Math.abs(actualColor.g - expected.g) <= 1 / 255
            && Math.abs(actualColor.b - expected.b) <= 1 / 255,
            actualColor + " != " + expectedHex);
-  }
-
-  // Worked example from DESIGN.md "Clips"
-  function test_worked_example_values() {
-    compareNear(ZrythmTheme.oklchColor(0.30, 0.065, 185), "#003631");
-    compareNear(ZrythmTheme.oklchColor(0.38, 0.065, 185), "#054d47");
-    compareNear(ZrythmTheme.oklchColor(0.22, 0.065, 185), "#00211d");
-    compareNear(ZrythmTheme.oklchColor(0.60, 0.21, 185), "#009488");
-    compareNear(ZrythmTheme.oklchColor(0.30, 0.065, 70), "#422700");
-    compareNear(ZrythmTheme.oklchColor(0.38, 0.065, 70), "#583c17");
-    compareNear(ZrythmTheme.oklchColor(0.22, 0.065, 70), "#2a1500");
-    compareNear(ZrythmTheme.oklchColor(0.60, 0.21, 70), "#b17000");
-    compareNear(ZrythmTheme.oklchColor(0.89, 0.06, 185), "#aee8e0");
-    compareNear(ZrythmTheme.oklchColor(0.84, 0.06, 185), "#9ed8cf");
-    compareNear(ZrythmTheme.oklchColor(0.81, 0.06, 185), "#95cec6");
-    compareNear(ZrythmTheme.oklchColor(0.44, 0.18, 185), "#006058");
-    compareNear(ZrythmTheme.oklchColor(0.89, 0.06, 70), "#f5d5b0");
-    compareNear(ZrythmTheme.oklchColor(0.84, 0.06, 70), "#e4c4a1");
-    compareNear(ZrythmTheme.oklchColor(0.81, 0.06, 70), "#dbbb97");
-    compareNear(ZrythmTheme.oklchColor(0.44, 0.18, 70), "#744700");
   }
 
   // The full single-pass API on live sources (dark mode)
