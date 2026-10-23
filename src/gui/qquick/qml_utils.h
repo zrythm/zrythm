@@ -21,6 +21,12 @@ public:
   Q_INVOKABLE static QUrl    localFileToQUrl (const QString &path);
   Q_INVOKABLE static QString pathBasename (const QString &path);
 
+  /**
+   * @brief Returns the directory containing @p url, without a trailing
+   * separator.
+   */
+  Q_INVOKABLE static QUrl parentFolder (const QUrl &url);
+
   Q_INVOKABLE static float       amplitudeToDbfs (float amplitude);
   Q_INVOKABLE static QStringList splitTextLines (const QString &text);
   Q_INVOKABLE static QStringList removeDuplicates (const QStringList &list);

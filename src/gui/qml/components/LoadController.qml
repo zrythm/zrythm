@@ -14,16 +14,18 @@ Item {
     text: qsTr("Open…")
 
     onTriggered: {
-      root.loadFolderDialog.open();
+      root.loadFileDialog.open();
     }
   }
-  property FolderDialog loadFolderDialog: FolderDialog {
+  property FileDialog loadFileDialog: FileDialog {
     currentFolder: QmlUtils.localFileToQUrl(GlobalState.application.appSettings.newProjectDirectory)
-    options: FolderDialog.ShowDirsOnly
+    nameFilters: [qsTr("Zrythm projects (*.zpj)"), qsTr("All files (*)")]
     title: qsTr("Open Project")
 
     onAccepted: {
-      root.loadProject(QmlUtils.toPathString(selectedFolder));
+      // loadProject() expects the project directory containing the
+      // project.zpj file
+      root.loadProject(QmlUtils.toPathString(QmlUtils.parentFolder(root.loadFileDialog.selectedFile)));
     }
   }
   property QFutureQmlWrapper loadFuture
@@ -43,6 +45,6 @@ Item {
   }
 
   function openLoadDialog() {
-    root.loadFolderDialog.open();
+    root.loadFileDialog.open();
   }
 }

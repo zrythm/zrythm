@@ -48,6 +48,12 @@ QmlUtils::pathBasename (const QString &path)
     .to_qstring ();
 }
 
+QUrl
+QmlUtils::parentFolder (const QUrl &url)
+{
+  return url.adjusted (QUrl::RemoveFilename | QUrl::StripTrailingSlash);
+}
+
 float
 QmlUtils::amplitudeToDbfs (float amplitude)
 {
