@@ -12,6 +12,12 @@ import ZrythmStyle 1.0
 T.Dialog {
   id: control
 
+  // In-scene dialogs center on the window's overlay (dialogs opened as
+  // native windows via popupType are placed by the window manager and
+  // ignore in-scene geometry)
+  parent: Overlay.overlay
+  anchors.centerIn: parent
+
   implicitHeight: Math.max(
     implicitBackgroundHeight + topInset + bottomInset,
     contentHeight + topPadding + bottomPadding
