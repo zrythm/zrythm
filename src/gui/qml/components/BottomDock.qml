@@ -37,9 +37,6 @@ ColumnLayout {
       currentIndex: root.session.uiState.clipEditor.clipObject ? 1 : 0
 
       PlaceholderPage {
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-        Layout.fillHeight: true
-        Layout.fillWidth: true
         description: qsTr("Select a clip from the timeline")
         icon.source: ResourceManager.getIconUrl("zrythm-dark", "roadmap.svg")
         title: qsTr("No clip selected")
