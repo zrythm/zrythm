@@ -74,6 +74,9 @@ class DeviceManager
   Q_PROPERTY (
     QVector<zrythm::gui::backend::MidiInputInfo> availableMidiInputs READ
       availableMidiInputs NOTIFY availableMidiInputsChanged)
+  Q_PROPERTY (
+    QString currentAudioDeviceName READ currentAudioDeviceName NOTIFY
+      currentAudioDeviceNameChanged)
 
 public:
   using XmlStateGetter = std::function<std::unique_ptr<juce::XmlElement> ()>;
@@ -121,6 +124,15 @@ public:
   QVector<MidiInputInfo> availableMidiInputs () const;
   Q_SIGNAL void          availableMidiInputsChanged ();
 
+  /**
+   * @brief Name of the currently open audio device.
+   *
+   * Empty when no audio device is open (e.g. no device available or opening
+   * failed).
+   */
+  [[nodiscard]] QString currentAudioDeviceName () const;
+  Q_SIGNAL void         currentAudioDeviceNameChanged ();
+
   dsp::MidiDeviceBuffer *
   midi_buffer_for_device (const utils::Utf8String &identifier) const;
 
@@ -148,6 +160,7 @@ private:
     {
       Q_EMIT dev_manager_.availableAudioInputsChanged ();
       Q_EMIT dev_manager_.availableMidiInputsChanged ();
+      Q_EMIT dev_manager_.currentAudioDeviceNameChanged ();
       dev_manager_.reconcile_midi_buffers ();
     }
 

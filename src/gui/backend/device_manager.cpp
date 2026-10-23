@@ -114,6 +114,7 @@ DeviceManager::initialize (
     }
   Q_EMIT availableAudioInputsChanged ();
   Q_EMIT availableMidiInputsChanged ();
+  Q_EMIT currentAudioDeviceNameChanged ();
   reconcile_midi_buffers ();
 }
 
@@ -226,6 +227,15 @@ DeviceManager::availableMidiInputs () const
         }
     }
   return result;
+}
+
+QString
+DeviceManager::currentAudioDeviceName () const
+{
+  auto * dev = getCurrentAudioDevice ();
+  return dev == nullptr
+           ? QString ()
+           : utils::Utf8String::from_juce_string (dev->getName ()).to_qstring ();
 }
 
 dsp::MidiDeviceBuffer *
