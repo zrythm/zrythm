@@ -26,7 +26,8 @@ Arranger {
   // renders identically to in-clip waveforms (DESIGN.md "Clips")
   readonly property color waveformInk: ZrythmTheme.contentColor (
     root.audioClip && root.audioClip.color.useColor
-      ? root.audioClip.color.color : root.track.color, false)
+      ? root.audioClip.color.color : TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode),
+      false)
   property QObjectPropertyOperator fadePropertyOperator: null
   readonly property Track track: clipEditor.track
 

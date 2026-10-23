@@ -33,7 +33,7 @@ Control {
   required property bool isSelected
   // The object's color: its own color where set, else the track color
   readonly property color objectBaseColor:
-    (arrangerObject.color && arrangerObject.color.useColor) ? arrangerObject.color.color : (track ? track.color : palette.button);
+    (arrangerObject.color && arrangerObject.color.useColor) ? arrangerObject.color.color : (track ? TrackColors.effectiveColor(track, ZrythmTheme.darkMode) : palette.button);
   // The role's derived colors in one pass; they depend only on the
   // base color and the theme, so state changes (hover, press,
   // selection, muted) re-run only the state pipeline below, never

@@ -57,5 +57,40 @@ public:
   {
     return Color::contrast_ratio (Color (a), Color (b));
   }
+
+  /**
+   * @brief Derives an OKLCH color at the given hue and chroma.
+   *
+   * When @p dark is false, the lightness is lowered in 0.02 steps
+   * until the color reaches @p contrastTarget against
+   * @p lightReferenceColor, or until @p lightnessFloor is reached.
+   *
+   * @param h Hue in degrees.
+   * @param lightness The starting lightness.
+   */
+  Q_INVOKABLE static QColor oklchColorWithContrast (
+    double        h,
+    double        chroma,
+    double        lightness,
+    bool          dark,
+    const QColor &lightReferenceColor,
+    double        contrastTarget,
+    double        lightnessFloor)
+  {
+    if (dark)
+      return oklchColor (lightness, chroma, h);
+
+    double l = lightness;
+    QColor color = oklchColor (l, chroma, h);
+    while (
+      Color::contrast_ratio (Color (color), Color (lightReferenceColor))
+        < contrastTarget
+      && l - 0.02 >= lightnessFloor)
+      {
+        l -= 0.02;
+        color = oklchColor (l, chroma, h);
+      }
+    return color;
+  }
 };
 } // namespace zrythm::utils

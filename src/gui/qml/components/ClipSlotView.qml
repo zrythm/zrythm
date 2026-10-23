@@ -26,7 +26,9 @@ Control {
     anchors.fill: parent
     clip: true
     color: {
-      let c = root.clipSlot.clipObject ? root.track.color : palette.button;
+      let c = root.clipSlot.clipObject
+        ? TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode)
+        : palette.button;
       return ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.activeFocus, tapHandler.pressed);
     }
     radius: ZrythmTheme.textFieldRadius

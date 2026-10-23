@@ -294,7 +294,10 @@ protected:
           }
       };
     operator_ = std::make_unique<ArrangerObjectSelectionOperator> (
-      *undo_stack_, mock_owner_provider, *factory, registry_, clipboard_,
+      *undo_stack_, mock_owner_provider,
+      [] (structure::arrangement::ArrangerObject *)
+        -> structure::tracks::Track * { return nullptr; },
+      *factory, registry_, clipboard_,
       [this] () { return current_project_id_; }, mock_enumerator);
   }
 
@@ -350,8 +353,10 @@ protected:
         obj_var);
     };
     return std::make_unique<ArrangerObjectSelectionOperator> (
-      *undo_stack_, lane_owner_provider, *factory, registry_, clipboard_,
-      [this] () { return current_project_id_; },
+      *undo_stack_, lane_owner_provider,
+      [lane] (structure::arrangement::ArrangerObject *)
+        -> structure::tracks::Track * { return lane->owner_list ()->track (); },
+      *factory, registry_, clipboard_, [this] () { return current_project_id_; },
       [] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor) { });
   }
 
@@ -536,6 +541,8 @@ protected:
           return static_cast<structure::arrangement::ArrangerObjectOwner<
             structure::arrangement::MidiClip> *> (nullptr);
         },
+        [] (structure::arrangement::ArrangerObject *)
+          -> structure::tracks::Track * { return nullptr; },
         arranger_factory, registry, clipboard,
         [project_id] () { return project_id; },
         [] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor) { });
@@ -2972,8 +2979,11 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtWithMissingOwnerIsNoOp)
       structure::arrangement::MidiClip> *> (nullptr);
   };
   ArrangerObjectSelectionOperator op_with_no_owner (
-    *undo_stack_, null_owner_provider, *factory, registry_, clipboard_,
-    [this] () { return current_project_id_; },
+    *undo_stack_, null_owner_provider,
+    [] (structure::arrangement::ArrangerObject *) -> structure::tracks::Track * {
+      return nullptr;
+    },
+    *factory, registry_, clipboard_, [this] () { return current_project_id_; },
     [] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor) { });
 
   select_object (midi_clip_ref);
@@ -3690,8 +3700,10 @@ TEST_F (
       obj_var);
   };
   ArrangerObjectSelectionOperator lane_operator (
-    *undo_stack_, lane_owner_provider, *factory, registry_, clipboard_,
-    [this] () { return current_project_id_; },
+    *undo_stack_, lane_owner_provider,
+    [lane] (structure::arrangement::ArrangerObject *)
+      -> structure::tracks::Track * { return lane->owner_list ()->track (); },
+    *factory, registry_, clipboard_, [this] () { return current_project_id_; },
     [] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor) { });
 
   selection_model_->clear ();
@@ -4763,6 +4775,73 @@ TEST_F (
   source.read_span (units::samples (0), units::samples (8), samples);
   EXPECT_FLOAT_EQ (samples.getSample (0, 3), 3.f);
   EXPECT_FLOAT_EQ (samples.getSample (1, 7), 7.f);
+}
+
+// Selecting only objects without a color feature refuses color operations
+TEST_F (ArrangerObjectSelectionOperatorTest, SetColorWithMarkerOnlySelection)
+{
+  select_object (marker_ref);
+
+  EXPECT_FALSE (
+    operator_->selectionHasColorableObjects (selection_model_.get ()));
+  EXPECT_EQ (
+    operator_->firstSelectedColorableObject (selection_model_.get ()), nullptr);
+
+  EXPECT_FALSE (
+    operator_->setColor (selection_model_.get (), QColor ("#FF0000")));
+  EXPECT_FALSE (operator_->unsetColor (selection_model_.get ()));
+}
+
+// Setting and resetting colors on selected clips is undoable
+TEST_F (ArrangerObjectSelectionOperatorTest, SetAndResetColorOnSelectedClips)
+{
+  select_object (audio_clip_ref);
+
+  EXPECT_TRUE (
+    operator_->selectionHasColorableObjects (selection_model_.get ()));
+  EXPECT_NE (
+    operator_->firstSelectedColorableObject (selection_model_.get ()), nullptr);
+
+  EXPECT_TRUE (
+    operator_->setColor (selection_model_.get (), QColor ("#00FF00")));
+  auto * color = audio_clip_ref.get ()->color ();
+  ASSERT_NE (color, nullptr);
+  EXPECT_TRUE (color->useColor ());
+  EXPECT_EQ (color->color (), QColor ("#00FF00"));
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (color->useColor ());
+
+  // Resetting an already-unset object leaves it unset and adds no
+  // undo entry
+  const auto index_before_reset = undo_stack_->index ();
+  EXPECT_TRUE (operator_->unsetColor (selection_model_.get ()));
+  EXPECT_FALSE (color->useColor ());
+  EXPECT_EQ (undo_stack_->index (), index_before_reset);
+
+  // Setting the color the object already has adds no undo entry
+  EXPECT_TRUE (
+    operator_->setColor (selection_model_.get (), QColor ("#00FF00")));
+  const auto index_after_set = undo_stack_->index ();
+  EXPECT_TRUE (color->useColor ());
+  EXPECT_TRUE (
+    operator_->setColor (selection_model_.get (), QColor ("#00FF00")));
+  EXPECT_EQ (undo_stack_->index (), index_after_set);
+  EXPECT_EQ (color->color (), QColor ("#00FF00"));
+}
+
+// The color picker resolves the owning track of lane-owned clips
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  FirstSelectedColorableObjectTrackOfLaneClip)
+{
+  const auto lane_track = make_single_lane_audio_track ();
+  const auto lane_operator = make_lane_operator (lane_track.lanes->at (0));
+  select_object (audio_clip_ref);
+
+  EXPECT_EQ (
+    lane_operator->firstSelectedColorableObjectTrack (selection_model_.get ()),
+    lane_track.track);
 }
 
 } // namespace zrythm::actions

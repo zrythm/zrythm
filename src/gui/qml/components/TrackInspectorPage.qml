@@ -5,7 +5,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Dialogs
 import QtQuick.Layouts
 import Qt.labs.synchronizer
 import Zrythm
@@ -72,24 +71,38 @@ ScrollView {
 
           Layout.fillWidth: true
           Layout.preferredHeight: 20
-          color: root.track.color
+          color: TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode)
           radius: 4
 
-          MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
+          TapHandler {
+            acceptedButtons: Qt.LeftButton
 
-            onClicked: colorDialog.open()
+            onTapped: trackColorPicker.open()
+          }
+          HoverHandler {
+            cursorShape: Qt.PointingHandCursor
           }
 
-          ColorDialog {
-            id: colorDialog
+          ColorPickerPopover {
+            id: trackColorPicker
 
-            selectedColor: root.track.color
-            title: qsTr("Choose Track Color")
+            currentColor: root.track.color
+            useColor: root.track.useColor
+            defaultColor: TrackColors.defaultColor(
+              root.track.type, ZrythmTheme.darkMode)
+            x: 0
+            y: colorRect.height + 4
 
-            onAccepted: {
-              trackOperator.setColor(selectedColor);
+            onColorSelected: function (picked) {
+              // A pick equal to the type default resets to the default
+              // instead of pinning the mode-specific default
+              if (Qt.colorEqual(picked, TrackColors.defaultColor(root.track.type, ZrythmTheme.darkMode)))
+                trackOperator.unsetColor();
+              else
+                trackOperator.setColor(picked);
+            }
+            onUnsetRequested: {
+              trackOperator.unsetColor();
             }
           }
         }

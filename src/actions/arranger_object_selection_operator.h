@@ -47,6 +47,10 @@ public:
   using ObjectOwnerProvider = std::function<ArrangerObjectOwnerPtrVariant (
     structure::arrangement::ArrangerObjectPtrVariant)>;
 
+  /** Returns the track that owns a timeline object, or null. */
+  using TrackForObjectProvider = std::function<structure::tracks::Track *(
+    structure::arrangement::ArrangerObject *)>;
+
   /// Visitor invoked by TimelineObjectsEnumerator for each object.
   using ArrangerObjectVisitor =
     std::function<void (structure::arrangement::ArrangerObjectUuidReference)>;
@@ -82,6 +86,7 @@ public:
   explicit ArrangerObjectSelectionOperator (
     undo::UndoStack                               &undoStack,
     ObjectOwnerProvider                            objectOwnerProvider,
+    TrackForObjectProvider                         trackForObjectProvider,
     structure::arrangement::ArrangerObjectFactory &objectFactory,
     structure::project::ProjectRegistry           &projectRegistry,
     controllers::Clipboard                        &clipboard,
@@ -387,6 +392,26 @@ public:
     double                         positionTicks);
 
   Q_INVOKABLE bool toggleMute (QItemSelectionModel * selectionModel);
+
+  /// Sets the color of all selected objects that can have a color.
+  Q_INVOKABLE bool
+  setColor (QItemSelectionModel * selectionModel, const QColor &color);
+
+  /// Resets the color of all selected objects that can have a color to
+  /// their owner's color.
+  Q_INVOKABLE bool unsetColor (QItemSelectionModel * selectionModel);
+
+  /// True when at least one selected object can have a color.
+  Q_INVOKABLE bool
+  selectionHasColorableObjects (QItemSelectionModel * selectionModel);
+
+  /// The first selected object that can have a color, or null.
+  Q_INVOKABLE structure::arrangement::ArrangerObject *
+  firstSelectedColorableObject (QItemSelectionModel * selectionModel);
+
+  /// The track owning the first selected colorable object, or null.
+  Q_INVOKABLE structure::tracks::Track *
+  firstSelectedColorableObjectTrack (QItemSelectionModel * selectionModel);
 
   /// Sets the timestretch algorithm on all selected AudioClips.
   Q_INVOKABLE bool setStretchAlgorithm (
@@ -720,6 +745,7 @@ private:
 private:
   undo::UndoStack                               &undo_stack_;
   ObjectOwnerProvider                            object_owner_provider_;
+  TrackForObjectProvider                         track_for_object_provider_;
   structure::arrangement::ArrangerObjectFactory &object_factory_;
   structure::project::ProjectRegistry           &project_registry_;
   controllers::Clipboard                        &clipboard_;

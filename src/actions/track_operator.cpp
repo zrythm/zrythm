@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/track_operator.h"
@@ -7,6 +7,7 @@
 #include "commands/change_track_comment_command.h"
 #include "commands/rename_track_command.h"
 #include "commands/route_track_command.h"
+#include "utils/logger.h"
 
 namespace zrythm::actions
 {
@@ -20,8 +21,32 @@ TrackOperator::rename (const QString &newName)
 void
 TrackOperator::setColor (const QColor &color)
 {
+  if (!color.isValid ())
+    {
+      z_warning ("cannot set an invalid track color");
+      return;
+    }
+
+  if (track_->useColor () && track_->color () == color)
+    {
+      return;
+    }
+
+  auto cmd = std::make_unique<commands::ChangeTrackColorCommand> (
+    *track_, structure::tracks::Track::Color (color));
+  undo_stack_->push (cmd.release ());
+}
+
+void
+TrackOperator::unsetColor ()
+{
+  if (!track_->useColor ())
+    {
+      return;
+    }
+
   auto cmd =
-    std::make_unique<commands::ChangeTrackColorCommand> (*track_, color);
+    std::make_unique<commands::ChangeTrackColorCommand> (*track_, std::nullopt);
   undo_stack_->push (cmd.release ());
 }
 

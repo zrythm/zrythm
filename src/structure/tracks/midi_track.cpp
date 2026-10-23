@@ -14,7 +14,6 @@ MidiTrack::MidiTrack (FinalTrackDependencies dependencies)
           | TrackFeatures::PianoRoll | TrackFeatures::Recording,
         dependencies.to_base_dependencies ())
 {
-  color_ = Color (QColor ("#F79616"));
   icon_name_ = u8"signal-midi";
 
   processor_ = make_track_processor (std::nullopt, [this] (auto &events) {

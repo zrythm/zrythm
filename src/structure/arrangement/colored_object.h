@@ -46,7 +46,12 @@ public:
 
   Q_INVOKABLE void unsetColor ()
   {
+    if (!color_.has_value ())
+      {
+        return;
+      }
     color_.reset ();
+    Q_EMIT colorChanged ({});
     Q_EMIT useColorChanged (false);
   }
 

@@ -14,8 +14,6 @@ AudioGroupTrack::AudioGroupTrack (FinalTrackDependencies dependencies)
         TrackFeatures::Automation,
         dependencies.to_base_dependencies ())
 {
-  /* GTK color picker color */
-  color_ = Color (QColor ("#26A269"));
   icon_name_ = u8"effect";
   processor_ = make_track_processor ();
 }

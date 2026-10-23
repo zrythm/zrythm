@@ -653,9 +653,17 @@ Item {
           id: arrangerContextMenu
 
           property bool showTimebaseMenu: false
+          property bool showColorMenu: false
+          property point menuPos
 
           onAboutToShow: {
             arrangerContextMenu.showTimebaseMenu = root.selectionOperator && root.selectionOperator.selectionHasTimebaseProviders(root.arrangerSelectionModel);
+            arrangerContextMenu.showColorMenu = root.selectionOperator && root.selectionOperator.selectionHasColorableObjects(root.arrangerSelectionModel);
+            // The menu coordinates are relative to its parent item, and
+            // the popup's position is captured while it is open
+            arrangerContextMenu.menuPos = arrangerContextMenu.parent.mapToItem(
+              Overlay.overlay, arrangerContextMenu.x,
+              arrangerContextMenu.y);
           }
 
           MenuItem {
@@ -697,6 +705,18 @@ Item {
             onTriggered: root.selectionOperator.toggleMute(root.arrangerSelectionModel)
           }
 
+          MenuItem {
+            text: qsTr("Color…")
+
+            visible: arrangerContextMenu.showColorMenu
+
+            onTriggered: {
+              objectColorPicker.x = arrangerContextMenu.menuPos.x + (arrangerContextMenu.width - objectColorPicker.width) / 2
+              objectColorPicker.y = arrangerContextMenu.menuPos.y
+              objectColorPicker.open()
+            }
+          }
+
           MenuSeparator {
             visible: arrangerContextMenu.showTimebaseMenu
           }
@@ -723,6 +743,36 @@ Item {
               onTriggered: root.selectionOperator.setTimebaseOverride(root.arrangerSelectionModel, 1)
             }
           }
+        }
+
+        ColorPickerPopover {
+          id: objectColorPicker
+
+          property ArrangerObject pickedObject: null
+          property Track pickedTrack: null
+
+          parent: Overlay.overlay
+
+          currentColor: pickedObject && pickedObject.color
+                        ? pickedObject.color.color : "transparent"
+          useColor: pickedObject && pickedObject.color
+                    ? pickedObject.color.useColor : false
+          defaultColor: pickedTrack
+                        ? TrackColors.effectiveColor(pickedTrack, ZrythmTheme.darkMode) : palette.button
+
+          onAboutToShow: {
+            pickedObject = root.selectionOperator.firstSelectedColorableObject(root.arrangerSelectionModel);
+            pickedTrack = root.selectionOperator.firstSelectedColorableObjectTrack(root.arrangerSelectionModel);
+          }
+          onColorSelected: (picked) => {
+            // A pick equal to the owning track's type default resets to
+            // the default instead of pinning the mode-specific default
+            if (pickedTrack && Qt.colorEqual(picked, TrackColors.defaultColor(pickedTrack.type, ZrythmTheme.darkMode)))
+              root.selectionOperator.unsetColor(root.arrangerSelectionModel);
+            else
+              root.selectionOperator.setColor(root.arrangerSelectionModel, picked);
+          }
+          onUnsetRequested: () => root.selectionOperator.unsetColor(root.arrangerSelectionModel)
         }
 
         DropArea {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/change_track_color_command.h"
@@ -176,6 +176,39 @@ TEST_F (ChangeTrackColorCommandTest, NamedColors)
 
   command.undo ();
   EXPECT_EQ (track->color (), QColor ("#FF0000"));
+}
+
+// Resetting to the type default, then undoing, restores the color
+TEST_F (ChangeTrackColorCommandTest, ResetToDefaultAndUndo)
+{
+  ChangeTrackColorCommand command (*track, std::nullopt);
+
+  command.redo ();
+  EXPECT_FALSE (track->useColor ());
+  EXPECT_FALSE (track->color ().isValid ());
+
+  command.undo ();
+  EXPECT_TRUE (track->useColor ());
+  EXPECT_EQ (track->color (), QColor ("#FF0000"));
+}
+
+// Setting a color after a reset: undo restores the unset state
+TEST_F (ChangeTrackColorCommandTest, UndoAfterResetRestoresUnsetState)
+{
+  ChangeTrackColorCommand reset_command (*track, std::nullopt);
+  reset_command.redo ();
+
+  ChangeTrackColorCommand set_command (*track, QColor ("#00FF00"));
+  set_command.redo ();
+  set_command.undo ();
+  EXPECT_FALSE (track->useColor ());
+}
+
+// The reset flavor is labeled for the undo stack
+TEST_F (ChangeTrackColorCommandTest, ResetCommandText)
+{
+  ChangeTrackColorCommand command (*track, std::nullopt);
+  EXPECT_EQ (command.text (), QString ("Reset Track Color"));
 }
 
 } // namespace zrythm::commands

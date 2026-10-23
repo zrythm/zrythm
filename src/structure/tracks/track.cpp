@@ -5,6 +5,7 @@
 
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track.h"
+#include "utils/logger.h"
 #include "utils/tracy.h"
 #include "utils/views.h"
 
@@ -499,6 +500,39 @@ Track::contains_uninstantiated_plugin () const
 }
 
 void
+Track::setColor (const QColor &color)
+{
+  if (!color.isValid ())
+    {
+      z_warning ("cannot set an invalid track color");
+      return;
+    }
+
+  set_stored_color (Color (color));
+}
+
+void
+Track::unsetColor ()
+{
+  set_stored_color (std::nullopt);
+}
+
+void
+Track::set_stored_color (std::optional<Color> color)
+{
+  if (color_ == color)
+    return;
+
+  const bool use_color_changed = color_.has_value () != color.has_value ();
+  color_ = std::move (color);
+  Q_EMIT colorChanged (this->color ());
+  if (use_color_changed)
+    {
+      Q_EMIT useColorChanged (color_.has_value ());
+    }
+}
+
+void
 Track::setClipLauncherMode (bool mode)
 {
   if (mode == clip_launcher_mode_)
@@ -659,7 +693,10 @@ to_json (nlohmann::json &j, const Track &track)
   j[Track::kVisibleKey] = track.visible_;
   j[Track::kMainHeightKey] = track.main_height_;
   j[Track::kEnabledKey] = track.enabled_;
-  j[Track::kColorKey] = track.color_;
+  if (track.color_)
+    {
+      j[Track::kColorKey] = *track.color_;
+    }
   // j[Track::kInputSignalTypeKey] = track.in_signal_type_;
   // j[Track::kOutputSignalTypeKey] = track.out_signal_type_;
   j[Track::kCommentKey] = track.comment_;
@@ -706,7 +743,14 @@ from_json (const nlohmann::json &j, Track &track)
   j.at (Track::kVisibleKey).get_to (track.visible_);
   j.at (Track::kMainHeightKey).get_to (track.main_height_);
   j.at (Track::kEnabledKey).get_to (track.enabled_);
-  j.at (Track::kColorKey).get_to (track.color_);
+  if (j.contains (Track::kColorKey))
+    {
+      j.at (Track::kColorKey).get_to (track.color_);
+    }
+  else
+    {
+      track.color_.reset ();
+    }
   // j.at (Track::kInputSignalTypeKey).get_to (track.in_signal_type_);
   // j.at (Track::kOutputSignalTypeKey).get_to (track.out_signal_type_);
   j.at (Track::kCommentKey).get_to (track.comment_);

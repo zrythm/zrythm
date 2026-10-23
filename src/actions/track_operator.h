@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -66,6 +66,7 @@ public:
 
   Q_INVOKABLE void rename (const QString &newName);
   Q_INVOKABLE void setColor (const QColor &color);
+  Q_INVOKABLE void unsetColor ();
   Q_INVOKABLE void setComment (const QString &comment);
   Q_INVOKABLE void setOutputTrack (structure::tracks::Track * destination);
 

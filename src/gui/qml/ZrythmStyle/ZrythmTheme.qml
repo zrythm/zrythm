@@ -152,7 +152,10 @@ QtObject {
   }
   // used in contrast with textColor
 
-  property color pageColor: darkMode ? "#161616" : "#E3E3E3"
+  // The light-mode page color; the reference the light-mode color
+  // derivations measure their contrast against
+  readonly property color lightPageColor: "#E3E3E3"
+  property color pageColor: darkMode ? "#161616" : lightPageColor
   property color placeholderTextColor: darkMode ? Qt.rgba(1, 1, 1, 0.5) : Qt.rgba(0, 0, 0, 0.5)
   property color primaryColor: zrythmColor
 
@@ -287,15 +290,31 @@ QtObject {
       return primaryColor;
     const baseHue = rgbToOklch(primaryColor)[2];
     const hue = (baseHue + index * 360 / total) % 360;
-    let l = 0.72;
-    let color = oklchColor(l, 0.15, hue);
-    if (!darkMode) {
-      while (l > 0.45 && contrastRatio(color, pageColor) < 3.0) {
-        l -= 0.02;
-        color = oklchColor(l, 0.15, hue);
-      }
+    return ColorMath.oklchColorWithContrast(
+      hue, 0.15, 0.72, darkMode, lightPageColor, 3.0, 0.45);
+  }
+
+  // Base surface color with selection and hover overlays blended in:
+  // 20% of the ink for selection, 5% for hover. The result is opaque.
+  function surfaceColor (
+    baseColor: color, inkColor: color, isSelected: bool,
+    isHovered: bool): color {
+    let c = baseColor;
+    if (isSelected) {
+      c = _blend(c, inkColor, 0.20);
     }
-    return color;
+    if (isHovered) {
+      c = _blend(c, inkColor, 0.05);
+    }
+    return c;
+  }
+
+  function _blend(base: color, overlay: color, amount: real): color {
+    const inv = 1.0 - amount;
+    return Qt.rgba(
+      base.r * inv + overlay.r * amount,
+      base.g * inv + overlay.g * amount,
+      base.b * inv + overlay.b * amount, 1);
   }
 
   // The arranger color recipe's OKLCH anchors (DESIGN.md "Clips").

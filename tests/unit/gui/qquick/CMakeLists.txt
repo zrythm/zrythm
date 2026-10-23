@@ -8,6 +8,7 @@ add_executable(zrythm_gui_qquick_unit_tests
   meter_processor_test.cpp
   qfuture_qml_wrapper_test.cpp
   timeline_position_tracker_test.cpp
+  track_colors_test.cpp
   unified_proxy_model_test.cpp
   waveform_peak_computation_test.cpp
 )

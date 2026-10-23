@@ -7,6 +7,7 @@
 #include "commands/add_arranger_object_command.h"
 #include "commands/arranger_object_owner_ref.h"
 #include "commands/bake_audio_clip_command.h"
+#include "commands/change_arranger_object_color_command.h"
 #include "commands/change_timebase_override_command.h"
 #include "commands/change_uuid_identifiable_object_property_command.h"
 #include "commands/delete_lane_command.h"
@@ -141,6 +142,7 @@ next_chord_content_position (const structure::arrangement::ChordObject &chord)
 ArrangerObjectSelectionOperator::ArrangerObjectSelectionOperator (
   undo::UndoStack                               &undoStack,
   ObjectOwnerProvider                            objectOwnerProvider,
+  TrackForObjectProvider                         trackForObjectProvider,
   structure::arrangement::ArrangerObjectFactory &objectFactory,
   structure::project::ProjectRegistry           &projectRegistry,
   controllers::Clipboard                        &clipboard,
@@ -149,6 +151,7 @@ ArrangerObjectSelectionOperator::ArrangerObjectSelectionOperator (
   QObject *                                      parent)
     : QObject (parent), undo_stack_ (undoStack),
       object_owner_provider_ (std::move (objectOwnerProvider)),
+      track_for_object_provider_ (std::move (trackForObjectProvider)),
       object_factory_ (objectFactory), project_registry_ (projectRegistry),
       clipboard_ (clipboard),
       project_id_provider_ (std::move (projectIdProvider)),
@@ -2523,6 +2526,126 @@ ArrangerObjectSelectionOperator::toggleMute (
     }
 
   return true;
+}
+
+namespace
+{
+std::vector<structure::arrangement::ArrangerObject *>
+colorable_objects_of (const auto &object_refs)
+{
+  std::vector<structure::arrangement::ArrangerObject *> colorable;
+  for (const auto &obj_ref : object_refs)
+    {
+      if (obj_ref.get ()->color () != nullptr)
+        {
+          colorable.push_back (obj_ref.get ());
+        }
+    }
+  return colorable;
+}
+}
+
+bool
+ArrangerObjectSelectionOperator::setColor (
+  QItemSelectionModel * selectionModel,
+  const QColor         &color)
+{
+  if (!color.isValid ())
+    {
+      z_warning ("Refusing to set an invalid object color");
+      return false;
+    }
+
+  auto       selected_objects = extractSelectedObjects (selectionModel);
+  const auto colorable = colorable_objects_of (selected_objects);
+  if (colorable.empty ())
+    {
+      z_debug ("No colorable objects selected for color change");
+      return false;
+    }
+
+  // Skip the push when no selected object would actually change, to
+  // avoid no-op undo entries
+  const bool any_change =
+    std::ranges::any_of (colorable, [&color] (const auto &obj) {
+      auto * color_obj = obj->color ();
+      return color_obj != nullptr
+             && (!color_obj->useColor () || color_obj->color () != color);
+    });
+  if (!any_change)
+    {
+      return true;
+    }
+
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_,
+    QObject::tr ("Set Color of %1 Objects").arg (colorable.size ()));
+  for (auto * obj : colorable)
+    {
+      undo_stack_.push (new commands::ChangeArrangerObjectColorCommand (
+        *obj, object_factory_.registry (), color));
+    }
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::unsetColor (
+  QItemSelectionModel * selectionModel)
+{
+  auto       selected_objects = extractSelectedObjects (selectionModel);
+  const auto colorable = colorable_objects_of (selected_objects);
+  if (colorable.empty ())
+    {
+      z_debug ("No colorable objects selected for color reset");
+      return false;
+    }
+
+  // Skip the push when no selected object would actually change, to
+  // avoid no-op undo entries
+  const bool any_change = std::ranges::any_of (colorable, [] (const auto &obj) {
+    auto * color_obj = obj->color ();
+    return color_obj != nullptr && color_obj->useColor ();
+  });
+  if (!any_change)
+    {
+      return true;
+    }
+
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_,
+    QObject::tr ("Reset Color of %1 Objects").arg (colorable.size ()));
+  for (auto * obj : colorable)
+    {
+      undo_stack_.push (new commands::ChangeArrangerObjectColorCommand (
+        *obj, object_factory_.registry (), std::nullopt));
+    }
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::selectionHasColorableObjects (
+  QItemSelectionModel * selectionModel)
+{
+  return firstSelectedColorableObject (selectionModel) != nullptr;
+}
+
+structure::arrangement::ArrangerObject *
+ArrangerObjectSelectionOperator::firstSelectedColorableObject (
+  QItemSelectionModel * selectionModel)
+{
+  auto       selected_objects = extractSelectedObjects (selectionModel);
+  const auto colorable = colorable_objects_of (selected_objects);
+  return colorable.empty () ? nullptr : colorable.front ();
+}
+
+structure::tracks::Track *
+ArrangerObjectSelectionOperator::firstSelectedColorableObjectTrack (
+  QItemSelectionModel * selectionModel)
+{
+  auto * obj = firstSelectedColorableObject (selectionModel);
+  return obj != nullptr ? track_for_object_provider_ (obj) : nullptr;
 }
 
 bool

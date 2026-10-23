@@ -27,6 +27,7 @@ target_sources(zrythm_commands_lib
       add_plugin_command.h
       add_track_command.h
       bake_audio_clip_command.h
+      change_arranger_object_color_command.h
       change_parameter_value_command.h
       change_qobject_property_command.h
       change_track_color_command.h

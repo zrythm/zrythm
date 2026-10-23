@@ -75,7 +75,6 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
       arrangement::ArrangerObjectOwner<ChordClip> (dependencies.registry_, *this),
       arrangement::ArrangerObjectOwner<ScaleObject> (dependencies.registry_, *this)
 {
-  color_ = Color (QColor ("#1C8FFB"));
   icon_name_ = u8"gnome-icon-library-library-music-symbolic";
 
   processor_ = make_track_processor (

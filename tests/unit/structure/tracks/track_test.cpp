@@ -158,7 +158,8 @@ TEST_F (TrackTest, QmlProperties)
   EXPECT_EQ (track->name (), QString ("Test Track"));
 
   // Color
-  EXPECT_EQ (track->color (), QColor (0, 0, 0));
+  EXPECT_FALSE (track->useColor ());
+  EXPECT_FALSE (track->color ().isValid ());
   track->setColor (QColor (255, 0, 0));
   EXPECT_EQ (track->color (), QColor (255, 0, 0));
 

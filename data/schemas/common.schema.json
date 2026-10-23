@@ -782,7 +782,8 @@
               "type": "boolean"
             },
             "color": {
-              "$ref": "#/definitions/color"
+              "$ref": "#/definitions/color",
+              "description": "User-set track color (omitted means the track uses its type default color)"
             },
             "comment": {
               "type": "string"

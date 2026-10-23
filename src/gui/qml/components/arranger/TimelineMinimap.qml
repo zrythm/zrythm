@@ -164,7 +164,7 @@ Item {
                   const startX = clip.position.ticks / totalTicks * width;
                   const clipWidth = Math.max(2, clip.timelineLengthTicks / totalTicks * width);
 
-                  ctx.fillStyle = Qt.alpha(track.color, 0.6);
+                  ctx.fillStyle = Qt.alpha(TrackColors.effectiveColor(track, ZrythmTheme.darkMode), 0.6);
                   ctx.fillRect(startX, trackY, clipWidth, trackHeight);
                 }
               }
@@ -181,7 +181,7 @@ Item {
                   const startX = clip.position.ticks / totalTicks * width;
                   const clipWidth = Math.max(2, clip.timelineLengthTicks / totalTicks * width);
 
-                  ctx.fillStyle = Qt.alpha(track.color, 0.6);
+                  ctx.fillStyle = Qt.alpha(TrackColors.effectiveColor(track, ZrythmTheme.darkMode), 0.6);
                   ctx.fillRect(startX, trackY, clipWidth, trackHeight);
                 }
               }

@@ -13,8 +13,6 @@ MasterTrack::MasterTrack (FinalTrackDependencies dependencies)
         TrackFeatures::Automation,
         dependencies.to_base_dependencies ())
 {
-  /* GTK color picker color */
-  color_ = Color (QColor ("#D90368"));
   icon_name_ = u8"jam-icons-crown";
 
   processor_ = make_track_processor ();

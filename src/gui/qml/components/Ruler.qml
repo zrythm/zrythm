@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Shapes
+import Zrythm
 import ZrythmStyle
 import ZrythmDsp
 import ZrythmGui
@@ -278,7 +279,9 @@ Item {
             id: regionBackground
 
             anchors.bottom: parent.bottom
-            color: root.clipObject.color.useColor ? root.clipObject.color.color : (root.track ? root.track.color : "gray")
+            color: root.clipObject.color.useColor
+              ? root.clipObject.color.color
+              : (root.track ? TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode) : "gray")
             height: 8
             opacity: 0.6
             width: root.clipObject.timelineLengthTicks * root.pxPerTick

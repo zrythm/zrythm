@@ -14,7 +14,6 @@ MidiGroupTrack::MidiGroupTrack (FinalTrackDependencies dependencies)
         TrackFeatures::Automation,
         dependencies.to_base_dependencies ())
 {
-  color_ = Color (QColor ("#E66100"));
   icon_name_ = u8"signal-midi";
 
   processor_ = make_track_processor ();

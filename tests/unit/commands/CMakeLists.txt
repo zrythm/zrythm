@@ -8,6 +8,7 @@ add_executable(zrythm_commands_unit_tests
   add_track_command_test.cpp
   arranger_object_owner_ref_test.cpp
   bake_audio_clip_command_test.cpp
+  change_arranger_object_color_command_test.cpp
   change_parameter_value_command_test.cpp
   change_qobject_property_command_test.cpp
   change_track_color_command_test.cpp

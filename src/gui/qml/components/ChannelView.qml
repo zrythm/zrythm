@@ -44,7 +44,9 @@ ColumnLayout {
   Rectangle {
     Layout.fillHeight: true
     Layout.fillWidth: true
-    color: QmlUtils.getTrackBackground(root.palette.window, root.track.color, root.palette.windowText, selectionTracker.isSelected || bgTapHandler.pressed, root.hovered, false)
+    color: ZrythmTheme.surfaceColor (
+      root.palette.window, root.palette.windowText,
+      selectionTracker.isSelected || bgTapHandler.pressed, root.hovered)
 
     Behavior on color {
       animation: ZrythmTheme.propertyAnimation
@@ -114,8 +116,8 @@ ColumnLayout {
 
       Rectangle {
         Layout.fillWidth: true
-        Layout.minimumHeight: 10
-        color: root.track.color
+        Layout.minimumHeight: 4
+        color: TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode)
       }
 
       Label {

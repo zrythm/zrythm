@@ -65,6 +65,7 @@ class Track : public utils::UuidIdentifiableObject<Track>
       automationTracklist CONSTANT)
   Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)
   Q_PROPERTY (QColor color READ color WRITE setColor NOTIFY colorChanged)
+  Q_PROPERTY (bool useColor READ useColor NOTIFY useColorChanged)
   Q_PROPERTY (
     QString comment READ comment WRITE setComment NOTIFY commentChanged)
   Q_PROPERTY (QString icon READ icon WRITE setIcon NOTIFY iconChanged)
@@ -372,16 +373,27 @@ public:
   }
   Q_SIGNAL void nameChanged (const QString &name);
 
-  QColor color () const { return color_.to_qcolor (); }
-  void   setColor (const QColor &color)
-  {
-    if (color_.to_qcolor () == color)
-      return;
+  /**
+   * @brief Returns the user-set color, or an invalid color when none is
+   * set.
+   */
+  QColor color () const { return color_ ? color_->to_qcolor () : QColor (); }
+  void   setColor (const QColor &color);
 
-    color_ = color;
-    Q_EMIT colorChanged (color);
-  }
-  Q_SIGNAL void colorChanged (const QColor &color);
+  /** True when the user set a color overriding the type default. */
+  bool useColor () const { return color_.has_value (); }
+
+  Q_INVOKABLE void unsetColor ();
+
+  /**
+   * @brief Returns the stored color state used by undo commands.
+   *
+   * A nullopt means the track uses its type default color.
+   */
+  std::optional<Color> stored_color () const { return color_; }
+  void                 set_stored_color (std::optional<Color> color);
+  Q_SIGNAL void        colorChanged (const QColor &color);
+  Q_SIGNAL void        useColorChanged (bool use_color);
 
   QString comment () const { return comment_.to_qstring (); }
   void    setComment (const QString &comment)
@@ -692,11 +704,11 @@ protected:
   bool enabled_ = true;
 
   /**
-   * Track color.
+   * User-set track color.
    *
-   * This is used in the channels as well.
+   * When unset, the track is drawn with its type-derived default color.
    */
-  Color color_;
+  std::optional<Color> color_;
 
   /**
    * The input signal type (eg audio bus tracks have audio input signals).

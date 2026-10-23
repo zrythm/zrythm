@@ -129,7 +129,9 @@ Control {
     }
   }
   background: Rectangle {
-    color: QmlUtils.getTrackBackground(root.palette.window, root.track.color, root.palette.windowText, selectionTracker.isSelected || bgTapHandler.pressed, root.hovered, false)
+    color: ZrythmTheme.surfaceColor (
+      root.palette.window, root.palette.windowText,
+      selectionTracker.isSelected || bgTapHandler.pressed, root.hovered)
 
     Behavior on color {
       animation: ZrythmTheme.propertyAnimation
@@ -277,51 +279,11 @@ Control {
       Rectangle {
         id: trackColor
 
-        readonly property int barWidth: 14
-        readonly property int cornerRadius: 2
+        readonly property int stripWidth: 4
 
         Layout.fillHeight: true
-        Layout.preferredWidth: barWidth
-        color: root.track.color
-        topLeftRadius: cornerRadius
-
-        Button {
-          id: expandButton
-
-          height: trackColor.barWidth
-          padding: 0
-          visible: root.foldable && root.hovered
-          width: trackColor.barWidth
-
-          background: Rectangle {
-            color: expandButton.hovered ? Qt.alpha(palette.button, 0.25) : Qt.alpha(palette.button, 0.1)
-            radius: trackColor.cornerRadius
-          }
-          contentItem: IconImage {
-            id: expandArrow
-
-            readonly property int iconSize: trackColor.barWidth - 2
-
-            color: palette.brightText
-            height: iconSize
-            rotation: root.expanded ? 0 : -90
-            source: ResourceManager.getIconUrl("zrythm-dark", "adw-expander-arrow-symbolic.svg")
-            sourceSize.height: iconSize
-            sourceSize.width: iconSize
-            width: iconSize
-
-            Behavior on rotation {
-              animation: ZrythmTheme.propertyAnimation
-            }
-          }
-
-          onClicked: root.tracklist.collection.setTrackExpanded(root.track, !root.expanded)
-
-          anchors {
-            bottom: parent.bottom
-            horizontalCenter: parent.horizontalCenter
-          }
-        }
+        Layout.preferredWidth: stripWidth
+        color: TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode)
       }
 
       ColumnLayout {
@@ -558,6 +520,36 @@ Control {
           Layout.fillWidth: true
           Layout.minimumHeight: contentHeight
           Layout.preferredHeight: contentHeight
+
+          Button {
+            id: expandButton
+
+            Layout.alignment: Qt.AlignTop | Qt.AlignBaseline
+            Layout.preferredHeight: 14
+            Layout.preferredWidth: 14
+            checkable: false
+            display: AbstractButton.IconOnly
+            flat: true
+            horizontalPadding: 0
+            icon.height: 12
+            icon.source: ResourceManager.getIconUrl(
+              "gnome-icon-library",
+              root.expanded ? "pan-down-symbolic.svg" : "pan-end-symbolic.svg")
+            icon.width: 12
+            padding: 0
+            visible: root.foldable
+
+            ToolTip {
+              text: root.expanded ? qsTr("Collapse") : qsTr("Expand")
+            }
+
+            background: Rectangle {
+              color: expandButton.hovered ? Qt.alpha(palette.button, 0.25) : "transparent"
+              radius: 2
+            }
+
+            onClicked: root.tracklist.collection.setTrackExpanded(root.track, !root.expanded)
+          }
 
           IconImage {
             id: trackIcon

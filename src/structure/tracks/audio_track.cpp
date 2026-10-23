@@ -14,7 +14,6 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
         TrackFeatures::Automation | TrackFeatures::Lanes | TrackFeatures::Recording,
         dependencies.to_base_dependencies ())
 {
-  color_ = Color (QColor ("#2BD700"));
   /* signal-audio also works */
   icon_name_ = u8"view-media-visualization";
 

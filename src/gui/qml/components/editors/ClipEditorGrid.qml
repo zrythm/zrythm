@@ -148,7 +148,9 @@ GridLayout {
     Rectangle {
       Layout.fillHeight: true
       Layout.preferredWidth: 5
-      color: root.clipObject.color.useColor ? root.clipObject.color.color : root.track.color
+      color: root.clipObject.color.useColor
+        ? root.clipObject.color.color
+        : TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode)
     }
 
     RotatedLabel {

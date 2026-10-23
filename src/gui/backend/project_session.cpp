@@ -105,6 +105,9 @@ ProjectSession::ProjectSession (
               },
               obj_var);
           },
+          [this] (structure::arrangement::ArrangerObject * obj) {
+            return project_->tracklist ()->getTrackForTimelineObject (obj);
+          },
           *project_->arrangerObjectFactory (),
           project_->projectRegistry (),
           clipboard_,

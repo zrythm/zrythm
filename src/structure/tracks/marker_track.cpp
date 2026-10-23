@@ -16,7 +16,6 @@ MarkerTrack::MarkerTrack (FinalTrackDependencies dependencies)
 {
   main_height_ = DEF_HEIGHT / 2;
   icon_name_ = u8"gnome-icon-library-flag-filled-symbolic";
-  color_ = Color (QColor ("#7C009B"));
 }
 
 auto

@@ -14,7 +14,6 @@ FolderTrack::FolderTrack (FinalTrackDependencies dependencies)
         {},
         dependencies.to_base_dependencies ())
 {
-  color_ = Color (QColor ("#865E3C"));
   icon_name_ = u8"fluentui-folder-regular";
 }
 

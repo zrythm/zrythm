@@ -14,7 +14,6 @@ InstrumentTrack::InstrumentTrack (FinalTrackDependencies dependencies)
           | TrackFeatures::PianoRoll | TrackFeatures::Recording,
         dependencies.to_base_dependencies ())
 {
-  color_ = Color (QColor ("#FF9616"));
   icon_name_ = u8"instrument";
 
   processor_ = make_track_processor (std::nullopt, [this] (auto &events) {

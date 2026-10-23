@@ -284,6 +284,7 @@ set(rel_qml_file_paths
   components/ClipLaunchButton.qml
   components/ClipLauncherView.qml
   components/ClipSlotView.qml
+  components/ColorPickerPopover.qml
   components/DspLoadIndicator.qml
   components/EditableSlider.qml
   components/FaderButtons.qml
@@ -336,6 +337,7 @@ set(rel_qml_file_paths
   utils/AudioTransformKindColors.qml
   utils/DragUtils.qml
   utils/SelectionTracker.qml
+  utils/TrackColors.qml
   views/ExportDialog.qml
   views/ProjectWindow.qml
 )
@@ -354,6 +356,7 @@ endforeach()
 set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/AudioTransformKindColors.qml
   ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/DragUtils.qml
+  ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/TrackColors.qml
   PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 )
 

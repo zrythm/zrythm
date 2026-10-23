@@ -281,6 +281,40 @@ until it passes; fills keep the base value and take polarity text
 `superorangeColor` is a high-intensity accent for strongly active
 states; the rest are alternate accent choices.
 
+### Track colors
+
+Tracks carry an optional user-set color. Unset tracks draw a default
+derived from their type; stored colors persist in projects and the
+`color` key is omitted from project JSON while unset. The derivation
+lives in the C++ `TrackColorTable` singleton (`gui/qquick/track_colors.h`);
+the QML `TrackColors` singleton resolves the effective color reactively,
+so color changes refresh the UI. `tst_TrackColors.qml` pins the
+resulting hexes.
+
+The default of a track type is its hue in the table below, rendered in
+OKLCH at lightness 0.70 and chroma 0.25. Hues sit at least 20° apart so
+adjacent types stay distinguishable in the track list, the mixer and
+the picker.
+
+| Type | Hue |
+|---|---|
+| Master | 0° |
+| MIDI group | 40° |
+| Instrument | 60° |
+| MIDI | 80° |
+| MIDI bus | 100° |
+| Audio | 130° |
+| Audio bus | 155° |
+| Audio group | 180° |
+| Folder | 210° |
+| Chord | 250° |
+| Modulator | 290° |
+| Marker | 320° |
+
+Light-mode variants keep the hue and chroma and lower the lightness in
+0.02 steps until the color reaches 3:1 against the light page color
+(`lightPageColor`, `#E3E3E3`), with a lightness floor of 0.45.
+
 ### State derivation rules
 
 State colors derive programmatically from the base fill:
@@ -476,6 +510,31 @@ on 4 px padding inside the surface.
 
 Tooltips: 12 px text in `toolTipText`, 4 px padding, 700 ms
 delay, placed 3 px above the control (below if it does not fit).
+
+### Color picker
+
+The shared color picker popover (`ColorPickerPopover`) is a grid of
+24 px cells with 4 px spacing: a default cell, up to thirteen swatch
+cells, and a custom cell. Callers supply the current color state, the
+color the default cell previews, and handle the `colorSelected` /
+`unsetRequested` signals.
+
+The default cell previews the subject's default color with a diagonal
+slash in the cell's polarity ink; selecting it requests the unset
+state. Swatch cells carry the picker palette (the canonical track-type
+defaults in the current mode); the custom cell shows a four-quadrant
+preview and opens the system color dialog.
+
+The selected cell takes a 2 px border in its own polarity ink, keeps
+keyboard focus when the popover opens, and shows the standard focus
+ring outside the cell; hover and press follow the state derivation
+rules. Every cell is a radio button to assistive technology (the
+custom cell a push button); arrow keys traverse the grid and Return,
+Enter and Space activate.
+
+Picking a swatch equal to the subject's current default resets to the
+default rather than storing the mode-specific value as an explicit
+color.
 
 ### Dialogs
 

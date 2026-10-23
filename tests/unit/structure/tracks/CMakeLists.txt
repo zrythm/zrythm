@@ -16,6 +16,7 @@ add_executable(zrythm_structure_tracks_unit_tests
   singleton_tracks_test.cpp
   track_collection_test.cpp
   track_collection_test.h
+  track_color_test.cpp
   track_factory_test.cpp
   track_lane_test.cpp
   track_lane_list_test.cpp
