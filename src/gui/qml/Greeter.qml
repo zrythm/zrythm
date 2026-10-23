@@ -18,11 +18,12 @@ ApplicationWindow {
   readonly property AppSettings appSettings: app?.appSettings ?? null
   property ProjectWindow currentProjectWindow: null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
-  readonly property string pendingProjectPath: app?.pendingProjectFile ?? ""
   readonly property NotificationCenter notificationCenter: app?.notificationCenter ?? null
+  readonly property string pendingProjectPath: app?.pendingProjectFile ?? ""
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
   readonly property ProjectManager projectManager: app?.projectManager ?? null
+  property bool pluginScanRunning: false
 
   function openProjectWindow(session) {
     let newWindow = projectWindowComponent.createObject(session, {
@@ -43,6 +44,16 @@ ApplicationWindow {
     root.hide();
   }
 
+  function showAudioDeviceHintIfMissing() {
+    if (root.deviceManager === null || root.notificationCenter === null)
+      return;
+
+    if (root.deviceManager.currentAudioDeviceName !== "")
+      return;
+
+    root.notificationCenter.postWarning(qsTr("No Audio Device"), qsTr("Zrythm could not open an audio device. Playback and recording will be silent until one is selected."), "first-run-audio-device", qsTr("Open Device Selector"), () => root.deviceManager.showDeviceSelector());
+  }
+
   font.family: ZrythmTheme.fontFamily
   font.pointSize: ZrythmTheme.fontPointSize
   height: 420
@@ -60,6 +71,22 @@ ApplicationWindow {
     }
   }
 
+  Component.onCompleted: {
+    // the scan runs in the background; the selector page shows progress
+    if (root.pluginManager !== null) {
+      root.pluginManager.beginScan();
+      root.pluginScanRunning = true;
+    }
+  }
+
+  Connections {
+    function onScanningFinished() {
+      root.pluginScanRunning = false;
+    }
+
+    target: root.pluginScanner
+  }
+
   AboutDialog {
     id: aboutDialog
   }
@@ -67,7 +94,7 @@ ApplicationWindow {
   NotificationArea {
     notificationCenter: root.notificationCenter
 
-    onCriticalNotification: (notification) => {
+    onCriticalNotification: notification => {
       alertDialog.text = notification.title;
       alertDialog.informativeText = notification.detail;
       alertDialog.open();
@@ -106,15 +133,19 @@ ApplicationWindow {
   }
 
   Item {
-    id: proceedToConfigPage
+    id: finishPage
 
     PlaceholderPage {
       title: qsTr("All Ready!")
 
       action: Action {
-        text: qsTr("Proceed to Configuration")
+        text: qsTr("Get Started")
 
-        onTriggered: stack.push(configPage)
+        onTriggered: {
+          root.appSettings.first_run = false;
+          root.showAudioDeviceHintIfMissing();
+          stack.push(projectSelectorPage);
+        }
       }
     }
   }
@@ -123,23 +154,15 @@ ApplicationWindow {
     id: stack
 
     anchors.fill: parent
-    initialItem: (root.appSettings?.first_run && root.pendingProjectPath.length === 0) ? firstRunPage : progressPage
+    initialItem: (root.appSettings?.first_run && root.pendingProjectPath.length === 0) ? firstRunPage : projectSelectorPage
 
-    popExit: Transition {
-      PropertyAnimation {
-        duration: 200
-        from: 1
-        property: "opacity"
-        to: 0
-      }
+    popEnter: FadeInTransition {
     }
-    pushEnter: Transition {
-      PropertyAnimation {
-        duration: 200
-        from: 0
-        property: "opacity"
-        to: 1
-      }
+    popExit: FadeOutTransition {
+    }
+    pushEnter: FadeInTransition {
+    }
+    pushExit: FadeOutTransition {
     }
 
     Component {
@@ -161,13 +184,15 @@ ApplicationWindow {
             if (Config.FLATPAK_BUILD)
               addItem(flatpakPage);
 
-            addItem(proceedToConfigPage);
+            addItem(finishPage);
           }
+          onCurrentIndexChanged: indicator.currentIndex = currentIndex
 
           Item {
             PlaceholderPage {
               description: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "zrythm.svg")
+              tintIcon: false
               title: qsTr("Welcome")
             }
           }
@@ -187,12 +212,13 @@ ApplicationWindow {
 
           readonly property real squareSize: 48
 
+          Accessible.name: qsTr("Previous Page")
           anchors.left: parent.left
+          anchors.leftMargin: 12
           anchors.verticalCenter: parent.verticalCenter
-          font.bold: true
-          font.pixelSize: 18
+          display: AbstractButton.IconOnly
           height: squareSize
-          text: "<"
+          icon.source: ResourceManager.getIconUrl("gnome-icon-library", "left-large-symbolic.svg")
           visible: welcomeCarousel.currentIndex > 0
           width: squareSize
 
@@ -201,12 +227,13 @@ ApplicationWindow {
 
         // Add right navigation button
         RoundButton {
+          Accessible.name: qsTr("Next Page")
           anchors.right: parent.right
+          anchors.rightMargin: 12
           anchors.verticalCenter: parent.verticalCenter
-          font.bold: true
-          font.pixelSize: 18
+          display: AbstractButton.IconOnly
           height: leftNavButton.squareSize
-          text: ">"
+          icon.source: ResourceManager.getIconUrl("gnome-icon-library", "right-large-symbolic.svg")
           visible: welcomeCarousel.currentIndex < welcomeCarousel.count - 1
           width: leftNavButton.squareSize
 
@@ -217,6 +244,7 @@ ApplicationWindow {
           id: indicator
 
           anchors.bottom: welcomeCarousel.bottom
+          anchors.bottomMargin: 12
           anchors.horizontalCenter: parent.horizontalCenter
           count: welcomeCarousel.count
           currentIndex: welcomeCarousel.currentIndex
@@ -228,128 +256,36 @@ ApplicationWindow {
     }
 
     Component {
-      id: configPage
-
-      NavigatablePage {
-        notificationCenter: root.notificationCenter
-        title: qsTr("Configuration")
-
-        footer: DialogButtonBox {
-          defaultButton: continueButton
-          horizontalPadding: 10
-          standardButtons: DialogButtonBox.Reset
-
-          onReset: {
-            console.log("Resetting settings...");
-          }
-
-          Button {
-            id: continueButton
-
-            DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
-            text: qsTr("Continue")
-
-            onClicked: {
-              console.log("Proceeding to next page...");
-              root.appSettings.first_run = false;
-              stack.push(progressPage);
-            }
-          }
-        }
-
-        ZrythmPreferencesPage {
-          anchors.fill: parent
-          title: qsTr("Initial Configuration")
-
-          ActionRow {
-            subtitle: "Preferred language"
-            title: "Language"
-
-            ComboBox {
-              model: ["English", "Spanish", "French"]
-            }
-          }
-
-          ActionRow {
-            subtitle: "Location to save user files"
-            title: "User Path"
-
-            ZrythmFilePicker {
-            }
-          }
-        }
-      }
-    }
-
-    Component {
-      id: progressPage
-
-      Page {
-        id: progressPagePage
-
-        title: qsTr("Progress")
-
-        StackView.onActivated: {
-          // start the scan in the background
-          root.pluginManager.beginScan();
-
-          if (root.pendingProjectPath.length > 0) {
-            // open the project requested on the command line or via a
-            // file-open request from the OS
-            loadController.loadProject(root.pendingProjectPath);
-          } else {
-            // move on to project selection page immediately
-            stack.push(projectSelectorPage);
-          }
-        }
-
-        PlaceholderPage {
-          icon.source: ResourceManager.getIconUrl("zrythm-dark", "zrythm-monochrome.svg")
-          title: qsTr("Scanning Plugins")
-        }
-
-        ColumnLayout {
-          spacing: 12
-
-          anchors {
-            bottom: parent.bottom
-            left: parent.left
-            margins: 26
-            right: parent.right
-          }
-
-          Text {
-            id: scanProgressLabel
-
-            Layout.fillWidth: true
-            color: palette.text
-            font.pointSize: 8
-            horizontalAlignment: Qt.AlignHCenter
-            opacity: 0.6
-            text: qsTr("Scanning:") + " " + root.pluginManager?.currentlyScanningPlugin
-            verticalAlignment: Qt.AlignVCenter
-          }
-
-          ProgressBar {
-            id: scanProgressBar
-
-            Layout.fillWidth: true
-            indeterminate: true
-          }
-        }
-      }
-    }
-
-    Component {
       id: projectSelectorPage
 
       NavigatablePage {
         // Distinguishes this page when inspecting the StackView's current item
         readonly property bool isProjectSelectorPage: true
+        property bool pendingProjectLoadHandled: false
 
         notificationCenter: root.notificationCenter
         showBackButton: false
         title: qsTr("Open a Project")
+
+        StackView.onActivated: {
+          // open the project requested on the command line or via a
+          // file-open request from the OS (once)
+          if (!pendingProjectLoadHandled && root.pendingProjectPath.length > 0) {
+            pendingProjectLoadHandled = true;
+            loadController.loadProject(root.pendingProjectPath);
+          }
+        }
+
+        resources: [
+          Action {
+            id: clearRecentProjectsAction
+
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "edit-delete-symbolic.svg")
+            text: qsTr("Clear Recent Projects")
+
+            onTriggered: clearRecentProjectsDialog.open()
+          }
+        ]
 
         footer: DialogButtonBox {
           horizontalPadding: 10
@@ -392,52 +328,152 @@ ApplicationWindow {
           }
         }
 
-        ListView {
-          id: recentProjectsListView
-
-          readonly property RecentProjectsModel recentProjects: root.projectManager?.recentProjects
-
+        ColumnLayout {
           anchors.fill: parent
           anchors.margins: 16
-          model: recentProjects
+          spacing: ZrythmTheme.buttonPadding
 
-          delegate: ActionRow {
-            id: projectItem
+          ActionRowGroup {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            suffixActions: [clearRecentProjectsAction]
+            title: qsTr("Recent Projects")
+            visible: recentProjectsListView.count > 0
 
-            required property string name
-            required property string path
+            ListView {
+              id: recentProjectsListView
 
-            interactive: true
-            subtitle: projectItem.path
-            title: projectItem.name
-            width: recentProjectsListView.width
+              readonly property RecentProjectsModel recentProjects: root.projectManager?.recentProjects
 
-            onClicked: loadController.loadProject (projectItem.path)
+              function formatLastSavedDate(lastSaved: date): string {
+                if (!(lastSaved instanceof Date) || isNaN(lastSaved.getTime()))
+                  return "";
 
-            resources: [
-              Action {
-                id: revealAction
-
-                text: qsTr ("Show in File Manager")
-
-                onTriggered: QmlUtils.revealInFileManager (projectItem.path)
-              },
-              Action {
-                id: removeAction
-
-                text: qsTr ("Remove From List")
-
-                onTriggered: recentProjectsListView.recentProjects.removeRecentProject (
-                  projectItem.path)
+                const minutes = Math.floor((Date.now() - lastSaved.getTime()) / 60000);
+                if (minutes < 1)
+                  return qsTr("Just now");
+                if (minutes < 60)
+                  return qsTr("%n minute(s) ago", "", minutes);
+                const hours = Math.floor(minutes / 60);
+                if (hours < 24)
+                  return qsTr("%n hour(s) ago", "", hours);
+                const days = Math.floor(hours / 24);
+                if (days === 1)
+                  return qsTr("Yesterday");
+                if (days < 7)
+                  return qsTr("%n day(s) ago", "", days);
+                return lastSaved.toLocaleString(Qt.locale(), Locale.ShortFormat);
               }
-            ]
 
-            overflowActions: [revealAction, removeAction]
+              clip: true
+              Layout.fillHeight: true
+              Layout.fillWidth: true
+              model: recentProjects
+
+              delegate: ActionRow {
+                id: projectItem
+
+                required property date date
+                required property string name
+                required property string path
+
+                hoverBaseColor: ZrythmTheme.cardColor
+                interactive: true
+                overflowActions: [revealAction]
+                subtitle: projectItem.path
+                suffixActions: [removeAction]
+                title: projectItem.name
+                width: recentProjectsListView.width
+
+                resources: [
+                  Action {
+                    id: revealAction
+
+                    text: qsTr("Show in File Manager")
+
+                    onTriggered: QmlUtils.revealInFileManager(projectItem.path)
+                  },
+                  Action {
+                    id: removeAction
+
+                    icon.source: ResourceManager.getIconUrl("gnome-icon-library", "edit-delete-symbolic.svg")
+                    text: qsTr("Remove From List")
+
+                    onTriggered: recentProjectsListView.recentProjects.removeRecentProject(projectItem.path)
+                  }
+                ]
+
+                onClicked: loadController.loadProject(projectItem.path)
+
+                Label {
+                  color: palette.text
+                  font: ZrythmTheme.smallTextFont
+                  opacity: 0.55
+                  text: recentProjectsListView.formatLastSavedDate(projectItem.date)
+                  visible: text !== ""
+                }
+              }
+
+              Component.onCompleted: {
+                recentProjects.clearNonExistingProjects();
+              }
+            }
           }
 
-          Component.onCompleted: {
-            recentProjects.clearNonExistingProjects();
+          Label {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            color: palette.text
+            horizontalAlignment: Text.AlignHCenter
+            opacity: 0.6
+            text: qsTr("No recent projects yet.\nCreate or open a project to see it here.")
+            verticalAlignment: Text.AlignVCenter
+            visible: recentProjectsListView.count === 0
+            wrapMode: Text.WordWrap
           }
+
+          RowLayout {
+            Layout.alignment: Qt.AlignHCenter
+            visible: root.pluginScanRunning
+
+            BusyIndicator {
+              Layout.preferredHeight: 16
+              Layout.preferredWidth: 16
+              running: root.pluginScanRunning
+            }
+
+            Label {
+              color: palette.text
+              font: ZrythmTheme.smallTextFont
+              opacity: 0.55
+              text: qsTr("Scanning Plugins...")
+            }
+          }
+        }
+
+        Dialog {
+          id: clearRecentProjectsDialog
+
+          contentItem: ColumnLayout {
+            Label {
+              Layout.fillWidth: true
+              text: qsTr("All projects will be removed from the list. Files on disk are not deleted.")
+              wrapMode: Text.WordWrap
+            }
+          }
+          modal: true
+          title: qsTr("Clear Recent Projects?")
+
+          footer: DialogButtonBox {
+            standardButtons: DialogButtonBox.Cancel
+
+            DestructiveButton {
+              DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+              text: qsTr("Clear")
+            }
+          }
+
+          onAccepted: recentProjectsListView.recentProjects.clearRecentProjects()
         }
       }
     }
@@ -451,17 +487,36 @@ ApplicationWindow {
         notificationCenter: root.notificationCenter
         title: qsTr("Create New Project")
 
-        ColumnLayout {
-          anchors.fill: parent
-          spacing: 10
+        footer: DialogButtonBox {
+          defaultButton: createProjectButton
+          horizontalPadding: 10
+          standardButtons: DialogButtonBox.Cancel
 
-          TextField {
-            id: projectNameField
+          onRejected: createProjectPage.StackView.view.pop()
 
-            Layout.fillWidth: true
-            placeholderText: qsTr("Project Name")
-            text: qsTr("Untitled Project")
+          Button {
+            id: createProjectButton
+
+            DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+            enabled: projectNameField.text.length > 0 && projectDirectoryField.selectedUrl.toString().length > 0
+            text: qsTr("Create Project")
+
+            onClicked: {
+              // start the project creation process asynchronusly
+              root.projectManager.createNewProject(projectDirectoryField.selectedUrl, projectNameField.text, projectTemplateField.currentValue);
+              stack.push(projectCreationProgressPage);
+            }
           }
+        }
+
+        ColumnLayout {
+          anchors {
+            left: parent.left
+            margins: 16
+            right: parent.right
+            top: parent.top
+          }
+          spacing: ZrythmTheme.buttonPadding
 
           Binding {
             property: "text"
@@ -470,33 +525,49 @@ ApplicationWindow {
             when: projectDirectoryField.selectedUrl.toString().length > 0
           }
 
-          ZrythmFilePicker {
-            id: projectDirectoryField
-
+          ActionRowGroup {
             Layout.fillWidth: true
-            // placeholderText: qsTr("Parent Directory")
-            initialPath: root.appSettings?.newProjectDirectory ?? ""
-          }
+            title: qsTr("Project Details")
 
-          ComboBox {
-            id: projectTemplateField
+            ActionRow {
+              subtitle: qsTr("Also used as the folder name")
+              title: qsTr("Name")
 
-            Layout.fillWidth: true
-            textRole: "name"
-            valueRole: "path"
+              TextField {
+                id: projectNameField
 
-            model: ProjectTemplatesModel {
+                Layout.preferredWidth: 240
+                placeholderText: qsTr("Project Name")
+                text: qsTr("Untitled Project")
+              }
             }
-          }
 
-          Button {
-            Layout.alignment: Qt.AlignHCenter
-            text: qsTr("Create Project")
+            ActionRow {
+              subtitle: qsTr("Where the project folder will be created")
+              title: qsTr("Location")
 
-            onClicked: {
-              // start the project creation process asynchronusly
-              root.projectManager.createNewProject(projectDirectoryField.selectedUrl, projectNameField.text, projectTemplateField.currentValue);
-              stack.push(projectCreationProgressPage);
+              ZrythmFilePicker {
+                id: projectDirectoryField
+
+                Layout.preferredWidth: 260
+                initialPath: root.appSettings?.newProjectDirectory ?? ""
+              }
+            }
+
+            ActionRow {
+              subtitle: qsTr("Starting contents for the new project")
+              title: qsTr("Template")
+
+              ComboBox {
+                id: projectTemplateField
+
+                Layout.preferredWidth: 200
+                textRole: "name"
+                valueRole: "path"
+
+                model: ProjectTemplatesModel {
+                }
+              }
             }
           }
         }
@@ -537,6 +608,7 @@ ApplicationWindow {
         // ProjectManager already set the active session and updated the
         // recent projects list before emitting this signal
         console.log("Project loaded: ", session.title);
+        root.appSettings.first_run = false;
         root.openProjectWindow(session);
       }
 
@@ -557,6 +629,23 @@ ApplicationWindow {
     }
   }
 
+  component FadeInTransition: Transition {
+    PropertyAnimation {
+      duration: ZrythmTheme.animationDuration
+      from: 0
+      property: "opacity"
+      to: 1
+    }
+  }
+  component FadeOutTransition: Transition {
+    PropertyAnimation {
+      duration: ZrythmTheme.animationDuration
+      from: 1
+      property: "opacity"
+      to: 0
+    }
+  }
+
   // Inline component for pages with standard navigation header
   component NavigatablePage: Page {
     id: navigatablePage
@@ -567,34 +656,42 @@ ApplicationWindow {
     property bool showBackButton: navigatablePage.StackView.view && navigatablePage.StackView.view.depth > 1
 
     header: ToolBar {
+      ToolButton {
+        anchors.left: parent.left
+        anchors.leftMargin: 4
+        anchors.verticalCenter: parent.verticalCenter
+        text: "‹"
+        visible: navigatablePage.showBackButton
+
+        onClicked: navigatablePage.StackView.view.pop()
+      }
+
+      // Centered on the whole header so asymmetric side controls don't
+      // shift the title
+      Label {
+        anchors.centerIn: parent
+        elide: Text.ElideRight
+        font.bold: true
+        text: navigatablePage.title
+        width: Math.min(implicitWidth, parent.width - 128)
+      }
+
       RowLayout {
-        anchors.fill: parent
+        id: rightActionsRow
 
-        ToolButton {
-          text: "‹"
-          visible: navigatablePage.showBackButton
+        anchors.right: notificationCenterButton.left
+        anchors.rightMargin: 4
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: 4
+      }
 
-          onClicked: navigatablePage.StackView.view.pop()
-        }
+      NotificationCenterButton {
+        id: notificationCenterButton
 
-        Label {
-          Layout.fillWidth: true
-          elide: Text.ElideRight
-          font.bold: true
-          horizontalAlignment: Qt.AlignHCenter
-          text: navigatablePage.title
-          verticalAlignment: Qt.AlignVCenter
-        }
-
-        RowLayout {
-          id: rightActionsRow
-
-          spacing: 4
-        }
-
-        NotificationCenterButton {
-          notificationCenter: navigatablePage.notificationCenter
-        }
+        anchors.right: parent.right
+        anchors.rightMargin: 4
+        anchors.verticalCenter: parent.verticalCenter
+        notificationCenter: navigatablePage.notificationCenter
       }
     }
   }
