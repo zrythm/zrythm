@@ -13,6 +13,9 @@ ItemDelegate {
   id: root
 
   property bool alternate: false
+  // Base fill the hovered/focused/pressed states derive from; rows on a
+  // card pass the card color (DESIGN.md "Cards and grouped rows")
+  property color hoverBaseColor: root.palette.button
   property bool interactive: false
   // Actions grouped under the row's "…" overflow button (list mode).
   property list<Action> overflowActions
@@ -49,7 +52,7 @@ ItemDelegate {
         return root.palette.highlight;
       if (root.alternate)
         return ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(ZrythmTheme.alternateBackgroundColor, root.hovered, root.visualFocus, root.down);
-      return (root.hovered || root.visualFocus || root.down) ? ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(root.palette.button, root.hovered, root.visualFocus, root.down) : "transparent";
+      return (root.hovered || root.visualFocus || root.down) ? ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(root.hoverBaseColor, root.hovered, root.visualFocus, root.down) : "transparent";
     }
     radius: ZrythmTheme.textFieldRadius
 
@@ -117,7 +120,7 @@ ItemDelegate {
           Accessible.name: modelData?.text ?? ""
           action: modelData
           display: AbstractButton.IconOnly
-          visible: (modelData?.checked ?? false) || root.rowActionsHot
+          visible: (modelData?.checked ?? false) || (root?.rowActionsHot ?? false)
 
           // Checked actions keep their resting visibility via `checked` but
           // do not light up in the accent color; any active state is carried
