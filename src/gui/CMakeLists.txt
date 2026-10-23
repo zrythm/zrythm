@@ -201,6 +201,7 @@ foreach(wav_filepath ${wav_filepaths})
 endforeach()
 
 set(rel_qml_file_paths
+  components/basic/ActionRowGroup.qml
   components/basic/ChannelStateButton.qml
   components/basic/DestructiveButton.qml
   components/basic/DropAreaBase.qml

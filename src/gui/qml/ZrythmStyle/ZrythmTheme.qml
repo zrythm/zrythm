@@ -38,6 +38,9 @@ QtObject {
       "pixelSize": 12,
       "bold": true
     })
+  // the page color raised by the same perceptual step (≈ 3.7 L*) as
+  // alternateBackgroundColor is recessed
+  property color cardColor: darkMode ? "#212121" : "#EDEDED"
   readonly property color celestialBlueColor: "#009DFF"
   // The two polarity inks a fill's text/glyph may take; the one passing
   // contrast against the fill is chosen by polarityTextColor()

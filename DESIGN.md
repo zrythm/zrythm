@@ -238,6 +238,7 @@ share a value show it once.
 | `pageColor` | `#161616` | `#E3E3E3` | Window/panel background |
 | `backgroundColor` | `#000000` | `#FFFFFF` | Deepest background layer |
 | `alternateBackgroundColor` | `#0F0F0F` | `#D9D9D9` | Alternating row backgrounds (palette `alternateBase`) — the page color recessed by the same perceptual step (≈ 3.7 L*) in both modes |
+| `cardColor` | `#212121` | `#EDEDED` | Card surfaces (grouped rows) — the page color raised by the same perceptual step (≈ 3.7 L*) in both modes |
 | `buttonBackgroundColor` | `#323232` | `#CDCDCD` | Control surfaces (buttons, combos, popups) |
 | `textColor` | `#E3E3E3` | `#161616` | Primary text; also the *fill* of emphasized buttons (via the `dark` palette role) |
 | `placeholderTextColor` | white @ 50 % | black @ 50 % | Text field placeholder |
@@ -740,6 +741,27 @@ table above, with all content — text and glyphs — switching to dark on
 the accent fill. Rows also serve as plain setting rows (title + subtitle
 + always-visible suffix controls, no interactions) in preferences-style
 forms.
+
+### Cards and grouped rows
+
+Cards group related two-line rows ([Lists](#lists)) into one surface: a
+`cardColor` fill with `rounded.lg` corners, no border and no inner padding —
+rows run edge to edge and keep their transparent resting fill.
+
+The optional group header sits 4 px above the card: a `semiBoldTextFont`
+title, a `smallTextFont` subtitle at 55 % opacity, and 16 px suffix action
+buttons on the trailing edge (always visible, following the toolbar-button
+rules).
+
+Rows on a card deviate from plain lists in one way: the hovered, focused and
+pressed states derive from `cardColor` instead of the button surface.
+
+| State | Fill | Text |
+|---|---|---|
+| Default | `cardColor` (row: transparent) | `textColor` |
+| Hovered / focus row | contrast-blended card (≈ `#2B2B2B`) | unchanged |
+| Pressed row | strengthened | unchanged |
+| Selected row | accent `#FFAE00` | dark `#161616` |
 
 ### Notifications
 
