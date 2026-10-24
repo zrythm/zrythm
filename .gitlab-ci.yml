@@ -25,7 +25,10 @@ stages:
   - source ./venv/bin/activate
   - python3 -m pip install -r requirements.txt
   - conan config install conan
-  - conan remote list | grep -q conan-local-index || conan remote add conan-local-index ext/conan-center-index
+  # conan stores the remote URL as an absolute path when adding it, so
+  # re-register the remote every job to point at this job's checkout
+  - conan remote remove conan-local-index 2>/dev/null || true
+  - conan remote add conan-local-index "${CI_PROJECT_DIR}/ext/conan-center-index"
   - python3 tools/export_conan_recipes.py
   - export CPM_SOURCE_CACHE="${HOME}/.cache/CPM"
 
@@ -127,7 +130,8 @@ stages:
     - *windows-activate-venv
     - python -m pip install -r requirements.txt
     - conan config install conan
-    - $r = conan remote list 2>$null; if (-not ($r -match 'conan-local-index')) { conan remote add conan-local-index ext/conan-center-index }
+    - $r = conan remote list 2>$null; if ($r -match 'conan-local-index') { conan remote remove conan-local-index }
+    - conan remote add conan-local-index "$env:CI_PROJECT_DIR/ext/conan-center-index"
     - python tools/export_conan_recipes.py
 
 .windows-arm-template:
@@ -146,7 +150,8 @@ stages:
     - *windows-activate-venv
     - python -m pip install -r requirements.txt
     - conan config install conan
-    - $r = conan remote list 2>$null; if (-not ($r -match 'conan-local-index')) { conan remote add conan-local-index ext/conan-center-index }
+    - $r = conan remote list 2>$null; if ($r -match 'conan-local-index') { conan remote remove conan-local-index }
+    - conan remote add conan-local-index "$env:CI_PROJECT_DIR/ext/conan-center-index"
     - python tools/export_conan_recipes.py
 
 default:
