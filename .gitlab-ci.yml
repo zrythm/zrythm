@@ -79,6 +79,8 @@ stages:
   extends: .gnu-linux-template
   tags:
     - ubuntu22-aarch64
+  variables:
+    ZRYTHM_RUN_COVERAGE: "0"
 
 .sanitizer-template:
   extends: .gnu-linux-template
@@ -210,7 +212,6 @@ configure:gnu/linux-aarch64:
       cmake --preset default
       -DZRYTHM_USER_MANUAL=OFF
       -DZRYTHM_UNITY_BUILD=ON
-      $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
   parallel:
     matrix:
       - BUILD_TYPE: Debug
@@ -351,7 +352,7 @@ check:exif:
 
 .unix_test_cmd: &unix_test_cmd
   - ctest --test-dir conanbuild/${BUILD_TYPE} -C ${BUILD_TYPE} -D NightlyTest --rerun-failed --output-on-failure
-  - if [ "${BUILD_TYPE}" = "Debug" ]; then
+  - if [ "${BUILD_TYPE}" = "Debug" ] && [ "${ZRYTHM_RUN_COVERAGE}" != "0" ]; then
       ctest --test-dir conanbuild/${BUILD_TYPE} -C ${BUILD_TYPE} -D NightlyCoverage ;
     fi
   - ctest --test-dir conanbuild/${BUILD_TYPE} -C ${BUILD_TYPE} -D NightlySubmit
