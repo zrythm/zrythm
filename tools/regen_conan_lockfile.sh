@@ -45,6 +45,10 @@ cp "$LOCK_OUT" "$LOCKFILE"
 run clang_debug    gcc_release
 run clang_release  gcc_release
 
+# Linux aarch64
+run gcc_debug_aarch64   gcc_release_aarch64
+run gcc_release_aarch64 gcc_release_aarch64
+
 # macOS (adds qt as build_require due to cross-building with bundled_libs)
 run appleclang_debug    appleclang_build
 run appleclang_release  appleclang_build

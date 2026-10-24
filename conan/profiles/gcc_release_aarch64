@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: CC0-1.0
+include(_gcc)
+include(_qt_common)
+
+[settings]
+arch=armv8
+os=Linux
+build_type=Release
+
+[conf]
+tools.build:cflags+=["-mtune=generic"]
+tools.build:cxxflags+=["-mtune=generic"]

@@ -1286,6 +1286,8 @@ elseif(APPLE)
   set(CPACK_SYSTEM_NAME "MacOS")
   set(CPACK_PACKAGE_ICON "${ZRYTHM_ICNS_FILE_PATH}")
 else()
+  # Distinguish x86_64 and aarch64 AppImages
+  set(CPACK_SYSTEM_NAME "Linux-${CMAKE_SYSTEM_PROCESSOR}")
   set(CPACK_PACKAGE_ICON "org.zrythm.Zrythm.svg")
 endif()
 
