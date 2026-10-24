@@ -8,12 +8,16 @@
 #include <fstream>
 #include <limits>
 
+#include <fmt/std.h>
+
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 
 #include <QCryptographicHash>
 
 #include "audio_block_store.h"
+
+using zrythm::utils::ZrythmException;
 
 namespace zrythm::dsp
 {
