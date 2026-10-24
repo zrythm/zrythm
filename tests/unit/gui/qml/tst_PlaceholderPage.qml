@@ -65,7 +65,9 @@ TestCase {
     verify(page);
     const column = contentColumn(page);
     tryVerify(() => column.height > 0);
-    tryVerify(() => Math.abs(column.x - (test.width - column.width) / 2) < 0.001);
-    tryVerify(() => Math.abs(column.y - (test.height - column.height) / 2) < 0.001);
+    // anchors.centerIn aligns to whole pixels by default (alignWhenCentered),
+    // so allow up to half a pixel of deviation from the ideal center
+    tryVerify(() => Math.abs(column.x - (test.width - column.width) / 2) <= 0.5);
+    tryVerify(() => Math.abs(column.y - (test.height - column.height) / 2) <= 0.5);
   }
 }
