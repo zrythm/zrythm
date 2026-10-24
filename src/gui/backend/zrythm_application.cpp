@@ -195,12 +195,10 @@ ZrythmApplication::initialize ()
   impl_->juce_message_handler_initializer_ =
     std::make_unique<juce::ScopedJuceInitialiser_GUI> ();
 
-#ifdef __linux__
   // Dispatch JUCE events (JUCE messages and X11 events for JUCE-created
-  // windows) inside Qt's event loop
+  // windows) inside Qt's event loop (no-op outside GNU/Linux)
   impl_->juce_event_loop_bridge_ =
     std::make_unique<gui::backend::JuceEventLoopBridge> ();
-#endif
 
   impl_->notification_center_ =
     utils::make_qobject_unique<NotificationCenter> (this);

@@ -14,8 +14,12 @@
 
 #  include <juce_events/native/juce_EventLoopInternal_linux.h>
 
+#endif
+
 namespace zrythm::gui::backend
 {
+
+#ifdef __linux__
 
 class JuceEventLoopBridge::Impl final
     : public juce::LinuxEventLoopInternal::Listener
@@ -73,24 +77,20 @@ private:
   std::map<int, utils::QObjectUniquePtr<QSocketNotifier>> notifiers_;
 };
 
-JuceEventLoopBridge::JuceEventLoopBridge () : pimpl_ (std::make_unique<Impl> ())
-{
-}
-
-JuceEventLoopBridge::~JuceEventLoopBridge () = default;
-
 #else
 
+// No-op implementation for platforms where JUCE dispatches events through
+// its own message-loop integration
 class JuceEventLoopBridge::Impl
 {
 };
 
+#endif
+
 JuceEventLoopBridge::JuceEventLoopBridge () : pimpl_ (std::make_unique<Impl> ())
 {
 }
 
 JuceEventLoopBridge::~JuceEventLoopBridge () = default;
-
-#endif
 
 } // namespace zrythm::gui::backend
