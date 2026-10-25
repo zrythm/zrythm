@@ -8,6 +8,72 @@ All notable changes to this project will be documented in this file.
 
 For changes prior to v2.0.0, see [CHANGELOG-old.v1.md](CHANGELOG-old.v1.md).
 
+## [v2.0.0-alpha.7] - 2026-10-25
+
+### Added
+- Selected notes, audio and automation can be transformed from the
+  clip editors' Functions menu (#5328): MIDI notes get Crescendo,
+  Flam, Flip Horizontal/Vertical, Legato, Portato, Staccato and
+  Strum, audio clips get Invert Polarity, Reverse, Normalize Peak/RMS
+  and curved Fade In/Out, and automation points get Flip
+  Horizontal/Vertical and Flatten. Functions with parameters open a
+  dialog, remember their last-used values and apply as one undo step
+- Transform Stack panel in the audio editor: audio functions are
+  kept as ordered, non-destructive entries over a time range, with
+  controls to bypass, remove, reorder and bake them and with the
+  affected range highlighted in the clip
+- Color picker for tracks and clips, reachable from the track
+  inspector and a new Color… entry in the arranger context menu, with
+  swatches, a custom color and a reset to the track type's default
+- GNU/Linux AppImages for aarch64, built next to the x86_64 ones;
+  AppImage file names now include the CPU architecture
+
+### Changed
+- Project audio is stored in blocks, and identical audio is stored
+  once; recordings are written to disk as they arrive, and backups
+  and Save As copy only the audio the project references, including
+  audio recorded while the save runs
+- Projects saved by earlier alphas no longer load: the audio pool
+  uses the new block-based format instead of whole-file WAVs
+- The startup window opens the project selector immediately while
+  plugins scan in the background with a progress indicator; the
+  first-run configuration page and scanning screen are gone
+- Recent projects show relative save dates in a card with a clear
+  action and an empty state, the create page is a labeled form with
+  name, location and template, and a warning appears when no audio
+  device could be opened
+- Tracks get a type-derived default color when no color is set,
+  drawn as a thin strip in the tracklist and mixer, and the folder
+  expander now sits on the name row
+- All arranger objects take their colors from the clip's color:
+  notes, waveforms and automation curves use a deeper, more saturated
+  shade, scale, chord, tempo and time-signature objects use a tinted
+  background, markers are drawn as pennants, clips have one unbroken
+  border and muted clips turn gray
+- Settings are stored under new names, so the icon theme, recent
+  projects, plugin search paths and user path fall back to their
+  defaults once, and the welcome tour shows again once
+- Open Project… now selects .zpj files directly instead of asking
+  for a folder
+- Sliders follow the design system, Filters/Presets/Functions share
+  a labeled menu button, and dialogs opened inside the window center
+  on it
+
+### Fixed
+- An idle project no longer keeps a CPU core busy: JUCE events are
+  dispatched through Qt's event loop instead of a timer that fired
+  continuously
+- Systems without an audio input device now get output-only
+  playback instead of no audio at all, with a warning; opening a
+  project when no audio device is open shows an error instead of
+  crashing
+- Dragging a plugin onto a track while a background plugin scan
+  runs no longer crashes, and plugin rows stay in place during the
+  scan
+- The new-project location field ignored the folder chosen in the
+  dialog; the selection is now used and remembered as the default,
+  and a reset button restores the factory location
+
 ## [v2.0.0-alpha.6] - 2026-10-04
 
 ### Added
