@@ -11,7 +11,7 @@ set_target_properties(zrythm_undo_unit_tests PROPERTIES
 )
 
 target_link_libraries(zrythm_undo_unit_tests PRIVATE
-  GTest::gmock_main
+  zrythm::gtest
   zrythm_undo_lib
   zrythm_test_helpers_lib
 )

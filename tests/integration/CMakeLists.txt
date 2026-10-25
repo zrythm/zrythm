@@ -15,7 +15,7 @@ set_target_properties(zrythm_integration_tests PROPERTIES
 )
 
 target_link_libraries(zrythm_integration_tests PRIVATE
-  GTest::gmock_main
+  zrythm::gtest
   zrythm_actions_lib
   zrythm_controllers_lib
   zrythm_test_helpers_lib

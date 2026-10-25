@@ -38,7 +38,7 @@ set_target_properties(zrythm_commands_unit_tests PROPERTIES
 )
 
 target_link_libraries(zrythm_commands_unit_tests PRIVATE
-  GTest::gmock_main
+  zrythm::gtest
   zrythm_commands_lib
   zrythm_test_helpers_lib
 )
