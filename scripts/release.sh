@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 #
 # Release script for Zrythm.
-# Usage: scripts/release.sh [--dry-run] <version>
+# Usage: scripts/release.sh [--dry-run] [--trailer "<trailer>"]... <version>
 # Example: scripts/release.sh 2.0.0-alpha.1
 #          scripts/release.sh --dry-run 2.0.0-alpha.1
+#          scripts/release.sh --trailer "Assisted-by: GLM-5.2" 2.0.0-alpha.1
 #
 # Prerequisites:
 #   - CHANGELOG.md must have a ## [v?<version>] section
@@ -15,7 +16,7 @@
 # This script:
 #   1. Validates the version format and changelog entry
 #   2. Updates VERSION.txt
-#   3. Commits the version bump
+#   3. Commits the version bump, with any extra trailers given
 #   4. Creates a GPG-signed annotated tag with changelog excerpt
 #   5. Generates source tarball with GPG signature and SHA-256 checksum
 #
@@ -23,19 +24,6 @@
 # CI handles binary builds and installer deployment on tag push.
 
 set -euo pipefail
-
-DRY_RUN=0
-if [ "${1:-}" = "--dry-run" ]; then
-    DRY_RUN=1
-    shift
-fi
-VERSION="${1:?Usage: $0 [--dry-run] <version> (e.g., 2.0.0-alpha.1)}"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-
-# Strip leading 'v' if provided
-VERSION="${VERSION#v}"
-TAG="v${VERSION}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -45,6 +33,39 @@ NC='\033[0m'
 info()  { echo -e "${GREEN}[INFO]${NC} $*"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $*"; }
 error() { echo -e "${RED}[ERROR]${NC} $*" >&2; exit 1; }
+
+DRY_RUN=0
+TRAILERS=()
+while [ $# -gt 0 ]; do
+    case "${1}" in
+        --dry-run)
+            DRY_RUN=1
+            shift
+            ;;
+        --trailer)
+            [ $# -ge 2 ] || error "--trailer requires a value"
+            TRAILERS+=("${2}")
+            shift 2
+            ;;
+        -*)
+            error "Unknown option: ${1}"
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+VERSION="${1:?Usage: $0 [--dry-run] [--trailer <trailer>]... <version> (e.g., 2.0.0-alpha.1)}"
+shift
+if [ $# -gt 0 ]; then
+    error "Unexpected argument: ${1}"
+fi
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Strip leading 'v' if provided
+VERSION="${VERSION#v}"
+TAG="v${VERSION}"
 
 cd "${PROJECT_DIR}"
 
@@ -100,9 +121,20 @@ fi
 
 if [ "${DRY_RUN}" -eq 1 ]; then
     info "[dry-run] Would commit VERSION.txt and CHANGELOG.md with message 'Release ${TAG}'"
+    for trailer in "${TRAILERS[@]}"; do
+        info "[dry-run] Would add trailer: ${trailer}"
+    done
 else
+    COMMIT_TRAILER_ARGS=()
+    for trailer in "${TRAILERS[@]}"; do
+        COMMIT_TRAILER_ARGS+=(--trailer "${trailer}")
+    done
     git add VERSION.txt CHANGELOG.md
-    git commit -s -m "Release ${TAG}"
+    if [ "${#COMMIT_TRAILER_ARGS[@]}" -gt 0 ]; then
+        git commit -s "${COMMIT_TRAILER_ARGS[@]}" -m "Release ${TAG}"
+    else
+        git commit -s -m "Release ${TAG}"
+    fi
 fi
 
 # ── Extract changelog for tag message ────────────────────────────────────────

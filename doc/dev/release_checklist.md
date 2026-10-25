@@ -30,10 +30,18 @@ Or do a dry run first:
 bash scripts/release.sh --dry-run 2.0.0-alpha.1
 ```
 
+Pass `--trailer` once per extra trailer to add to the release
+commit. AI-assisted release notes must carry an `Assisted-by` trailer:
+
+```bash
+bash scripts/release.sh --trailer "Assisted-by: <model>" 2.0.0-alpha.1
+```
+
 The script will:
 - Validate the version format and changelog entry
 - Update `VERSION.txt`
-- Commit `VERSION.txt` and `CHANGELOG.md` with message `Release v2.0.0-alpha.1`
+- Commit `VERSION.txt` and `CHANGELOG.md` with message
+  `Release v2.0.0-alpha.1`, adding any `--trailer` values
 - Create a GPG-signed annotated tag with the changelog as the tag message
 - Generate source tarball: `zrythm-2.0.0-alpha.1.tar.xz`
 - GPG-sign the tarball: `zrythm-2.0.0-alpha.1.tar.xz.asc`
