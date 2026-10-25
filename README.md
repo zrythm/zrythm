@@ -85,49 +85,18 @@ See the following instructions if you would like to build Zrythm from source ins
 
 ### Building From Source
 
-> [!NOTE]
-> We make heavy use of CMake's [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) module to fetch dependencies so you don't need to install any dependencies manually other than CMake and Qt.
-> This guide assumes you are fine with fetching dependencies automatically.
-
 > [!IMPORTANT]
 > If you distribute your builds to others, you must comply with the license terms of Zrythm and all dependencies we use, in addition to our [Trademark Policy](TRADEMARKS.md).
 
-You can change `Release` to `Debug` below if you want to build in debug mode.
+All dependencies are fetched and built automatically: most (including Qt) by [Conan](https://conan.io/), a handful (JUCE, the CLAP and VST3 SDKs and a few small libraries, pinned in [package-lock.cmake](package-lock.cmake)) by [CPM](https://github.com/cpm-cmake/CPM.cmake) at configure time, and the rest vendored under [ext/](ext/). You only need a compiler toolchain (GCC or Clang on GNU/Linux, Xcode on macOS, or Visual Studio 2022 with the "Desktop development with C++" workload on Windows), plus CMake, Ninja, Python and Git. The first configure downloads and builds a lot of source code.
 
-#### GNU/Linux
-
-1. Install [CMake](https://cmake.org/), [Ninja](https://ninja-build.org/) and [Qt](https://www.qt.io/) (see [CMakeLists.txt](CMakeLists.txt) for required version).
-2. Open a terminal and go to the root of Zrythm's source code.
-3. Run `cmake -B builddir -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
-4. Run `cmake --build builddir --config Release`.
-5. Zrythm is now built at `builddir/src/gui/zrythm`.
-
-#### macOS
-
-1. Install Xcode, CMake and Qt.
-2. Open a terminal and go to the root of Zrythm's source code.
-3. Run `cmake -B builddir -G Xcode -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
-4. Open the Xcode project inside `builddir` and build it.
-
-#### Windows
-
-1. Install Visual Studio 2022 (CMake ships with Visual Studio, but you have to install the "Desktop development with C++" package), and Qt.
-2. Open Developer Powershell for Visual Studio 2022 and go to the root of Zrythm's source code.
-3. Run `cmake -B builddir -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
-4. Open the Visual Studio solution inside `builddir` and build it.
-
-> [!NOTE]
-> On Windows, you must build Qt with the same compiler and same configuration (Debug/Release) you use to build Zrythm.
-
-#### Using Conan (optional)
-
-[Conan](https://conan.io/) can manage all dependencies (including Qt) for reproducible builds across platforms.
-
-1. Install Conan, CMake, and Ninja in a virtual environment:
+1. Install Conan in a virtual environment:
    ```
    python -m venv venv && source venv/bin/activate
    pip install -r requirements.txt
    ```
+
+   On Windows, activate the venv with `venv\Scripts\Activate.ps1` and run the steps below from a Developer PowerShell for VS 2022.
 
 2. Install project profiles and settings:
    ```
@@ -157,6 +126,7 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
    |----------|-------------------|-------------------------------|
    | GNU/Linux (Clang) | `clang_debug` / `clang_release` | — |
    | GNU/Linux (GCC) | `gcc_debug` / `gcc_release` | — |
+   | GNU/Linux (aarch64, GCC) | `gcc_debug_aarch64` / `gcc_release_aarch64` | — |
    | macOS | `appleclang_debug` / `appleclang_release` | `appleclang_build` |
    | Windows (x64) | `msvc_debug` / `msvc_release` | — |
    | Windows (ARM64EC) | `msvc_arm64ec_debug` / `msvc_arm64ec_release` | — |
@@ -170,6 +140,9 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
    ```
    conan install . -pr:h clang_debug -pr:b clang_debug -o sanitizer="address_undefined" --build=missing
    ```
+
+> [!NOTE]
+> Building against system libraries instead of Conan is untested. The complete inventory of dependencies (Conan, CPM and vendored) is [data/dependencies.toml](data/dependencies.toml); the build declarations live in [conanfile.py](conanfile.py) and [package-lock.cmake](package-lock.cmake).
 
 ## Using Zrythm
 
