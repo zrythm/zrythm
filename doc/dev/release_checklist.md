@@ -8,7 +8,8 @@ SPDX-License-Identifier: FSFAP
 ## Pre-release
 
 1. Ensure all intended features/fixes are merged to `master`
-2. Update `CHANGELOG.md` with a new version section:
+2. Update `CHANGELOG.md` with a new version section, following the
+   writing rules in [release_notes.md](release_notes.md):
    ```
    ## [v2.0.0-alpha.1] - 2026-05-30
    ```
@@ -67,7 +68,8 @@ git reset --hard HEAD~1
 1. Verify CI pipeline passes on the tag
 2. Verify binary installers are available on the download site
 3. Verify source tarballs are available on the website
-4. Announce the release (Mastodon, forum, etc.)
+4. Announce the release (Mastodon, forum, etc.), following
+   [release_notes.md](release_notes.md)
 
 ## Version Scheme
 
