@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "White Noise"
 version: "1.0"
-Code generated with Faust 2.85.9 (https://faust.grame.fr)
+Code generated with Faust 2.88.0 (https://faust.grame.fr)
 Compilation options: -a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn white_noise -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0
 ------------------------------------------------------------ */
 
@@ -45,6 +45,13 @@ using zrythm::plugins::faust::UI;
 #include <cmath>
 #include <cstdint>
 #include <math.h>
+#ifndef FAUST_INT_WRAP
+#define FAUST_INT_WRAP
+inline int faust_wrap_add(int a, int b) { return int((unsigned int)a + (unsigned int)b); }
+inline int faust_wrap_sub(int a, int b) { return int((unsigned int)a - (unsigned int)b); }
+inline int faust_wrap_mul(int a, int b) { return int((unsigned int)a * (unsigned int)b); }
+#endif
+
 
 #ifndef FAUSTCLASS 
 #define FAUSTCLASS white_noise
@@ -66,12 +73,12 @@ class white_noise : public dsp {
 	
  private:
 	
-	int iRec0[2];
 	int fSampleRate;
 	float fConst0;
 	float fConst1;
 	FAUSTFLOAT fHslider0;
-	float fRec1[2];
+	float fRec0[2];
+	int iRec1[2];
 	
  public:
 	white_noise() {
@@ -86,7 +93,7 @@ class white_noise : public dsp {
 	void metadata(Meta* m) { 
 		m->declare("author", "Zrythm");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "1.22.0");
+		m->declare("basics.lib/version", "1.23.0");
 		m->declare("compile_options", "-a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn white_noise -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "White noise generator");
@@ -94,16 +101,16 @@ class white_noise : public dsp {
 		m->declare("license", "AGPL-3.0-or-later");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
-		m->declare("maths.lib/license", "LGPL with exception");
+		m->declare("maths.lib/license", "LicenseRef-LGPL-2.1-or-later-with-Faust-exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.9.0");
 		m->declare("name", "White Noise");
 		m->declare("noises.lib/name", "Faust Noise Generator Library");
-		m->declare("noises.lib/version", "1.5.0");
+		m->declare("noises.lib/version", "1.6.0");
 		m->declare("platform.lib/name", "Generic Platform Library");
 		m->declare("platform.lib/version", "1.3.0");
 		m->declare("signals.lib/name", "Faust Routing Library");
-		m->declare("signals.lib/version", "1.6.0");
+		m->declare("signals.lib/version", "1.7.0");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -132,11 +139,11 @@ class white_noise : public dsp {
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
-			iRec0[l0] = 0;
+		for (int l0 = 0; l0 < 2; l0 = faust_wrap_add(l0, 1)) {
+			fRec0[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
-			fRec1[l1] = 0.0f;
+		for (int l1 = 0; l1 < 2; l1 = faust_wrap_add(l1, 1)) {
+			iRec1[l1] = 0;
 		}
 	}
 	
@@ -170,14 +177,14 @@ class white_noise : public dsp {
 		FAUSTFLOAT* output0 = outputs[0];
 		FAUSTFLOAT* output1 = outputs[1];
 		float fSlow0 = fConst0 * std::pow(1e+01f, 0.05f * static_cast<float>(fHslider0));
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
-			iRec0[0] = 1103515245 * iRec0[1] + 12345;
-			fRec1[0] = fSlow0 + fConst1 * fRec1[1];
-			float fTemp0 = 4.656613e-10f * fRec1[0] * static_cast<float>(iRec0[0]);
+		for (int i0 = 0; i0 < count; i0 = faust_wrap_add(i0, 1)) {
+			fRec0[0] = fSlow0 + fConst1 * fRec0[1];
+			iRec1[0] = faust_wrap_add(12345, faust_wrap_mul(1103515245, iRec1[1]));
+			float fTemp0 = 4.656613e-10f * static_cast<float>(iRec1[0]) * fRec0[0];
 			output0[i0] = static_cast<FAUSTFLOAT>(fTemp0);
 			output1[i0] = static_cast<FAUSTFLOAT>(fTemp0);
-			iRec0[1] = iRec0[0];
-			fRec1[1] = fRec1[0];
+			fRec0[1] = fRec0[0];
+			iRec1[1] = iRec1[0];
 		}
 	}
 

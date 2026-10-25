@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Gate Stereo"
 version: "1.0"
-Code generated with Faust 2.85.9 (https://faust.grame.fr)
+Code generated with Faust 2.88.0 (https://faust.grame.fr)
 Compilation options: -a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn gate_stereo -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0
 ------------------------------------------------------------ */
 
@@ -45,6 +45,13 @@ using zrythm::plugins::faust::UI;
 #include <cmath>
 #include <cstdint>
 #include <math.h>
+#ifndef FAUST_INT_WRAP
+#define FAUST_INT_WRAP
+inline int faust_wrap_add(int a, int b) { return int((unsigned int)a + (unsigned int)b); }
+inline int faust_wrap_sub(int a, int b) { return int((unsigned int)a - (unsigned int)b); }
+inline int faust_wrap_mul(int a, int b) { return int((unsigned int)a * (unsigned int)b); }
+#endif
+
 
 #ifndef FAUSTCLASS 
 #define FAUSTCLASS gate_stereo
@@ -92,10 +99,10 @@ class gate_stereo : public dsp {
 	void metadata(Meta* m) { 
 		m->declare("analyzers.lib/amp_follower_ar:author", "Jonatan Liljedahl, revised by Romain Michon");
 		m->declare("analyzers.lib/name", "Faust Analyzer Library");
-		m->declare("analyzers.lib/version", "1.3.0");
+		m->declare("analyzers.lib/version", "1.4.0");
 		m->declare("author", "Zrythm");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "1.22.0");
+		m->declare("basics.lib/version", "1.23.0");
 		m->declare("compile_options", "-a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn gate_stereo -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Stereo gate");
@@ -103,22 +110,22 @@ class gate_stereo : public dsp {
 		m->declare("license", "AGPL-3.0-or-later");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
-		m->declare("maths.lib/license", "LGPL with exception");
+		m->declare("maths.lib/license", "LicenseRef-LGPL-2.1-or-later-with-Faust-exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.9.0");
 		m->declare("misceffects.lib/gate_gain_mono:author", "Julius O. Smith III");
-		m->declare("misceffects.lib/gate_gain_mono:license", "STK-4.3");
+		m->declare("misceffects.lib/gate_gain_mono:license", "LicenseRef-STK-4.3");
 		m->declare("misceffects.lib/gate_stereo:author", "Julius O. Smith III");
-		m->declare("misceffects.lib/gate_stereo:license", "STK-4.3");
+		m->declare("misceffects.lib/gate_stereo:license", "LicenseRef-STK-4.3");
 		m->declare("misceffects.lib/name", "Misc Effects Library");
-		m->declare("misceffects.lib/version", "2.5.2");
+		m->declare("misceffects.lib/version", "2.6.0");
 		m->declare("name", "Gate Stereo");
 		m->declare("platform.lib/name", "Generic Platform Library");
 		m->declare("platform.lib/version", "1.3.0");
 		m->declare("signals.lib/name", "Faust Routing Library");
 		m->declare("signals.lib/onePoleSwitching:author", "Jonatan Liljedahl, revised by Dario Sanfilippo");
-		m->declare("signals.lib/onePoleSwitching:licence", "STK-4.3");
-		m->declare("signals.lib/version", "1.6.0");
+		m->declare("signals.lib/onePoleSwitching:licence", "LicenseRef-STK-4.3");
+		m->declare("signals.lib/version", "1.7.0");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -151,16 +158,16 @@ class gate_stereo : public dsp {
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
+		for (int l0 = 0; l0 < 2; l0 = faust_wrap_add(l0, 1)) {
 			fRec1[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
+		for (int l1 = 0; l1 < 2; l1 = faust_wrap_add(l1, 1)) {
 			iVec0[l1] = 0;
 		}
-		for (int l2 = 0; l2 < 2; l2 = l2 + 1) {
+		for (int l2 = 0; l2 < 2; l2 = faust_wrap_add(l2, 1)) {
 			iRec2[l2] = 0;
 		}
-		for (int l3 = 0; l3 < 2; l3 = l3 + 1) {
+		for (int l3 = 0; l3 < 2; l3 = faust_wrap_add(l3, 1)) {
 			fRec0[l3] = 0.0f;
 		}
 	}
@@ -221,13 +228,13 @@ class gate_stereo : public dsp {
 		float fSlow9 = ((iSlow8) ? 0.0f : std::exp(-(fConst1 / ((iSlow8) ? 1.0f : fSlow2))));
 		int iSlow10 = std::fabs(fSlow1) < 1.1920929e-07f;
 		float fSlow11 = ((iSlow10) ? 0.0f : std::exp(-(fConst1 / ((iSlow10) ? 1.0f : fSlow1))));
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
+		for (int i0 = 0; i0 < count; i0 = faust_wrap_add(i0, 1)) {
 			float fTemp0 = static_cast<float>(input0[i0]);
 			float fTemp1 = static_cast<float>(input1[i0]);
-			fRec1[0] = std::fabs(std::fabs(fTemp1) + std::fabs(fTemp0)) * fSlow6 + fRec1[1] * fSlow5;
+			fRec1[0] = fSlow6 * std::fabs(std::fabs(fTemp1) + std::fabs(fTemp0)) + fSlow5 * fRec1[1];
 			int iTemp2 = fRec1[0] > fSlow0;
 			iVec0[0] = iTemp2;
-			iRec2[0] = std::max<int>(iSlow7 * (iTemp2 < iVec0[1]), iRec2[1] + -1);
+			iRec2[0] = std::max<int>(faust_wrap_mul(iSlow7, iTemp2 < iVec0[1]), faust_wrap_add(-1, iRec2[1]));
 			float fTemp3 = std::fabs(std::max<float>(static_cast<float>(iTemp2), static_cast<float>(iRec2[0] > 0)));
 			float fTemp4 = ((fTemp3 > fRec0[1]) ? fSlow11 : fSlow9);
 			fRec0[0] = fTemp3 * (1.0f - fTemp4) + fRec0[1] * fTemp4;

@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Peak Limiter"
 version: "1.0"
-Code generated with Faust 2.85.9 (https://faust.grame.fr)
+Code generated with Faust 2.88.0 (https://faust.grame.fr)
 Compilation options: -a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn peak_limiter -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0
 ------------------------------------------------------------ */
 
@@ -45,6 +45,13 @@ using zrythm::plugins::faust::UI;
 #include <cmath>
 #include <cstdint>
 #include <math.h>
+#ifndef FAUST_INT_WRAP
+#define FAUST_INT_WRAP
+inline int faust_wrap_add(int a, int b) { return int((unsigned int)a + (unsigned int)b); }
+inline int faust_wrap_sub(int a, int b) { return int((unsigned int)a - (unsigned int)b); }
+inline int faust_wrap_mul(int a, int b) { return int((unsigned int)a * (unsigned int)b); }
+#endif
+
 
 #ifndef FAUSTCLASS 
 #define FAUSTCLASS peak_limiter
@@ -97,17 +104,17 @@ class peak_limiter : public dsp {
 	void metadata(Meta* m) { 
 		m->declare("analyzers.lib/amp_follower_ar:author", "Jonatan Liljedahl, revised by Romain Michon");
 		m->declare("analyzers.lib/name", "Faust Analyzer Library");
-		m->declare("analyzers.lib/version", "1.3.0");
+		m->declare("analyzers.lib/version", "1.4.0");
 		m->declare("author", "Zrythm");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "1.22.0");
+		m->declare("basics.lib/version", "1.23.0");
 		m->declare("compile_options", "-a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn peak_limiter -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0");
 		m->declare("compressors.lib/compression_gain_mono:author", "Julius O. Smith III");
 		m->declare("compressors.lib/compression_gain_mono:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("compressors.lib/compression_gain_mono:license", "MIT-style STK-4.3 license");
+		m->declare("compressors.lib/compression_gain_mono:license", "LicenseRef-STK-4.3");
 		m->declare("compressors.lib/compressor_stereo:author", "Julius O. Smith III");
 		m->declare("compressors.lib/compressor_stereo:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("compressors.lib/compressor_stereo:license", "MIT-style STK-4.3 license");
+		m->declare("compressors.lib/compressor_stereo:license", "LicenseRef-STK-4.3");
 		m->declare("compressors.lib/name", "Faust Compressor Effect Library");
 		m->declare("compressors.lib/version", "1.6.0");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
@@ -116,7 +123,7 @@ class peak_limiter : public dsp {
 		m->declare("license", "AGPL-3.0-or-later");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
-		m->declare("maths.lib/license", "LGPL with exception");
+		m->declare("maths.lib/license", "LicenseRef-LGPL-2.1-or-later-with-Faust-exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.9.0");
 		m->declare("name", "Peak Limiter");
@@ -124,8 +131,8 @@ class peak_limiter : public dsp {
 		m->declare("platform.lib/version", "1.3.0");
 		m->declare("signals.lib/name", "Faust Routing Library");
 		m->declare("signals.lib/onePoleSwitching:author", "Jonatan Liljedahl, revised by Dario Sanfilippo");
-		m->declare("signals.lib/onePoleSwitching:licence", "STK-4.3");
-		m->declare("signals.lib/version", "1.6.0");
+		m->declare("signals.lib/onePoleSwitching:licence", "LicenseRef-STK-4.3");
+		m->declare("signals.lib/version", "1.7.0");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -161,22 +168,22 @@ class peak_limiter : public dsp {
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
+		for (int l0 = 0; l0 < 2; l0 = faust_wrap_add(l0, 1)) {
 			fRec1[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
+		for (int l1 = 0; l1 < 2; l1 = faust_wrap_add(l1, 1)) {
 			fRec2[l1] = 0.0f;
 		}
-		for (int l2 = 0; l2 < 2; l2 = l2 + 1) {
+		for (int l2 = 0; l2 < 2; l2 = faust_wrap_add(l2, 1)) {
 			fRec3[l2] = 0.0f;
 		}
-		for (int l3 = 0; l3 < 2; l3 = l3 + 1) {
+		for (int l3 = 0; l3 < 2; l3 = faust_wrap_add(l3, 1)) {
 			fRec5[l3] = 0.0f;
 		}
-		for (int l4 = 0; l4 < 2; l4 = l4 + 1) {
+		for (int l4 = 0; l4 < 2; l4 = faust_wrap_add(l4, 1)) {
 			fRec4[l4] = 0.0f;
 		}
-		for (int l5 = 0; l5 < 2; l5 = l5 + 1) {
+		for (int l5 = 0; l5 < 2; l5 = faust_wrap_add(l5, 1)) {
 			fRec0[l5] = 0.0f;
 		}
 	}
@@ -228,7 +235,7 @@ class peak_limiter : public dsp {
 		float fSlow1 = fConst1 * static_cast<float>(fHslider1);
 		float fSlow2 = fConst1 * static_cast<float>(fHslider2);
 		float fSlow3 = fConst5 * static_cast<float>(fHslider3);
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
+		for (int i0 = 0; i0 < count; i0 = faust_wrap_add(i0, 1)) {
 			fRec1[0] = fSlow0 + fConst2 * fRec1[1];
 			float fTemp0 = 0.5f * fRec1[0];
 			int iTemp1 = std::fabs(fTemp0) < 1.1920929e-07f;
@@ -243,7 +250,7 @@ class peak_limiter : public dsp {
 			int iTemp7 = std::fabs(fRec1[0]) < 1.1920929e-07f;
 			float fTemp8 = ((fTemp5 > fRec4[1]) ? ((iTemp7) ? 0.0f : std::exp(-(fConst4 / ((iTemp7) ? 1.0f : fRec1[0])))) : ((iTemp6) ? 0.0f : std::exp(-(fConst4 / ((iTemp6) ? 1.0f : fRec5[0])))));
 			fRec4[0] = fTemp5 * (1.0f - fTemp8) + fRec4[1] * fTemp8;
-			fRec0[0] = std::max<float>(2e+01f * std::log10(std::max<float>(1.1754944e-38f, fRec4[0])) - fRec3[0], 0.0f) * (1.0f - fTemp2) * (1.0f / std::max<float>(1.1920929e-07f, fRec2[0]) + -1.0f) + fTemp2 * fRec0[1];
+			fRec0[0] = (1.0f - fTemp2) * std::max<float>(2e+01f * std::log10(std::max<float>(1.1754944e-38f, fRec4[0])) - fRec3[0], 0.0f) * (-1.0f + 1.0f / std::max<float>(1.1920929e-07f, fRec2[0])) + fTemp2 * fRec0[1];
 			float fTemp9 = std::pow(1e+01f, 0.05f * fRec0[0]);
 			output0[i0] = static_cast<FAUSTFLOAT>(fTemp3 * fTemp9);
 			output1[i0] = static_cast<FAUSTFLOAT>(fTemp4 * fTemp9);

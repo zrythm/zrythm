@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Cubic Distortion"
 version: "1.0"
-Code generated with Faust 2.85.9 (https://faust.grame.fr)
+Code generated with Faust 2.88.0 (https://faust.grame.fr)
 Compilation options: -a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn cubic_distortion -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0
 ------------------------------------------------------------ */
 
@@ -44,6 +44,13 @@ using zrythm::plugins::faust::UI;
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#ifndef FAUST_INT_WRAP
+#define FAUST_INT_WRAP
+inline int faust_wrap_add(int a, int b) { return int((unsigned int)a + (unsigned int)b); }
+inline int faust_wrap_sub(int a, int b) { return int((unsigned int)a - (unsigned int)b); }
+inline int faust_wrap_mul(int a, int b) { return int((unsigned int)a * (unsigned int)b); }
+#endif
+
 
 #ifndef FAUSTCLASS 
 #define FAUSTCLASS cubic_distortion
@@ -151,16 +158,16 @@ class cubic_distortion : public dsp {
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
+		for (int l0 = 0; l0 < 2; l0 = faust_wrap_add(l0, 1)) {
 			fRec1[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
+		for (int l1 = 0; l1 < 2; l1 = faust_wrap_add(l1, 1)) {
 			fRec2[l1] = 0.0f;
 		}
-		for (int l2 = 0; l2 < 2; l2 = l2 + 1) {
+		for (int l2 = 0; l2 < 2; l2 = faust_wrap_add(l2, 1)) {
 			fVec0[l2] = 0.0f;
 		}
-		for (int l3 = 0; l3 < 2; l3 = l3 + 1) {
+		for (int l3 = 0; l3 < 2; l3 = faust_wrap_add(l3, 1)) {
 			fRec0[l3] = 0.0f;
 		}
 	}
@@ -189,12 +196,12 @@ class cubic_distortion : public dsp {
 		ui_interface->openVerticalBox("CUBIC NONLINEARITY cubicnl");
 		ui_interface->declare(0, "1", "");
 		ui_interface->openHorizontalBox("0x00");
-		ui_interface->declare(&fHslider0, "1", "");
-		ui_interface->declare(&fHslider0, "tooltip", "Amount of distortion");
-		ui_interface->addHorizontalSlider("Drive", &fHslider0, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.01f));
-		ui_interface->declare(&fHslider1, "2", "");
-		ui_interface->declare(&fHslider1, "tooltip", "Brings in even harmonics");
-		ui_interface->addHorizontalSlider("Offset", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.01f));
+		ui_interface->declare(&fHslider1, "1", "");
+		ui_interface->declare(&fHslider1, "tooltip", "Amount of distortion");
+		ui_interface->addHorizontalSlider("Drive", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.01f));
+		ui_interface->declare(&fHslider0, "2", "");
+		ui_interface->declare(&fHslider0, "tooltip", "Brings in even harmonics");
+		ui_interface->addHorizontalSlider("Offset", &fHslider0, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.01f));
 		ui_interface->closeBox();
 		ui_interface->closeBox();
 	}
@@ -204,10 +211,10 @@ class cubic_distortion : public dsp {
 		FAUSTFLOAT* output0 = outputs[0];
 		float fSlow0 = 0.001f * static_cast<float>(fHslider0);
 		float fSlow1 = 0.001f * static_cast<float>(fHslider1);
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
+		for (int i0 = 0; i0 < count; i0 = faust_wrap_add(i0, 1)) {
 			fRec1[0] = fSlow0 + 0.999f * fRec1[1];
 			fRec2[0] = fSlow1 + 0.999f * fRec2[1];
-			float fTemp0 = std::max<float>(-1.0f, std::min<float>(1.0f, fRec2[0] + static_cast<float>(input0[i0]) * std::pow(1e+01f, 2.0f * fRec1[0])));
+			float fTemp0 = std::max<float>(-1.0f, std::min<float>(1.0f, static_cast<float>(input0[i0]) * std::pow(1e+01f, 2.0f * fRec2[0]) + fRec1[0]));
 			float fTemp1 = fTemp0 * (1.0f - 0.33333334f * cubic_distortion_faustpower2_f(fTemp0));
 			fVec0[0] = fTemp1;
 			fRec0[0] = 0.995f * fRec0[1] + fTemp1 - fVec0[1];

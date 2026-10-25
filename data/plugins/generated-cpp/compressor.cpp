@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Compressor"
 version: "1.0"
-Code generated with Faust 2.85.9 (https://faust.grame.fr)
+Code generated with Faust 2.88.0 (https://faust.grame.fr)
 Compilation options: -a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn compressor -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0
 ------------------------------------------------------------ */
 
@@ -45,6 +45,13 @@ using zrythm::plugins::faust::UI;
 #include <cmath>
 #include <cstdint>
 #include <math.h>
+#ifndef FAUST_INT_WRAP
+#define FAUST_INT_WRAP
+inline int faust_wrap_add(int a, int b) { return int((unsigned int)a + (unsigned int)b); }
+inline int faust_wrap_sub(int a, int b) { return int((unsigned int)a - (unsigned int)b); }
+inline int faust_wrap_mul(int a, int b) { return int((unsigned int)a * (unsigned int)b); }
+#endif
+
 
 #ifndef FAUSTCLASS 
 #define FAUSTCLASS compressor
@@ -89,17 +96,17 @@ class compressor : public dsp {
 	void metadata(Meta* m) { 
 		m->declare("analyzers.lib/amp_follower_ar:author", "Jonatan Liljedahl, revised by Romain Michon");
 		m->declare("analyzers.lib/name", "Faust Analyzer Library");
-		m->declare("analyzers.lib/version", "1.3.0");
+		m->declare("analyzers.lib/version", "1.4.0");
 		m->declare("author", "Zrythm");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "1.22.0");
+		m->declare("basics.lib/version", "1.23.0");
 		m->declare("compile_options", "-a data/plugins/zrythm-arch.cpp -lang cpp -fpga-mem-th 4 -ct 1 -cn compressor -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 0");
 		m->declare("compressors.lib/compression_gain_mono:author", "Julius O. Smith III");
 		m->declare("compressors.lib/compression_gain_mono:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("compressors.lib/compression_gain_mono:license", "MIT-style STK-4.3 license");
+		m->declare("compressors.lib/compression_gain_mono:license", "LicenseRef-STK-4.3");
 		m->declare("compressors.lib/compressor_stereo:author", "Julius O. Smith III");
 		m->declare("compressors.lib/compressor_stereo:copyright", "Copyright (C) 2014-2020 by Julius O. Smith III <jos@ccrma.stanford.edu>");
-		m->declare("compressors.lib/compressor_stereo:license", "MIT-style STK-4.3 license");
+		m->declare("compressors.lib/compressor_stereo:license", "LicenseRef-STK-4.3");
 		m->declare("compressors.lib/name", "Faust Compressor Effect Library");
 		m->declare("compressors.lib/version", "1.6.0");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
@@ -108,7 +115,7 @@ class compressor : public dsp {
 		m->declare("license", "AGPL-3.0-or-later");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
-		m->declare("maths.lib/license", "LGPL with exception");
+		m->declare("maths.lib/license", "LicenseRef-LGPL-2.1-or-later-with-Faust-exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.9.0");
 		m->declare("name", "Compressor");
@@ -116,8 +123,8 @@ class compressor : public dsp {
 		m->declare("platform.lib/version", "1.3.0");
 		m->declare("signals.lib/name", "Faust Routing Library");
 		m->declare("signals.lib/onePoleSwitching:author", "Jonatan Liljedahl, revised by Dario Sanfilippo");
-		m->declare("signals.lib/onePoleSwitching:licence", "STK-4.3");
-		m->declare("signals.lib/version", "1.6.0");
+		m->declare("signals.lib/onePoleSwitching:licence", "LicenseRef-STK-4.3");
+		m->declare("signals.lib/version", "1.7.0");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -149,10 +156,10 @@ class compressor : public dsp {
 	}
 	
 	virtual void instanceClear() {
-		for (int l0 = 0; l0 < 2; l0 = l0 + 1) {
+		for (int l0 = 0; l0 < 2; l0 = faust_wrap_add(l0, 1)) {
 			fRec1[l0] = 0.0f;
 		}
-		for (int l1 = 0; l1 < 2; l1 = l1 + 1) {
+		for (int l1 = 0; l1 < 2; l1 = faust_wrap_add(l1, 1)) {
 			fRec0[l1] = 0.0f;
 		}
 	}
@@ -206,25 +213,24 @@ class compressor : public dsp {
 		float fSlow1 = 0.0005f * fSlow0;
 		int iSlow2 = std::fabs(fSlow1) < 1.1920929e-07f;
 		float fSlow3 = ((iSlow2) ? 0.0f : std::exp(-(fConst0 / ((iSlow2) ? 1.0f : fSlow1))));
-		float fSlow4 = 1.0f - fSlow3;
-		float fSlow5 = static_cast<float>(fHslider1);
-		float fSlow6 = 0.001f * static_cast<float>(fHslider2);
-		int iSlow7 = std::fabs(fSlow6) < 1.1920929e-07f;
-		float fSlow8 = ((iSlow7) ? 0.0f : std::exp(-(fConst0 / ((iSlow7) ? 1.0f : fSlow6))));
-		float fSlow9 = 0.001f * fSlow0;
-		int iSlow10 = std::fabs(fSlow9) < 1.1920929e-07f;
-		float fSlow11 = ((iSlow10) ? 0.0f : std::exp(-(fConst0 / ((iSlow10) ? 1.0f : fSlow9))));
-		float fSlow12 = 1.0f / std::max<float>(1.1920929e-07f, static_cast<float>(fHslider3)) + -1.0f;
-		float fSlow13 = 0.01f * static_cast<float>(fHslider4);
-		float fSlow14 = 1.0f - fSlow13;
-		for (int i0 = 0; i0 < count; i0 = i0 + 1) {
+		float fSlow4 = static_cast<float>(fHslider1);
+		float fSlow5 = 0.001f * static_cast<float>(fHslider2);
+		int iSlow6 = std::fabs(fSlow5) < 1.1920929e-07f;
+		float fSlow7 = ((iSlow6) ? 0.0f : std::exp(-(fConst0 / ((iSlow6) ? 1.0f : fSlow5))));
+		float fSlow8 = 0.001f * fSlow0;
+		int iSlow9 = std::fabs(fSlow8) < 1.1920929e-07f;
+		float fSlow10 = ((iSlow9) ? 0.0f : std::exp(-(fConst0 / ((iSlow9) ? 1.0f : fSlow8))));
+		float fSlow11 = (1.0f - fSlow3) * (1.0f / std::max<float>(1.1920929e-07f, static_cast<float>(fHslider3)) + -1.0f);
+		float fSlow12 = 0.01f * static_cast<float>(fHslider4);
+		float fSlow13 = 1.0f - fSlow12;
+		for (int i0 = 0; i0 < count; i0 = faust_wrap_add(i0, 1)) {
 			float fTemp0 = static_cast<float>(input1[i0]);
 			float fTemp1 = static_cast<float>(input0[i0]);
 			float fTemp2 = std::fabs(std::fabs(fTemp1) + std::fabs(fTemp0));
-			float fTemp3 = ((fTemp2 > fRec1[1]) ? fSlow11 : fSlow8);
+			float fTemp3 = ((fTemp2 > fRec1[1]) ? fSlow10 : fSlow7);
 			fRec1[0] = fTemp2 * (1.0f - fTemp3) + fRec1[1] * fTemp3;
-			fRec0[0] = fSlow12 * std::max<float>(2e+01f * std::log10(std::max<float>(1.1754944e-38f, fRec1[0])) - fSlow5, 0.0f) * fSlow4 + fSlow3 * fRec0[1];
-			float fTemp4 = fSlow14 + fSlow13 * std::pow(1e+01f, 0.05f * fRec0[0]);
+			fRec0[0] = fSlow11 * std::max<float>(2e+01f * std::log10(std::max<float>(1.1754944e-38f, fRec1[0])) - fSlow4, 0.0f) + fSlow3 * fRec0[1];
+			float fTemp4 = fSlow13 + fSlow12 * std::pow(1e+01f, 0.05f * fRec0[0]);
 			output0[i0] = static_cast<FAUSTFLOAT>(fTemp1 * fTemp4);
 			output1[i0] = static_cast<FAUSTFLOAT>(fTemp0 * fTemp4);
 			fRec1[1] = fRec1[0];
