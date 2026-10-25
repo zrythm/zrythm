@@ -19,6 +19,7 @@ target_link_libraries(zrythm_integration_tests PRIVATE
   zrythm_actions_lib
   zrythm_controllers_lib
   zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
 )
 
 # Absolute path to the plugin scanner executable (with the platform's

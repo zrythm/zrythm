@@ -40,6 +40,7 @@ target_link_libraries(zrythm_plugins_unit_tests PRIVATE
   GTest::gmock_main
   zrythm_plugins_lib
   zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
 )
 
 zrythm_discover_tests(zrythm_plugins_unit_tests)

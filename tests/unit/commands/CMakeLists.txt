@@ -41,6 +41,7 @@ target_link_libraries(zrythm_commands_unit_tests PRIVATE
   GTest::gmock_main
   zrythm_commands_lib
   zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
 )
 
 target_precompile_headers(zrythm_commands_unit_tests REUSE_FROM zrythm_structure_project_unit_tests)

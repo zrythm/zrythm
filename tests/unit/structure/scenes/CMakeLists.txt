@@ -17,6 +17,7 @@ target_link_libraries(zrythm_structure_scenes_unit_tests PRIVATE
   GTest::gmock_main
   zrythm_structure_scenes_lib
   zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
 )
 
 target_precompile_headers(zrythm_structure_scenes_unit_tests REUSE_FROM zrythm_structure_tracks_unit_tests)

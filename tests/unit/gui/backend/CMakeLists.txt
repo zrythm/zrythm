@@ -18,6 +18,7 @@ target_link_libraries(zrythm_gui_backend_unit_tests PRIVATE
   GTest::gmock_main
   zrythm_gui_lib
   zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
 )
 
 zrythm_discover_tests(zrythm_gui_backend_unit_tests)

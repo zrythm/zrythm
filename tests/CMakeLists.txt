@@ -92,6 +92,20 @@ set_target_properties(zrythm_test_helpers_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
+# Test targets must link this as their LAST library: gcc applies the last
+# -W flag in the compile command, so these options must sort after the
+# warning flags carried by zrythm::all_compile_options (-Wall and the
+# strict -Werror=inline re-enable -Winline after an earlier -Wno-inline).
+# gtest-style implicitly-inline fixture members make -Winline and
+# -Winterference-size pure noise in test code. Benchmarks do not link
+# this and keep the warnings, where inlining failures affect measured
+# loops.
+add_library(zrythm_test_warning_suppressions_link_last INTERFACE)
+if(compiler_gnulike)
+  target_compile_options(zrythm_test_warning_suppressions_link_last INTERFACE
+    -Wno-inline -Wno-interference-size)
+endif()
+
 add_subdirectory(unit)
 add_subdirectory(benchmarks)
 

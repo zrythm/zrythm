@@ -14,6 +14,7 @@ target_link_libraries(zrythm_undo_unit_tests PRIVATE
   GTest::gmock_main
   zrythm_undo_lib
   zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
 )
 
 zrythm_discover_tests(zrythm_undo_unit_tests)
