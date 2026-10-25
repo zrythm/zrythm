@@ -2,11 +2,16 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <filesystem>
+#include <latch>
+#include <ranges>
+#include <vector>
 
 #include "utils/audio_file_writer.h"
 #include "utils/io_utils.h"
 
 #include <QFuture>
+#include <QThreadPool>
+#include <QtConcurrentRun>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -216,14 +221,12 @@ TEST_F (AudioFileWriterTest, WriteWithProgressReporting)
   auto future =
     AudioFileWriter::write_async (options, file_path, std::move (buffer));
 
-  // Initially no progress
-  EXPECT_EQ (future.progressValue (), 0);
-
-  // Wait for completion
   future.waitForFinished ();
 
   EXPECT_TRUE (future.isValid ());
   EXPECT_FALSE (future.isCanceled ());
+  EXPECT_EQ (future.progressMinimum (), 0);
+  EXPECT_EQ (future.progressMaximum (), 2048);
   EXPECT_EQ (future.progressValue (), 2048); // Should reach full progress
 
   verify_file_exists_and_size (file_path, 2000);
@@ -232,27 +235,44 @@ TEST_F (AudioFileWriterTest, WriteWithProgressReporting)
 TEST_F (AudioFileWriterTest, WriteWithCancellation)
 {
   const auto file_path = temp_dir_path_ / "test_cancel.wav";
-  auto       buffer = create_test_buffer (2, 4096); // Large buffer
+  auto       buffer = create_test_buffer (2, 4096);
   const auto options = create_test_options ();
+
+  // Fill every thread of the global pool (the pool write_async uses)
+  // with blocked tasks, so the write task is queued and cannot start
+  // until the cancellation below is in place
+  auto *                     pool = QThreadPool::globalInstance ();
+  const auto                 num_threads = pool->maxThreadCount ();
+  std::latch                 threads_started (num_threads);
+  std::latch                 release_threads (1);
+  std::vector<QFuture<void>> pool_holders;
+  pool_holders.reserve (num_threads);
+  for (const auto _ : std::views::iota (0, num_threads))
+    {
+      pool_holders.push_back (QtConcurrent::run ([&] {
+        threads_started.count_down ();
+        release_threads.wait ();
+      }));
+    }
+  threads_started.wait ();
 
   auto future =
     AudioFileWriter::write_async (options, file_path, std::move (buffer));
 
-  // Cancel immediately
+  // The write task is still queued behind the blocked pool threads
   future.cancel ();
+  release_threads.count_down ();
   future.waitForFinished ();
+  for (auto &pool_holder : pool_holders)
+    {
+      pool_holder.waitForFinished ();
+    }
 
   EXPECT_TRUE (future.isCanceled ());
   EXPECT_FALSE (future.isValid ());
 
-  // File should not exist or be incomplete due to cancellation
-  if (std::filesystem::exists (file_path))
-    {
-      const auto file_size = std::filesystem::file_size (file_path);
-      // File might be partially written or empty
-      EXPECT_LT (file_size, 4000) // Should be smaller than full size
-        << "Cancelled file should be smaller than full size";
-    }
+  // The write never started, so no file was created
+  EXPECT_FALSE (std::filesystem::exists (file_path));
 }
 
 TEST_F (AudioFileWriterTest, WriteWithDifferentBlockSizes)
