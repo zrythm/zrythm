@@ -18,7 +18,7 @@ RecentProjectsModel::RecentProjectsModel (
 std::vector<std::unique_ptr<ProjectInfo>>
 RecentProjectsModel::get_recent_projects () const
 {
-  auto list = app_settings_.recent_projects ();
+  auto list = app_settings_.recentProjects ();
 
   std::vector<std::unique_ptr<ProjectInfo>> ret;
   std::ranges::transform (
@@ -77,7 +77,7 @@ void
 RecentProjectsModel::addRecentProject (const QString &path)
 {
   beginResetModel ();
-  auto recent_projects = app_settings_.recent_projects ();
+  auto recent_projects = app_settings_.recentProjects ();
   recent_projects.removeAll (path);
   recent_projects.prepend (path);
   while (recent_projects.size () > MAX_RECENT_DOCUMENTS)
@@ -92,7 +92,7 @@ void
 RecentProjectsModel::removeRecentProject (const QString &path)
 {
   beginResetModel ();
-  auto recent_projects = app_settings_.recent_projects ();
+  auto recent_projects = app_settings_.recentProjects ();
   recent_projects.removeAll (path);
   store_recent_projects (recent_projects);
   endResetModel ();
@@ -101,7 +101,7 @@ RecentProjectsModel::removeRecentProject (const QString &path)
 void
 RecentProjectsModel::store_recent_projects (const QStringList &list)
 {
-  app_settings_.set_recent_projects (list);
+  app_settings_.set_recentProjects (list);
 }
 
 void
@@ -116,7 +116,7 @@ void
 RecentProjectsModel::clearNonExistingProjects ()
 {
   beginResetModel ();
-  auto       recent_projects = app_settings_.recent_projects ();
+  auto       recent_projects = app_settings_.recentProjects ();
   const auto removed_count = recent_projects.removeIf ([] (const auto &path) {
     return !utils::io::path_exists (
       utils::Utf8String::from_qstring (path).to_path ());

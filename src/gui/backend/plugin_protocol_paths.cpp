@@ -89,7 +89,7 @@ PluginProtocolPaths::get_lv2_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  auto paths_from_settings = app_settings_.lv2_search_paths ();
+  auto paths_from_settings = app_settings_.lv2SearchPaths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -147,7 +147,7 @@ PluginProtocolPaths::get_vst2_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  auto paths_from_settings = app_settings_.vst2_search_paths ();
+  auto paths_from_settings = app_settings_.vst2SearchPaths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -196,7 +196,7 @@ PluginProtocolPaths::get_vst3_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  auto paths_from_settings = app_settings_.vst3_search_paths ();
+  auto paths_from_settings = app_settings_.vst3SearchPaths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -249,7 +249,7 @@ PluginProtocolPaths::get_sf_paths (bool sf2)
   auto ret = std::make_unique<utils::FilePathList> ();
 
   auto paths_from_settings =
-    sf2 ? app_settings_.sf2_search_paths () : app_settings_.sfz_search_paths ();
+    sf2 ? app_settings_.sf2SearchPaths () : app_settings_.sfzSearchPaths ();
   add_expanded_paths (ret, paths_from_settings);
 
   return ret;
@@ -260,7 +260,7 @@ PluginProtocolPaths::get_dssi_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  auto paths_from_settings = app_settings_.dssi_search_paths ();
+  auto paths_from_settings = app_settings_.dssiSearchPaths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -301,7 +301,7 @@ PluginProtocolPaths::get_ladspa_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  auto paths_from_settings = app_settings_.ladspa_search_paths ();
+  auto paths_from_settings = app_settings_.ladspaSearchPaths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -338,7 +338,7 @@ PluginProtocolPaths::get_clap_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  auto paths_from_settings = app_settings_.clap_search_paths ();
+  auto paths_from_settings = app_settings_.clapSearchPaths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -384,7 +384,7 @@ PluginProtocolPaths::get_jsfx_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  auto paths_from_settings = app_settings_.jsfx_search_paths ();
+  auto paths_from_settings = app_settings_.jsfxSearchPaths ();
   if (!paths_from_settings.empty ())
     {
       /* use paths given */

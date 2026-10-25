@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/app_settings.h"
@@ -42,42 +42,42 @@ TEST_F (AppSettingsTest, Constructor)
 TEST_F (AppSettingsTest, FirstRunProperty)
 {
   // Test default value
-  EXPECT_EQ (app_settings_->get_default_first_run (), true);
+  EXPECT_EQ (app_settings_->firstRunDefaultValue (), true);
 
   // Test getter returns default when backend has no value
   EXPECT_CALL (
-    *mock_backend_, value (QAnyStringView ("first_run"), QVariant (true)))
+    *mock_backend_, value (QAnyStringView ("firstRun"), QVariant (true)))
     .WillOnce (Return (QVariant (true)));
-  EXPECT_EQ (app_settings_->first_run (), true);
+  EXPECT_EQ (app_settings_->firstRun (), true);
 
   // Test setter
   EXPECT_CALL (
-    *mock_backend_, value (QAnyStringView ("first_run"), QVariant (true)))
+    *mock_backend_, value (QAnyStringView ("firstRun"), QVariant (true)))
     .WillOnce (Return (QVariant (true)));
   EXPECT_CALL (
-    *mock_backend_, setValue (QAnyStringView ("first_run"), QVariant (false)))
+    *mock_backend_, setValue (QAnyStringView ("firstRun"), QVariant (false)))
     .Times (1);
 
-  app_settings_->set_first_run (false);
+  app_settings_->set_firstRun (false);
 }
 
 TEST_F (AppSettingsTest, FirstRunSignal)
 {
   // Set up mock to return current value
   EXPECT_CALL (
-    *mock_backend_, value (QAnyStringView ("first_run"), QVariant (true)))
+    *mock_backend_, value (QAnyStringView ("firstRun"), QVariant (true)))
     .WillOnce (Return (QVariant (true)));
 
   // Set up mock for setValue
   EXPECT_CALL (
-    *mock_backend_, setValue (QAnyStringView ("first_run"), QVariant (false)))
+    *mock_backend_, setValue (QAnyStringView ("firstRun"), QVariant (false)))
     .Times (1);
 
   // Connect signal spy
-  QSignalSpy spy (app_settings_.get (), &AppSettings::first_runChanged);
+  QSignalSpy spy (app_settings_.get (), &AppSettings::firstRunChanged);
 
   // Change value
-  app_settings_->set_first_run (false);
+  app_settings_->set_firstRun (false);
 
   // Verify signal was emitted
   EXPECT_EQ (spy.count (), 1);
@@ -88,18 +88,18 @@ TEST_F (AppSettingsTest, FirstRunNoSignalOnSameValue)
 {
   // Set up mock to return same value we're setting
   EXPECT_CALL (
-    *mock_backend_, value (QAnyStringView ("first_run"), QVariant (true)))
+    *mock_backend_, value (QAnyStringView ("firstRun"), QVariant (true)))
     .WillOnce (Return (QVariant (true)));
 
   // setValue should not be called since values are equal
-  EXPECT_CALL (*mock_backend_, setValue (QAnyStringView ("first_run"), _))
+  EXPECT_CALL (*mock_backend_, setValue (QAnyStringView ("firstRun"), _))
     .Times (0);
 
   // Connect signal spy
-  QSignalSpy spy (app_settings_.get (), &AppSettings::first_runChanged);
+  QSignalSpy spy (app_settings_.get (), &AppSettings::firstRunChanged);
 
   // Set same value
-  app_settings_->set_first_run (true);
+  app_settings_->set_firstRun (true);
 
   // Verify no signal was emitted
   EXPECT_EQ (spy.count (), 0);
@@ -107,63 +107,101 @@ TEST_F (AppSettingsTest, FirstRunNoSignalOnSameValue)
 
 TEST_F (AppSettingsTest, StringProperty)
 {
-  // Test icon_theme property
+  // Test iconTheme property
   QString expected_default = u"zrythm-dark"_s;
-  EXPECT_EQ (app_settings_->get_default_icon_theme (), expected_default);
+  EXPECT_EQ (app_settings_->iconThemeDefaultValue (), expected_default);
 
   // Test getter
   EXPECT_CALL (
     *mock_backend_,
-    value (QAnyStringView ("icon_theme"), QVariant (expected_default)))
+    value (QAnyStringView ("iconTheme"), QVariant (expected_default)))
     .WillOnce (Return (QVariant (expected_default)));
-  EXPECT_EQ (app_settings_->icon_theme (), expected_default);
+  EXPECT_EQ (app_settings_->iconTheme (), expected_default);
 
   // Test setter
   EXPECT_CALL (
     *mock_backend_,
-    value (QAnyStringView ("icon_theme"), QVariant (expected_default)))
+    value (QAnyStringView ("iconTheme"), QVariant (expected_default)))
     .WillOnce (Return (QVariant (expected_default)));
   EXPECT_CALL (
     *mock_backend_,
-    setValue (QAnyStringView ("icon_theme"), QVariant (u"light-theme"_s)))
+    setValue (QAnyStringView ("iconTheme"), QVariant (u"light-theme"_s)))
     .Times (1);
 
-  app_settings_->set_icon_theme (u"light-theme"_s);
+  app_settings_->set_iconTheme (u"light-theme"_s);
+}
+
+TEST_F (AppSettingsTest, ResetRestoresFactoryDefault)
+{
+  // The property declares RESET
+  const QMetaObject * meta = app_settings_->metaObject ();
+  const int           property_index = meta->indexOfProperty ("iconTheme");
+  ASSERT_GE (property_index, 0);
+  EXPECT_TRUE (meta->property (property_index).isResettable ());
+
+  // Current value is a non-default theme
+  EXPECT_CALL (
+    *mock_backend_,
+    value (QAnyStringView ("iconTheme"), QVariant (u"zrythm-dark"_s)))
+    .WillOnce (Return (QVariant (u"light-theme"_s)));
+  EXPECT_CALL (
+    *mock_backend_,
+    setValue (QAnyStringView ("iconTheme"), QVariant (u"zrythm-dark"_s)))
+    .Times (1);
+
+  QSignalSpy spy (app_settings_.get (), &AppSettings::iconThemeChanged);
+  app_settings_->reset_iconTheme ();
+  EXPECT_EQ (spy.count (), 1);
+  EXPECT_EQ (spy.at (0).at (0).toString (), u"zrythm-dark"_s);
+}
+
+TEST_F (AppSettingsTest, ResetNoSignalWhenAlreadyDefault)
+{
+  EXPECT_CALL (
+    *mock_backend_,
+    value (QAnyStringView ("iconTheme"), QVariant (u"zrythm-dark"_s)))
+    .WillOnce (Return (QVariant (u"zrythm-dark"_s)));
+  EXPECT_CALL (*mock_backend_, setValue (QAnyStringView ("iconTheme"), _))
+    .Times (0);
+
+  QSignalSpy spy (app_settings_.get (), &AppSettings::iconThemeChanged);
+  app_settings_->reset_iconTheme ();
+  EXPECT_EQ (spy.count (), 0);
 }
 
 TEST_F (AppSettingsTest, StringListProperty)
 {
-  // Test recent_projects property
+  // Test recentProjects property
   QStringList expected_default;
-  EXPECT_EQ (app_settings_->get_default_recent_projects (), expected_default);
+  EXPECT_EQ (app_settings_->recentProjectsDefaultValue (), expected_default);
 
   QStringList test_list = { "project1", "project2", "project3" };
 
   // Test getter
   EXPECT_CALL (
     *mock_backend_,
-    value (QAnyStringView ("recent_projects"), QVariant (expected_default)))
+    value (QAnyStringView ("recentProjects"), QVariant (expected_default)))
     .WillOnce (Return (QVariant (test_list)));
-  EXPECT_EQ (app_settings_->recent_projects (), test_list);
+  EXPECT_EQ (app_settings_->recentProjects (), test_list);
 
   // Test setter
   EXPECT_CALL (
     *mock_backend_,
-    value (QAnyStringView ("recent_projects"), QVariant (expected_default)))
+    value (QAnyStringView ("recentProjects"), QVariant (expected_default)))
     .WillOnce (Return (QVariant (expected_default)));
   EXPECT_CALL (
     *mock_backend_,
-    setValue (QAnyStringView ("recent_projects"), QVariant (test_list)))
+    setValue (QAnyStringView ("recentProjects"), QVariant (test_list)))
     .Times (1);
 
-  app_settings_->set_recent_projects (test_list);
+  app_settings_->set_recentProjects (test_list);
 }
 
 TEST_F (AppSettingsTest, NumericProperty)
 {
   // Test undoStackLength property
   int expected_default = 128;
-  EXPECT_EQ (app_settings_->get_default_undoStackLength (), expected_default);
+  EXPECT_EQ (app_settings_->undoStackLengthDefaultValue (), expected_default);
 
   // Test getter
   EXPECT_CALL (
@@ -189,7 +227,7 @@ TEST_F (AppSettingsTest, DoubleProperty)
 {
   // Test metronomeVolume property
   double expected_default = 1.0;
-  EXPECT_EQ (app_settings_->get_default_metronomeVolume (), expected_default);
+  EXPECT_EQ (app_settings_->metronomeVolumeDefaultValue (), expected_default);
 
   // Test getter
   EXPECT_CALL (
@@ -216,7 +254,7 @@ TEST_F (AppSettingsTest, FloatProperty)
   // Test monitorVolume property
   float expected_default = 1.0f;
   EXPECT_FLOAT_EQ (
-    app_settings_->get_default_monitorVolume (), expected_default);
+    app_settings_->monitorVolumeDefaultValue (), expected_default);
 
   // Test getter
   EXPECT_CALL (

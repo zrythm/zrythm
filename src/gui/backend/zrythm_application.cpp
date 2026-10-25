@@ -147,12 +147,12 @@ ZrythmApplication::initialize ()
   auto * app_settings = impl_->app_settings_.get ();
   impl_->dir_manager_ = std::make_unique<DirectoryManager> (
     [app_settings] () {
-      return utils::Utf8String::from_qstring (app_settings->zrythm_user_path ())
+      return utils::Utf8String::from_qstring (app_settings->zrythmUserPath ())
         .to_path ();
     },
     [] () {
       return utils::Utf8String::
-        from_qstring (utils::AppSettings::get_default_zrythm_user_path ())
+        from_qstring (utils::AppSettings::zrythmUserPathDefaultValue ())
           .to_path ();
     },
     [] () {
@@ -610,7 +610,7 @@ ZrythmApplication::setup_ui ()
   }
 
   // icon theme
-  const auto icon_theme_name = impl_->app_settings_->icon_theme ();
+  const auto icon_theme_name = impl_->app_settings_->iconTheme ();
   z_info ("Setting icon theme to '{}'", icon_theme_name);
   QIcon::setThemeName (icon_theme_name);
 

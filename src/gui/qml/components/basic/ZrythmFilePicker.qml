@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
@@ -12,41 +14,24 @@ RowLayout {
   id: control
 
   property string buttonLabel: qsTr("Browse")
-  property string initialPath // optional path to use as initial value (auto-sets initialUrl)
-  property url initialUrl // optional URL to use as initial value
+  property string defaultPath // optional path the reset button restores
+  property string initialPath // optional path used as the initial value and the dialog's starting folder
   property bool pickFolder: true // whether to pick a folder or a file
 
-  property url selectedUrl: pickFolder ? folderDialog.currentFolder : fileDialog.currentFile // to communicate the result to the parent
+  // Value chosen so far: the initial path until the user accepts a selection
+  // in the dialog, then the last accepted selection
+  property url selectedUrl: control.initialUrl
 
-  Binding {
-    property: "initialUrl"
-    target: control
-    value: QmlUtils.localFileToQUrl(control.initialPath)
-    when: control.initialPath !== undefined
-  }
-
-  Binding {
-    property: "currentFile"
-    target: fileDialog
-    value: control.initialUrl
-    when: !control.pickFolder && control.initialUrl !== undefined
-  }
-
-  Binding {
-    property: "currentFolder"
-    target: folderDialog
-    value: control.initialUrl
-    when: control.pickFolder && control.initialUrl !== undefined
-  }
+  readonly property url initialUrl: QmlUtils.localFileToQUrl(control.initialPath)
 
   TextField {
     id: textField
 
-    readonly property url currentUrl: control.pickFolder ? folderDialog.currentFolder : fileDialog.currentFile
+    readonly property string selectedPath: QmlUtils.toPathString(control.selectedUrl)
 
     Layout.fillWidth: true
     readOnly: true
-    text: currentUrl ? QmlUtils.toPathString(currentUrl) : "(no path selected)"
+    text: textField.selectedPath.length > 0 ? textField.selectedPath : qsTr("(no path selected)")
   }
 
   Button {
@@ -57,14 +42,53 @@ RowLayout {
     onClicked: control.pickFolder ? folderDialog.open() : fileDialog.open()
   }
 
+  Loader {
+    id: resetButtonLoader
+
+    // defaultPath is fixed at creation, so the button's existence is decided once
+    active: false
+    sourceComponent: resetButtonComponent
+
+    Component.onCompleted: resetButtonLoader.active = control.defaultPath.length > 0
+  }
+
+  Component {
+    id: resetButtonComponent
+
+    Button {
+      Accessible.name: qsTr("Reset to Default Location")
+      display: AbstractButton.IconOnly
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "revert-symbolic.svg")
+
+      onClicked: control.selectedUrl = QmlUtils.localFileToQUrl(control.defaultPath)
+
+      ToolTip {
+        text: qsTr("Reset to Default Location")
+      }
+    }
+  }
+
   FolderDialog {
     id: folderDialog
 
+    currentFolder: control.selectedUrl
+
+    onAccepted: control.selectedUrl = folderDialog.selectedFolder
+  }
+
+  // Preselected file for the file dialog; only active when picking files
+  Binding {
+    property: "currentFile"
+    target: fileDialog
+    value: control.selectedUrl
+    when: !control.pickFolder
   }
 
   FileDialog {
     id: fileDialog
 
     fileMode: FileDialog.OpenFile
+
+    onAccepted: control.selectedUrl = fileDialog.selectedFile
   }
 }

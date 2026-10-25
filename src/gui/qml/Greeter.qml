@@ -142,7 +142,7 @@ ApplicationWindow {
         text: qsTr("Get Started")
 
         onTriggered: {
-          root.appSettings.first_run = false;
+          root.appSettings.firstRun = false;
           root.showAudioDeviceHintIfMissing();
           stack.push(projectSelectorPage);
         }
@@ -154,7 +154,7 @@ ApplicationWindow {
     id: stack
 
     anchors.fill: parent
-    initialItem: (root.appSettings?.first_run && root.pendingProjectPath.length === 0) ? firstRunPage : projectSelectorPage
+    initialItem: (root.appSettings?.firstRun && root.pendingProjectPath.length === 0) ? firstRunPage : projectSelectorPage
 
     popEnter: FadeInTransition {
     }
@@ -502,7 +502,11 @@ ApplicationWindow {
             text: qsTr("Create Project")
 
             onClicked: {
-              // start the project creation process asynchronusly
+              // remember the chosen directory as the default for the next new project
+              if (root.appSettings !== null)
+                root.appSettings.newProjectDirectory = QmlUtils.toPathString(projectDirectoryField.selectedUrl);
+
+              // start the project creation process asynchronously
               root.projectManager.createNewProject(projectDirectoryField.selectedUrl, projectNameField.text, projectTemplateField.currentValue);
               stack.push(projectCreationProgressPage);
             }
@@ -550,6 +554,7 @@ ApplicationWindow {
                 id: projectDirectoryField
 
                 Layout.preferredWidth: 260
+                defaultPath: root.appSettings?.newProjectDirectoryDefaultValue() ?? ""
                 initialPath: root.appSettings?.newProjectDirectory ?? ""
               }
             }
@@ -608,7 +613,7 @@ ApplicationWindow {
         // ProjectManager already set the active session and updated the
         // recent projects list before emitting this signal
         console.log("Project loaded: ", session.title);
-        root.appSettings.first_run = false;
+        root.appSettings.firstRun = false;
         root.openProjectWindow(session);
       }
 

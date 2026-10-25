@@ -21,12 +21,18 @@ log_setting_change (const char * name, const QVariant &value);
 
 #define DEFINE_SETTING_PROPERTY(ptype, name, default_value) \
 \
-  Q_PROPERTY (ptype name READ name WRITE set_##name NOTIFY name##Changed) \
+  Q_PROPERTY ( \
+    ptype name READ name WRITE set_##name RESET reset_##name NOTIFY \
+                                                name##Changed) \
 \
 public: \
-  [[nodiscard]] static ptype get_default_##name () \
+  [[nodiscard]] Q_INVOKABLE static ptype name##DefaultValue () \
   { \
     return default_value; \
+  } \
+  Q_INVOKABLE void reset_##name () \
+  { \
+    set_##name (name##DefaultValue ()); \
   } \
   [[nodiscard]] ptype name () const \
   { \
@@ -56,9 +62,9 @@ class AppSettings : public QObject
   // FIXME: should be part of DirectoryManager, not an editable setting
   DEFINE_SETTING_PROPERTY (
     QString,
-    zrythm_user_path,
+    zrythmUserPath,
     QStandardPaths::writableLocation (QStandardPaths::AppDataLocation))
-  DEFINE_SETTING_PROPERTY (bool, first_run, true)
+  DEFINE_SETTING_PROPERTY (bool, firstRun, true)
   // DEFINE_SETTING_PROPERTY (bool, transportLoop, true)
   DEFINE_SETTING_PROPERTY (bool, transportReturnToCue, true)
   DEFINE_SETTING_PROPERTY (bool, showCacheActivity, false)
@@ -71,18 +77,18 @@ class AppSettings : public QObject
   DEFINE_SETTING_PROPERTY (int, recordingMode, 2)     // takes
   DEFINE_SETTING_PROPERTY (int, recordingPreroll, 0)  // number of bars
   DEFINE_SETTING_PROPERTY (int, jackTransportType, 0) // timebase master
-  DEFINE_SETTING_PROPERTY (QString, icon_theme, u"zrythm-dark"_s)
-  DEFINE_SETTING_PROPERTY (QStringList, recent_projects, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, lv2_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, vst2_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, vst3_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, sf2_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, sfz_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, dssi_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, ladspa_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, clap_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, jsfx_search_paths, QStringList ())
-  DEFINE_SETTING_PROPERTY (QStringList, au_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QString, iconTheme, u"zrythm-dark"_s)
+  DEFINE_SETTING_PROPERTY (QStringList, recentProjects, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, lv2SearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, vst2SearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, vst3SearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, sf2SearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, sfzSearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, dssiSearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, ladspaSearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, clapSearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, jsfxSearchPaths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, auSearchPaths, QStringList ())
   DEFINE_SETTING_PROPERTY (
     QString,
     newProjectDirectory,
