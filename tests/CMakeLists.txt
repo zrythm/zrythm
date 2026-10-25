@@ -63,7 +63,7 @@ target_sources(zrythm_test_helpers_lib
 )
 target_link_libraries(zrythm_test_helpers_lib
   PUBLIC
-    zrythm::gtest
+    GTest::gmock_main
     zrythm::include_dirs
     ${zrythm_link_libs}
     zrythm::all_compile_options

@@ -14,13 +14,20 @@ add_executable(zrythm_controllers_unit_tests
   transport_controller_test.cpp
 )
 
+# compiled as its own translation unit even in unity builds: its test
+# fixtures exceed GCC's inlining limits when merged with the other suites
+# and flood the build log with -Winline warnings
+set_source_files_properties(recording_materializer_test.cpp PROPERTIES
+  SKIP_UNITY_BUILD_INCLUSION ON
+)
+
 set_target_properties(zrythm_controllers_unit_tests PROPERTIES
   AUTOMOC ON
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
 
 target_link_libraries(zrythm_controllers_unit_tests PRIVATE
-  zrythm::gtest
+  GTest::gmock_main
   zrythm_controllers_lib
   zrythm_test_helpers_lib
 )

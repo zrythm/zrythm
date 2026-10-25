@@ -929,17 +929,6 @@ if(ZRYTHM_TESTS)
   # For Windows: Prevent overriding the parent project's compiler/linker settings
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
   find_package(GTest REQUIRED)
-  # Test targets link this instead of GTest::gmock_main. gtest-style
-  # implicitly-inline fixture members make -Winline and -Winterference-size
-  # (both enabled by -Wall) pure noise in test code. Benchmarks link GTest
-  # targets directly and keep the warnings, since inlining failures there
-  # affect measured loops.
-  add_library(_gtest_lib INTERFACE)
-  target_link_libraries(_gtest_lib INTERFACE GTest::gmock_main)
-  if(compiler_gnulike)
-    target_compile_options(_gtest_lib INTERFACE -Wno-inline -Wno-interference-size)
-  endif()
-  add_library(zrythm::gtest ALIAS _gtest_lib)
 endif()
 
 if(ZRYTHM_BENCHMARKS)
