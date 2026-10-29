@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <shared_mutex>
+#include <string_view>
 #include <utility>
 
 #include "dsp/midi_device_buffer.h"
@@ -14,8 +15,23 @@
 
 #include <juce_audio_utils/juce_audio_utils.h>
 
+using namespace std::string_view_literals;
+
 namespace zrythm::gui::backend
 {
+
+namespace
+{
+/**
+ * Name of the ALSA device PipeWire installs to route ALSA clients through
+ * the audio server.
+ *
+ * It stays usable while the audio server owns the sound card, so it is
+ * tried when the ALSA `default` device cannot be opened. Where no device
+ * with this name exists, requesting it falls back to the default devices.
+ */
+constexpr auto pipewire_alsa_device_name = "PipeWire Sound Server"sv;
+} // namespace
 
 struct DeviceManager::MidiImpl
 {
@@ -97,20 +113,57 @@ DeviceManager::initialize (
   auto error = initialise (
     max_input_channels, max_output_channels, state_getter_ ().get (),
     fallback_to_default);
+  const auto initial_error = error;
+
+  // The PipeWire device routes through the audio server, so it can open
+  // even while the audio server owns the sound card.
   if (error.isNotEmpty () && max_input_channels > 0)
     {
       z_warning (
         "Failed to open the audio device(s) with up to {} input channel(s) "
-        "({}); retrying with output channels only",
+        "({}); retrying with the PipeWire device",
         max_input_channels, utils::Utf8String::from_juce_string (error));
-      error = initialise (0, max_output_channels, nullptr, true);
+      error = initialise (
+        max_input_channels, max_output_channels, nullptr, true,
+        utils::Utf8String::from_utf8_encoded_string (pipewire_alsa_device_name)
+          .to_juce_string ());
     }
+
+  if (error.isNotEmpty () && max_input_channels > 0)
+    {
+      z_warning (
+        "Failed to open the audio device(s) with input channels ({}); "
+        "retrying with output channels only",
+        utils::Utf8String::from_juce_string (error));
+      error = initialise (
+        0, max_output_channels, nullptr, true,
+        utils::Utf8String::from_utf8_encoded_string (pipewire_alsa_device_name)
+          .to_juce_string ());
+      if (error.isNotEmpty ())
+        {
+          z_warning (
+            "Failed to open the audio device(s) with the PipeWire device "
+            "({}); retrying with the default device",
+            utils::Utf8String::from_juce_string (error));
+          error = initialise (0, max_output_channels, nullptr, true);
+        }
+    }
+
   if (error.isNotEmpty ())
     {
-      throw utils::ZrythmException (
-        fmt::format (
-          "Audio device initialization failed: {}",
-          utils::Utf8String::from_juce_string (error).view ()));
+      z_warning (
+        "All audio device open attempts failed (last error: {})",
+        utils::Utf8String::from_juce_string (error));
+      auto message = fmt::format (
+        "Audio device initialization failed: {}",
+        utils::Utf8String::from_juce_string (initial_error).view ());
+      if (error != initial_error)
+        {
+          message += fmt::format (
+            " (last attempt: {})",
+            utils::Utf8String::from_juce_string (error).view ());
+        }
+      throw utils::ZrythmException (std::move (message));
     }
   Q_EMIT availableAudioInputsChanged ();
   Q_EMIT availableMidiInputsChanged ();

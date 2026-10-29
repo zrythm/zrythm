@@ -13,7 +13,7 @@
 namespace zrythm::test_helpers
 {
 /**
- * @brief QApplication wrapper that also spins the JUCE message loop.
+ * @brief QCoreApplication wrapper that also spins the JUCE message loop.
  *
  * To be inherited from (or used as a member) in test classes.
  */

@@ -3,9 +3,11 @@
 
 #include <array>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "gui/backend/device_manager.h"
+#include "utils/exceptions.h"
 
 #include "helpers/scoped_juce_qapplication.h"
 
@@ -194,20 +196,41 @@ private:
 class FakeAudioIODeviceType final : public juce::AudioIODeviceType
 {
 public:
+  /** Open behavior of a fake device. */
+  struct DeviceSpec
+  {
+    juce::String name;
+
+    /** Every open fails, like a device held by another client. */
+    bool busy = false;
+
+    /** Error returned when opening a busy device. */
+    juce::String busy_error = "Device or resource busy";
+
+    /** Opens requesting input channels fail, like an ALSA device on a
+     * machine with no capture devices. */
+    bool no_capture = false;
+  };
+
   FakeAudioIODeviceType () : AudioIODeviceType ("Fake") { }
 
   void scanForDevices () override { }
 
   juce::StringArray getDeviceNames (bool) const override
   {
-    return { "Fake Device" };
+    juce::StringArray names;
+    for (const auto &spec : device_specs)
+      names.add (spec.name);
+    return names;
   }
 
   int getDefaultDeviceIndex (bool) const override { return 0; }
 
   int getIndexOfDevice (juce::AudioIODevice * device, bool) const override
   {
-    return device != nullptr && device->getName () == "Fake Device" ? 0 : -1;
+    if (device == nullptr)
+      return -1;
+    return getDeviceNames (false).indexOf (device->getName ());
   }
 
   bool hasSeparateInputsAndOutputs () const override { return false; }
@@ -216,9 +239,11 @@ public:
     const juce::String &output_device_name,
     const juce::String &input_device_name) override
   {
-    if (output_device_name.isEmpty () && input_device_name.isEmpty ())
+    const auto name =
+      output_device_name.isNotEmpty () ? output_device_name : input_device_name;
+    if (name.isEmpty () || spec_for (name) == nullptr)
       return nullptr;
-    auto * device = new FakeAudioIODevice ("Fake Device", *this);
+    auto * device = new FakeAudioIODevice (name, *this);
     last_created_device = device;
     return device;
   }
@@ -227,9 +252,18 @@ public:
    * manager. */
   FakeAudioIODevice * last_created_device = nullptr;
 
-  /** When true, devices fail to open when input channels are requested,
-   * like an ALSA device on a machine with no capture devices. */
-  bool fail_open_with_input_channels = false;
+  /** Devices this type lists; the first one is the default device. */
+  std::vector<DeviceSpec> device_specs;
+
+  const DeviceSpec * spec_for (const juce::String &name) const
+  {
+    for (const auto &spec : device_specs)
+      {
+        if (spec.name == name)
+          return &spec;
+      }
+    return nullptr;
+  }
 
   void forget_device (const FakeAudioIODevice &device)
   {
@@ -254,7 +288,13 @@ FakeAudioIODevice::open (
   double                  sample_rate,
   int                     buffer_size_samples)
 {
-  if (inputs.countNumberOfSetBits () > 0 && owner_.fail_open_with_input_channels)
+  const auto * spec = owner_.spec_for (getName ());
+  assert (spec != nullptr);
+  if (spec->busy)
+    {
+      return spec->busy_error;
+    }
+  if (spec->no_capture && inputs.countNumberOfSetBits () > 0)
     {
       // Stands in for a machine where no capture device can be opened,
       // e.g. no microphone connected
@@ -281,15 +321,23 @@ FakeAudioIODevice::~FakeAudioIODevice ()
 
 /**
  * @brief DeviceManager with its device types replaced by a single fake
- * type whose device is driven manually by the test.
+ * type listing the devices in @ref device_specs.
+ *
+ * @param saved_state Device setup XML served by the state getter.
  */
 class TestDeviceManager final : public DeviceManager
 {
 public:
-  TestDeviceManager ()
+  explicit TestDeviceManager (
+    std::unique_ptr<juce::XmlElement> saved_state = nullptr)
       : DeviceManager (
-          [] () -> std::unique_ptr<juce::XmlElement> { return nullptr; },
-          [] (const juce::XmlElement &) { })
+          [this] () -> std::unique_ptr<juce::XmlElement> {
+            return saved_state_
+                     ? std::make_unique<juce::XmlElement> (*saved_state_)
+                     : nullptr;
+          },
+          [] (const juce::XmlElement &) { }),
+        saved_state_ (std::move (saved_state))
   {
   }
 
@@ -297,16 +345,21 @@ public:
     juce::OwnedArray<juce::AudioIODeviceType> &types) override
   {
     auto * type = new FakeAudioIODeviceType ();
-    type->fail_open_with_input_channels = fail_open_with_input_channels;
+    type->device_specs = device_specs;
     fake_device_type_ = type;
     types.add (type);
   }
 
   FakeAudioIODeviceType * fake_device_type_ = nullptr;
 
-  /** Propagated to the fake device type when it is created during
+  /** Devices listed by the fake device type; must be set before
    * initialize(). */
-  bool fail_open_with_input_channels = false;
+  std::vector<FakeAudioIODeviceType::DeviceSpec> device_specs{
+    FakeAudioIODeviceType::DeviceSpec{ .name = juce::String ("Fake Device") }
+  };
+
+private:
+  std::unique_ptr<juce::XmlElement> saved_state_;
 };
 
 class DeviceManagerTest : public ::testing::Test
@@ -362,7 +415,10 @@ TEST_F (DeviceManagerTest, DeviceOutputMatchesEngineRenderAcrossCycles)
 TEST_F (DeviceManagerTest, InitializeFallsBackToOutputOnlyWithoutCapture)
 {
   auto manager = std::make_unique<TestDeviceManager> ();
-  manager->fail_open_with_input_channels = true;
+  manager->device_specs = {
+    FakeAudioIODeviceType::DeviceSpec{
+                                      .name = juce::String ("Fake Device"), .no_capture = true },
+  };
 
   EXPECT_NO_THROW (
     manager->initialize (fake_num_channels, fake_num_channels, true));
@@ -372,6 +428,119 @@ TEST_F (DeviceManagerTest, InitializeFallsBackToOutputOnlyWithoutCapture)
   EXPECT_TRUE (device->isPlaying ());
   EXPECT_EQ (device->getActiveInputChannels ().countNumberOfSetBits (), 0);
   EXPECT_GT (device->getActiveOutputChannels ().countNumberOfSetBits (), 0);
+
+  manager.reset ();
+}
+
+// The ALSA `default` device can point straight at the sound card and stay
+// busy while the audio server owns it, while PipeWire's explicit ALSA
+// device opens through the server: initialize() must pick PipeWire instead
+// of failing or dropping the input channels
+TEST_F (DeviceManagerTest, InitializeFallsBackToPipeWireWhenDefaultIsBusy)
+{
+  auto manager = std::make_unique<TestDeviceManager> ();
+  manager->device_specs = {
+    FakeAudioIODeviceType::DeviceSpec{
+                                      .name = juce::String ("Default Audio Device"), .busy = true },
+    FakeAudioIODeviceType::DeviceSpec{
+                                      .name = juce::String ("PipeWire Sound Server") },
+  };
+
+  EXPECT_NO_THROW (
+    manager->initialize (fake_num_channels, fake_num_channels, true));
+
+  EXPECT_EQ (
+    manager->currentAudioDeviceName (),
+    QStringLiteral ("PipeWire Sound Server"));
+  auto * device = manager->fake_device_type_->last_created_device;
+  ASSERT_NE (device, nullptr);
+  EXPECT_EQ (device->getName (), juce::String ("PipeWire Sound Server"));
+  EXPECT_TRUE (device->isPlaying ());
+  EXPECT_EQ (
+    device->getActiveInputChannels ().countNumberOfSetBits (),
+    fake_num_channels);
+  EXPECT_EQ (
+    device->getActiveOutputChannels ().countNumberOfSetBits (),
+    fake_num_channels);
+
+  manager.reset ();
+}
+
+// When no device can be opened, the reported error must lead with the
+// initial failure and append the last attempt's error, so the root cause
+// is not replaced by a later attempt's error
+TEST_F (DeviceManagerTest, InitializeReportsInitialAndLastErrorsWhenAllOpensFail)
+{
+  auto saved_state = std::make_unique<juce::XmlElement> ("DEVICESETUP");
+  saved_state->setAttribute ("deviceType", "Fake");
+  saved_state->setAttribute ("audioOutputDeviceName", "Saved Device");
+  saved_state->setAttribute ("audioInputDeviceName", "Saved Device");
+  auto manager = std::make_unique<TestDeviceManager> (std::move (saved_state));
+  // fallback_to_default = false keeps the saved device's error as the
+  // initial error: JUCE would otherwise retry the default device and
+  // report that error instead
+  manager->device_specs = {
+    FakeAudioIODeviceType::DeviceSpec{
+                                      .name = juce::String ("Default Audio Device"),
+                                      .busy = true,
+                                      .busy_error = juce::String ("Default device busy") },
+    FakeAudioIODeviceType::DeviceSpec{
+                                      .name = juce::String ("PipeWire Sound Server"),
+                                      .busy = true,
+                                      .busy_error = juce::String ("PipeWire busy")       },
+    FakeAudioIODeviceType::DeviceSpec{
+                                      .name = juce::String ("Saved Device"),
+                                      .busy = true,
+                                      .busy_error = juce::String ("Saved device busy")   },
+  };
+
+  try
+    {
+      manager->initialize (fake_num_channels, fake_num_channels, false);
+      FAIL () << "initialize() was expected to throw";
+    }
+  catch (const utils::ZrythmException &e)
+    {
+      const auto message = e.what_string ().str ();
+      EXPECT_TRUE (message.starts_with (
+        "Audio device initialization failed: Saved device busy"))
+        << "message was: " << message;
+      EXPECT_NE (
+        message.find ("(last attempt: Default device busy)"),
+        std::string_view::npos)
+        << "message was: " << message;
+    }
+
+  manager.reset ();
+}
+
+// A saved device selection that opens successfully must be used as-is; the
+// fallbacks only engage when the saved selection fails to open
+TEST_F (DeviceManagerTest, InitializeUsesSavedDeviceWhenItOpens)
+{
+  auto saved_state = std::make_unique<juce::XmlElement> ("DEVICESETUP");
+  saved_state->setAttribute ("deviceType", "Fake");
+  saved_state->setAttribute ("audioOutputDeviceName", "Explicit Device");
+  saved_state->setAttribute ("audioInputDeviceName", "Explicit Device");
+  auto manager = std::make_unique<TestDeviceManager> (std::move (saved_state));
+  manager->device_specs = {
+    FakeAudioIODeviceType::DeviceSpec{
+                                      .name = juce::String ("Default Audio Device"), .busy = true },
+    FakeAudioIODeviceType::DeviceSpec{ .name = juce::String ("Explicit Device") },
+  };
+
+  EXPECT_NO_THROW (
+    manager->initialize (fake_num_channels, fake_num_channels, true));
+
+  EXPECT_EQ (
+    manager->currentAudioDeviceName (), QStringLiteral ("Explicit Device"));
+  auto * device = manager->fake_device_type_->last_created_device;
+  ASSERT_NE (device, nullptr);
+  EXPECT_EQ (device->getName (), juce::String ("Explicit Device"));
+  EXPECT_TRUE (device->isPlaying ());
+  EXPECT_EQ (
+    device->getActiveInputChannels ().countNumberOfSetBits (),
+    fake_num_channels);
 
   manager.reset ();
 }
