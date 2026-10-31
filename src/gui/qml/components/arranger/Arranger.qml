@@ -54,6 +54,17 @@ Item {
   }
 
   property alias arrangerContentHeight: arrangerContent.height
+
+  // Axes the active drag may auto-scroll: the per-action policy, with the
+  // vertical axis removed for arrangers that cannot scroll vertically.
+  // Object painting drags only ever scroll horizontally.
+  readonly property int autoScrollAxes: {
+    let axes = root.objectPainting ? ArrangerAutoScroller.Axes.Horizontal : autoScroller.axesForArrangerAction(root.currentAction);
+    if (!root.enableYScroll)
+      axes &= ArrangerAutoScroller.Axes.Horizontal;
+    return axes;
+  }
+
   required property ItemSelectionModel arrangerSelectionModel
 
   // Audition tool: playhead position and rolling state saved on press and
@@ -437,6 +448,16 @@ Item {
     }
   }
 
+  // Shifts the tracked drag pointer by an auto-scroll step and re-runs the
+  // per-action drag processing, so previews and release commits match the
+  // content that moved under the resting pointer.
+  function compensateDragForAutoScroll(deltaX: real, deltaY: real) {
+    const previousY = arrangerMouseArea.currentCoordinates.y;
+    arrangerMouseArea.currentCoordinates.x += deltaX;
+    arrangerMouseArea.currentCoordinates.y += deltaY;
+    arrangerMouseArea.processDragAction(deltaX, deltaY, previousY);
+  }
+
   function updateCursor() {
     // Do not set the cursor while the pointer is outside this arranger (or its
     // objects) and no action is active (e.g. when a modifier key is pressed
@@ -600,6 +621,26 @@ Item {
 
     enabled: root.hoveredObject !== null
     target: root.hoveredObject
+  }
+
+  // Edge-zone auto-scrolling for drags tracked by the arranger MouseArea.
+  // Drags grabbed by item-local handlers (fade handles, velocity bars)
+  // track their own coordinates, so they are not scrolled underneath.
+  ArrangerAutoScroller {
+    id: autoScroller
+
+    active: arrangerMouseArea.pressed
+    axes: root.autoScrollAxes
+    editorSettings: root.editorSettings
+    maxScrollX: arrangerContent.width - root.scrollViewWidth
+    maxScrollY: root.arrangerContentHeight - root.scrollViewHeight
+    pointer: Qt.point(arrangerMouseArea.currentCoordinates.x - root.scrollX,
+                      arrangerMouseArea.currentCoordinates.y - root.scrollY)
+    pointerValid: arrangerMouseArea.pressed
+    viewportHeight: root.scrollViewHeight
+    viewportWidth: root.scrollViewWidth
+
+    onScrolled: (deltaX, deltaY) => root.compensateDragForAutoScroll(deltaX, deltaY)
   }
 
   // Arranger background
@@ -960,6 +1001,116 @@ Item {
             moveSelectionsX(ticksToMove);
           }
 
+          // Processes the active drag action for the given pointer delta
+          // (content pixels) and the pointer's y position before the
+          // delta. Runs for real pointer moves and for auto-scroll steps,
+          // which shift the pointer's content position while the screen
+          // pointer rests still.
+          function processDragAction(dx: real, dy: real, previousY: real) {
+            if (root.objectPainting) {
+              // Edit tool Ctrl+drag: paint a snap-length object at each
+              // newly entered snap slot, filling skipped slots on fast
+              // drags
+              if (root.shouldSnap) {
+                root.paintSlotsUpTo(root.snapGrid.snapWithoutStartTicks(Math.max(0, currentTimelineTicks)), currentCoordinates.y);
+              }
+            } else if (action === Arranger.Erasing) {
+              root.eraseObjectsAround(currentCoordinates.x, currentCoordinates.y);
+            } else if (action === Arranger.Selecting) {
+              // Select all objects within the selection rectangle
+              root.selectObjectsInRectangle();
+            } else if (action === Arranger.Panning) {
+              currentCoordinates.x -= dx;
+              root.editorSettings.x -= dx;
+              if (root.enableYScroll) {
+                currentCoordinates.y -= dy;
+                root.editorSettings.y -= dy;
+              }
+            } else if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
+              const obj = root.getObjectAtCurrentIndex();
+              root.dragState.dragDeltaPx = calculateSnappedMovementTicks(ArrangerObjectHelper.timelineTicks(obj)) * root.ruler.pxPerTick;
+              moveTemporaryObjectsY(dy, previousY);
+            } else if (action == Arranger.CreatingMoving) {
+              const ticksToMove = calculateObjectMovementTicks();
+              moveSelectionsX(ticksToMove);
+              moveSelectionsY(dy, previousY);
+            } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingLFade].includes(action)) {
+              // Determine resize type based on current action
+              let resizeType = ArrangerObjectSelectionOperator.Bounds;
+              if (action === Arranger.ResizingLLoop) {
+                resizeType = ArrangerObjectSelectionOperator.LoopPoints;
+              } else if (action === Arranger.ResizingLFade) {
+                resizeType = ArrangerObjectSelectionOperator.Fades;
+              }
+
+              if (resizeType === ArrangerObjectSelectionOperator.Fades) {
+                // Fades use direct manipulation (live resizeObjects) because the
+                // plain Rectangle temp view cannot represent fade curves.
+                const startTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
+                const obj = root.getObjectAtCurrentIndex();
+                let delta = 0;
+                if (obj.fadeRange) {
+                  delta = startTicks - obj.fadeRange.startOffset.ticks;
+                }
+                root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
+              } else {
+                // Bounds/LoopPoints: visual transform on real delegates
+                root.dragState.isLoopResize = (resizeType === ArrangerObjectSelectionOperator.LoopPoints);
+                if (root.dragState.dragMode !== ArrangerDragState.DragMode.ResizeFromStart) {
+                  root.dragState.dragMode = ArrangerDragState.DragMode.ResizeFromStart;
+                  const obj = root.getObjectAtCurrentIndex();
+                  resizeOriginalTicks = ArrangerObjectHelper.timelineTicks(obj);
+                }
+                const snappedStartTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
+                const deltaTicks = snappedStartTicks - resizeOriginalTicks;
+                currentResizeDeltaTicks = deltaTicks;
+                root.dragState.dragDeltaPx = deltaTicks * root.ruler.pxPerTick;
+              }
+            } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
+              if (action === Arranger.CreatingResizingMovingR) {
+                moveSelectionsY(dy, previousY);
+              }
+              // Apply snapping to resize endpoint
+              const endTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
+              if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
+                const obj = root.getObjectAtCurrentIndex();
+                if (endTicks > ArrangerObjectHelper.timelineTicks(obj)) {
+                  ArrangerObjectHelper.setEndFromTimelineTicks(obj, endTicks);
+                }
+              } else {
+                // Determine resize type based on current action
+                let resizeType = ArrangerObjectSelectionOperator.Bounds;
+                if (action === Arranger.ResizingRLoop) {
+                  resizeType = ArrangerObjectSelectionOperator.LoopPoints;
+                } else if (action === Arranger.ResizingRFade) {
+                  resizeType = ArrangerObjectSelectionOperator.Fades;
+                }
+
+                if (resizeType === ArrangerObjectSelectionOperator.Fades) {
+                  // Fades use direct manipulation (live resizeObjects) because the
+                  // plain Rectangle temp view cannot represent fade curves.
+                  const obj = root.getObjectAtCurrentIndex();
+                  let delta = 0;
+                  if (obj.fadeRange) {
+                    delta = endTicks - obj.fadeRange.endOffset.ticks;
+                  }
+                  root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
+                } else {
+                  // Bounds/LoopPoints: visual transform on real delegates
+                  root.dragState.isLoopResize = (resizeType === ArrangerObjectSelectionOperator.LoopPoints);
+                  if (root.dragState.dragMode !== ArrangerDragState.DragMode.ResizeFromEnd) {
+                    root.dragState.dragMode = ArrangerDragState.DragMode.ResizeFromEnd;
+                    const obj = root.getObjectAtCurrentIndex();
+                    resizeOriginalTicks = ArrangerObjectHelper.timelineEndTicks(obj);
+                  }
+                  const deltaTicks = endTicks - resizeOriginalTicks;
+                  currentResizeDeltaTicks = deltaTicks;
+                  root.dragState.dragDeltaPx = deltaTicks * root.ruler.pxPerTick;
+                }
+              }
+            }
+          }
+
           acceptedButtons: Qt.AllButtons
           anchors.fill: parent
           hoverEnabled: true
@@ -1018,7 +1169,6 @@ Item {
             currentCoordinates = Qt.point(mouse.x, mouse.y);
             const dx = mouse.x - prevCoordinates.x;
             const dy = mouse.y - prevCoordinates.y;
-            const ticksDiff = dx / root.ruler.pxPerTick;
             if (pressed) {
               // handle action transitions
               if (action === Arranger.StartingSelection) {
@@ -1069,109 +1219,7 @@ Item {
                 action = Arranger.Moving;
               }
 
-              // Process current action
-              if (root.objectPainting) {
-                // Edit tool Ctrl+drag: paint a snap-length object at each
-                // newly entered snap slot, filling skipped slots on fast
-                // drags
-                if (root.shouldSnap) {
-                  root.paintSlotsUpTo(root.snapGrid.snapWithoutStartTicks(Math.max(0, currentTimelineTicks)), mouse.y);
-                }
-              } else if (action === Arranger.Erasing) {
-                root.eraseObjectsAround(mouse.x, mouse.y);
-              } else if (action === Arranger.Selecting) {
-                // Select all objects within the selection rectangle
-                root.selectObjectsInRectangle();
-              } else if (action === Arranger.Panning) {
-                currentCoordinates.x -= dx;
-                root.editorSettings.x -= dx;
-                if (root.enableYScroll) {
-                  currentCoordinates.y -= dy;
-                  root.editorSettings.y -= dy;
-                }
-              } else if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
-                const obj = root.getObjectAtCurrentIndex();
-                root.dragState.dragDeltaPx = calculateSnappedMovementTicks(ArrangerObjectHelper.timelineTicks(obj)) * root.ruler.pxPerTick;
-                moveTemporaryObjectsY(dy, prevCoordinates.y);
-              } else if (action == Arranger.CreatingMoving) {
-                const ticksToMove = calculateObjectMovementTicks();
-                moveSelectionsX(ticksToMove);
-                moveSelectionsY(dy, prevCoordinates.y);
-              } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingLFade].includes(action)) {
-                // Determine resize type based on current action
-                let resizeType = ArrangerObjectSelectionOperator.Bounds;
-                if (action === Arranger.ResizingLLoop) {
-                  resizeType = ArrangerObjectSelectionOperator.LoopPoints;
-                } else if (action === Arranger.ResizingLFade) {
-                  resizeType = ArrangerObjectSelectionOperator.Fades;
-                }
-
-                if (resizeType === ArrangerObjectSelectionOperator.Fades) {
-                  // Fades use direct manipulation (live resizeObjects) because the
-                  // plain Rectangle temp view cannot represent fade curves.
-                  const startTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
-                  const obj = root.getObjectAtCurrentIndex();
-                  let delta = 0;
-                  if (obj.fadeRange) {
-                    delta = startTicks - obj.fadeRange.startOffset.ticks;
-                  }
-                  root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
-                } else {
-                  // Bounds/LoopPoints: visual transform on real delegates
-                  root.dragState.isLoopResize = (resizeType === ArrangerObjectSelectionOperator.LoopPoints);
-                  if (root.dragState.dragMode !== ArrangerDragState.DragMode.ResizeFromStart) {
-                    root.dragState.dragMode = ArrangerDragState.DragMode.ResizeFromStart;
-                    const obj = root.getObjectAtCurrentIndex();
-                    resizeOriginalTicks = ArrangerObjectHelper.timelineTicks(obj);
-                  }
-                  const snappedStartTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
-                  const deltaTicks = snappedStartTicks - resizeOriginalTicks;
-                  currentResizeDeltaTicks = deltaTicks;
-                  root.dragState.dragDeltaPx = deltaTicks * root.ruler.pxPerTick;
-                }
-              } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
-                if (action === Arranger.CreatingResizingMovingR) {
-                  moveSelectionsY(dy, prevCoordinates.y);
-                }
-                // Apply snapping to resize endpoint
-                const endTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
-                if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
-                  const obj = root.getObjectAtCurrentIndex();
-                  if (endTicks > ArrangerObjectHelper.timelineTicks(obj)) {
-                    ArrangerObjectHelper.setEndFromTimelineTicks(obj, endTicks);
-                  }
-                } else {
-                  // Determine resize type based on current action
-                  let resizeType = ArrangerObjectSelectionOperator.Bounds;
-                  if (action === Arranger.ResizingRLoop) {
-                    resizeType = ArrangerObjectSelectionOperator.LoopPoints;
-                  } else if (action === Arranger.ResizingRFade) {
-                    resizeType = ArrangerObjectSelectionOperator.Fades;
-                  }
-
-                  if (resizeType === ArrangerObjectSelectionOperator.Fades) {
-                    // Fades use direct manipulation (live resizeObjects) because the
-                    // plain Rectangle temp view cannot represent fade curves.
-                    const obj = root.getObjectAtCurrentIndex();
-                    let delta = 0;
-                    if (obj.fadeRange) {
-                      delta = endTicks - obj.fadeRange.endOffset.ticks;
-                    }
-                    root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
-                  } else {
-                    // Bounds/LoopPoints: visual transform on real delegates
-                    root.dragState.isLoopResize = (resizeType === ArrangerObjectSelectionOperator.LoopPoints);
-                    if (root.dragState.dragMode !== ArrangerDragState.DragMode.ResizeFromEnd) {
-                      root.dragState.dragMode = ArrangerDragState.DragMode.ResizeFromEnd;
-                      const obj = root.getObjectAtCurrentIndex();
-                      resizeOriginalTicks = ArrangerObjectHelper.timelineEndTicks(obj);
-                    }
-                    const deltaTicks = endTicks - resizeOriginalTicks;
-                    currentResizeDeltaTicks = deltaTicks;
-                    root.dragState.dragDeltaPx = deltaTicks * root.ruler.pxPerTick;
-                  }
-                }
-              }
+              processDragAction(dx, dy, prevCoordinates.y);
             }
 
             root.updateCursor();

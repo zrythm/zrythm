@@ -236,6 +236,7 @@ set(rel_qml_file_paths
   components/arranger/AutomationClipContent.qml
   components/arranger/AutomationClipView.qml
   components/arranger/Arranger.qml
+  components/arranger/ArrangerAutoScroller.qml
   components/arranger/AudioArranger.qml
   components/arranger/ArrangerObjectBaseView.qml
   components/arranger/ArrangerDragState.qml
