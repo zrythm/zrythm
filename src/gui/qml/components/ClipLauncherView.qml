@@ -35,12 +35,12 @@ Item {
   SortFilterProxyModel {
     id: pinnedTrackModel
 
-    model: root.trackCollection
+    sourceModel: root.trackCollection
 
     filters: [
       FunctionFilter {
-        function filter(data: TrackRoleData): bool {
-          return root.tracklist.shouldBeVisible(data.track) && root.tracklist.isTrackPinned(data.track);
+        function filter(track: Track): bool {
+          return root.tracklist.shouldBeVisible(track) && root.tracklist.isTrackPinned(track);
         }
       }
     ]
@@ -49,12 +49,12 @@ Item {
   SortFilterProxyModel {
     id: unpinnedTrackModel
 
-    model: root.trackCollection
+    sourceModel: root.trackCollection
 
     filters: [
       FunctionFilter {
-        function filter(data: TrackRoleData): bool {
-          return root.tracklist.shouldBeVisible(data.track) && !root.tracklist.isTrackPinned(data.track);
+        function filter(track: Track): bool {
+          return root.tracklist.shouldBeVisible(track) && !root.tracklist.isTrackPinned(track);
         }
       }
     ]
@@ -292,9 +292,6 @@ Item {
       Layout.rightMargin: 4
       model: rowsForTrackModel.model
     }
-  }
-  component TrackRoleData: QtObject {
-    required property Track track
   }
   component TrackSceneClipSlotListView: ListView {
     id: clipSlotsListView

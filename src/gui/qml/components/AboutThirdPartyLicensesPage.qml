@@ -60,7 +60,7 @@ ColumnLayout {
   SortFilterProxyModel {
     id: filteredModel
 
-    model: componentModel
+    sourceModel: componentModel
 
     filters: [
       FunctionFilter {
@@ -68,8 +68,8 @@ ColumnLayout {
 
         property string searchText: searchField.text
 
-        function filter(data: LicensesRoleData): bool {
-          return data.name.toLowerCase().includes(searchText.toLowerCase());
+        function filter(name: string): bool {
+          return name.toLowerCase().includes(searchText.toLowerCase());
         }
 
         onSearchTextChanged: invalidate()
@@ -77,7 +77,7 @@ ColumnLayout {
     ]
     sorters: [
       FunctionSorter {
-        function sort(lhs: SortRoleData, rhs: SortRoleData): int {
+        function compare(lhs: SortRoleData, rhs: SortRoleData): int {
           const a = lhs.name.toLowerCase();
           const b = rhs.name.toLowerCase();
           return a < b ? -1 : (a > b ? 1 : 0);
@@ -232,9 +232,6 @@ ColumnLayout {
     }
   }
 
-  component LicensesRoleData: QtObject {
-    property string name
-  }
   component SortRoleData: QtObject {
     property string name
   }

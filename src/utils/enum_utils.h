@@ -28,6 +28,8 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QVariantList>
+#include <QVariantMap>
 
 /* the magic_enum fmt formatter must be available in every TU that includes
  * this header, regardless of include order or precompiled headers */

@@ -162,12 +162,12 @@ ListView {
   model: SortFilterProxyModel {
     id: proxyModel
 
-    model: root.tracklist.collection
+    sourceModel: root.tracklist.collection
 
     filters: [
       FunctionFilter {
-        function filter(data: TrackRoleData): bool {
-          return root.tracklist.shouldBeVisible(data.track) && root.tracklist.isTrackPinned(data.track) === root.pinned;
+        function filter(track: Track): bool {
+          return root.tracklist.shouldBeVisible(track) && root.tracklist.isTrackPinned(track) === root.pinned;
         }
       }
     ]
@@ -179,9 +179,5 @@ ListView {
     }
 
     target: root.tracklist
-  }
-
-  component TrackRoleData: QtObject {
-    property Track track
   }
 }

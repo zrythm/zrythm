@@ -28,7 +28,7 @@ MidiClipCanvasItem::setMidiClip (structure::arrangement::MidiClip * clip)
     return;
   midi_clip_ = clip;
 
-  for (const auto &connection : clip_connections_)
+  for (auto &connection : clip_connections_)
     QObject::disconnect (connection);
   clip_connections_.clear ();
 

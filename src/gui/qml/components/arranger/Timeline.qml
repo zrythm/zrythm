@@ -387,12 +387,12 @@ Arranger {
     model: SortFilterProxyModel {
       id: timelineProxyModel
 
-      model: root.tracklist.collection
+      sourceModel: root.tracklist.collection
 
       filters: [
         FunctionFilter {
-          function filter(data: TrackRoleData): bool {
-            return root.tracklist.shouldBeVisible(data.track) && root.tracklist.isTrackPinned(data.track) === root.pinned;
+          function filter(track: Track): bool {
+            return root.tracklist.shouldBeVisible(track) && root.tracklist.isTrackPinned(track) === root.pinned;
           }
         }
       ]
@@ -420,10 +420,6 @@ Arranger {
 
     font: ZrythmTheme.arrangerObjectTextFont
     text: "Some text"
-  }
-
-  component ATHRoleData: QtObject {
-    property AutomationTrackHolder automationTrackHolder
   }
 
   component PlaybackCacheActivityOverlay: Item {
@@ -910,12 +906,12 @@ Arranger {
             }
           }
           model: SortFilterProxyModel {
-            model: automationLoader.automationTracklist
+            sourceModel: automationLoader.automationTracklist
 
             filters: [
               FunctionFilter {
-                function filter(data: ATHRoleData): bool {
-                  return data.automationTrackHolder.createdByUser && data.automationTrackHolder.visible;
+                function filter(automationTrackHolder: AutomationTrackHolder): bool {
+                  return automationTrackHolder.createdByUser && automationTrackHolder.visible;
                 }
               }
             ]
@@ -1021,8 +1017,5 @@ Arranger {
       delegate: laneClipLoaderComponent
       model: laneItem.trackLane.audioClips
     }
-  }
-  component TrackRoleData: QtObject {
-    required property Track track
   }
 }

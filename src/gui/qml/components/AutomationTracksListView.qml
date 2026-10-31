@@ -229,18 +229,14 @@ ListView {
   model: SortFilterProxyModel {
     id: proxyModel
 
-    model: control.track.automationTracklist
+    sourceModel: control.track.automationTracklist
 
     filters: [
       FunctionFilter {
-        function filter(data: ATHRoleData): bool {
-          return data.automationTrackHolder.createdByUser && data.automationTrackHolder.visible;
+        function filter(automationTrackHolder: AutomationTrackHolder): bool {
+          return automationTrackHolder.createdByUser && automationTrackHolder.visible;
         }
       }
     ]
-  }
-
-  component ATHRoleData: QtObject {
-    property AutomationTrackHolder automationTrackHolder
   }
 }

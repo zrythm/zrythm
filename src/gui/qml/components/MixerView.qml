@@ -43,19 +43,15 @@ RowLayout {
     model: SortFilterProxyModel {
       id: mixerProxyModel
 
-      model: root.tracklist.collection
+      sourceModel: root.tracklist.collection
 
       filters: [
         FunctionFilter {
-          function filter(data: TrackRoleData): bool {
-            return root.tracklist.shouldBeVisible(data.track) && root.tracklist.hasChannel(data.track);
+          function filter(track: Track): bool {
+            return root.tracklist.shouldBeVisible(track) && root.tracklist.hasChannel(track);
           }
         }
       ]
     }
-  }
-
-  component TrackRoleData: QtObject {
-    required property Track track
   }
 }

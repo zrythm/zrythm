@@ -12,6 +12,7 @@ qt/*:qttools=True
 qt/*:qttranslations=True
 qt/*:qtcanvaspainter=True
 qt/*:qtlanguageserver=True
+qt/*:qttasktree=True
 qt/*:qtsvg=True
 qt/*:qtshadertools=True
 qt/*:with_pq=False

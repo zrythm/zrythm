@@ -9,7 +9,7 @@ namespace zrythm::gui::qquick
 {
 
 void
-RulerGridCanvasRenderer::synchronize (QCanvasPainterItem * item)
+RulerGridCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * ruler_item = static_cast<RulerGridCanvasItem *> (item);
 
@@ -52,9 +52,8 @@ RulerGridCanvasRenderer::paint (QCanvasPainter * painter)
   if (canvas_height_ <= 0.0f)
     return;
 
-  painter->setRenderHint (QCanvasPainter::RenderHint::Antialiasing, false);
-  painter->setRenderHint (
-    QCanvasPainter::RenderHint::HighQualityStroking, false);
+  painter->setAntialias (0.0);
+  painter->setHighQualityStroking (false);
 
   // The canvas is viewport-sized. Translate so content-space coordinates
   // map to the visible portion.

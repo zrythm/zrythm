@@ -15,7 +15,7 @@ namespace zrythm::gui::qquick
 {
 
 void
-TempoCurveCanvasRenderer::synchronize (QCanvasPainterItem * item)
+TempoCurveCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * tempo_item = static_cast<TempoCurveCanvasItem *> (item);
 
@@ -145,7 +145,7 @@ TempoCurveCanvasRenderer::paint (QCanvasPainter * painter)
     return (1.0f - normalized) * lane_height_;
   };
 
-  painter->setRenderHint (QCanvasPainter::RenderHint::Antialiasing, true);
+  painter->setAntialias (1.0);
   painter->setLineWidth (2.0f);
 
   // The canvas is viewport-sized; translate so content-space x maps to the

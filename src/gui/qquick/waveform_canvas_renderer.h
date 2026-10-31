@@ -104,7 +104,7 @@ compute_waveform_peaks (
 /**
  * @brief Renders audio waveform peaks using QCanvasPainter.
  *
- * Peak computation happens in synchronize() (render thread).
+ * Peak computation happens in synchronizeData() (render thread).
  * Drawing happens in paint() (render thread).
  */
 class WaveformCanvasRenderer : public QCanvasPainterItemRenderer
@@ -113,7 +113,7 @@ public:
   WaveformCanvasRenderer () = default;
   Q_DISABLE_COPY_MOVE (WaveformCanvasRenderer)
 
-  void synchronize (QCanvasPainterItem * item) override;
+  void synchronizeData (QCanvasPainterItem * item) override;
   void paint (QCanvasPainter * painter) override;
 
 private:

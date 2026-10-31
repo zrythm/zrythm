@@ -112,14 +112,14 @@ Item {
   SortFilterProxyModel {
     id: pluginFilter
 
-    model: root.pluginManager.pluginDescriptors
+    sourceModel: root.pluginManager.pluginDescriptors
 
     filters: [
       FunctionFilter {
         property string searchText: pluginSearch.text
 
-        function filter(data: RoleData): bool {
-          return data.name.toLowerCase().includes(searchText.toLowerCase());
+        function filter(name: string): bool {
+          return name.toLowerCase().includes(searchText.toLowerCase());
         }
 
         onSearchTextChanged: invalidate()
@@ -132,8 +132,8 @@ Item {
         property list<string> selectedFormats: root.selectedFormats
         property list<string> selectedTypes: root.selectedTypes
 
-        function filter(data: RoleData): bool {
-          const d = data.descriptor;
+        function filter(descriptor: PluginDescriptor): bool {
+          const d = descriptor;
           if (favoritesOnly && !favoriteKeys.includes(root.descriptorFavoriteKey(d)))
             return false;
           if (selectedFormats.length > 0 && !selectedFormats.includes(d.format))
@@ -684,10 +684,6 @@ Item {
         }
       }
     }
-  }
-  component RoleData: QtObject {
-    property PluginDescriptor descriptor
-    property string name
   }
   // Removable lozenge showing one active spec filter
   component SpecFilterChip: Rectangle {

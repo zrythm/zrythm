@@ -51,7 +51,7 @@ TimelinePositionTracker::timelineEndTicks () const
 void
 TimelinePositionTracker::disconnect_all ()
 {
-  for (const auto &conn : connections_)
+  for (auto &conn : connections_)
     QObject::disconnect (conn);
   connections_.clear ();
 }

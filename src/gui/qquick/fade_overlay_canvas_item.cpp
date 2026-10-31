@@ -31,7 +31,7 @@ FadeOverlayCanvasItem::setAudioClip (structure::arrangement::AudioClip * clip)
   audio_clip_ = clip;
 
   // Disconnect old signal connections from previous clip
-  for (const auto &connection : clip_connections_)
+  for (auto &connection : clip_connections_)
     QObject::disconnect (connection);
   clip_connections_.clear ();
 

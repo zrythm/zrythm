@@ -74,7 +74,7 @@ public:
 
   /// Computes a per-pixel frame mapping that accounts for the tempo map's
   /// non-linear tick-to-sample conversion. Called by the renderer during
-  /// synchronize() so the waveform visually aligns with what plays at each
+  /// synchronizeData() so the waveform visually aligns with what plays at each
   /// timeline position.
   std::vector<int64_t> computeTimelineFrameMapping (
     int    canvas_width,

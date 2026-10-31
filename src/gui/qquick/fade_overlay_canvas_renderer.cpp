@@ -12,7 +12,7 @@ namespace zrythm::gui::qquick
 {
 
 void
-FadeOverlayCanvasRenderer::synchronize (QCanvasPainterItem * item)
+FadeOverlayCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * fade_item = static_cast<FadeOverlayCanvasItem *> (item);
   fade_type_ = static_cast<int> (fade_item->fadeType ());

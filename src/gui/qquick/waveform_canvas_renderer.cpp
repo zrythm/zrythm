@@ -160,7 +160,7 @@ compute_waveform_peaks (
 }
 
 void
-WaveformCanvasRenderer::synchronize (QCanvasPainterItem * item)
+WaveformCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * waveform_item = static_cast<WaveformCanvasItem *> (item);
 
@@ -215,7 +215,7 @@ WaveformCanvasRenderer::synchronize (QCanvasPainterItem * item)
     }
 
   // The raw pointer into the item's audio_buffer_ is valid only for the
-  // duration of synchronize() (the GUI thread is blocked during this call).
+  // duration of synchronizeData() (the GUI thread is blocked during this call).
   // compute_peaks() below copies the needed data into peaks_, so paint()
   // never dereferences this pointer — do not read audio_buffer_ from paint().
   waveform_color_ = waveform_item->waveformColor ();
@@ -284,7 +284,7 @@ WaveformCanvasRenderer::paint (QCanvasPainter * painter)
   painter->setFillStyle (waveform_color_);
   painter->setStrokeStyle (outline_color_);
   painter->setLineWidth (1.0f);
-  painter->setRenderHint (QCanvasPainter::RenderHint::Antialiasing, false);
+  painter->setAntialias (0.0);
 
   for (const auto ch : std::views::iota (0, num_channels_))
     {

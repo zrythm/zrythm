@@ -34,7 +34,7 @@ class Zrythm(ConanFile):
         self.version = load(self, "VERSION.txt").lstrip("v").rstrip()
 
     def requirements(self):
-        self.requires("qt/[>=6.11.1]")
+        self.requires("qt/[>=6.12.0]")
         self.requires("magic_enum/0.9.7")
         self.requires("fmt/[~12]")
         self.requires("spdlog/[~1.17]")
@@ -69,7 +69,7 @@ class Zrythm(ConanFile):
     def configure(self):
         # Conan 2 does not propagate consumer options to build-context
         # tool_requires, so the options the build-context qt also needs are
-        # mirrored in conan/profiles/_qt_common: the 8 enabled qt modules,
+        # mirrored in conan/profiles/_qt_common: the 9 enabled qt modules,
         # with_pq/with_odbc and with_glib. Keep in sync. (with_dbus needs no
         # mirror - our qt recipe forwards it to its self-tool_requires.)
         self.options["qt"].shared = True
@@ -94,6 +94,7 @@ class Zrythm(ConanFile):
         self.options["qt"].qttranslations = True
         self.options["qt"].qtcanvaspainter = True
         self.options["qt"].qtlanguageserver = True
+        self.options["qt"].qttasktree = True
         self.options["qt"].qtsvg = True
         self.options["qt"].qtshadertools = True
 

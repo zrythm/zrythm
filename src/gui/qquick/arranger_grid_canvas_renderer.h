@@ -16,7 +16,7 @@ class ArrangerGridCanvasItem;
 /**
  * @brief Renders arranger background grid lines using QCanvasPainter.
  *
- * Grid line positions are computed in synchronize() (render thread blocked)
+ * Grid line positions are computed in synchronizeData() (render thread blocked)
  * and drawn in paint() (render thread).
  */
 class ArrangerGridCanvasRenderer : public QCanvasPainterItemRenderer
@@ -25,7 +25,7 @@ public:
   ArrangerGridCanvasRenderer () = default;
   Q_DISABLE_COPY_MOVE (ArrangerGridCanvasRenderer)
 
-  void synchronize (QCanvasPainterItem * item) override;
+  void synchronizeData (QCanvasPainterItem * item) override;
   void paint (QCanvasPainter * painter) override;
 
 private:
@@ -40,7 +40,7 @@ private:
   float  detail_measure_px_threshold_{ 32.0f };
   float  canvas_height_{ 0.0f };
 
-  // Pre-computed grid lines (computed in synchronize)
+  // Pre-computed grid lines (computed in synchronizeData)
   ComputedGridLines grid_lines_;
 };
 

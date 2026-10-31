@@ -53,8 +53,8 @@ Item {
   // Source row selected when the session began (the revert target,
   // shown in the footer)
   property int loadedSourceRow: -1
-  // Source model of presets with a "name" role and optionally a "group"
-  // role (e.g. PluginPresetListModel); auditioning requires its `plugin`
+  // Source model of presets with "name" and "group" roles (e.g.
+  // PluginPresetListModel); auditioning requires its `plugin`
   // property
   property var model: null
   // Whether the model has more than one named group; with zero or one
@@ -262,14 +262,14 @@ Item {
   SortFilterProxyModel {
     id: filterProxy
 
-    model: root.model
+    sourceModel: root.model
 
     filters: [
       FunctionFilter {
         property string searchText: searchField.text.toLowerCase()
 
-        function filter(data: PresetRoleData): bool {
-          return searchText.length === 0 || data.name.toLowerCase().includes(searchText) || data.group.toLowerCase().includes(searchText);
+        function filter(name: string, group: string): bool {
+          return searchText.length === 0 || name.toLowerCase().includes(searchText) || group.toLowerCase().includes(searchText);
         }
 
         onSearchTextChanged: {
@@ -282,13 +282,13 @@ Item {
         }
       },
       FunctionFilter {
-        property string group: root.currentGroup
+        property string selectedGroup: root.currentGroup
 
-        function filter(data: PresetRoleData): bool {
-          return group.length === 0 || data.group === group;
+        function filter(group: string): bool {
+          return selectedGroup.length === 0 || group === selectedGroup;
         }
 
-        onGroupChanged: {
+        onSelectedGroupChanged: {
           filterProxy.invalidate();
           listPane.currentIndex = -1;
         }
@@ -497,10 +497,5 @@ Item {
     interval: 120
 
     onTriggered: root.applyPendingAudition()
-  }
-
-  component PresetRoleData: QtObject {
-    property string group
-    property string name
   }
 }

@@ -161,7 +161,7 @@ AudioClipWaveformCanvasItem::reserialize ()
 void
 AudioClipWaveformCanvasItem::connect_audio_source_signals ()
 {
-  for (const auto &connection : source_connections_)
+  for (auto &connection : source_connections_)
     QObject::disconnect (connection);
   source_connections_.clear ();
   if (audio_clip_ == nullptr)
@@ -211,10 +211,10 @@ AudioClipWaveformCanvasItem::setAudioClip (
   audio_clip_ = clip;
 
   // Disconnect old signal connections from previous clip
-  for (const auto &connection : clip_connections_)
+  for (auto &connection : clip_connections_)
     QObject::disconnect (connection);
   clip_connections_.clear ();
-  for (const auto &connection : source_connections_)
+  for (auto &connection : source_connections_)
     QObject::disconnect (connection);
   source_connections_.clear ();
 
@@ -278,7 +278,7 @@ AudioClipWaveformCanvasItem::setTempoMap (QObject * tempoMap)
   if (tempo_map_ == tempoMap)
     return;
 
-  for (const auto &connection : tempo_map_connections_)
+  for (auto &connection : tempo_map_connections_)
     QObject::disconnect (connection);
   tempo_map_connections_.clear ();
 

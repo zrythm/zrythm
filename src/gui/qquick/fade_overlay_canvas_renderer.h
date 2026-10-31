@@ -19,7 +19,7 @@ public:
   FadeOverlayCanvasRenderer () = default;
   Q_DISABLE_COPY_MOVE (FadeOverlayCanvasRenderer)
 
-  void synchronize (QCanvasPainterItem * item) override;
+  void synchronizeData (QCanvasPainterItem * item) override;
   void paint (QCanvasPainter * painter) override;
 
 private:
@@ -31,7 +31,7 @@ private:
   float  canvas_height_ = 0.0f;
   bool   has_valid_fade_ = false;
 
-  // Pre-computed curve Y values (copied from item during synchronize)
+  // Pre-computed curve Y values (copied from item during synchronizeData)
   std::vector<double> cached_curve_y_;
 };
 

@@ -30,7 +30,7 @@ if(CPACK_GENERATOR STREQUAL "AppImage")
     set(total_after 0)
     foreach(lib ${lib_files})
       # Resolve symlinks (e.g. libQt6Core.so -> libQt6Core.so.6 ->
-      # libQt6Core.so.6.11.1) so each real file is stripped exactly once.
+      # libQt6Core.so.6.12.0) so each real file is stripped exactly once.
       get_filename_component(real_lib "${lib}" REALPATH)
       if(real_lib IN_LIST processed_reals)
         continue()

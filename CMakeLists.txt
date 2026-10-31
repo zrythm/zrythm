@@ -967,7 +967,7 @@ set(QT_ADDITIONAL_PACKAGES_PREFIX_PATH "${CMAKE_BINARY_DIR}")
 # server can resolve the project's types from the build directory
 set(QT_QML_GENERATE_QMLLS_INI ON)
 
-find_package(Qt6 6.11
+find_package(Qt6 6.12
   COMPONENTS
     Core
     Gui
@@ -978,6 +978,7 @@ find_package(Qt6 6.11
     LinguistTools
     QuickTest
     Test
+    TaskTree
     CanvasPainter
     Svg
     # for QRhi (offscreen QML rendering for X11 plugin window headers);
@@ -992,7 +993,9 @@ qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 qt_policy(SET QTP0005 NEW)
 target_compile_definitions(Qt6::Core INTERFACE
-  "QT_ENABLE_STRICT_MODE_UP_TO=0x061100"
+  # QT_VERSION_CHECK(6, 12, 0); enables QT_LEAN_HEADERS, so each header
+  # must include the Qt types it uses directly
+  "QT_ENABLE_STRICT_MODE_UP_TO=0x060C00"
   "QT_NO_KEYWORDS"
   "QT_NO_CONTEXTLESS_CONNECT"
 )

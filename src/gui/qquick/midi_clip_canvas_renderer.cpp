@@ -14,7 +14,7 @@ namespace zrythm::gui::qquick
 {
 
 void
-MidiClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
+MidiClipCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * canvas_item = static_cast<MidiClipCanvasItem *> (item);
 
@@ -125,7 +125,7 @@ MidiClipCanvasRenderer::paint (QCanvasPainter * painter)
   if (note_rects_.empty ())
     return;
 
-  painter->setRenderHint (QCanvasPainter::RenderHint::Antialiasing, false);
+  painter->setAntialias (0.0);
 
   for (const auto &rect : note_rects_)
     {

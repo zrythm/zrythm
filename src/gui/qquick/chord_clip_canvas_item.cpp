@@ -25,7 +25,7 @@ ChordClipCanvasItem::setChordClip (structure::arrangement::ChordClip * clip)
   if (chord_clip_ == clip)
     return;
 
-  for (const auto &connection : clip_connections_)
+  for (auto &connection : clip_connections_)
     QObject::disconnect (connection);
   clip_connections_.clear ();
 

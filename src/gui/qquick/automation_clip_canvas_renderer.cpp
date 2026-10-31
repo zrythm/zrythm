@@ -19,7 +19,7 @@ namespace zrythm::gui::qquick
 {
 
 void
-AutomationClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
+AutomationClipCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * canvas_item = static_cast<AutomationClipCanvasItem *> (item);
 
@@ -363,7 +363,7 @@ AutomationClipCanvasRenderer::paint (QCanvasPainter * painter)
         }
     }
 
-  painter->setRenderHint (QCanvasPainter::RenderHint::Antialiasing, true);
+  painter->setAntialias (1.0);
 
   // ---- Fill below the curve with a vertical gradient ----
   painter->beginPath ();

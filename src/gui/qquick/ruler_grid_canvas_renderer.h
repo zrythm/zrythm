@@ -17,7 +17,7 @@ class RulerGridCanvasItem;
 /**
  * @brief Renders ruler grid lines and labels using QCanvasPainter.
  *
- * Grid line positions are computed in synchronize() (render thread blocked)
+ * Grid line positions are computed in synchronizeData() (render thread blocked)
  * and drawn in paint() (render thread).
  */
 class RulerGridCanvasRenderer : public QCanvasPainterItemRenderer
@@ -26,7 +26,7 @@ public:
   RulerGridCanvasRenderer () = default;
   Q_DISABLE_COPY_MOVE (RulerGridCanvasRenderer)
 
-  void synchronize (QCanvasPainterItem * item) override;
+  void synchronizeData (QCanvasPainterItem * item) override;
   void paint (QCanvasPainter * painter) override;
 
 private:
@@ -44,7 +44,7 @@ private:
   QFont  beat_label_font_;
   QFont  sixteenth_label_font_;
 
-  // Pre-computed grid lines (computed in synchronize)
+  // Pre-computed grid lines (computed in synchronizeData)
   ComputedGridLines grid_lines_;
 };
 

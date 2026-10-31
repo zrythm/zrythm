@@ -112,7 +112,7 @@ rootNoteToColor (int rootNote)
 } // anonymous namespace
 
 void
-ChordClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
+ChordClipCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * canvas_item = static_cast<ChordClipCanvasItem *> (item);
 
@@ -178,7 +178,7 @@ ChordClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
 
       // Measure full name width for LOD (using QCanvasPainter's text bounding)
       // We can't call painter->textBoundingBox here (no painter in
-      // synchronize), so estimate with QFontMetrics.
+      // synchronizeData), so estimate with QFontMetrics.
       if (!c.full_name.isEmpty ())
         {
           c.full_name_width = name_metrics.horizontalAdvance (c.full_name) + 8;
@@ -198,7 +198,7 @@ ChordClipCanvasRenderer::paint (QCanvasPainter * painter)
   if (cells_.empty () || canvas_width_ <= 0.0f || canvas_height_ <= 0.0f)
     return;
 
-  painter->setRenderHint (QCanvasPainter::RenderHint::Antialiasing, false);
+  painter->setAntialias (0.0);
 
   QColor separator_color = text_color_;
   separator_color.setAlphaF (separator_color.alphaF () * 0.4f);

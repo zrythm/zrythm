@@ -14,7 +14,7 @@ import sys
 
 # (recipe path relative to repo root, version)
 recipes = [
-    ("ext/conan-center-index/recipes/qt/6.x.x/conanfile.py", "6.11.1"),
+    ("ext/conan-center-index/recipes/qt/6.x.x/conanfile.py", "6.12.0"),
     ("ext/conan-center-index/recipes/mpg123/all/conanfile.py", "1.33.0"),
     ("ext/conan-center-index/recipes/libjpeg-turbo/all/conanfile.py", "3.1.4.1"),
     ("ext/conan-center-index/recipes/wayland/all/conanfile.py", "1.22.0"),

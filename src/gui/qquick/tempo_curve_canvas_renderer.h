@@ -21,7 +21,7 @@ class TempoCurveCanvasItem;
  * The curve is drawn from the project's tempo objects (the same ones rendered
  * as pills): constant segments as steps, linear segments as ramps, stroked and
  * filled with a translucent vertical gradient. The event data is snapshotted
- * in synchronize() (render thread blocked) and painted in paint() (render
+ * in synchronizeData() (render thread blocked) and painted in paint() (render
  * thread).
  */
 class TempoCurveCanvasRenderer : public QCanvasPainterItemRenderer
@@ -30,7 +30,7 @@ public:
   TempoCurveCanvasRenderer () = default;
   Q_DISABLE_COPY_MOVE (TempoCurveCanvasRenderer)
 
-  void synchronize (QCanvasPainterItem * item) override;
+  void synchronizeData (QCanvasPainterItem * item) override;
   void paint (QCanvasPainter * painter) override;
 
 private:

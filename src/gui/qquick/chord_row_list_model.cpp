@@ -180,7 +180,7 @@ ChordRowListModel::connect_descriptor_signals ()
 void
 ChordRowListModel::disconnect_descriptor_signals ()
 {
-  for (const auto &conn : descriptor_connections_)
+  for (auto &conn : descriptor_connections_)
     QObject::disconnect (conn);
   descriptor_connections_.clear ();
 }

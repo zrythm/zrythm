@@ -13,7 +13,7 @@ namespace zrythm::gui::qquick
 {
 
 void
-SpectrumAnalyzerCanvasRenderer::synchronize (QCanvasPainterItem * item)
+SpectrumAnalyzerCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * spectrum_item = static_cast<SpectrumAnalyzerCanvasItem *> (item);
 
@@ -46,7 +46,7 @@ SpectrumAnalyzerCanvasRenderer::paint (QCanvasPainter * painter)
   constexpr float min_freq = 40.0f;
   const float     max_freq = sample_rate_ / 2.0f;
 
-  painter->setRenderHint (QCanvasPainter::RenderHint::Antialiasing, true);
+  painter->setAntialias (1.0);
   painter->setFillStyle (spectrum_color_);
 
   for (int i = 0; i < bin_count - 1; ++i)

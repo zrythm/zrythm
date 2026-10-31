@@ -54,12 +54,12 @@ Loader {
         model: SortFilterProxyModel {
           id: availableRoutesModel
 
-          model: root.tracklist.collection
+          sourceModel: root.tracklist.collection
 
           filters: [
             FunctionFilter {
-              function filter(data: TrackRoleData): bool {
-                return root.tracklist.trackRouting.canRouteTo(root.track, data.track);
+              function filter(track: Track): bool {
+                return root.tracklist.trackRouting.canRouteTo(root.track, track);
               }
             }
           ]
@@ -93,9 +93,5 @@ Loader {
         }
       }
     }
-  }
-
-  component TrackRoleData: QtObject {
-    property Track track
   }
 }

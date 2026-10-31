@@ -9,7 +9,7 @@ namespace zrythm::gui::qquick
 {
 
 void
-ArrangerGridCanvasRenderer::synchronize (QCanvasPainterItem * item)
+ArrangerGridCanvasRenderer::synchronizeData (QCanvasPainterItem * item)
 {
   auto * grid_item = static_cast<ArrangerGridCanvasItem *> (item);
 
@@ -47,7 +47,7 @@ ArrangerGridCanvasRenderer::paint (QCanvasPainter * painter)
   if (canvas_height_ <= 0.0f)
     return;
 
-  painter->setRenderHint (QCanvasPainter::RenderHint::Antialiasing, false);
+  painter->setAntialias (0.0);
   painter->setLineWidth (1.0f);
 
   // The canvas is viewport-sized. Translate so content-space coordinates
