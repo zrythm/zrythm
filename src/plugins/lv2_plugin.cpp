@@ -954,7 +954,8 @@ public:
   const PortInfo * find_control_input (std::string_view symbol) const
   {
     const auto it = std::ranges::find_if (ports_, [&symbol] (const PortInfo &p) {
-      return p.symbol.view () == symbol;
+      return p.type == PortInfo::Type::Control && p.flow == dsp::PortFlow::Input
+             && p.symbol.view () == symbol;
     });
     return it == ports_.end () ? nullptr : &*it;
   }

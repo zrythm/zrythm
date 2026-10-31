@@ -115,6 +115,9 @@ add_lv2_fixture(pos_probe_lv2 pos-probe.lv2 pos_probe
 add_lv2_fixture(state_files_lv2 state-files.lv2 state_files
   TTL_FILES state-files.ttl
   SOURCES state-files.lv2/state_files.c)
+add_lv2_fixture(cv_state_lv2 cv-state.lv2 cv_state
+  TTL_FILES cv-state.ttl
+  SOURCES cv-state.lv2/cv_state.c)
 add_lv2_fixture(plumbing_lv2 plumbing.lv2 plumbing
   TTL_FILES plumbing.ttl
   SOURCES plumbing.lv2/midieat.c plumbing.lv2/plumbing.c plumbing.lv2/route.c)
@@ -149,6 +152,7 @@ set(zrythm_test_lv2_fixture_targets
   pos_probe_lv2
   sigabrt_lv2
   state_files_lv2
+  cv_state_lv2
   test_instrument_lv2
   broken_lv2
   PARENT_SCOPE

@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix state: <http://lv2plug.in/ns/ext/state#> .
+
+<https://lv2.zrythm.org/cv-state>
+	a lv2:Plugin ;
+	doap:name "CV State" ;
+	lv2:requiredFeature state:loadDefaultState ;
+	lv2:port [
+		a lv2:InputPort ,
+			lv2:CVPort ;
+		lv2:index 0 ;
+		lv2:symbol "cv_in" ;
+		lv2:name "CV In" ;
+		lv2:default 0.25 ;
+		lv2:minimum -1.0 ;
+		lv2:maximum 1.0
+	] , [
+		a lv2:OutputPort ,
+			lv2:CVPort ;
+		lv2:index 1 ;
+		lv2:symbol "cv_out" ;
+		lv2:name "CV Out"
+	] .

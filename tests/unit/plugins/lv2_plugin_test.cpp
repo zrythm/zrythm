@@ -1400,6 +1400,14 @@ TEST_F (Lv2PluginTest, FifthsTransposesMidiNotes)
   EXPECT_TRUE (found_transposed) << "No transposed note-on found in the output";
 }
 
+// Default state values for CV inputs do not alias control input buffers
+TEST_F (Lv2PluginTest, DefaultStateIgnoresCvInputValues)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("cv-state.lv2"));
+
+  EXPECT_FALSE (plugin_->save_state ().empty ());
+}
+
 // eg-sampler (an unmodified upstream plugin) requires the
 // state:loadDefaultState feature: the default state's sample file is
 // loaded through the worker extension, and a note-on plays it back
