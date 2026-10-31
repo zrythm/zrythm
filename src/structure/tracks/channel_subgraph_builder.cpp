@@ -18,34 +18,14 @@ const auto is_main_bus_audio_port = [] (const dsp::AudioPort * port) {
 void
 ChannelSubgraphBuilder::add_nodes (dsp::graph::Graph &graph, Channel &ch)
 {
-  // prefader & post-fader
-  if (ch.is_audio ())
+  // built-in processors (passthrough stages, MIDI event tap, fader)
+  for (auto * processor : ch.get_builtin_processors ())
     {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_audio_pre_fader ());
-      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_audio_post_fader ());
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *processor);
     }
-  if (ch.has_midi_event_tap ())
-    {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_midi_event_tap ());
-    }
-  if (ch.has_midi_pre_fader ())
-    {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_midi_pre_fader ());
-    }
-  if (ch.is_midi ())
-    {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_midi_post_fader ());
-    }
-
-  // fader
-  {
-    dsp::ProcessorGraphBuilder::add_nodes (graph, *ch.fader ());
-  }
 
   // plugins
-  std::vector<plugins::PluginUuidReference> plugins;
-  ch.get_plugins (plugins);
-  for (const auto &pl_ref : plugins)
+  for (const auto &pl_ref : ch.get_plugins ())
     {
       dsp::ProcessorGraphBuilder::add_nodes (graph, *pl_ref.get ());
     }
@@ -101,8 +81,7 @@ ChannelSubgraphBuilder::add_connections (
    * channels use their MIDI pre-fader as the chain's final stage. */
   const bool instrument_channel = ch.has_midi_event_tap ();
 
-  std::vector<plugins::PluginUuidReference> midi_fx_plugins;
-  ch.midiFx ()->get_plugins (midi_fx_plugins);
+  const auto   midi_fx_plugins = ch.midiFx ()->get_plugins ();
   const size_t num_midi_fx = midi_fx_plugins.size ();
 
   /* Connects the given plugin's MIDI outputs to the given MIDI processor's
@@ -177,8 +156,7 @@ ChannelSubgraphBuilder::add_connections (
 
   bool midi_event_tap_fed = false;
 
-  std::vector<plugins::PluginUuidReference> plugins;
-  ch.get_plugins (plugins);
+  const auto        plugins = ch.get_plugins ();
   plugins::Plugin * last_plugin = nullptr;
   for (
     const auto &[plugin_index, pl] : utils::views::enumerate (

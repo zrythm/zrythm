@@ -619,8 +619,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAudioPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginUuidReference> plugin_refs;
-  audio_channel_->get_plugins (plugin_refs);
+  const auto plugin_refs = audio_channel_->get_plugins ();
   EXPECT_EQ (plugin_refs.size (), 2);
 
   auto plugins =
@@ -667,8 +666,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithMidiPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginUuidReference> plugin_refs;
-  midi_channel_->get_plugins (plugin_refs);
+  const auto plugin_refs = midi_channel_->get_plugins ();
   EXPECT_EQ (plugin_refs.size (), 2);
 
   auto plugins =
@@ -800,8 +798,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithSingleMonoAudioPlugin)
   });
 
   // Get plugin objects
-  std::vector<plugins::PluginUuidReference> plugin_refs;
-  audio_channel_->get_plugins (plugin_refs);
+  const auto plugin_refs = audio_channel_->get_plugins ();
   EXPECT_EQ (plugin_refs.size (), 1);
 
   auto plugins =
@@ -847,8 +844,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAsymmetricAudioPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginUuidReference> plugin_refs;
-  audio_channel_->get_plugins (plugin_refs);
+  const auto plugin_refs = audio_channel_->get_plugins ();
   EXPECT_EQ (plugin_refs.size (), 2);
 
   auto plugins =
@@ -900,8 +896,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithInstrumentPlugin)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginUuidReference> plugin_refs;
-  audio_channel_->get_plugins (plugin_refs);
+  const auto plugin_refs = audio_channel_->get_plugins ();
   EXPECT_EQ (plugin_refs.size (), 1);
 
   auto plugins =
@@ -1199,8 +1194,7 @@ TEST_F (ChannelSubgraphBuilderTest, InstrumentChannelRoutesMidiThroughEventTap)
       graph_, *instrument_channel_, track_output);
   });
 
-  std::vector<plugins::PluginUuidReference> plugin_refs;
-  instrument_channel_->get_plugins (plugin_refs);
+  const auto plugin_refs = instrument_channel_->get_plugins ();
   ASSERT_EQ (plugin_refs.size (), 2);
   auto * midi_fx = plugin_refs[0].get ();
   auto * instrument = plugin_refs[1].get ();

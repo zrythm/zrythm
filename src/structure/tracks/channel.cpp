@@ -156,8 +156,7 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
   std::optional<plugins::PluginUuidReference> ret;
 
   const auto check_plugin_list = [id, &ret] (auto &container) {
-    std::vector<plugins::PluginUuidReference> plugins;
-    container->get_plugins (plugins);
+    const auto plugins = container->get_plugins ();
     auto it = std::ranges::find (plugins, id, &plugins::PluginUuidReference::id);
     if (it != plugins.end ())
       {
@@ -175,12 +174,33 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
   return ret.value ();
 }
 
-void
-Channel::get_plugins (std::vector<plugins::PluginUuidReference> &plugins) const
+std::vector<plugins::PluginUuidReference>
+Channel::get_plugins () const
 {
-  midi_fx_->get_plugins (plugins);
-  instruments_->get_plugins (plugins);
-  inserts_->get_plugins (plugins);
+  std::vector<plugins::PluginUuidReference> plugins;
+  plugins.append_range (midi_fx_->get_plugins ());
+  plugins.append_range (instruments_->get_plugins ());
+  plugins.append_range (inserts_->get_plugins ());
+  return plugins;
+}
+
+std::vector<dsp::ProcessorBase *>
+Channel::get_builtin_processors () const
+{
+  std::vector<dsp::ProcessorBase *> processors;
+  if (has_midi_event_tap ())
+    processors.push_back (&get_midi_event_tap ());
+  if (has_midi_pre_fader ())
+    processors.push_back (&get_midi_pre_fader ());
+  if (is_audio ())
+    {
+      processors.push_back (&get_audio_pre_fader ());
+      processors.push_back (&get_audio_post_fader ());
+    }
+  if (is_midi ())
+    processors.push_back (&get_midi_post_fader ());
+  processors.push_back (fader ());
+  return processors;
 }
 
 void

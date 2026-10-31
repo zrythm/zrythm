@@ -1812,8 +1812,7 @@ TEST_F (TrackCollectionOperatorClipboardTest, PasteSucceedsWithInstantiatedPlugi
       registry_
     }
       .get ();
-  std::vector<plugins::PluginUuidReference> pasted_plugins;
-  pasted_track->channel ()->get_plugins (pasted_plugins);
+  const auto pasted_plugins = pasted_track->channel ()->get_plugins ();
   ASSERT_EQ (pasted_plugins.size (), 1u);
   EXPECT_EQ (
     pasted_plugins.front ().get ()->instantiationStatus (),

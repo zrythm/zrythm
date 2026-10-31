@@ -275,9 +275,8 @@ PluginOperator::duplicatePlugins (
 
   // Paste right after the last duplicated plugin still in the group; if
   // none of them is in the group anymore, append
-  std::vector<plugins::PluginUuidReference> group_plugins;
-  group->get_plugins (group_plugins, /*recursive=*/false);
-  int last_source_index = -1;
+  const auto group_plugins = group->get_plugins (/*recursive=*/false);
+  int        last_source_index = -1;
   for (const auto [i, plugin_ref] : utils::views::enumerate (group_plugins))
     {
       const auto is_source =

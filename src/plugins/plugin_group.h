@@ -147,9 +147,13 @@ public:
 
   QVariant element_at_idx (size_t idx) const;
 
-  void get_plugins (
-    std::vector<plugins::PluginUuidReference> &plugins,
-    bool                                       recursive = true) const;
+  /**
+   * @brief Returns the plugins in the group.
+   *
+   * @param recursive Whether to include plugins in nested groups.
+   */
+  std::vector<plugins::PluginUuidReference>
+  get_plugins (bool recursive = true) const;
 
 private:
   static constexpr auto kDeviceGroupsKey = "deviceGroups"sv;

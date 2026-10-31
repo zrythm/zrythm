@@ -73,9 +73,7 @@ process_track_connections (
 
   if (auto * mod_track = qobject_cast<structure::tracks::ModulatorTrack *> (tr))
     {
-      std::vector<plugins::PluginUuidReference> plugins;
-      mod_track->modulators ()->get_plugins (plugins);
-      for (const auto &pl_ref : plugins)
+      for (const auto &pl_ref : mod_track->modulators ()->get_plugins ())
         {
           auto * pl = pl_ref.get ();
           dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
@@ -165,9 +163,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         auto * mod_track = qobject_cast<structure::tracks::ModulatorTrack *> (tr))
         {
           /* add plugins */
-          std::vector<plugins::PluginUuidReference> plugins;
-          mod_track->modulators ()->get_plugins (plugins);
-          for (const auto &pl_ref : plugins)
+          for (const auto &pl_ref : mod_track->modulators ()->get_plugins ())
             {
               dsp::ProcessorGraphBuilder::add_nodes (graph, *pl_ref.get ());
             }

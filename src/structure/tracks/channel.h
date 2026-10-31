@@ -151,10 +151,20 @@ public:
 
   /**
    * @brief Returns all existing plugins in the channel.
-   *
-   * @param pls Vector to add plugins to.
    */
-  void get_plugins (std::vector<plugins::PluginUuidReference> &plugins) const;
+  std::vector<plugins::PluginUuidReference> get_plugins () const;
+
+  /**
+   * @brief Returns the channel's built-in processors, in signal-flow
+   * order.
+   *
+   * These exist for the channel's lifetime and are chosen at construction
+   * from its signal types: the MIDI event tap, the pre-faders, the fader
+   * and the post-faders. User-added content is enumerated separately:
+   * plugins (get_plugins()) and sends (pre_fader_sends() /
+   * post_fader_sends()).
+   */
+  std::vector<dsp::ProcessorBase *> get_builtin_processors () const;
 
   /**
    * @brief Removes the given plugin.

@@ -621,12 +621,12 @@ Track::collect_plugins (std::vector<plugins::PluginUuidReference> &plugins) cons
 {
   if (channel_)
     {
-      channel_->get_plugins (plugins);
+      plugins.append_range (channel_->get_plugins ());
     }
 
   if (modulators_)
     {
-      modulators_->get_plugins (plugins);
+      plugins.append_range (modulators_->get_plugins ());
     }
 }
 

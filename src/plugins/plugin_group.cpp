@@ -152,18 +152,17 @@ PluginGroup::element_at_idx (size_t idx) const
   return data (index (static_cast<int> (idx)), DeviceGroupPtrRole);
 }
 
-void
-PluginGroup::get_plugins (
-  std::vector<plugins::PluginUuidReference> &plugins,
-  bool                                       recursive) const
+std::vector<plugins::PluginUuidReference>
+PluginGroup::get_plugins (bool recursive) const
 {
+  std::vector<plugins::PluginUuidReference> plugins;
   for (const auto &var : pimpl_->devices_)
     {
       if (var.index () == 0)
         {
           if (recursive)
             {
-              std::get<0> (var)->get_plugins (plugins, recursive);
+              plugins.append_range (std::get<0> (var)->get_plugins (recursive));
             }
         }
       else
@@ -171,6 +170,7 @@ PluginGroup::get_plugins (
           plugins.push_back (std::get<1> (var));
         }
     }
+  return plugins;
 }
 
 void

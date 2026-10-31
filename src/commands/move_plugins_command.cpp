@@ -19,8 +19,7 @@ MovePluginsCommand::MovePluginsCommand (
 {
   for (const auto &info : plugin_infos_)
     {
-      std::vector<plugins::PluginUuidReference> plugins;
-      info.source_location.first->get_plugins (plugins);
+      const auto plugins = info.source_location.first->get_plugins ();
       if (!std::ranges::contains (
             plugins, info.plugin_ref.id (), &plugins::PluginUuidReference::id))
         {

@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include <algorithm>
 
 #include "dsp/fader.h"
 #include "dsp/parameter.h"
@@ -227,6 +229,48 @@ TEST_F (ChannelTest, SplitSignalTypeCapabilities)
   EXPECT_EQ (instrument_channel->getMidiOut (), nullptr);
   EXPECT_NE (instrument_channel->audioOutPort (), nullptr);
   EXPECT_NE (instrument_channel->postMidiFxPort (), nullptr);
+}
+
+// Each channel kind reports exactly its fixed processing stages: audio
+// channels carry the audio pre/post-faders, MIDI channels the MIDI
+// pre/post-faders, instrument channels the MIDI event tap plus the audio
+// pre/post-faders; every kind carries the fader.
+TEST_F (ChannelTest, BuiltinProcessorsMatchChannelSignalTypes)
+{
+  audio_channel_ = createAudioChannel ();
+  midi_channel_ = createMidiChannel ();
+  auto instrument_channel = createInstrumentChannel ();
+
+  const auto contains = [] (const auto &processors, const auto * processor) {
+    return std::ranges::find (processors, processor) != processors.end ();
+  };
+
+  const auto audio_processors = audio_channel_->get_builtin_processors ();
+  EXPECT_EQ (audio_processors.size (), 3u);
+  EXPECT_TRUE (contains (audio_processors, audio_channel_->fader ()));
+  EXPECT_TRUE (
+    contains (audio_processors, &audio_channel_->get_audio_pre_fader ()));
+  EXPECT_TRUE (
+    contains (audio_processors, &audio_channel_->get_audio_post_fader ()));
+
+  const auto midi_processors = midi_channel_->get_builtin_processors ();
+  EXPECT_EQ (midi_processors.size (), 3u);
+  EXPECT_TRUE (contains (midi_processors, midi_channel_->fader ()));
+  EXPECT_TRUE (
+    contains (midi_processors, &midi_channel_->get_midi_pre_fader ()));
+  EXPECT_TRUE (
+    contains (midi_processors, &midi_channel_->get_midi_post_fader ()));
+
+  const auto instrument_processors =
+    instrument_channel->get_builtin_processors ();
+  EXPECT_EQ (instrument_processors.size (), 4u);
+  EXPECT_TRUE (contains (instrument_processors, instrument_channel->fader ()));
+  EXPECT_TRUE (contains (
+    instrument_processors, &instrument_channel->get_midi_event_tap ()));
+  EXPECT_TRUE (contains (
+    instrument_processors, &instrument_channel->get_audio_pre_fader ()));
+  EXPECT_TRUE (contains (
+    instrument_processors, &instrument_channel->get_audio_post_fader ()));
 }
 
 TEST_F (ChannelTest, PostMidiFxPortIsStablePostMidiFxOutput)

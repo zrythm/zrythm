@@ -297,8 +297,7 @@ Tracklist::get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const
       if (channel == nullptr)
         continue;
 
-      std::vector<plugins::PluginUuidReference> plugins;
-      channel->get_plugins (plugins);
+      const auto plugins = channel->get_plugins ();
       if (
         std::ranges::contains (
           plugins, plugin_id, &plugins::PluginUuidReference::id))
