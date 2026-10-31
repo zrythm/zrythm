@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -7,79 +7,94 @@ import QtQuick
 import QtQuick.Layouts
 import Zrythm
 
-RowLayout {
+Item {
   id: root
 
   readonly property bool _isMasterTrack: root.track && root.track.type === Track.Master
   required property AudioEngine audioEngine
   required property Channel channel
-  readonly property real currentAmplitude: channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentAmplitude : midiMetersLoader.item.currentAmplitude) : 0
-  readonly property real currentPeak: channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentPeak : midiMetersLoader.item.currentPeak) : 0
+  readonly property real currentAmplitude: root.channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentAmplitude : (midiMetersLoader.active ? midiMetersLoader.item.currentAmplitude : 0)) : 0
+  readonly property real currentPeak: root.channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentPeak : (midiMetersLoader.active ? midiMetersLoader.item.currentPeak : 0)) : 0
+  implicitHeight: meterLayout.implicitHeight
+  implicitWidth: meterLayout.implicitWidth
   required property PortObservationManager portObservationManager
+  // Set false when another component presents MIDI event activity, so the
+  // generic MIDI meter is not duplicated.
+  property bool showMidiMeter: true
   required property Track track
 
-  Loader {
-    id: audioMetersLoader
+  RowLayout {
+    id: meterLayout
 
-    Layout.fillHeight: true
-    Layout.fillWidth: false
-    active: root.channel && root.channel.audioOutPort
-    visible: active
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.top: parent.top
+    spacing: 0
+    width: implicitWidth
 
-    sourceComponent: RowLayout {
-      id: meters
+    Loader {
+      id: audioMetersLoader
 
-      property real currentAmplitude: Math.max(audioLMeter.meterProcessor.currentAmplitude, audioRMeter.meterProcessor.currentAmplitude)
-      property real currentPeak: Math.max(audioLMeter.meterProcessor.peakAmplitude, audioRMeter.meterProcessor.peakAmplitude)
+      Layout.fillHeight: true
+      Layout.fillWidth: false
+      active: root.channel && root.channel.audioOutPort
+      visible: active
 
-      anchors.fill: parent
-      spacing: 0
+      sourceComponent: RowLayout {
+        id: meters
 
-      Meter {
-        id: audioLMeter
+        property real currentAmplitude: Math.max(audioLMeter.meterProcessor.currentAmplitude, audioRMeter.meterProcessor.currentAmplitude)
+        property real currentPeak: Math.max(audioLMeter.meterProcessor.peakAmplitude, audioRMeter.meterProcessor.peakAmplitude)
 
-        Layout.fillHeight: true
-        Layout.preferredWidth: width
-        algorithm: root._isMasterTrack ? MeterProcessor.K : MeterProcessor.DigitalPeak
-        audioEngine: root.audioEngine
-        channel: 0
-        port: root.channel.audioOutPort
-        portObservationManager: root.portObservationManager
-      }
+        anchors.fill: parent
+        spacing: 0
 
-      Meter {
-        id: audioRMeter
+        Meter {
+          id: audioLMeter
 
-        Layout.fillHeight: true
-        Layout.preferredWidth: width
-        algorithm: root._isMasterTrack ? MeterProcessor.K : MeterProcessor.DigitalPeak
-        audioEngine: root.audioEngine
-        channel: 1
-        port: root.channel.audioOutPort
-        portObservationManager: root.portObservationManager
+          Layout.fillHeight: true
+          Layout.preferredWidth: width
+          algorithm: root._isMasterTrack ? MeterProcessor.K : MeterProcessor.DigitalPeak
+          audioEngine: root.audioEngine
+          channel: 0
+          port: root.channel.audioOutPort
+          portObservationManager: root.portObservationManager
+        }
+
+        Meter {
+          id: audioRMeter
+
+          Layout.fillHeight: true
+          Layout.preferredWidth: width
+          algorithm: root._isMasterTrack ? MeterProcessor.K : MeterProcessor.DigitalPeak
+          audioEngine: root.audioEngine
+          channel: 1
+          port: root.channel.audioOutPort
+          portObservationManager: root.portObservationManager
+        }
       }
     }
-  }
 
-  Loader {
-    id: midiMetersLoader
+    Loader {
+      id: midiMetersLoader
 
-    Layout.fillHeight: true
-    Layout.fillWidth: false
-    Layout.preferredWidth: 4
-    active: root.channel && root.channel.midiOut
-    visible: active
+      Layout.fillHeight: true
+      Layout.fillWidth: false
+      Layout.preferredWidth: 4
+      active: root.channel && root.channel.midiOut && root.showMidiMeter
+      visible: active
 
-    sourceComponent: Meter {
-      id: midiMeter
+      sourceComponent: Meter {
+        id: midiMeter
 
-      property real currentAmplitude: midiMeter.meterProcessor.currentAmplitude
-      property real currentPeak: midiMeter.meterProcessor.peakAmplitude
+        property real currentAmplitude: midiMeter.meterProcessor.currentAmplitude
+        property real currentPeak: midiMeter.meterProcessor.peakAmplitude
 
-      anchors.fill: parent
-      audioEngine: root.audioEngine
-      port: root.channel.midiOut
-      portObservationManager: root.portObservationManager
+        anchors.fill: parent
+        audioEngine: root.audioEngine
+        port: root.channel.midiOut
+        portObservationManager: root.portObservationManager
+      }
     }
   }
 }

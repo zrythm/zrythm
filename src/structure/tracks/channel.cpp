@@ -16,7 +16,7 @@ ChannelMidiPassthroughProcessor::ChannelMidiPassthroughProcessor (
   QObject *               parent)
     : dsp::MidiPassthroughProcessor (registry, 1, parent)
 {
-  set_name (u8"MIDI PreFader");
+  set_name (u8"MIDI Passthrough");
 }
 
 ChannelAudioPassthroughProcessor::ChannelAudioPassthroughProcessor (
@@ -29,14 +29,16 @@ ChannelAudioPassthroughProcessor::ChannelAudioPassthroughProcessor (
 
 Channel::Channel (
   utils::IObjectRegistry           &registry,
-  dsp::PortType                     signal_type,
+  dsp::PortType                     input_signal_type,
+  dsp::PortType                     output_signal_type,
   NameProvider                      name_provider,
   bool                              hard_limit_fader_output,
   dsp::Fader::ShouldBeMutedCallback should_be_muted_cb,
   QObject *                         parent)
     : QObject (parent), registry_ (registry),
       local_registry_ (utils::make_qobject_unique<utils::ObjectRegistry> (this)),
-      name_provider_ (std::move (name_provider)), signal_type_ (signal_type),
+      name_provider_ (std::move (name_provider)),
+      input_signal_type_ (input_signal_type), signal_type_ (output_signal_type),
       hard_limit_fader_output_ (hard_limit_fader_output),
       midi_fx_ (
         utils::make_qobject_unique<plugins::PluginGroup> (
@@ -67,16 +69,11 @@ Channel::Channel (
           this))
 {
 
-  if (signal_type_ == PortType::Audio)
-    {
-      audio_prefader_ = utils::make_qobject_unique<
-        ChannelAudioPassthroughProcessor> (*local_registry_, this);
-      audio_prefader_->set_name (u8"Audio Pre-Fader");
-      audio_postfader_ = utils::make_qobject_unique<
-        ChannelAudioPassthroughProcessor> (*local_registry_, this);
-      audio_postfader_->set_name (u8"Audio Post-Fader");
-    }
-  else if (signal_type_ == PortType::Midi)
+  // The passthrough processors follow the output signal type. Instrument
+  // channels additionally get a MIDI event tap between their MIDI FX and
+  // instrument, so the post-MIDI-FX stream can be observed without treating
+  // that point as a fader stage.
+  if (signal_type_ == PortType::Midi)
     {
       midi_prefader_ = utils::make_qobject_unique<
         ChannelMidiPassthroughProcessor> (*local_registry_, this);
@@ -84,6 +81,22 @@ Channel::Channel (
       midi_postfader_ = utils::make_qobject_unique<
         ChannelMidiPassthroughProcessor> (*local_registry_, this);
       midi_postfader_->set_name (u8"MIDI Post-Fader");
+    }
+  else if (signal_type_ == PortType::Audio)
+    {
+      audio_prefader_ = utils::make_qobject_unique<
+        ChannelAudioPassthroughProcessor> (*local_registry_, this);
+      audio_prefader_->set_name (u8"Audio Pre-Fader");
+      audio_postfader_ = utils::make_qobject_unique<
+        ChannelAudioPassthroughProcessor> (*local_registry_, this);
+      audio_postfader_->set_name (u8"Audio Post-Fader");
+
+      if (input_signal_type_ == PortType::Midi)
+        {
+          midi_event_tap_ = utils::make_qobject_unique<
+            ChannelMidiPassthroughProcessor> (*local_registry_, this);
+          midi_event_tap_->set_name (u8"MIDI Event Tap");
+        }
     }
 
   /* init sends */

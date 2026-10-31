@@ -695,6 +695,16 @@ lane's On/Touch/Off group) share the chip geometry — 18 px tall, radius
 4, `channelStateTextFont`, flat linked pills — with the selected mode
 taking the accent, since they select a mode rather than latch a state.
 
+### Track event activity indicator
+
+A decorative 4 × 4 dot in an 18 px tall container, placed immediately
+before the channel state buttons on track headers. It lights for
+note-on, note-off, and all-notes-off batches: an accent-derived indicator
+fill (the accent at 3:1 against the page) colors the dot
+immediately, holds for 120 ms, then fades over the standard 200 ms
+animation duration; a new batch relights it and restarts the hold. At
+rest the dot takes the button fill with a 1 px `mid` border.
+
 ### Menus and menu items
 
 Menus and menu items sit on the shared popup surface. Items

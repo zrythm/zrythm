@@ -237,8 +237,8 @@ utils::QObjectUniquePtr<Channel>
 Track::make_channel ()
 {
   return utils::make_qobject_unique<Channel> (
-    base_dependencies_.registry_, out_signal_type_.value (),
-    [&] () { return get_name (); }, is_master (),
+    base_dependencies_.registry_, in_signal_type_.value (),
+    out_signal_type_.value (), [&] () { return get_name (); }, is_master (),
     [this] (bool fader_solo_status) {
       // Effectively muted if other track(s) is soloed and this isn't
       return base_dependencies_.soloed_tracks_exist_getter_ ()

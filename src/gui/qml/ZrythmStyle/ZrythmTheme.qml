@@ -96,6 +96,7 @@ QtObject {
 
   // the error hue at 4.5:1 as resting text
   readonly property color errorTextColor: darkMode ? "#FF6862" : errorColor
+
   readonly property font fadedTextFont: ({
       "family": root.fontFamily,
       "pixelSize": 11,
@@ -280,6 +281,15 @@ QtObject {
   // color fits the sRGB gamut
   function oklchColor(l: real, c: real, h: real): color {
     return ColorMath.oklchColor(l, c, h);
+  }
+
+  // A non-text indicator fill derived from @p source: the source color in
+  // dark mode, or the same OKLCH hue and chroma darkened in light mode until
+  // it reaches 3:1 against the page (DESIGN.md "Colors", non-text elements).
+  function indicatorColor(source: color): color {
+    const [lightness, chroma, hue] = rgbToOklch(source);
+    return ColorMath.oklchColorWithContrast(
+      hue, chroma, lightness, darkMode, pageColor, 3.0, 0.45);
   }
 
   // A palette of @p total colors with hues evenly spread from the

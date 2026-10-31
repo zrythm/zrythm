@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <memory>
+#include <vector>
+
 #include "dsp/midi_activity_provider.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_port.h"
@@ -20,6 +23,8 @@ namespace zrythm::dsp
 {
 
 using graph_test::MockTransport;
+using MidiEventKind = MidiActivityProvider::MidiEventKind;
+using MidiEventKinds = MidiActivityProvider::MidiEventKinds;
 
 class MidiActivityProviderTest : public ::testing::Test
 {
@@ -58,6 +63,19 @@ protected:
   {
     drain_and_update (provider, observer, default_time_nfo ());
     port.buffer_.clear ();
+  }
+
+  std::shared_ptr<std::vector<MidiActivityProvider::MidiEventKinds>>
+  record_event_batches (MidiActivityProvider &provider)
+  {
+    auto batches =
+      std::make_shared<std::vector<MidiActivityProvider::MidiEventKinds>> ();
+    QObject::connect (
+      &provider, &MidiActivityProvider::midiEventsReceived, &provider,
+      [batches] (MidiActivityProvider::MidiEventKinds kinds) {
+        batches->push_back (kinds);
+      });
+    return batches;
   }
 };
 
@@ -327,6 +345,268 @@ TEST_F (MidiActivityProviderTest, AllNotesOffClearsAll)
   EXPECT_FALSE (provider.isNoteActive (72));
   for (int i = 0; i < 128; ++i)
     EXPECT_FALSE (provider.isNoteActive (i));
+}
+
+TEST_F (MidiActivityProviderTest, NoteOnAndOffEachEmitClassifiedKinds)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  auto batches = record_event_batches (provider);
+
+  push_note_on (*port, 0, 60);
+  push_and_drain (*port, provider, observer);
+  ASSERT_EQ (batches->size (), 1);
+  EXPECT_EQ (batches->front (), MidiEventKind::NoteOn);
+
+  push_note_off (*port, 0, 60);
+  push_and_drain (*port, provider, observer);
+  ASSERT_EQ (batches->size (), 2);
+  EXPECT_EQ (batches->back (), MidiEventKind::NoteOff);
+}
+
+TEST_F (MidiActivityProviderTest, NoteOffWithoutNoteOnEmitsNoteOff)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  auto batches = record_event_batches (provider);
+
+  push_note_off (*port, 0, 60);
+  push_and_drain (*port, provider, observer);
+  ASSERT_EQ (batches->size (), 1);
+  EXPECT_EQ (batches->front (), MidiEventKind::NoteOff);
+}
+
+TEST_F (MidiActivityProviderTest, VelocityZeroNoteOnIsClassifiedAsNoteOff)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  auto batches = record_event_batches (provider);
+
+  const std::array<midi_byte_t, 3> note_on_vel0{
+    static_cast<midi_byte_t> (utils::midi::MIDI_CH1_NOTE_ON), 64, 0
+  };
+  port->buffer_.push_back (units::samples (0), note_on_vel0);
+  push_and_drain (*port, provider, observer);
+  ASSERT_EQ (batches->size (), 1);
+  EXPECT_EQ (batches->front (), MidiEventKind::NoteOff);
+  EXPECT_FALSE (provider.isNoteActive (64));
+}
+
+TEST_F (MidiActivityProviderTest, MixedNoteBatchEmitsUnionOnce)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  auto batches = record_event_batches (provider);
+
+  push_note_on (*port, 0, 60);
+  push_note_on (*port, 0, 64);
+  push_note_off (*port, 0, 60);
+  push_and_drain (*port, provider, observer);
+  ASSERT_EQ (batches->size (), 1);
+  EXPECT_EQ (batches->front (), MidiEventKind::NoteOn | MidiEventKind::NoteOff);
+
+  push_note_on (*port, 0, 67);
+  push_and_drain (*port, provider, observer);
+  ASSERT_EQ (batches->size (), 2);
+  EXPECT_EQ (batches->back (), MidiEventKind::NoteOn);
+}
+
+TEST_F (MidiActivityProviderTest, SameTimestampNoteOffAndRetriggerEmitUnionOnce)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  push_note_on (*port, 0, 60);
+  push_and_drain (*port, provider, observer);
+
+  auto batches = record_event_batches (provider);
+
+  push_note_off (*port, 0, 60);
+  push_note_on (*port, 0, 60);
+  push_and_drain (*port, provider, observer);
+  ASSERT_EQ (batches->size (), 1);
+  EXPECT_EQ (batches->front (), MidiEventKind::NoteOn | MidiEventKind::NoteOff);
+  EXPECT_TRUE (provider.isNoteActive (60));
+}
+
+TEST_F (MidiActivityProviderTest, NonNoteMessagesEmitTheirKinds)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  auto batches = record_event_batches (provider);
+
+  push_cc (*port, 0, 1, 64);
+  const std::array<midi_byte_t, 3> pitch_bend{
+    static_cast<midi_byte_t> (0xE0), 0, 64
+  };
+  port->buffer_.push_back (units::samples (0), pitch_bend);
+  const std::array<midi_byte_t, 2> program_change{
+    static_cast<midi_byte_t> (0xC0), 5
+  };
+  port->buffer_.push_back (units::samples (0), program_change);
+  push_and_drain (*port, provider, observer);
+
+  ASSERT_EQ (batches->size (), 1);
+  EXPECT_EQ (
+    batches->front (),
+    MidiEventKind::ControlChange | MidiEventKind::PitchBend
+      | MidiEventKind::ProgramChange);
+  EXPECT_TRUE (provider.hasActivity ());
+}
+
+TEST_F (MidiActivityProviderTest, PressureAndSystemMessagesEmitTheirKinds)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  auto batches = record_event_batches (provider);
+
+  const std::array<midi_byte_t, 3> poly_aftertouch{
+    static_cast<midi_byte_t> (0xA0), 60, 40
+  };
+  port->buffer_.push_back (units::samples (0), poly_aftertouch);
+  const std::array<midi_byte_t, 2> channel_pressure{
+    static_cast<midi_byte_t> (0xD0), 40
+  };
+  port->buffer_.push_back (units::samples (0), channel_pressure);
+  const std::array<midi_byte_t, 1> timing_clock{
+    static_cast<midi_byte_t> (0xF8)
+  };
+  port->buffer_.push_back (units::samples (0), timing_clock);
+  push_and_drain (*port, provider, observer);
+
+  ASSERT_EQ (batches->size (), 1);
+  EXPECT_EQ (
+    batches->front (),
+    MidiEventKind::PolyAftertouch | MidiEventKind::ChannelPressure
+      | MidiEventKind::Other);
+}
+
+TEST_F (MidiActivityProviderTest, AllNotesOffEmitsAllNotesOffKind)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  push_note_on (*port, 0, 60);
+  push_and_drain (*port, provider, observer);
+
+  auto batches = record_event_batches (provider);
+  EXPECT_TRUE (batches->empty ());
+
+  push_all_notes_off (*port, 0);
+  push_and_drain (*port, provider, observer);
+  ASSERT_EQ (batches->size (), 1);
+  EXPECT_EQ (batches->front (), MidiEventKind::AllNotesOff);
+  EXPECT_FALSE (provider.isNoteActive (60));
+}
+
+TEST_F (MidiActivityProviderTest, EmptyBatchDoesNotEmitEvents)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  MidiActivityProvider provider;
+  provider.setPort (port);
+  provider.setPortObservationManager (&manager_);
+
+  auto * observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  push_note_on (*port, 0, 60);
+  push_and_drain (*port, provider, observer);
+
+  auto batches = record_event_batches (provider);
+
+  drain_and_update (provider, observer, default_time_nfo ());
+  EXPECT_TRUE (batches->empty ());
 }
 
 }

@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "structure/tracks/channel.h"
 #include "structure/tracks/track_factory.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
@@ -395,6 +396,39 @@ TEST_F (TrackFactoryTest, RecordingParamIsNotAutomatable)
   auto * param = audio_track->recordingParam ();
   ASSERT_NE (param, nullptr);
   EXPECT_FALSE (param->automatable ());
+}
+
+// Test that track channels match their track's input/output signal types
+TEST_F (TrackFactoryTest, ChannelSignalTypesMatchTrackTypes)
+{
+  auto   instrument_track_ref = factory->create_empty_track<InstrumentTrack> ();
+  auto * instrument_track =
+    instrument_track_ref.get_object_as<InstrumentTrack> ();
+  ASSERT_NE (instrument_track, nullptr);
+  auto * instrument_channel = instrument_track->channel ();
+  ASSERT_NE (instrument_channel, nullptr);
+  EXPECT_TRUE (instrument_channel->has_midi_input ());
+  EXPECT_FALSE (instrument_channel->has_midi_pre_fader ());
+  EXPECT_TRUE (instrument_channel->has_midi_event_tap ());
+  EXPECT_TRUE (instrument_channel->is_audio ());
+  EXPECT_EQ (instrument_channel->getMidiOut (), nullptr);
+  EXPECT_NE (instrument_channel->postMidiFxPort (), nullptr);
+
+  auto   midi_track_ref = factory->create_empty_track<MidiTrack> ();
+  auto * midi_track = midi_track_ref.get_object_as<MidiTrack> ();
+  ASSERT_NE (midi_track, nullptr);
+  auto * midi_channel = midi_track->channel ();
+  ASSERT_NE (midi_channel, nullptr);
+  EXPECT_TRUE (midi_channel->has_midi_input ());
+  EXPECT_NE (midi_channel->postMidiFxPort (), nullptr);
+
+  auto   audio_track_ref = factory->create_empty_track<AudioTrack> ();
+  auto * audio_track = audio_track_ref.get_object_as<AudioTrack> ();
+  ASSERT_NE (audio_track, nullptr);
+  auto * audio_channel = audio_track->channel ();
+  ASSERT_NE (audio_channel, nullptr);
+  EXPECT_FALSE (audio_channel->has_midi_input ());
+  EXPECT_EQ (audio_channel->postMidiFxPort (), nullptr);
 }
 
 } // namespace zrythm::structure::tracks

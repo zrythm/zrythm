@@ -3,9 +3,12 @@
 
 #include "dsp/fader.h"
 #include "dsp/graph.h"
+#include "dsp/midi_event.h"
+#include "dsp/midi_port.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
 #include "plugins/faust/faust_plugin.h"
+#include "plugins/internal_plugin_base.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_group.h"
 #include "structure/tracks/channel.h"
@@ -18,6 +21,7 @@
 #include <QObject>
 
 #include "../../dsp/graph_helpers.h"
+#include "channel_subgraph_builder_test.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -46,6 +50,49 @@ public:
   MOCK_METHOD (void, custom_release_resources, (), (override));
 };
 
+// Track processor double whose MIDI output carries a fixed note every block.
+class NoteSourceTrackProcessor : public dsp::ProcessorBase
+{
+public:
+  NoteSourceTrackProcessor (utils::IObjectRegistry &registry, midi_byte_t pitch)
+      : dsp::ProcessorBase (registry, u8"NoteSourceTrackProcessor"), pitch_ (pitch)
+  {
+    add_output_port (
+      utils::create_object<dsp::MidiPort> (
+        registry, u8"Track MIDI Out", dsp::PortFlow::Output));
+  }
+
+  void custom_process_block (
+    dsp::graph::ProcessBlockInfo,
+    const dsp::ITransport &,
+    const dsp::TempoMap &) noexcept override
+  {
+    auto &out_port =
+      *get_all_output_ports ().front ().get_object_as<dsp::MidiPort> ();
+    const auto ev =
+      dsp::midi_event::make_note_on (0, pitch_, 100, units::samples (0));
+    out_port.buffer_.push_back (ev.time_, ev.data ());
+  }
+
+private:
+  midi_byte_t pitch_;
+};
+
+std::vector<int>
+pitches_on (const dsp::MidiPort &port)
+{
+  std::vector<int> pitches;
+  for (const auto &view : port.buffer_)
+    {
+      const auto bytes = view.data ();
+      if (bytes.size () >= 2)
+        {
+          pitches.push_back (bytes[1]);
+        }
+    }
+  return pitches;
+}
+
 class ChannelSubgraphBuilderTest : public ::testing::Test
 {
 protected:
@@ -55,6 +102,9 @@ protected:
 
     name_provider_ = [] { return u8"Test Channel"; };
     should_be_muted_cb_ = [] (bool solo_status) { return false; };
+
+    mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
   }
 
   void TearDown () override
@@ -67,20 +117,31 @@ protected:
       {
         midi_channel_->get_fader ().release_resources ();
       }
+    if (instrument_channel_)
+      {
+        instrument_channel_->get_fader ().release_resources ();
+      }
   }
 
   std::unique_ptr<Channel> createAudioChannel ()
   {
     return std::make_unique<Channel> (
-      *registry_, dsp::PortType::Audio, name_provider_, false,
-      should_be_muted_cb_);
+      *registry_, dsp::PortType::Audio, dsp::PortType::Audio, name_provider_,
+      false, should_be_muted_cb_);
   }
 
   std::unique_ptr<Channel> createMidiChannel ()
   {
     return std::make_unique<Channel> (
-      *registry_, dsp::PortType::Midi, name_provider_, false,
-      should_be_muted_cb_);
+      *registry_, dsp::PortType::Midi, dsp::PortType::Midi, name_provider_,
+      false, should_be_muted_cb_);
+  }
+
+  std::unique_ptr<Channel> createInstrumentChannel ()
+  {
+    return std::make_unique<Channel> (
+      *registry_, dsp::PortType::Midi, dsp::PortType::Audio, name_provider_,
+      false, should_be_muted_cb_);
   }
 
   plugins::PluginUuidReference createMockPlugin (
@@ -112,7 +173,7 @@ protected:
           {
             pl->add_input_port (createMockPort (
               dsp::PortType::Audio,
-              utils::Utf8String ::from_utf8_encoded_string (
+              utils::Utf8String::from_utf8_encoded_string (
                 fmt::format ("Audio In {}", i + 1)),
               dsp::PortFlow::Input));
           }
@@ -123,7 +184,7 @@ protected:
           {
             pl->add_output_port (createMockPort (
               dsp::PortType::Audio,
-              utils::Utf8String ::from_utf8_encoded_string (
+              utils::Utf8String::from_utf8_encoded_string (
                 fmt::format ("Audio Out {}", i + 1)),
               dsp::PortFlow::Output));
           }
@@ -160,15 +221,18 @@ protected:
     throw std::runtime_error ("Unsupported port type");
   }
 
-  std::unique_ptr<utils::ObjectRegistry> registry_;
-  Channel::NameProvider                  name_provider_;
-  dsp::Fader::ShouldBeMutedCallback      should_be_muted_cb_;
-  dsp::graph::Graph                      graph_;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  Channel::NameProvider                           name_provider_;
+  dsp::Fader::ShouldBeMutedCallback               should_be_muted_cb_;
+  dsp::graph::Graph                               graph_;
+  std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map_;
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
   units::sample_u32_t  max_block_length_{ units::samples (1024u) };
 
   std::unique_ptr<Channel> audio_channel_;
   std::unique_ptr<Channel> midi_channel_;
+  std::unique_ptr<Channel> instrument_channel_;
 
   // Helper functions for connection verification
   dsp::graph::GraphNode *
@@ -226,9 +290,9 @@ protected:
     return processor.get_all_output_ports ().front ();
   }
 
-  void addTrackProcessorToGraph (
-    MockTrackProcessor &track_processor,
-    bool                connect = true)
+  template <typename TrackProcessorT>
+  void
+  addTrackProcessorToGraph (TrackProcessorT &track_processor, bool connect = true)
   {
     auto track_processor_node =
       graph_.add_node_for_processable (track_processor);
@@ -240,6 +304,56 @@ protected:
           {
             track_processor_node->connect_to (*node);
           }
+      }
+  }
+
+  // Prepares all nodes and processes one block in topological order,
+  // mirroring what the graph scheduler does per cycle.
+  void process_graph_once (dsp::graph::Graph &graph)
+  {
+    graph.finalize_nodes ();
+    ASSERT_TRUE (graph.is_valid ());
+    for (auto &node : graph.get_nodes ().graph_nodes_)
+      {
+        node->get_processable ().prepare_for_processing (
+          node.get (), sample_rate_, max_block_length_);
+      }
+    graph.get_nodes ().update_latencies ();
+
+    std::vector<dsp::graph::GraphNode *> ready;
+    for (auto &node : graph.get_nodes ().graph_nodes_)
+      {
+        if (node->init_refcount_ == 0)
+          {
+            ready.push_back (node.get ());
+          }
+      }
+    while (!ready.empty ())
+      {
+        auto * node = ready.back ();
+        ready.pop_back ();
+        node->process (
+          dsp::graph::ProcessBlockInfo{
+            .transport_position_ = units::samples (0),
+            .buffer_offset_ = units::samples (0),
+            .nframes_ = max_block_length_ },
+          units::samples (0), *mock_transport_, *tempo_map_);
+        for (auto &child : node->feeds ())
+          {
+            if (--child.get ().init_refcount_ == 0)
+              {
+                ready.push_back (&child.get ());
+              }
+          }
+      }
+  }
+
+  // Releases the resources allocated by process_graph_once().
+  void release_graph_resources (dsp::graph::Graph &graph)
+  {
+    for (auto &node : graph.get_nodes ().graph_nodes_)
+      {
+        node->get_processable ().release_resources ();
       }
   }
 
@@ -1060,6 +1174,256 @@ TEST_F (ChannelSubgraphBuilderTest, SidechainOnlyFirstPluginGetsNoAudioConnectio
   EXPECT_FALSE (hasConnection (track_out_port, sidechain_in_port));
   // with no port connection made, the plugin still gets a scheduling edge
   EXPECT_TRUE (hasConnection (track_out_port, *pl));
+}
+
+TEST_F (ChannelSubgraphBuilderTest, InstrumentChannelRoutesMidiThroughEventTap)
+{
+  instrument_channel_ = createInstrumentChannel ();
+  ASSERT_NE (instrument_channel_, nullptr);
+
+  auto midi_fx_ref = createMockPlugin (
+    dsp::PortType::Midi, dsp::PortType::Midi, 0, 0, true, true);
+  auto instrument_ref = createMockPlugin (
+    dsp::PortType::Midi, dsp::PortType::Audio, 0, 2, true, false);
+  instrument_channel_->midiFx ()->append_plugin (midi_fx_ref);
+  instrument_channel_->instruments ()->append_plugin (instrument_ref);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  EXPECT_NO_THROW ({
+    ChannelSubgraphBuilder::add_connections (
+      graph_, *instrument_channel_, track_output);
+  });
+
+  std::vector<plugins::PluginUuidReference> plugin_refs;
+  instrument_channel_->get_plugins (plugin_refs);
+  ASSERT_EQ (plugin_refs.size (), 2);
+  auto * midi_fx = plugin_refs[0].get ();
+  auto * instrument = plugin_refs[1].get ();
+
+  // track processor -> MIDI FX -> MIDI event tap -> instrument -> audio
+  // pre-fader -> fader -> audio post-fader
+  verifyProcessorsConnected (*track_processor, *midi_fx);
+  verifyProcessorsConnected (
+    *midi_fx, instrument_channel_->get_midi_event_tap ());
+  verifyProcessorsConnected (
+    instrument_channel_->get_midi_event_tap (), *instrument);
+  verifyProcessorsConnected (
+    *instrument, instrument_channel_->get_audio_pre_fader ());
+  verifyProcessorsConnected (
+    instrument_channel_->get_audio_pre_fader (),
+    instrument_channel_->get_fader ());
+  verifyProcessorsConnected (
+    instrument_channel_->get_fader (),
+    instrument_channel_->get_audio_post_fader ());
+}
+
+TEST_F (
+  ChannelSubgraphBuilderTest,
+  InstrumentChannelWithoutMidiFxRoutesThroughEventTap)
+{
+  instrument_channel_ = createInstrumentChannel ();
+  ASSERT_NE (instrument_channel_, nullptr);
+
+  auto instrument_ref = createMockPlugin (
+    dsp::PortType::Midi, dsp::PortType::Audio, 0, 2, true, false);
+  instrument_channel_->instruments ()->append_plugin (instrument_ref);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  EXPECT_NO_THROW ({
+    ChannelSubgraphBuilder::add_connections (
+      graph_, *instrument_channel_, track_output);
+  });
+
+  verifyProcessorsConnected (
+    *track_processor, instrument_channel_->get_midi_event_tap ());
+  verifyProcessorsConnected (
+    instrument_channel_->get_midi_event_tap (), *instrument_ref.get ());
+  verifyProcessorsConnected (
+    *instrument_ref.get (), instrument_channel_->get_audio_pre_fader ());
+}
+
+TEST_F (ChannelSubgraphBuilderTest, InstrumentChannelWithOnlyMidiFxFeedsEventTap)
+{
+  instrument_channel_ = createInstrumentChannel ();
+  ASSERT_NE (instrument_channel_, nullptr);
+
+  auto midi_fx_ref = createMockPlugin (
+    dsp::PortType::Midi, dsp::PortType::Midi, 0, 0, true, true);
+  instrument_channel_->midiFx ()->append_plugin (midi_fx_ref);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  EXPECT_NO_THROW ({
+    ChannelSubgraphBuilder::add_connections (
+      graph_, *instrument_channel_, track_output);
+  });
+
+  verifyProcessorsConnected (*track_processor, *midi_fx_ref.get ());
+  verifyProcessorsConnected (
+    *midi_fx_ref.get (), instrument_channel_->get_midi_event_tap ());
+}
+
+TEST_F (
+  ChannelSubgraphBuilderTest,
+  InstrumentChannelWithoutPluginsFeedsEventTapFromProcessor)
+{
+  instrument_channel_ = createInstrumentChannel ();
+  ASSERT_NE (instrument_channel_, nullptr);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  EXPECT_NO_THROW ({
+    ChannelSubgraphBuilder::add_connections (
+      graph_, *instrument_channel_, track_output);
+  });
+
+  verifyProcessorsConnected (
+    *track_processor, instrument_channel_->get_midi_event_tap ());
+}
+
+TEST_F (ChannelSubgraphBuilderTest, PostMidiFxPortStableAcrossGraphRebuilds)
+{
+  instrument_channel_ = createInstrumentChannel ();
+  ASSERT_NE (instrument_channel_, nullptr);
+
+  const auto * tap = instrument_channel_->postMidiFxPort ();
+  ASSERT_NE (tap, nullptr);
+
+  {
+    auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
+    auto track_output = getProcessorOutputPort (*track_processor);
+    addTrackProcessorToGraph (*track_processor);
+    ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
+    ChannelSubgraphBuilder::add_connections (
+      graph_, *instrument_channel_, track_output);
+    EXPECT_NE (graph_.get_nodes ().find_node_for_processable (*tap), nullptr);
+  }
+
+  // A graph rebuild re-adds nodes and connections without touching the
+  // channel-owned port.
+  dsp::graph::Graph second_graph;
+  {
+    auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
+    auto track_output = getProcessorOutputPort (*track_processor);
+    auto track_processor_node =
+      second_graph.add_node_for_processable (*track_processor);
+    for (const auto &port_ref : track_processor->get_all_output_ports ())
+      {
+        auto * node = second_graph.add_node_for_processable (*port_ref.get ());
+        track_processor_node->connect_to (*node);
+      }
+    ChannelSubgraphBuilder::add_nodes (second_graph, *instrument_channel_);
+    ChannelSubgraphBuilder::add_connections (
+      second_graph, *instrument_channel_, track_output);
+    EXPECT_NE (
+      second_graph.get_nodes ().find_node_for_processable (*tap), nullptr);
+  }
+
+  EXPECT_EQ (instrument_channel_->postMidiFxPort (), tap);
+}
+
+TEST_F (ChannelSubgraphBuilderTest, PostMidiFxPortCarriesSourceAndGeneratedNotes)
+{
+  instrument_channel_ = createInstrumentChannel ();
+  ASSERT_NE (instrument_channel_, nullptr);
+
+  auto generator_ref = utils::create_object<NoteGeneratorPlugin> (
+    *registry_, *registry_, midi_byte_t{ 96 });
+  instrument_channel_->midiFx ()->append_plugin (generator_ref);
+  auto instrument_ref =
+    utils::create_object<InstrumentSinkPlugin> (*registry_, *registry_);
+  instrument_channel_->instruments ()->append_plugin (instrument_ref);
+
+  NoteSourceTrackProcessor track_processor (*registry_, 60);
+  auto track_output = getProcessorOutputPort (track_processor);
+  addTrackProcessorToGraph (track_processor);
+  ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
+  ChannelSubgraphBuilder::add_connections (
+    graph_, *instrument_channel_, track_output);
+
+  process_graph_once (graph_);
+
+  const auto * tap = instrument_channel_->postMidiFxPort ();
+  ASSERT_NE (tap, nullptr);
+  EXPECT_THAT (pitches_on (*tap), ::testing::UnorderedElementsAre (60, 96));
+
+  release_graph_resources (graph_);
+}
+
+TEST_F (
+  ChannelSubgraphBuilderTest,
+  BypassedMidiFxDropsGeneratedNotesFromPostMidiFxPort)
+{
+  instrument_channel_ = createInstrumentChannel ();
+  ASSERT_NE (instrument_channel_, nullptr);
+
+  auto generator_ref = utils::create_object<NoteGeneratorPlugin> (
+    *registry_, *registry_, midi_byte_t{ 96 });
+  instrument_channel_->midiFx ()->append_plugin (generator_ref);
+
+  NoteSourceTrackProcessor track_processor (*registry_, 60);
+  auto track_output = getProcessorOutputPort (track_processor);
+  addTrackProcessorToGraph (track_processor);
+  ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
+  ChannelSubgraphBuilder::add_connections (
+    graph_, *instrument_channel_, track_output);
+
+  generator_ref.get_object_as<NoteGeneratorPlugin> ()->setBypassed (true);
+
+  process_graph_once (graph_);
+
+  const auto * tap = instrument_channel_->postMidiFxPort ();
+  ASSERT_NE (tap, nullptr);
+  // bypass passes the source note through without the generated one
+  EXPECT_THAT (pitches_on (*tap), ::testing::ElementsAre (60));
+
+  release_graph_resources (graph_);
+}
+
+TEST_F (ChannelSubgraphBuilderTest, MutedChannelKeepsEventsOnPostMidiFxPort)
+{
+  // channel-muted fader: the event tap sits before the fader/mute stage
+  instrument_channel_ = std::make_unique<Channel> (
+    *registry_, dsp::PortType::Midi, dsp::PortType::Audio, name_provider_,
+    false, [] (bool) { return true; });
+  ASSERT_NE (instrument_channel_, nullptr);
+
+  auto generator_ref = utils::create_object<NoteGeneratorPlugin> (
+    *registry_, *registry_, midi_byte_t{ 96 });
+  instrument_channel_->midiFx ()->append_plugin (generator_ref);
+
+  NoteSourceTrackProcessor track_processor (*registry_, 60);
+  auto track_output = getProcessorOutputPort (track_processor);
+  addTrackProcessorToGraph (track_processor);
+  ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
+  ChannelSubgraphBuilder::add_connections (
+    graph_, *instrument_channel_, track_output);
+
+  process_graph_once (graph_);
+
+  const auto * tap = instrument_channel_->postMidiFxPort ();
+  ASSERT_NE (tap, nullptr);
+  EXPECT_THAT (pitches_on (*tap), ::testing::UnorderedElementsAre (60, 96));
+
+  release_graph_resources (graph_);
 }
 
 } // namespace zrythm::structure::tracks

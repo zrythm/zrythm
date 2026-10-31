@@ -37,6 +37,7 @@ target_sources(zrythm_gui_lib
       tempo_curve_canvas_renderer.h
       timeline_position_tracker.h
       track_colors.h
+      track_event_activity_provider.h
       waveform_canvas_item.h
       waveform_canvas_renderer.h
   PRIVATE
@@ -69,6 +70,7 @@ target_sources(zrythm_gui_lib
     tempo_curve_canvas_item.cpp
     tempo_curve_canvas_renderer.cpp
     timeline_position_tracker.cpp
+    track_event_activity_provider.cpp
     waveform_canvas_item.cpp
     waveform_canvas_renderer.cpp
 )

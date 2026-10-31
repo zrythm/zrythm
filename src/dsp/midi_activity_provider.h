@@ -17,8 +17,8 @@ namespace zrythm::dsp
  * @brief Tracks note activity and general MIDI activity on an observed port.
  *
  * Observes a MidiPort via the PortObservationManager infrastructure. A 60fps
- * timer drains MIDI events from the observation cache and updates two kinds of
- * state exposed to QML:
+ * timer drains MIDI events from the observation cache and exposes three kinds
+ * of information to QML:
  *
  * 1. **Note activity** — per-pitch tracking using a reference counter that
  *    correctly handles overlapping note-ons on the same pitch (from different
@@ -29,11 +29,21 @@ namespace zrythm::dsp
  *    any MIDI events (notes, CC, program change, etc.) are received, and false
  *    when the cache is empty. Useful for activity indicators.
  *
+ * 3. **Event batches** — midiEventsReceived() is emitted once per non-empty
+ *    batch with a bitfield of the MIDI event kinds it contained, so consumers
+ *    can react only to the kinds they care about.
+ *
  * Typical QML usage:
  * @code
  * MidiActivityProvider {
  *     port: track.trackProcessorMidiOut
  *     portObservationManager: session.project.portObservationManager
+ *     onMidiEventsReceived: (kinds) => {
+ *         if (kinds & (MidiActivityProvider.NoteOn
+ *                      | MidiActivityProvider.NoteOff
+ *                      | MidiActivityProvider.AllNotesOff))
+ *             indicator.pulse()
+ *     }
  * }
  * @endcode
  *
@@ -56,6 +66,29 @@ class MidiActivityProvider : public QObject
   Q_PROPERTY (bool hasActivity READ hasActivity NOTIFY activityChanged)
 
 public:
+  /**
+   * @brief MIDI message categories reported in event batches.
+   *
+   * A velocity-zero note-on is classified as NoteOff. All-notes-off is
+   * reported as AllNotesOff rather than ControlChange. Messages that do not
+   * match a more specific category (including system messages) are reported
+   * as Other.
+   */
+  enum class MidiEventKind : int
+  {
+    NoteOn = 1 << 0,
+    NoteOff = 1 << 1,
+    ControlChange = 1 << 2,
+    ProgramChange = 1 << 3,
+    ChannelPressure = 1 << 4,
+    PolyAftertouch = 1 << 5,
+    PitchBend = 1 << 6,
+    AllNotesOff = 1 << 7,
+    Other = 1 << 8,
+  };
+  Q_DECLARE_FLAGS (MidiEventKinds, MidiEventKind)
+  Q_FLAG (MidiEventKinds)
+
   explicit MidiActivityProvider (QObject * parent = nullptr);
   ~MidiActivityProvider () override;
 
@@ -88,6 +121,15 @@ public:
   Q_SIGNAL void activeNotesChanged ();
 
   /**
+   * @brief Emitted when at least one MIDI message was received in the last
+   * update cycle.
+   *
+   * Emitted once per non-empty batch with the union of the event kinds it
+   * contained, regardless of how many messages of each kind it has.
+   */
+  Q_SIGNAL void midiEventsReceived (MidiEventKinds kinds);
+
+  /**
    * @brief Drains pending events from the observation cache and updates state.
    *
    * Called automatically by the internal 60fps timer. Can also be called
@@ -96,11 +138,14 @@ public:
   void update ();
 
 private:
-  void reset_state ();
-  void try_create_token ();
-  void process_midi_events ();
+  void           reset_state ();
+  void           try_create_token ();
+  MidiEventKinds process_midi_events ();
 
   struct Impl;
   std::unique_ptr<Impl> impl_;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS (MidiActivityProvider::MidiEventKinds)
+
 }

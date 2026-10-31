@@ -288,6 +288,7 @@ set(rel_qml_file_paths
   components/ColorPickerPopover.qml
   components/DspLoadIndicator.qml
   components/EditableSlider.qml
+  components/EventActivityIndicator.qml
   components/FaderButtons.qml
   components/FaderControl.qml
   components/FileBrowserPage.qml

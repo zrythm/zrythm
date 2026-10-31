@@ -16,6 +16,45 @@
 namespace zrythm::dsp
 {
 
+namespace
+{
+
+MidiActivityProvider::MidiEventKind
+classify_midi_event (std::span<const midi_byte_t> data)
+{
+  using MidiEventKind = MidiActivityProvider::MidiEventKind;
+
+  if (data.empty ())
+    return MidiEventKind::Other;
+
+  const int expected_length = utils::midi::midi_get_msg_length (data[0]);
+  if (
+    expected_length < 0 || data.size () < static_cast<size_t> (expected_length))
+    return MidiEventKind::Other;
+
+  if (utils::midi::midi_is_note_on (data))
+    return MidiEventKind::NoteOn;
+  if (utils::midi::midi_is_note_off (data))
+    return MidiEventKind::NoteOff;
+  if (utils::midi::midi_is_controller (data))
+    {
+      if (utils::midi::midi_is_all_notes_off (data))
+        return MidiEventKind::AllNotesOff;
+      return MidiEventKind::ControlChange;
+    }
+  if (utils::midi::midi_is_program_change (data))
+    return MidiEventKind::ProgramChange;
+  if (utils::midi::midi_is_channel_pressure (data))
+    return MidiEventKind::ChannelPressure;
+  if (utils::midi::midi_is_aftertouch (data))
+    return MidiEventKind::PolyAftertouch;
+  if (utils::midi::midi_is_pitch_wheel (data))
+    return MidiEventKind::PitchBend;
+  return MidiEventKind::Other;
+}
+
+} // namespace
+
 struct MidiActivityProvider::Impl
 {
   QPointer<dsp::Port>                   port_;
@@ -106,9 +145,24 @@ MidiActivityProvider::setPortObservationManager (
   if (impl_->manager_ == manager)
     return;
 
+  if (impl_->manager_ != nullptr)
+    {
+      QObject::disconnect (impl_->manager_, nullptr, this, nullptr);
+    }
+
   reset_state ();
   impl_->manager_ = manager;
-  try_create_token ();
+  if (impl_->manager_ != nullptr)
+    {
+      QObject::connect (impl_->manager_, &QObject::destroyed, this, [this] () {
+        /* QPointer instances are cleared before destroyed() runs, so
+         * reset_state() drops the token without touching the manager. */
+        reset_state ();
+        impl_->manager_.clear ();
+        Q_EMIT portObservationManagerChanged ();
+      });
+      try_create_token ();
+    }
 
   Q_EMIT portObservationManagerChanged ();
 }
@@ -131,7 +185,7 @@ void
 MidiActivityProvider::update ()
 {
   impl_->has_activity_ = false;
-  process_midi_events ();
+  const auto received_kinds = process_midi_events ();
 
   if (impl_->active_notes_ != impl_->prev_active_notes_)
     {
@@ -143,6 +197,11 @@ MidiActivityProvider::update ()
     {
       impl_->prev_has_activity_ = impl_->has_activity_;
       Q_EMIT activityChanged ();
+    }
+
+  if (received_kinds != MidiEventKinds{})
+    {
+      Q_EMIT midiEventsReceived (received_kinds);
     }
 }
 
@@ -164,52 +223,63 @@ MidiActivityProvider::try_create_token ()
   impl_->timer_->start ();
 }
 
-void
+MidiActivityProvider::MidiEventKinds
 MidiActivityProvider::process_midi_events ()
 {
   if (!impl_->token_ || impl_->manager_ == nullptr)
-    return;
+    return {};
 
   auto &cache = impl_->token_->cache ();
   if (cache.midi.empty ())
-    return;
+    return {};
 
   impl_->has_activity_ = true;
+
+  MidiEventKinds received_kinds;
 
   dsp::midi_event::sort_with_note_off_priority (cache.midi);
   for (const auto &event : cache.midi)
     {
-      auto data = event.data ();
-      if (data.size () < 3)
-        continue;
+      auto       data = event.data ();
+      const auto kind = classify_midi_event (data);
+      received_kinds |= kind;
 
-      if (utils::midi::midi_is_note_on (data))
+      switch (kind)
         {
-          auto pitch = utils::midi::midi_get_note_number (data);
-          if (pitch < 128)
-            {
-              ++impl_->pitch_counts_[pitch];
-              impl_->active_notes_.set (pitch);
-            }
-        }
-      else if (utils::midi::midi_is_note_off (data))
-        {
-          auto pitch = utils::midi::midi_get_note_number (data);
-          if (pitch < 128 && impl_->pitch_counts_[pitch] > 0)
-            {
-              --impl_->pitch_counts_[pitch];
-              if (impl_->pitch_counts_[pitch] == 0)
-                impl_->active_notes_.reset (pitch);
-            }
-        }
-      else if (utils::midi::midi_is_all_notes_off (data))
-        {
-          impl_->pitch_counts_.fill (0);
-          impl_->active_notes_.reset ();
+        case MidiEventKind::NoteOn:
+          {
+            auto pitch = utils::midi::midi_get_note_number (data);
+            if (pitch < 128)
+              {
+                ++impl_->pitch_counts_[pitch];
+                impl_->active_notes_.set (pitch);
+              }
+            break;
+          }
+        case MidiEventKind::NoteOff:
+          {
+            auto pitch = utils::midi::midi_get_note_number (data);
+            if (pitch < 128 && impl_->pitch_counts_[pitch] > 0)
+              {
+                --impl_->pitch_counts_[pitch];
+                if (impl_->pitch_counts_[pitch] == 0)
+                  impl_->active_notes_.reset (pitch);
+              }
+            break;
+          }
+        case MidiEventKind::AllNotesOff:
+          {
+            impl_->pitch_counts_.fill (0);
+            impl_->active_notes_.reset ();
+            break;
+          }
+        default:
+          break;
         }
     }
 
   cache.clear_midi ();
+  return received_kinds;
 }
 
 }

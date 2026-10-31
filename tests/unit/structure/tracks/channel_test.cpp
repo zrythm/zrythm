@@ -51,15 +51,22 @@ protected:
   std::unique_ptr<Channel> createAudioChannel ()
   {
     return std::make_unique<Channel> (
-      *registry_, dsp::PortType::Audio, name_provider_, false,
-      should_be_muted_cb_);
+      *registry_, dsp::PortType::Audio, dsp::PortType::Audio, name_provider_,
+      false, should_be_muted_cb_);
   }
 
   std::unique_ptr<Channel> createMidiChannel ()
   {
     return std::make_unique<Channel> (
-      *registry_, dsp::PortType::Midi, name_provider_, false,
-      should_be_muted_cb_);
+      *registry_, dsp::PortType::Midi, dsp::PortType::Midi, name_provider_,
+      false, should_be_muted_cb_);
+  }
+
+  std::unique_ptr<Channel> createInstrumentChannel ()
+  {
+    return std::make_unique<Channel> (
+      *registry_, dsp::PortType::Midi, dsp::PortType::Audio, name_provider_,
+      false, should_be_muted_cb_);
   }
 
   plugins::PluginUuidReference createMockPlugin ()
@@ -195,11 +202,56 @@ TEST_F (ChannelTest, PassthroughProcessors)
   EXPECT_NO_THROW (midi_channel_->get_midi_post_fader ());
 }
 
+TEST_F (ChannelTest, SplitSignalTypeCapabilities)
+{
+  audio_channel_ = createAudioChannel ();
+  midi_channel_ = createMidiChannel ();
+  auto instrument_channel = createInstrumentChannel ();
+
+  // Audio channels carry no MIDI processing stages.
+  EXPECT_FALSE (audio_channel_->has_midi_input ());
+  EXPECT_FALSE (audio_channel_->has_midi_pre_fader ());
+  EXPECT_EQ (audio_channel_->postMidiFxPort (), nullptr);
+
+  // MIDI channels keep their full MIDI chain.
+  EXPECT_TRUE (midi_channel_->has_midi_input ());
+  EXPECT_TRUE (midi_channel_->has_midi_pre_fader ());
+  EXPECT_NE (midi_channel_->postMidiFxPort (), nullptr);
+
+  // Instrument channels receive MIDI and output audio: their MIDI chain ends
+  // at the event tap, and their fader stages process audio.
+  EXPECT_TRUE (instrument_channel->has_midi_input ());
+  EXPECT_FALSE (instrument_channel->has_midi_pre_fader ());
+  EXPECT_TRUE (instrument_channel->has_midi_event_tap ());
+  EXPECT_TRUE (instrument_channel->is_audio ());
+  EXPECT_EQ (instrument_channel->getMidiOut (), nullptr);
+  EXPECT_NE (instrument_channel->audioOutPort (), nullptr);
+  EXPECT_NE (instrument_channel->postMidiFxPort (), nullptr);
+}
+
+TEST_F (ChannelTest, PostMidiFxPortIsStablePostMidiFxOutput)
+{
+  midi_channel_ = createMidiChannel ();
+  EXPECT_EQ (
+    midi_channel_->postMidiFxPort (),
+    &midi_channel_->get_midi_pre_fader ().get_midi_out_port (0));
+
+  auto instrument_channel = createInstrumentChannel ();
+  EXPECT_EQ (
+    instrument_channel->postMidiFxPort (),
+    &instrument_channel->get_midi_event_tap ().get_midi_out_port (0));
+
+  // The port pointer stays identical for the channel's lifetime.
+  const auto * first = instrument_channel->postMidiFxPort ();
+  EXPECT_EQ (instrument_channel->postMidiFxPort (), first);
+}
+
 TEST_F (ChannelTest, HardLimitFaderOutput)
 {
   // Test channel with hard limiting enabled
   auto hard_limit_channel = std::make_unique<Channel> (
-    *registry_, dsp::PortType::Audio, name_provider_, true, should_be_muted_cb_);
+    *registry_, dsp::PortType::Audio, dsp::PortType::Audio, name_provider_,
+    true, should_be_muted_cb_);
 
   EXPECT_NE (hard_limit_channel->fader (), nullptr);
   EXPECT_TRUE (hard_limit_channel->fader ()->hard_limiting_enabled ());
@@ -214,8 +266,8 @@ TEST_F (ChannelTest, NameProviderFunctionality)
   };
 
   auto channel = std::make_unique<Channel> (
-    *registry_, dsp::PortType::Audio, custom_name_provider, false,
-    should_be_muted_cb_);
+    *registry_, dsp::PortType::Audio, dsp::PortType::Audio,
+    custom_name_provider, false, should_be_muted_cb_);
 
   EXPECT_TRUE (name_provider_called);
   EXPECT_EQ (channel->fader ()->get_node_name (), u8"Custom Channel Name Fader");
@@ -230,8 +282,8 @@ TEST_F (ChannelTest, ShouldBeMutedCallback)
   };
 
   auto channel = std::make_unique<Channel> (
-    *registry_, dsp::PortType::Audio, name_provider_, false,
-    custom_should_be_muted);
+    *registry_, dsp::PortType::Audio, dsp::PortType::Audio, name_provider_,
+    false, custom_should_be_muted);
 
   EXPECT_FALSE (callback_called); // Not called during construction
   channel->fader ()->prepare_for_processing (

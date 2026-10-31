@@ -267,7 +267,6 @@ Control {
     RowLayout {
       id: mainLayout
 
-      Layout.rightMargin: 6
       anchors.fill: parent
       spacing: 4
 
@@ -423,15 +422,17 @@ Control {
       }
 
       Loader {
+        Layout.fillHeight: true
+        Layout.fillWidth: false
+        Layout.preferredWidth: (item as TrackMeters)?.implicitWidth ?? 0
         active: root.track.channel !== null
         visible: active
 
         sourceComponent: TrackMeters {
-          Layout.fillHeight: true
-          Layout.fillWidth: false
           audioEngine: root.audioEngine
           channel: root.track.channel
           portObservationManager: root.portObservationManager
+          showMidiMeter: !root.track.channel?.postMidiFxPort
           track: root.track
         }
       }
@@ -588,6 +589,33 @@ Control {
             elide: Text.ElideRight
             font: selectionTracker.isSelected ? ZrythmTheme.buttonTextFont : ZrythmTheme.normalTextFont
             text: root.track.name
+          }
+
+          Loader {
+            id: eventIndicatorLoader
+
+            objectName: "eventIndicatorLoader"
+
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.fillWidth: false
+            Layout.preferredHeight: ZrythmTheme.compactControlHeight
+            Layout.preferredWidth: 4
+            active: root.track.channel && root.track.channel.postMidiFxPort
+            visible: active
+
+            sourceComponent: EventActivityIndicator {
+              id: eventIndicator
+
+              TrackEventActivityProvider {
+                id: eventActivityProvider
+
+                portObservationManager: root.portObservationManager
+                track: root.track
+
+                onEventReceived: eventIndicator.pulse()
+                onTrackChanged: eventIndicator.reset()
+              }
+            }
           }
 
           LinkedButtons {

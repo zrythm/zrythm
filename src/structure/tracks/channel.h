@@ -59,6 +59,8 @@ class Channel : public QObject
   Q_PROPERTY (QVariant preFader READ preFader CONSTANT)
   Q_PROPERTY (zrythm::dsp::AudioPort * audioOutPort READ audioOutPort CONSTANT)
   Q_PROPERTY (zrythm::dsp::MidiPort * midiOut READ getMidiOut CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::MidiPort * postMidiFxPort READ postMidiFxPort CONSTANT)
   Q_PROPERTY (zrythm::plugins::PluginGroup * inserts READ inserts CONSTANT)
   Q_PROPERTY (zrythm::plugins::PluginGroup * midiFx READ midiFx CONSTANT)
   Q_PROPERTY (
@@ -77,7 +79,8 @@ public:
 public:
   explicit Channel (
     utils::IObjectRegistry           &registry,
-    dsp::PortType                     signal_type,
+    dsp::PortType                     input_signal_type,
+    dsp::PortType                     output_signal_type,
     NameProvider                      name_provider,
     bool                              hard_limit_fader_output,
     dsp::Fader::ShouldBeMutedCallback should_be_muted_cb,
@@ -104,6 +107,27 @@ public:
     return is_midi () ? std::addressof (midi_postfader_->get_midi_out_port (0))
                       : nullptr;
   }
+
+  /**
+   * @brief The MIDI stream after the channel's MIDI FX chain, for
+   * observation.
+   *
+   * On MIDI-output channels this is the MIDI pre-fader output. On instrument
+   * channels it is the MIDI event tap between the MIDI FX chain and the
+   * instrument. The returned port stays valid for the channel's lifetime.
+   * Null when the channel has no MIDI input.
+   */
+  dsp::MidiPort * postMidiFxPort () const
+  {
+    if (has_midi_event_tap ())
+      {
+        return std::addressof (midi_event_tap_->get_midi_out_port (0));
+      }
+    return has_midi_pre_fader ()
+             ? std::addressof (midi_prefader_->get_midi_out_port (0))
+             : nullptr;
+  }
+
   plugins::PluginGroup * midiFx () const { return midi_fx_.get (); }
   plugins::PluginGroup * inserts () const { return inserts_.get (); }
   plugins::PluginGroup * instruments () const { return instruments_.get (); }
@@ -112,6 +136,18 @@ public:
 
   bool is_midi () const { return signal_type_ == PortType::Midi; }
   bool is_audio () const { return signal_type_ == PortType::Audio; }
+
+  /** Whether the channel receives MIDI input (MIDI and instrument tracks). */
+  bool has_midi_input () const { return input_signal_type_ == PortType::Midi; }
+
+  /** Whether the channel owns a MIDI pre-fader processor. */
+  bool has_midi_pre_fader () const { return midi_prefader_ != nullptr; }
+
+  /**
+   * Whether the channel owns the MIDI event tap between its MIDI FX chain
+   * and instrument (instrument tracks).
+   */
+  bool has_midi_event_tap () const { return midi_event_tap_ != nullptr; }
 
   /**
    * @brief Returns all existing plugins in the channel.
@@ -135,6 +171,7 @@ public:
 
   dsp::Fader &get_fader () const { return *fader_; }
   auto       &get_midi_pre_fader () const { return *midi_prefader_; }
+  auto       &get_midi_event_tap () const { return *midi_event_tap_; }
   auto       &get_audio_pre_fader () const { return *audio_prefader_; }
   auto       &get_midi_post_fader () const { return *midi_postfader_; }
   auto       &get_audio_post_fader () const { return *audio_postfader_; }
@@ -162,6 +199,10 @@ private:
 
   NameProvider name_provider_;
 
+  /** Input signal type (MIDI on MIDI and instrument tracks). */
+  dsp::PortType input_signal_type_;
+
+  /** Output signal type (audio on instrument, audio and master tracks). */
   dsp::PortType signal_type_;
 
   bool hard_limit_fader_output_;
@@ -186,11 +227,21 @@ private:
   utils::QObjectUniquePtr<dsp::Fader> fader_;
 
   /**
-   * Prefader.
+   * The MIDI pre-fader.
    *
-   * The last plugin should connect to this.
+   * Present on MIDI-output channels. The last MIDI FX plugin (or the track
+   * processor) connects to its input, and its output feeds the MIDI fader.
    */
-  utils::QObjectUniquePtr<ChannelMidiPassthroughProcessor>  midi_prefader_;
+  utils::QObjectUniquePtr<ChannelMidiPassthroughProcessor> midi_prefader_;
+
+  /**
+   * The MIDI event tap.
+   *
+   * Present on instrument channels, between the MIDI FX group and the
+   * instrument. It provides a stable post-MIDI-FX output port for event
+   * observation; it is not a fader stage.
+   */
+  utils::QObjectUniquePtr<ChannelMidiPassthroughProcessor>  midi_event_tap_;
   utils::QObjectUniquePtr<ChannelAudioPassthroughProcessor> audio_prefader_;
 
   /**

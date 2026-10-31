@@ -24,9 +24,16 @@ ChannelSubgraphBuilder::add_nodes (dsp::graph::Graph &graph, Channel &ch)
       dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_audio_pre_fader ());
       dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_audio_post_fader ());
     }
-  else if (ch.is_midi ())
+  if (ch.has_midi_event_tap ())
+    {
+      dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_midi_event_tap ());
+    }
+  if (ch.has_midi_pre_fader ())
     {
       dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_midi_pre_fader ());
+    }
+  if (ch.is_midi ())
+    {
       dsp::ProcessorGraphBuilder::add_nodes (graph, ch.get_midi_post_fader ());
     }
 
@@ -89,15 +96,113 @@ ChannelSubgraphBuilder::add_connections (
   const auto channel_output_type =
     ch.fader ()->is_midi () ? dsp::PortType::Midi : dsp::PortType::Audio;
 
+  /* Instrument channels split their plugin chain at the MIDI event tap:
+   * MIDI FX run before it and the instrument runs after it. MIDI-output
+   * channels use their MIDI pre-fader as the chain's final stage. */
+  const bool instrument_channel = ch.has_midi_event_tap ();
+
+  std::vector<plugins::PluginUuidReference> midi_fx_plugins;
+  ch.midiFx ()->get_plugins (midi_fx_plugins);
+  const size_t num_midi_fx = midi_fx_plugins.size ();
+
+  /* Connects the given plugin's MIDI outputs to the given MIDI processor's
+   * input, with a scheduling-edge fallback when no ports match. */
+  const auto connect_plugin_to_midi_processor =
+    [&] (plugins::Plugin &pl, ChannelMidiPassthroughProcessor &dest) {
+      using utils::views::qobject_cast_and_filter;
+      auto dest_midi_ins =
+        dest.get_attached_input_ports ()
+        | std::views::transform (&dsp::PortUuidReference::get)
+        | qobject_cast_and_filter<dsp::MidiPort>;
+      auto pl_midi_outs =
+        pl.get_attached_output_ports ()
+        | std::views::transform (&dsp::PortUuidReference::get)
+        | qobject_cast_and_filter<dsp::MidiPort>;
+
+      bool connections_made{};
+      for (
+        const auto &[pl_midi_out, dest_midi_in] :
+        std::views::zip (pl_midi_outs, dest_midi_ins))
+        {
+          connect_ports (*pl_midi_out, *dest_midi_in);
+          connections_made = true;
+        }
+
+      if (!connections_made)
+        {
+          for (const auto &pl_midi_out : pl_midi_outs)
+            {
+              graph.get_nodes ()
+                .find_node_for_processable (*pl_midi_out)
+                ->connect_to (
+                  *graph.get_nodes ().find_node_for_processable (dest));
+            }
+        }
+    };
+
+  /* Feeds the given MIDI processor's input from the track processor
+   * output. */
+  const auto connect_processor_to_midi_processor =
+    [&] (ChannelMidiPassthroughProcessor &dest) {
+      if (processor_midi_out_ref.has_value ())
+        {
+          connect_ports (
+            *processor_midi_out_ref->get_object_as<dsp::MidiPort> (),
+            dest.get_midi_in_port (0));
+        }
+    };
+
+  /* Connects the given MIDI processor's output to all MIDI inputs of the
+   * given plugin, with a scheduling-edge fallback. */
+  const auto connect_midi_processor_to_plugin =
+    [&] (ChannelMidiPassthroughProcessor &src, plugins::Plugin &pl) {
+      using utils::views::qobject_cast_and_filter;
+      auto &src_out = src.get_midi_out_port (0);
+      bool  connections_made{};
+      for (
+        auto * midi_in :
+        pl.get_attached_input_ports ()
+          | std::views::transform (&dsp::PortUuidReference::get)
+          | qobject_cast_and_filter<dsp::MidiPort>)
+        {
+          connect_ports (src_out, *midi_in);
+          connections_made = true;
+        }
+      if (!connections_made)
+        {
+          graph.get_nodes ().find_node_for_processable (src_out)->connect_to (
+            *graph.get_nodes ().find_node_for_processable (pl));
+        }
+    };
+
+  bool midi_event_tap_fed = false;
+
   std::vector<plugins::PluginUuidReference> plugins;
   ch.get_plugins (plugins);
   plugins::Plugin * last_plugin = nullptr;
   for (
-    auto * const pl :
-    plugins | std::views::transform (&plugins::PluginUuidReference::get))
+    const auto &[plugin_index, pl] : utils::views::enumerate (
+      plugins | std::views::transform (&plugins::PluginUuidReference::get)))
     {
       dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
-      if (last_plugin == nullptr)
+      if (instrument_channel && plugin_index == num_midi_fx)
+        {
+          /* MIDI event tap boundary: feed it from the chain so far (the
+           * last MIDI FX plugin, or the track processor), then continue
+           * the chain from its output. */
+          if (last_plugin != nullptr)
+            {
+              connect_plugin_to_midi_processor (
+                *last_plugin, ch.get_midi_event_tap ());
+            }
+          else
+            {
+              connect_processor_to_midi_processor (ch.get_midi_event_tap ());
+            }
+          midi_event_tap_fed = true;
+          connect_midi_processor_to_plugin (ch.get_midi_event_tap (), *pl);
+        }
+      else if (last_plugin == nullptr)
         {
           // connect processor outputs to plugin inputputs
           std::array<dsp::PortUuidReference, 1> processor_outputs{
@@ -218,13 +323,7 @@ ChannelSubgraphBuilder::add_connections (
         }
       else if (channel_output_type == dsp::PortType::Midi)
         {
-          if (processor_midi_out_ref.has_value ())
-            {
-              auto &prefader = ch.get_midi_pre_fader ();
-              connect_ports (
-                *processor_midi_out_ref->get_object_as<dsp::MidiPort> (),
-                prefader.get_midi_in_port (0));
-            }
+          connect_processor_to_midi_processor (ch.get_midi_pre_fader ());
         }
     }
   else // else if there is at least 1 plugin
@@ -253,43 +352,33 @@ ChannelSubgraphBuilder::add_connections (
         }
       else if (channel_output_type == dsp::PortType::Midi)
         {
-          using utils::views::qobject_cast_and_filter;
-          auto prefader_midi_ins =
-            ch.get_midi_pre_fader ().get_attached_input_ports ()
-            | std::views::transform (&dsp::PortUuidReference::get)
-            | qobject_cast_and_filter<dsp::MidiPort>;
-          auto pl_midi_outs =
-            last_pl->get_attached_output_ports ()
-            | std::views::transform (&dsp::PortUuidReference::get)
-            | qobject_cast_and_filter<dsp::MidiPort>;
+          connect_plugin_to_midi_processor (*last_pl, ch.get_midi_pre_fader ());
+        }
+    }
 
-          bool connections_made{};
-          for (
-            const auto &[pl_midi_out, prefader_midi_in] :
-            std::views::zip (pl_midi_outs, prefader_midi_ins))
-            {
-              connect_ports (*pl_midi_out, *prefader_midi_in);
-              connections_made = true;
-            }
-
-          // if no compatible ports were connected, connect the plugin
-          // outputs directly to the prefader processor
-          if (!connections_made)
-            {
-              for (const auto &pl_midi_out : pl_midi_outs)
-                {
-                  graph.get_nodes ()
-                    .find_node_for_processable (ch.get_midi_pre_fader ())
-                    ->connect_to (*graph.get_nodes ().find_node_for_processable (
-                      *pl_midi_out));
-                }
-            }
+  /* Instrument channels without a plugin after their MIDI FX group still
+   * feed the MIDI event tap so post-MIDI-FX events remain observable. */
+  if (instrument_channel && !midi_event_tap_fed)
+    {
+      if (!midi_fx_plugins.empty ())
+        {
+          connect_plugin_to_midi_processor (
+            *midi_fx_plugins.back ().get (), ch.get_midi_event_tap ());
+        }
+      else
+        {
+          connect_processor_to_midi_processor (ch.get_midi_event_tap ());
         }
     }
 
   // connect the prefader & postfader
   if (channel_output_type == dsp::PortType::Audio)
     {
+      if (ch.has_midi_event_tap ())
+        {
+          dsp::ProcessorGraphBuilder::add_connections (
+            graph, ch.get_midi_event_tap ());
+        }
       dsp::ProcessorGraphBuilder::add_connections (
         graph, ch.get_audio_pre_fader ());
       dsp::ProcessorGraphBuilder::add_connections (
