@@ -48,9 +48,17 @@ using namespace zrythm::plugins::scanner_private;
 
 //==============================================================================
 
-//==============================================================================
-
-Worker::Worker (PluginScanManager &scanner) : scanner_ (scanner) { }
+Worker::Worker (
+  PluginScanManager                       &scanner,
+  std::shared_ptr<PluginCatalog>           catalog,
+  std::shared_ptr<PluginScanFormatManager> format_manager,
+  PluginScanner *                          plugin_scanner,
+  std::uint64_t                            scan_generation)
+    : scanner_ (scanner), catalog_ (std::move (catalog)),
+      format_manager_ (std::move (format_manager)),
+      plugin_scanner_ (plugin_scanner), scan_generation_ (scan_generation)
+{
+}
 
 void
 Worker::requestStop ()
@@ -61,74 +69,133 @@ Worker::requestStop ()
 void
 Worker::process ()
 {
+  try
+    {
+      process_scan ();
+    }
+  catch (const std::exception &e)
+    {
+      z_warning ("Plugin scan stopped after an error: {}", e.what ());
+    }
+  catch (...)
+    {
+      z_warning ("Plugin scan stopped after an unknown error");
+    }
+
+  z_debug ("Scanning in thread finished");
+  Q_EMIT finished ();
+}
+
+void
+Worker::process_scan ()
+{
   z_info ("Scanning for plugins...");
 
-  // Iterate through available formats
-  for (auto * format : scanner_.format_manager_->getFormats ())
+  for (auto * format : format_manager_->formats ())
     {
       if (should_stop_)
         {
           z_debug ("Scanning cancelled");
-          break;
+          return;
         }
 
-      z_debug ("Scanning plugins for format {}", format->getName ());
-      const auto protocol = Protocol::from_juce_format_name (format->getName ());
+      z_debug ("Scanning plugins for format {}", format->format_name ());
+      const auto protocol = format->protocol ();
       const auto paths = scanner_.plugin_paths_provider_ (protocol);
-      // auto defaultLocations = format->getDefaultLocationsToSearch ();
-      auto identifiers = format->searchPathsForPlugins (
-        paths->get_as_juce_file_search_path (), true, true);
+      const auto identifiers = format->search_identifiers (*paths, true);
       for (const auto &identifier : identifiers)
         {
           if (should_stop_)
             {
               z_debug ("Scanning cancelled");
-              break;
+              return;
             }
 
-          scanner_.set_currently_scanning_plugin (
-            utils::Utf8String::from_juce_string (identifier).to_qstring ());
-          juce::OwnedArray<juce::PluginDescription> types;
-          const bool has_new = scanner_.known_plugin_list_->scanAndAddFile (
-            identifier, true, types, *format);
-          if (has_new)
-            {
-              z_info (
-                "Found new plugins for identifier '{}' (total types {})",
-                identifier, types.size ());
-            }
-          // Identifiers without plugins (e.g. LV2 preset or extension
-          // bundles) are a valid scan result, not a failure. Failed scans
-          // (crashes, timeouts) are blacklisted by KnownPluginList itself
-          // when the scanner subprocess reports failure.
+          scanner_.set_currently_scanning_plugin (identifier.to_qstring ());
+          const auto scan_state = catalog_->scan_state (
+            protocol, identifier, [&] (const PluginDescriptor &descriptor) {
+              return format->plugin_needs_rescanning (descriptor);
+            });
           if (
-            scanner_.known_plugin_list_->getBlacklistedFiles ().contains (
-              identifier))
+            scan_state == PluginCatalog::ScanState::UpToDate
+            || scan_state == PluginCatalog::ScanState::Blacklisted)
+            continue;
+
+          auto result =
+            plugin_scanner_->scan (format->format_name (), identifier, [this] {
+              return should_stop_.load ();
+            });
+          if (should_stop_)
             {
-              z_debug ("Blacklisted plugin: {}", identifier);
+              z_debug ("Scanning cancelled");
+              return;
             }
+          if (!result.has_value ())
+            {
+              z_warning (
+                "Scan failed for {} {}: {}", format->format_name (), identifier,
+                result.error ());
+              QMetaObject::invokeMethod (
+                &scanner_,
+                [manager = &scanner_, generation = scan_generation_, protocol,
+                 identifier] {
+                  if (manager->active_generation_ != generation)
+                    return;
+                  manager->catalog_->blacklist_identifier (protocol, identifier);
+                },
+                Qt::QueuedConnection);
+              continue;
+            }
+
+          auto descriptors =
+            std::make_shared<std::vector<std::unique_ptr<PluginDescriptor>>> (
+              std::move (*result));
+          for (const auto &descriptor : *descriptors)
+            {
+              if (descriptor->thread () != catalog_->thread ())
+                descriptor->moveToThread (catalog_->thread ());
+            }
+
+          QMetaObject::invokeMethod (
+            &scanner_,
+            [manager = &scanner_, generation = scan_generation_,
+             catalog = catalog_, protocol, identifier,
+             descriptors = std::move (descriptors)] () mutable {
+              if (manager->active_generation_ != generation)
+                return;
+              const auto replacement = catalog->replace_results_for_scan (
+                protocol, identifier, std::move (*descriptors));
+              if (!replacement.has_value ())
+                {
+                  z_warning (
+                    "Rejecting scan results for {}: {}", identifier.view (),
+                    replacement.error ().view ());
+                  catalog->blacklist_identifier (protocol, identifier);
+                }
+            },
+            Qt::QueuedConnection);
         }
 
       if (should_stop_)
         {
           z_debug ("Scanning cancelled");
-          break;
+          return;
         }
     }
-  z_debug ("Scanning in thread finished");
-  Q_EMIT finished ();
 }
 
 //==============================================================================
 
 PluginScanManager::PluginScanManager (
-  std::shared_ptr<juce::KnownPluginList>          known_plugins,
-  std::shared_ptr<juce::AudioPluginFormatManager> format_manager,
-  ProtocolPluginPathsProvider                     plugin_paths_provider,
-  QObject *                                       parent)
-    : QObject (parent), known_plugin_list_ (std::move (known_plugins)),
+  std::shared_ptr<PluginCatalog>           catalog,
+  std::shared_ptr<PluginScanFormatManager> format_manager,
+  ProtocolPluginPathsProvider              plugin_paths_provider,
+  std::unique_ptr<PluginScanner>           plugin_scanner,
+  QObject *                                parent)
+    : QObject (parent), catalog_ (std::move (catalog)),
       plugin_paths_provider_ (std::move (plugin_paths_provider)),
       format_manager_ (std::move (format_manager)),
+      plugin_scanner_ (std::move (plugin_scanner)),
       currently_scanning_plugin_ (tr ("Scanning..."))
 {
 }
@@ -145,26 +212,74 @@ PluginScanManager::requestStop ()
 void
 PluginScanManager::beginScan ()
 {
+  if (scan_thread_ != nullptr)
+    {
+      if (scan_thread_->isRunning ())
+        {
+          // the active scan finishes first, and the new scan starts from its
+          // completion callback
+          restart_pending_ = true;
+          requestStop ();
+          return;
+        }
+
+      scan_thread_->quit ();
+      scan_thread_->wait ();
+      worker_.reset ();
+      scan_thread_.reset ();
+    }
+
+  start_scan ();
+}
+
+void
+PluginScanManager::start_scan ()
+{
+  const auto scan_generation = ++active_generation_;
   scan_thread_ = utils::make_qobject_unique<QThread> ();
-  worker_ = utils::make_qobject_unique<Worker> (*this);
+  worker_ = utils::make_qobject_unique<Worker> (
+    *this, catalog_, format_manager_, plugin_scanner_.get (), scan_generation);
   worker_->moveToThread (scan_thread_.get ());
   QObject::connect (
     scan_thread_.get (), &QThread::started, worker_.get (), &Worker::process);
+  // the worker emits finished on the scan thread, and quit() stops that
+  // thread's event loop immediately
   QObject::connect (
     worker_.get (), &Worker::finished, scan_thread_.get (), &QThread::quit,
     Qt::DirectConnection);
+  // queued catalog updates are posted before the thread finishes, so completion
+  // is delivered after every result of the generation
   QObject::connect (
-    worker_.get (), &Worker::finished, this, &PluginScanManager::scan_finished,
-    Qt::BlockingQueuedConnection);
+    scan_thread_.get (), &QThread::finished, this,
+    [this, scan_generation] { finish_scan (scan_generation); },
+    Qt::QueuedConnection);
   scan_thread_->start ();
+}
+
+void
+PluginScanManager::finish_scan (std::uint64_t scan_generation)
+{
+  if (scan_generation != active_generation_)
+    return;
+
+  worker_.reset ();
+  scan_thread_.reset ();
+
+  if (restart_pending_)
+    {
+      restart_pending_ = false;
+      start_scan ();
+      return;
+    }
+
+  scan_finished ();
 }
 
 void
 PluginScanManager::scan_finished ()
 {
-  auto xml = known_plugin_list_->createXml ();
-  auto str = xml->toString ();
-  z_debug ("Plugins:\n{}", str);
+  z_debug (
+    "Plugin scan finished ({} descriptors)", catalog_->descriptor_count ());
   Q_EMIT scanningFinished ();
 }
 
@@ -191,14 +306,13 @@ PluginScanManager::~PluginScanManager ()
 {
   if (scan_thread_)
     {
-      // Disconnect all signals from worker to prevent any queued connections
+      // Disconnect all signals between the scan objects and this manager
       if (worker_)
         {
           worker_->disconnect ();
           disconnect (worker_.get ());
         }
-
-      // Disconnect all signals from thread
+      scan_thread_->disconnect ();
       disconnect (scan_thread_.get ());
 
       // Request worker to stop gracefully

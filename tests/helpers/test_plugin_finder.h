@@ -3,22 +3,19 @@
 
 #pragma once
 
-#include "plugins/CLAPPluginFormat.h"
+#include "plugins/clap_plugin_format.h"
 #include "plugins/vst3_plugin_format.h"
 #include "utils/file_path_list.h"
 #include "utils/qt.h"
-
-#include <juce_audio_processors/juce_audio_processors.h>
 
 namespace zrythm::test_helpers
 {
 
 /**
- * @brief Finds a test plugin description by name, using a JUCE format to
- * scan the given search paths.
+ * @brief Finds a test plugin descriptor by name.
  */
 template <typename FormatType>
-std::unique_ptr<juce::PluginDescription>
+std::unique_ptr<plugins::PluginDescriptor>
 find_test_plugin_by_name (
   const QString      &search_paths_str,
   const juce::String &target_name)
@@ -35,30 +32,29 @@ find_test_plugin_by_name (
     return nullptr;
 
   FormatType format;
-  auto       juce_search_paths = paths->get_as_juce_file_search_path ();
-  auto       identifiers =
-    format.searchPathsForPlugins (juce_search_paths, false, false);
-  for (const auto &id : identifiers)
+  for (const auto &identifier : format.search_identifiers (*paths, false))
     {
-      juce::OwnedArray<juce::PluginDescription> descriptions;
-      format.findAllTypesForFile (descriptions, id);
-      for (const auto * desc : descriptions)
+      auto scan_result = format.scan_identifier (identifier);
+      if (!scan_result.has_value ())
+        continue;
+
+      for (auto &descriptor : *scan_result)
         {
-          if (desc->name == target_name)
-            return std::make_unique<juce::PluginDescription> (*desc);
+          if (descriptor->name_.to_juce_string () == target_name)
+            return std::move (descriptor);
         }
     }
   return nullptr;
 }
 
-inline std::unique_ptr<juce::PluginDescription>
+inline std::unique_ptr<plugins::PluginDescriptor>
 find_test_vst3_plugin_by_name (const juce::String &target_name)
 {
   return find_test_plugin_by_name<plugins::Vst3PluginFormat> (
     QStringLiteral (TEST_VST3_SEARCH_PATHS), target_name);
 }
 
-inline std::unique_ptr<juce::PluginDescription>
+inline std::unique_ptr<plugins::PluginDescriptor>
 find_test_clap_plugin_by_name (const juce::String &target_name)
 {
   return find_test_plugin_by_name<plugins::CLAPPluginFormat> (

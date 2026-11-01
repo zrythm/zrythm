@@ -205,11 +205,11 @@ TEST_F (Lv2DiscoveryTest, UncategorizedPluginHasNoCategory)
   Lv2PluginFormat format{
     std::make_shared<Lv2World> (Lv2PluginFormat::get_spec_bundles_dir ())
   };
-  juce::OwnedArray<juce::PluginDescription> results;
-  format.findAllTypesForFile (
-    results, utils::Utf8String::from_path (bundle_path_).to_juce_string ());
-  ASSERT_EQ (results.size (), 1);
-  EXPECT_EQ (results[0]->category, "Effect");
+  auto results =
+    format.scan_identifier (utils::Utf8String::from_path (bundle_path_));
+  ASSERT_TRUE (results.has_value ());
+  ASSERT_EQ (results->size (), 1);
+  EXPECT_EQ ((*results)[0]->category_str_, u8"Effect");
 }
 
 } // namespace zrythm::plugins

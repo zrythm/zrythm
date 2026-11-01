@@ -41,9 +41,13 @@
 
 #include "zrythm-config.h"
 
+#include <memory>
 #include <optional>
 
-#include <juce_audio_processors/juce_audio_processors.h>
+#include "plugins/plugin_scan_format.h"
+#include "plugins/plugin_scan_protocol.h"
+
+#include <juce_gui_basics/juce_gui_basics.h>
 
 namespace zrythm::plugins::scanner
 {
@@ -83,13 +87,12 @@ private:
   /**
    * @brief Scans the identifier contained in the given message.
    *
-   * @return The scan results (possibly empty when the identifier contains no
-   * plugins), or nullopt if the scan could not run on the current thread and
-   * must be retried on the message thread.
+   * @return The scan result (possibly empty when the identifier contains no
+   * plugins), or nullopt if the scan must be retried on the message thread.
    */
-  std::optional<juce::OwnedArray<juce::PluginDescription>>
+  std::optional<discovery::PluginScanResult>
        do_scan (const juce::MemoryBlock &block);
-  void send_results (const juce::OwnedArray<juce::PluginDescription> &results);
+  void send_results (const discovery::PluginScanResult &results);
 
   bool has_timed_out () const;
   void timerCallback () override;
@@ -100,9 +103,9 @@ private:
   /**
    * @brief Format name & identifier stream.
    */
-  std::queue<juce::MemoryBlock>     pending_blocks_;
-  juce::AudioPluginFormatManager    format_manager_;
-  std::unique_ptr<juce::FileLogger> file_logger_;
+  std::queue<juce::MemoryBlock>                     pending_blocks_;
+  std::unique_ptr<plugins::PluginScanFormatManager> format_manager_;
+  std::unique_ptr<juce::FileLogger>                 file_logger_;
 
 private:
   std::chrono::steady_clock::time_point start_time_;

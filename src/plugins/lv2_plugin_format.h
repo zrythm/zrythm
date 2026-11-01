@@ -3,12 +3,11 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cstdint>
 #include <filesystem>
 #include <memory>
+#include <vector>
 
-#include <juce_audio_processors_headless/juce_audio_processors_headless.h>
+#include "plugins/plugin_scan_format.h"
 
 namespace zrythm::plugins
 {
@@ -16,16 +15,13 @@ namespace zrythm::plugins
 class Lv2World;
 
 /**
- * @brief Native LV2 plugin discovery via lilv, replacing
- * juce::LV2PluginFormat.
+ * @brief Native LV2 plugin discovery via lilv.
  *
- * Implements the juce::AudioPluginFormat interface (so KnownPluginList and
- * the out-of-process scanner keep working) but discovers plugins via lilv.
- * Discovery is metadata-only: bundle ttl is parsed, but no plugin binary is
- * ever loaded. Instantiation via createPluginInstance() is unsupported:
- * hosting will be done by a dedicated Lv2Plugin.
+ * Produces complete Zrythm descriptors directly. Discovery is metadata-only:
+ * bundle ttl is parsed, but no plugin binary is ever loaded. Hosting is done
+ * by Lv2Plugin.
  */
-class Lv2PluginFormat final : public juce::AudioPluginFormat
+class Lv2PluginFormat final : public PluginScanFormat
 {
 public:
   /**
@@ -38,46 +34,32 @@ public:
   /**
    * @brief Returns the directory the LV2 specification bundles are shipped
    * in.
-   *
-   * When running inside a macOS app bundle, this is
-   * <bundle>/Contents/Resources/lv2-specs. For a plain executable (an
-   * installed <prefix>/bin or the build tree's products/bin), this is
-   * <parent-of-bin>/share/zrythm/lv2-specs.
    */
   static std::filesystem::path get_spec_bundles_dir ();
 
-  static juce::String getFormatName () { return "LV2"; }
-  juce::String        getName () const override { return getFormatName (); }
-  bool                canScanForPlugins () const override { return true; }
-  bool                isTrivialToScan () const override { return false; }
+  [[nodiscard]] Protocol::ProtocolType protocol () const override;
+  [[nodiscard]] utils::Utf8String      format_name () const override;
 
-  void findAllTypesForFile (
-    juce::OwnedArray<juce::PluginDescription> &,
-    const juce::String &fileOrIdentifier) override;
-  bool
-  fileMightContainThisPluginType (const juce::String &fileOrIdentifier) override;
-  juce::String
-  getNameOfPluginFromIdentifier (const juce::String &fileOrIdentifier) override;
-  bool pluginNeedsRescanning (const juce::PluginDescription &) override;
-  juce::StringArray
-  searchPathsForPlugins (const juce::FileSearchPath &, bool recursive, bool)
-    override;
-  bool doesPluginStillExist (const juce::PluginDescription &) override;
-  juce::FileSearchPath getDefaultLocationsToSearch () override;
+  [[nodiscard]] std::vector<utils::Utf8String>
+  search_identifiers (const utils::FilePathList &search_paths, bool recursive)
+    const override;
 
-private:
-  void createPluginInstance (
-    const juce::PluginDescription &desc,
-    double                         initialSampleRate,
-    int                            initialBufferSize,
-    PluginCreationCallback) override;
-  bool requiresUnblockedMessageThreadDuringCreation (
-    const juce::PluginDescription &desc) const override;
+  [[nodiscard]] std::
+    expected<std::vector<std::unique_ptr<PluginDescriptor>>, utils::Utf8String>
+    scan_identifier (const utils::Utf8String &identifier) override;
+
+  [[nodiscard]] bool
+  plugin_needs_rescanning (const PluginDescriptor &descriptor) const override;
+  [[nodiscard]] bool
+  plugin_exists (const PluginDescriptor &descriptor) const override;
+  [[nodiscard]] bool
+  scan_uses_message_thread (const utils::Utf8String &identifier) const override;
 
 private:
+  [[nodiscard]] bool file_might_contain_this_plugin_type (
+    const utils::Utf8String &identifier) const;
+
   std::shared_ptr<Lv2World> world_;
-
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Lv2PluginFormat)
 };
 
 } // namespace zrythm::plugins

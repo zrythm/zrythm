@@ -4,9 +4,13 @@
 // VST3 discovery implemented against the VST3 SDK's hosting helpers
 // (public.sdk/source/vst/hosting/module.h: Module, PluginFactory, ClassInfo).
 
+#include <limits>
 #include <ranges>
+#include <string>
+#include <vector>
 
 #include "plugins/plugin_format_utils.h"
+#include "plugins/plugin_scan_format.h"
 #include "plugins/vst3_plugin_format.h"
 #include "utils/format_juce.h"
 #include "utils/logger.h"
@@ -14,12 +18,17 @@
 #include <QtSystemDetection>
 
 #include <pluginterfaces/vst/ivstaudioprocessor.h>
+#include <pluginterfaces/vst/ivstcomponent.h>
+#include <public.sdk/source/vst/hosting/hostclasses.h>
 #include <public.sdk/source/vst/hosting/module.h>
 
 namespace zrythm::plugins
 {
 
-static bool
+namespace
+{
+
+bool
 class_info_is_instrument (const VST3::Hosting::ClassInfo &class_info)
 {
   const auto &sub_categories = class_info.subCategories ();
@@ -29,168 +38,244 @@ class_info_is_instrument (const VST3::Hosting::ClassInfo &class_info)
   });
 }
 
-void
-Vst3PluginFormat::findAllTypesForFile (
-  juce::OwnedArray<juce::PluginDescription> &results,
-  const juce::String                        &fileOrIdentifier)
+std::int64_t
+current_time_ms ()
 {
-  if (!fileMightContainThisPluginType (fileOrIdentifier))
-    return;
+  return juce::Time::getCurrentTime ().toMilliseconds ();
+}
 
-  std::string error;
-  const auto  module =
-    VST3::Hosting::Module::create (fileOrIdentifier.toStdString (), error);
-  if (module == nullptr)
+std::expected<int, utils::Utf8String>
+audio_channel_count (
+  Steinberg::Vst::IComponent  &component,
+  Steinberg::Vst::BusDirection direction)
+{
+  using namespace Steinberg;
+
+  constexpr auto max_int = std::numeric_limits<int>::max ();
+  const int      bus_count =
+    component.getBusCount (Vst::MediaTypes::kAudio, direction);
+  if (bus_count < 0)
+    return std::unexpected (
+      utils::Utf8String::from_utf8_encoded_string (
+        "VST3 plugin reported a negative audio bus count"));
+
+  int channel_count = 0;
+  for (const int bus_index : std::views::iota (0, bus_count))
     {
-      z_warning ("Failed to load VST3 module '{}': {}", fileOrIdentifier, error);
-      return;
+      Vst::BusInfo bus_info{};
+      if (
+        component.getBusInfo (
+          Vst::MediaTypes::kAudio, direction, bus_index, bus_info)
+        != kResultOk)
+        return std::unexpected (
+          utils::Utf8String::from_utf8_encoded_string (
+            fmt::format ("VST3 plugin did not report audio bus {}", bus_index)));
+
+      if (
+        bus_info.channelCount < 0
+        || bus_info.channelCount > max_int - channel_count)
+        return std::unexpected (
+          utils::Utf8String::from_utf8_encoded_string (
+            "VST3 plugin reported an invalid audio channel count"));
+      channel_count += static_cast<int> (bus_info.channelCount);
     }
-
-  const auto  plugin_file = juce::File (fileOrIdentifier);
-  const auto &factory = module->getFactory ();
-  const auto  factory_vendor = factory.info ().vendor ();
-  for (const auto &class_info : factory.classInfos ())
-    {
-      // A factory also lists non-plugin classes (e.g. the edit
-      // controller class of dual-component plugins); only audio module
-      // classes are plugins the host can instantiate
-      if (class_info.category () != kVstAudioEffectClass)
-        continue;
-
-      auto desc = std::make_unique<juce::PluginDescription> ();
-      desc->fileOrIdentifier = fileOrIdentifier;
-      // Recorded at scan time so pluginNeedsRescanning() can detect
-      // on-disk changes
-      desc->lastFileModTime = effective_modification_time (plugin_file);
-      desc->lastInfoUpdateTime = juce::Time::getCurrentTime ();
-      desc->pluginFormatName = getFormatName ();
-      desc->name = class_info.name ();
-      desc->manufacturerName =
-        class_info.vendor ().empty () ? factory_vendor : class_info.vendor ();
-      desc->version = class_info.version ();
-      desc->uniqueId = get_hash_for_range (class_info.ID ().toString ());
-      desc->deprecatedUid = desc->uniqueId;
-      desc->isInstrument = class_info_is_instrument (class_info);
-      desc->category = desc->isInstrument ? "Instrument" : "Effect";
-      // Channel counts require instantiation; the actual bus layout is
-      // queried by Vst3Plugin at load time
-      desc->numInputChannels = 2;
-      desc->numOutputChannels = 2;
-      results.add (std::move (desc));
-    }
+  return channel_count;
 }
 
-void
-Vst3PluginFormat::createPluginInstance (
-  const juce::PluginDescription &,
-  double,
-  int,
-  PluginCreationCallback callback)
+std::expected<int, utils::Utf8String>
+event_bus_count (
+  Steinberg::Vst::IComponent  &component,
+  Steinberg::Vst::BusDirection direction)
 {
-  // VST3 plugins are hosted natively by Vst3Plugin, not via
-  // juce::AudioPluginInstance
-  callback (nullptr, "unsupported");
+  const int count =
+    component.getBusCount (Steinberg::Vst::MediaTypes::kEvent, direction);
+  if (count < 0)
+    return std::unexpected (
+      utils::Utf8String::from_utf8_encoded_string (
+        "VST3 plugin reported a negative event bus count"));
+  return count;
+}
+} // namespace
+
+Vst3PluginFormat::~Vst3PluginFormat () = default;
+
+Protocol::ProtocolType
+Vst3PluginFormat::protocol () const
+{
+  return Protocol::ProtocolType::VST3;
+}
+
+utils::Utf8String
+Vst3PluginFormat::format_name () const
+{
+  return u8"VST3";
 }
 
 bool
-Vst3PluginFormat::requiresUnblockedMessageThreadDuringCreation (
-  const juce::PluginDescription &) const
+Vst3PluginFormat::file_might_contain_this_plugin_type (
+  const utils::Utf8String &identifier) const
 {
-  return false;
+  return identifier.to_qstring ().endsWith (
+    QStringLiteral (".vst3"), Qt::CaseInsensitive);
 }
 
-bool
-Vst3PluginFormat::fileMightContainThisPluginType (
-  const juce::String &fileOrIdentifier)
+std::vector<utils::Utf8String>
+Vst3PluginFormat::search_identifiers (
+  const utils::FilePathList &search_paths,
+  bool                       recursive) const
 {
-  const auto f = juce::File::createFileWithoutCheckingPath (fileOrIdentifier);
-
-  // A .vst3 can be a bundle directory or a single binary
-  return f.hasFileExtension ("vst3");
-}
-
-juce::String
-Vst3PluginFormat::getNameOfPluginFromIdentifier (
-  const juce::String &fileOrIdentifier)
-{
-  return juce::File (fileOrIdentifier).getFileNameWithoutExtension ();
-}
-
-bool
-Vst3PluginFormat::pluginNeedsRescanning (
-  const juce::PluginDescription &description)
-{
-  return effective_modification_time (juce::File (description.fileOrIdentifier))
-         != description.lastFileModTime;
-}
-
-bool
-Vst3PluginFormat::doesPluginStillExist (
-  const juce::PluginDescription &description)
-{
-  return juce::File (description.fileOrIdentifier).exists ();
-}
-
-juce::StringArray
-Vst3PluginFormat::searchPathsForPlugins (
-  const juce::FileSearchPath &directoriesToSearch,
-  const bool                  recursive,
-  bool)
-{
-  juce::StringArray results;
-
-  for (const auto i : std::views::iota (0, directoriesToSearch.getNumPaths ()))
-    recursiveFileSearch (results, directoriesToSearch[i], recursive);
-
+  std::vector<utils::Utf8String> results;
+  for (const auto &path : search_paths)
+    recursive_file_search (results, path, recursive);
   return results;
 }
 
 void
-Vst3PluginFormat::recursiveFileSearch (
-  juce::StringArray &results,
-  const juce::File  &directory,
-  const bool         recursive)
+Vst3PluginFormat::recursive_file_search (
+  std::vector<utils::Utf8String> &results,
+  const std::filesystem::path    &directory,
+  bool                            recursive) const
 {
-  for (
-    const auto &iter : juce::RangedDirectoryIterator (
-      directory, false, "*", juce::File::findFilesAndDirectories))
+  std::error_code ec;
+  for (const auto &entry : std::filesystem::directory_iterator (directory, ec))
     {
-      const auto f = iter.getFile ();
-
-      if (fileMightContainThisPluginType (f.getFullPathName ()))
+      const auto path = entry.path ();
+      const auto path_string = utils::Utf8String::from_path (path);
+      // a .vst3 identifier can be a single binary or a bundle directory
+      if (file_might_contain_this_plugin_type (path_string))
         {
-          results.add (f.getFullPathName ());
+          results.push_back (path_string);
         }
-      else if (recursive && f.isDirectory ())
+      else if (recursive && entry.is_directory (ec))
         {
-          recursiveFileSearch (results, f, true);
+          recursive_file_search (results, path, true);
         }
+    }
+  if (ec)
+    {
+      z_warning ("VST3: failed to search '{}': {}", directory, ec.message ());
     }
 }
 
-juce::FileSearchPath
-Vst3PluginFormat::getDefaultLocationsToSearch ()
+std::expected<std::vector<std::unique_ptr<PluginDescriptor>>, utils::Utf8String>
+Vst3PluginFormat::scan_identifier (const utils::Utf8String &identifier)
 {
-#ifdef Q_OS_WIN
-  const auto localAppData =
-    juce::File::getSpecialLocation (juce::File::windowsLocalAppData)
-      .getFullPathName ();
-  const auto programFiles =
-    juce::File::getSpecialLocation (juce::File::globalApplicationsDirectory)
-      .getFullPathName ();
-  return juce::FileSearchPath{
-    localAppData + "\\Programs\\Common\\VST3;" + programFiles
-    + "\\Common Files\\VST3"
-  };
-#elifdef Q_OS_APPLE
-  return juce::FileSearchPath{
-    "~/Library/Audio/Plug-Ins/VST3;/Library/Audio/Plug-Ins/VST3"
-  };
-#else
-  return juce::FileSearchPath{ "~/.vst3/;/usr/lib/vst3/;/usr/local/lib/vst3/" };
-#endif
+  if (!file_might_contain_this_plugin_type (identifier))
+    return std::vector<std::unique_ptr<PluginDescriptor>>{};
+
+  std::string load_error;
+  const auto  module = VST3::Hosting::Module::create (
+    std::string{ identifier.view () }, load_error);
+  if (module == nullptr)
+    return std::unexpected (
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("Failed to load VST3 module: {}", load_error)));
+
+  std::vector<std::unique_ptr<PluginDescriptor>> descriptors;
+  const auto &factory = module->getFactory ();
+  const auto  factory_vendor = factory.info ().vendor ();
+  const auto  plugin_file = juce::File (identifier.to_juce_string ());
+  const auto  modification_time = effective_modification_time (plugin_file);
+
+  for (const auto &class_info : factory.classInfos ())
+    {
+      // A factory also lists non-plugin classes (e.g. the edit controller
+      // class of dual-component plugins); only audio module classes are
+      // plugins the host can instantiate
+      if (class_info.category () != kVstAudioEffectClass)
+        continue;
+
+      Steinberg::Vst::HostApplication host_application;
+      auto                            component =
+        factory.createInstance<Steinberg::Vst::IComponent> (class_info.ID ());
+      if (component == nullptr)
+        return std::unexpected (
+          utils::Utf8String::from_utf8_encoded_string (
+            fmt::format (
+              "Failed to create VST3 component for '{}'", class_info.name ())));
+
+      if (component->initialize (&host_application) != Steinberg::kResultOk)
+        return std::unexpected (
+          utils::Utf8String::from_utf8_encoded_string (
+            fmt::format (
+              "VST3 component initialization failed for '{}'",
+              class_info.name ())));
+
+      const auto num_event_ins =
+        event_bus_count (*component, Steinberg::Vst::kInput);
+      const auto num_event_outs =
+        event_bus_count (*component, Steinberg::Vst::kOutput);
+      const auto num_audio_ins =
+        audio_channel_count (*component, Steinberg::Vst::kInput);
+      const auto num_audio_outs =
+        audio_channel_count (*component, Steinberg::Vst::kOutput);
+      if (
+        !num_event_ins.has_value () || !num_event_outs.has_value ()
+        || !num_audio_ins.has_value () || !num_audio_outs.has_value ())
+        {
+          component->terminate ();
+          return std::unexpected (
+            !num_event_ins    ? num_event_ins.error ()
+            : !num_event_outs ? num_event_outs.error ()
+            : !num_audio_ins
+              ? num_audio_ins.error ()
+              : num_audio_outs.error ());
+        }
+
+      auto descriptor = std::make_unique<PluginDescriptor> ();
+      descriptor->path_or_id_ = identifier.to_path ();
+      descriptor->last_file_mod_time_ms_ = modification_time.toMilliseconds ();
+      descriptor->last_info_update_time_ms_ = current_time_ms ();
+      descriptor->protocol_ = Protocol::ProtocolType::VST3;
+      descriptor->name_ =
+        utils::Utf8String::from_utf8_encoded_string (class_info.name ());
+      descriptor->author_ = utils::Utf8String::from_utf8_encoded_string (
+        class_info.vendor ().empty () ? factory_vendor : class_info.vendor ());
+      descriptor->version_ =
+        utils::Utf8String::from_utf8_encoded_string (class_info.version ());
+      descriptor->unique_id_ = get_hash_for_range (class_info.ID ().toString ());
+      descriptor->juce_compat_deprecated_unique_id_ =
+        static_cast<int> (descriptor->unique_id_);
+      descriptor->category_ =
+        class_info_is_instrument (class_info)
+          ? PluginCategory::Instrument
+          : PluginCategory::None;
+      descriptor->category_str_ =
+        descriptor->category_ == PluginCategory::Instrument
+          ? u8"Instrument"
+          : u8"Effect";
+      descriptor->num_audio_ins_ = *num_audio_ins;
+      descriptor->num_audio_outs_ = *num_audio_outs;
+      descriptor->num_midi_ins_ = *num_event_ins;
+      descriptor->num_midi_outs_ = *num_event_outs;
+      descriptors.push_back (std::move (descriptor));
+
+      component->terminate ();
+    }
+
+  return descriptors;
 }
 
-Vst3PluginFormat::~Vst3PluginFormat () = default;
+bool
+Vst3PluginFormat::plugin_needs_rescanning (
+  const PluginDescriptor &descriptor) const
+{
+  const auto identifier = descriptor.source_identifier ();
+  return effective_modification_time (juce::File (identifier.to_juce_string ()))
+           .toMilliseconds ()
+         != descriptor.last_file_mod_time_ms_;
+}
+
+bool
+Vst3PluginFormat::plugin_exists (const PluginDescriptor &descriptor) const
+{
+  return std::filesystem::exists (descriptor.source_identifier ().to_path ());
+}
+
+bool
+Vst3PluginFormat::scan_uses_message_thread (const utils::Utf8String &) const
+{
+  return true;
+}
 
 } // namespace zrythm::plugins

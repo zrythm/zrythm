@@ -155,7 +155,7 @@ protected:
     const char * format_str =
       param.format == PluginTestParam::Format::CLAP ? "CLAP" : "VST3";
 
-    const auto juce_desc = [&] () {
+    const auto descriptor = [&] () {
       if (param.format == PluginTestParam::Format::CLAP)
         {
           return test_helpers::find_test_clap_plugin_by_name (plugin_name);
@@ -163,13 +163,9 @@ protected:
 
       return test_helpers::find_test_vst3_plugin_by_name (plugin_name);
     }();
-    EXPECT_NE (juce_desc, nullptr)
+    EXPECT_NE (descriptor, nullptr)
       << "Test " << format_str << " plugin '" << param.plugin_name
       << "' not found";
-
-    const auto descriptor =
-      plugins::PluginDescriptor::from_juce_description (*juce_desc);
-    EXPECT_NE (descriptor, nullptr);
 
     auto project = create_minimal_project ();
     EXPECT_NE (project, nullptr);
@@ -308,21 +304,17 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
     },
     nullptr);
 
-  std::unique_ptr<juce::PluginDescription> juce_desc;
+  std::unique_ptr<plugins::PluginDescriptor> descriptor;
   if (GetParam ().format == PluginTestParam::Format::CLAP)
     {
-      juce_desc = test_helpers::find_test_clap_plugin_by_name (
+      descriptor = test_helpers::find_test_clap_plugin_by_name (
         juce::String::fromUTF8 (GetParam ().plugin_name.data ()));
     }
   else
     {
-      juce_desc = test_helpers::find_test_vst3_plugin_by_name (
+      descriptor = test_helpers::find_test_vst3_plugin_by_name (
         juce::String::fromUTF8 (GetParam ().plugin_name.data ()));
     }
-  ASSERT_NE (juce_desc, nullptr);
-
-  auto descriptor =
-    plugins::PluginDescriptor::from_juce_description (*juce_desc);
   ASSERT_NE (descriptor, nullptr);
 
   bool instantiation_finished = false;

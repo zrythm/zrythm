@@ -38,9 +38,36 @@ target_link_libraries(zrythm_vst3_hosting_lib PUBLIC sdk_hosting)
 
 qt_add_library(zrythm_plugins_lib STATIC)
 
+set(PLUGIN_CATALOG_SCHEMA_INLINED_JSON "${CMAKE_CURRENT_BINARY_DIR}/known-plugins.schema.inlined.json")
+add_custom_command(
+  OUTPUT "${PLUGIN_CATALOG_SCHEMA_INLINED_JSON}"
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/inline_json_schema_refs.py"
+    "${CMAKE_SOURCE_DIR}/data/schemas/known-plugins.schema.json"
+    "${PLUGIN_CATALOG_SCHEMA_INLINED_JSON}"
+  DEPENDS
+    "${CMAKE_SOURCE_DIR}/data/schemas/known-plugins.schema.json"
+    "${CMAKE_SOURCE_DIR}/data/schemas/common.schema.json"
+    "${CMAKE_SOURCE_DIR}/scripts/inline_json_schema_refs.py"
+  COMMENT "Inlining shared schema definitions into known-plugins.schema.json"
+)
+add_custom_command(
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/plugin_catalog_json_schema.h"
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/generate_embedded_header.py"
+    "${PLUGIN_CATALOG_SCHEMA_INLINED_JSON}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/plugin_catalog_json_schema.in.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/plugin_catalog_json_schema.h"
+    "@PLUGIN_CATALOG_SCHEMA_JSON_HEX_BYTES@"
+  DEPENDS
+    "${PLUGIN_CATALOG_SCHEMA_INLINED_JSON}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/plugin_catalog_json_schema.in.h"
+    "${CMAKE_SOURCE_DIR}/scripts/generate_embedded_header.py"
+  COMMENT "Generating embedded known-plugins JSON schema header"
+)
+
 target_sources(zrythm_plugins_lib
   PRIVATE
-    CLAPPluginFormat.cpp
+    "${CMAKE_CURRENT_BINARY_DIR}/plugin_catalog_json_schema.h"
+    clap_plugin_format.cpp
     clap_plugin.cpp
     clap_preset_discovery.cpp
     gl_context_utils.cpp
@@ -54,9 +81,9 @@ target_sources(zrythm_plugins_lib
     lv2_world.cpp
     out_of_process_scanner.cpp
     plugin.cpp
+    plugin_catalog.cpp
     plugin_configuration.cpp
     plugin_descriptor.cpp
-    plugin_descriptor_list.cpp
     plugin_group.cpp
     plugin_host_window.cpp
     plugin_instantiation_wait.cpp
@@ -66,14 +93,16 @@ target_sources(zrythm_plugins_lib
     plugin_protocol.cpp
     plugin_run_loop.cpp
     plugin_format_utils.cpp
+    plugin_scan_format.cpp
     plugin_scan_manager.cpp
+    plugin_scan_protocol.cpp
     vst3_plugin.cpp
     vst3_plugin_format.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
     FILES
-      CLAPPluginFormat.h
+      clap_plugin_format.h
       clap_plugin.h
       clap_preset_discovery.h
       clap_speaker_arrangement.h
@@ -89,9 +118,9 @@ target_sources(zrythm_plugins_lib
       out_of_process_scanner.h
       plugin.h
       plugin_all.h
+      plugin_catalog.h
       plugin_configuration.h
       plugin_descriptor.h
-      plugin_descriptor_list.h
       plugin_factory.h
       plugin_format_utils.h
       plugin_group.h
@@ -102,7 +131,9 @@ target_sources(zrythm_plugins_lib
       plugin_preset_list_model.h
       plugin_protocol.h
       plugin_run_loop.h
+      plugin_scan_format.h
       plugin_scan_manager.h
+      plugin_scan_protocol.h
       plugin_transport_context.h
       vst3_channel_mapping.h
       vst3_speaker_arrangement.h
@@ -163,6 +194,7 @@ target_link_libraries(zrythm_plugins_lib
     zrythm::all_compile_options
     zrythm_dsp_lib
     zrythm_vst3_hosting_lib
+    nlohmann_json_schema_validator
     $<$<TARGET_EXISTS:zrythm_faust_plugins>:zrythm_faust_plugins>
 )
 

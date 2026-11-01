@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -93,18 +93,16 @@ OutOfProcessPluginScanner::SubprocessCoordinator::getResponse ()
 {
   std::unique_lock<std::mutex> lock{ mutex };
 
-  // z_debug ("Waiting for response...");
-
   if (!condvar.wait_for (lock, std::chrono::milliseconds{ 50 }, [&] {
         return gotResult || connectionLost;
       }))
-    return { .state = State::Timeout, .xml = nullptr };
+    return { .state = State::Timeout, .payload = {} };
 
   const auto state = connectionLost ? State::ConnectionLost : State::GotResult;
   connectionLost = false;
   gotResult = false;
 
-  return { .state = state, .xml = std::move (pluginDescription) };
+  return { .state = state, .payload = std::move (payload) };
 }
 
 void
@@ -112,8 +110,7 @@ OutOfProcessPluginScanner::SubprocessCoordinator::handleMessageFromWorker (
   const juce::MemoryBlock &mb)
 {
   const std::lock_guard<std::mutex> lock{ mutex };
-  z_trace ("Received message from plugin scanner worker:\n{}", mb.toString ());
-  pluginDescription = parseXML (mb.toString ());
+  payload = utils::Utf8String::from_juce_string (mb.toString ());
   gotResult = true;
   condvar.notify_one ();
 }
@@ -135,81 +132,92 @@ OutOfProcessPluginScanner::OutOfProcessPluginScanner (QObject * parent)
 }
 OutOfProcessPluginScanner::~OutOfProcessPluginScanner () = default;
 
-bool
-OutOfProcessPluginScanner::findPluginTypesFor (
-  juce::AudioPluginFormat                   &format,
-  juce::OwnedArray<juce::PluginDescription> &result,
-  const juce::String                        &fileOrIdentifier)
+PluginScanResult
+OutOfProcessPluginScanner::scan (
+  const utils::Utf8String      &format_name,
+  const utils::Utf8String      &identifier,
+  const std::function<bool ()> &cancelled)
 {
-  z_debug ("Scanning {}", fileOrIdentifier);
+  z_debug ("Scanning {} {}", format_name, identifier);
 
-  if (add_plugin_descriptions (format, fileOrIdentifier, result))
-    return true;
-
-  coordinator_ = nullptr;
-  return false;
+  auto result = add_plugin_descriptions (format_name, identifier, cancelled);
+  if (!result.has_value ())
+    coordinator_ = nullptr;
+  return result;
 }
 
-bool
+PluginScanResult
 OutOfProcessPluginScanner::add_plugin_descriptions (
-  juce::AudioPluginFormat                   &format,
-  const juce::String                        &file_or_identifier,
-  juce::OwnedArray<juce::PluginDescription> &result)
+  const utils::Utf8String      &format_name,
+  const utils::Utf8String      &identifier,
+  const std::function<bool ()> &cancelled)
 {
+  if (cancelled ())
+    return std::vector<std::unique_ptr<PluginDescriptor>>{};
+
   if (coordinator_ == nullptr)
-    coordinator_ = std::make_unique<SubprocessCoordinator> ();
+    {
+      // A scanner that cannot start is an environment failure that affects
+      // every identifier, so the failure propagates and aborts the whole scan
+      try
+        {
+          coordinator_ = std::make_unique<SubprocessCoordinator> ();
+        }
+      catch (const std::exception &e)
+        {
+          throw ZrythmException (
+            fmt::format ("Failed to launch plugin scanner: {}", e.what ()));
+        }
+    }
 
   juce::MemoryBlock        block;
   juce::MemoryOutputStream stream{ block, true };
-  stream.writeString (format.getName ());
-  stream.writeString (file_or_identifier);
+  stream.writeString (format_name.to_juce_string ());
+  stream.writeString (identifier.to_juce_string ());
 
-  z_trace (
-    "Sending scan request for {} {}", format.getName (), file_or_identifier);
+  z_trace ("Sending scan request for {} {}", format_name, identifier);
 
   if (!coordinator_->sendMessageToWorker (block))
-    return false;
+    return std::unexpected (
+      utils::Utf8String::from_utf8_encoded_string (
+        "Failed to send plugin scan request"));
 
   const auto start_time = std::chrono::steady_clock::now ();
 
   for (;;)
     {
-      if (shouldExit ())
-        return true;
-
       const auto response = coordinator_->getResponse ();
 
       if (response.state == SubprocessCoordinator::State::Timeout)
         {
-          // Check if the total time elapsed exceeds the timeout
-          auto current_time = std::chrono::steady_clock::now ();
+          if (cancelled ())
+            {
+              // The abandoned subprocess is replaced by a fresh one on the
+              // next scan
+              coordinator_ = nullptr;
+              return std::vector<std::unique_ptr<PluginDescriptor>>{};
+            }
+          const auto current_time = std::chrono::steady_clock::now ();
           if (current_time - start_time > PLUGIN_SCAN_TIMEOUT)
             {
               z_warning (
-                "Scan for '{}' timed out after {} seconds", file_or_identifier,
+                "Scan for '{}' timed out after {} seconds", identifier,
                 PLUGIN_SCAN_TIMEOUT.count ());
-              return false;
+              return std::unexpected (
+                utils::Utf8String::from_utf8_encoded_string (
+                  fmt::format (
+                    "Plugin scan timed out after {} seconds",
+                    PLUGIN_SCAN_TIMEOUT.count ())));
             }
 
-          // plugin is still being scanned - try again
           continue;
         }
 
-      if (response.xml != nullptr)
-        {
-          for (const auto * item : response.xml->getChildIterator ())
-            {
-              auto desc = std::make_unique<juce::PluginDescription> ();
+      if (response.state == SubprocessCoordinator::State::ConnectionLost)
+        return std::unexpected (
+          utils::Utf8String::from_utf8_encoded_string (
+            "Plugin scanner connection lost"));
 
-              if (desc->loadFromXml (*item))
-                {
-                  z_debug ("Adding plugin: {}", desc->name);
-                  result.add (std::move (desc));
-                  // Q_EMIT pluginsAdded ();
-                }
-            }
-        }
-
-      return (response.state == SubprocessCoordinator::State::GotResult);
+      return deserialize_plugin_scan_response (response.payload.view ());
     }
 }

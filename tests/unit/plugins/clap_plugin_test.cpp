@@ -11,8 +11,8 @@
 
 #include "dsp/fork_join_executor.h"
 #include "dsp/midi_event.h"
-#include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
+#include "plugins/clap_plugin_format.h"
 #include "plugins/clap_preset_discovery.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
@@ -109,13 +109,13 @@ protected:
 
   void load_test_plugin (std::string_view name)
   {
-    const auto juce_desc = test_helpers::find_test_clap_plugin_by_name (
+    auto descriptor = test_helpers::find_test_clap_plugin_by_name (
       juce::String::fromUTF8 (name.data (), static_cast<int> (name.size ())));
-    ASSERT_NE (juce_desc, nullptr)
+    ASSERT_NE (descriptor, nullptr)
       << "Test CLAP plugin '" << name << "' not found";
 
     auto config = std::make_unique<PluginConfiguration> ();
-    config->descr_ = PluginDescriptor::from_juce_description (*juce_desc);
+    config->descr_ = std::move (descriptor);
     ASSERT_NE (config->descr_, nullptr);
 
     window_state_ = std::make_shared<test_helpers::MockPluginHostWindowState> ();
@@ -1351,11 +1351,11 @@ TEST_F (ClapPluginTest, ThreadPoolConcurrentInstancesDoNotInterfere)
 
   // Second instance: sequential construction on this thread, its own
   // registry/window state, shared main-thread dispatcher
-  const auto juce_desc = test_helpers::find_test_clap_plugin_by_name (
+  auto descriptor = test_helpers::find_test_clap_plugin_by_name (
     juce::String ("Test Thread Pool"));
-  ASSERT_NE (juce_desc, nullptr);
+  ASSERT_NE (descriptor, nullptr);
   auto config = std::make_unique<PluginConfiguration> ();
-  config->descr_ = PluginDescriptor::from_juce_description (*juce_desc);
+  config->descr_ = std::move (descriptor);
   ASSERT_NE (config->descr_, nullptr);
   auto second_registry = std::make_unique<utils::ObjectRegistry> ();
   auto second_window_state =

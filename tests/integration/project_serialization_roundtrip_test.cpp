@@ -652,15 +652,11 @@ TEST_F (ProjectSerializationRoundtripTest, SaveLoadSaveRoundtripWithFaustPlugin)
 TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithVst3Plugin)
 {
   static const juce::String kTargetPluginName = "Test Gain";
-  auto                      juce_desc =
+  auto                      descriptor =
     test_helpers::find_test_vst3_plugin_by_name (kTargetPluginName);
-  ASSERT_NE (juce_desc, nullptr)
+  ASSERT_NE (descriptor, nullptr)
     << "Test VST3 plugin '" << kTargetPluginName
     << "' not found - check TEST_VST3_SEARCH_PATHS";
-
-  auto descriptor =
-    plugins::PluginDescriptor::from_juce_description (*juce_desc);
-  ASSERT_NE (descriptor, nullptr);
 
   // 2 built-in (bypass + gain) + 4 plugin params (Level, CC Assign,
   // Auto Report, UI Edit Mode)
@@ -678,15 +674,11 @@ TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithVst3Plugin)
 TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithClapPlugin)
 {
   static const juce::String kTargetPluginName = "Test Gain";
-  auto                      juce_desc =
+  auto                      descriptor =
     test_helpers::find_test_clap_plugin_by_name (kTargetPluginName);
-  ASSERT_NE (juce_desc, nullptr)
+  ASSERT_NE (descriptor, nullptr)
     << "Test CLAP plugin '" << kTargetPluginName
     << "' not found - check TEST_CLAP_SEARCH_PATHS";
-
-  auto descriptor =
-    plugins::PluginDescriptor::from_juce_description (*juce_desc);
-  ASSERT_NE (descriptor, nullptr);
 
   // 2 built-in (bypass + gain) + 2 plugin params (Level, Report Mode)
   save_load_save_roundtrip_with_plugin (*descriptor, 4);
@@ -709,14 +701,10 @@ TEST_F (
   ClapStatePreservedOnReloadWithDivergedValue)
 {
   static const juce::String kTargetPluginName = "Test Gain";
-  auto                      juce_desc =
+  auto                      descriptor =
     test_helpers::find_test_clap_plugin_by_name (kTargetPluginName);
-  ASSERT_NE (juce_desc, nullptr)
+  ASSERT_NE (descriptor, nullptr)
     << "Bundled CLAP plugin '" << kTargetPluginName << "' not found";
-
-  auto descriptor =
-    plugins::PluginDescriptor::from_juce_description (*juce_desc);
-  ASSERT_NE (descriptor, nullptr);
 
   // === Step 1: Create project, set Level to 0.75, save ===
   auto bundle = std::make_unique<ProjectBundle> ();
@@ -952,15 +940,11 @@ TEST_P (ProjectPluginUiRestoreTest, LoadWithVisibleUiRestoresEditorDeferred)
   const auto plugin_name = juce::String::fromUTF8 (
     GetParam ().data (), static_cast<int> (GetParam ().size ()));
 
-  auto juce_desc = test_helpers::find_test_clap_plugin_by_name (plugin_name);
-  if (juce_desc == nullptr)
-    juce_desc = test_helpers::find_test_vst3_plugin_by_name (plugin_name);
-  ASSERT_NE (juce_desc, nullptr)
+  auto descriptor = test_helpers::find_test_clap_plugin_by_name (plugin_name);
+  if (descriptor == nullptr)
+    descriptor = test_helpers::find_test_vst3_plugin_by_name (plugin_name);
+  ASSERT_NE (descriptor, nullptr)
     << "Test GUI plugin '" << plugin_name << "' not found";
-
-  auto descriptor =
-    plugins::PluginDescriptor::from_juce_description (*juce_desc);
-  ASSERT_NE (descriptor, nullptr);
 
   // === Step 1: Create a project with the plugin's editor shown ===
   auto original_window_state =

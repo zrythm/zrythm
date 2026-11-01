@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -39,7 +39,12 @@
 
 #pragma once
 
+#include <cstdint>
+
+#include "plugins/plugin_catalog.h"
 #include "plugins/plugin_protocol.h"
+#include "plugins/plugin_scan_format.h"
+#include "plugins/plugin_scan_protocol.h"
 #include "utils/file_path_list.h"
 #include "utils/qt.h"
 
@@ -50,10 +55,11 @@
 #include <QThread>
 #include <QtQmlIntegration/qqmlintegration.h>
 
-#include <juce_audio_processors/juce_audio_processors.h>
-
 namespace zrythm::plugins
 {
+
+using discovery::PluginCatalog;
+using discovery::PluginScanner;
 
 //==============================================================================
 
@@ -62,51 +68,39 @@ using ProtocolPluginPathsProvider =
 
 class PluginScanManager;
 
-// can't use QObject in nested classes so we put it in a namespace
 namespace scanner_private
 {
 /**
- * @brief A worker thread for the PluginScanManager class.
- *
- * This class is responsible for performing the actual plugin scanning
- * in a separate thread, to avoid blocking the main thread.
+ * @brief Worker that scans plugin identifiers outside the main thread.
  */
 class Worker final : public QObject
 {
   Q_OBJECT
 
 public:
-  /**
-   * @brief Constructs a new Worker instance.
-   * @param scanner The PluginScanManager instance to work with.
-   */
-  Worker (PluginScanManager &scanner_);
+  Worker (
+    PluginScanManager                       &scanner_,
+    std::shared_ptr<PluginCatalog>           catalog,
+    std::shared_ptr<PluginScanFormatManager> format_manager,
+    PluginScanner *                          plugin_scanner,
+    std::uint64_t                            scan_generation);
 
 public:
-  /**
-   * @brief Starts the plugin scanning process.
-   *
-   * This slot is called from the PluginScanManager class to initiate the
-   * scanning process in the worker thread.
-   */
   Q_SLOT void process ();
 
-  /**
-   * @brief Request the worker to stop gracefully.
-   */
   void requestStop ();
 
-  /**
-   * @brief Emitted when the scanning process has finished.
-   *
-   * This signal is connected to the PluginScanManager class to notify it
-   * that the scanning is complete.
-   */
   Q_SIGNAL void finished ();
 
 private:
-  PluginScanManager &scanner_;
-  std::atomic<bool>  should_stop_{ false };
+  void process_scan ();
+
+  PluginScanManager                       &scanner_;
+  std::shared_ptr<PluginCatalog>           catalog_;
+  std::shared_ptr<PluginScanFormatManager> format_manager_;
+  PluginScanner *                          plugin_scanner_;
+  std::uint64_t                            scan_generation_;
+  std::atomic<bool>                        should_stop_{ false };
 };
 } // namespace scanner_private
 
@@ -140,23 +134,12 @@ class PluginScanManager final : public QObject
   Q_DISABLE_COPY_MOVE (PluginScanManager)
 
 public:
-  /**
-   * @brief Constructs a PluginScanManager object.
-   *
-   * @param known_plugins A shared pointer to a juce::KnownPluginList containing
-   * previously discovered plugins. A scanner must already be set to it (eg, via
-   * setCustomScanner()).
-   * @param parent The parent QObject for memory management (optional, defaults
-   * to nullptr).
-   *
-   * This constructor initializes a PluginScanManager with a list of known
-   * plugins.
-   */
-  explicit PluginScanManager (
-    std::shared_ptr<juce::KnownPluginList>          known_plugins,
-    std::shared_ptr<juce::AudioPluginFormatManager> format_manager,
-    ProtocolPluginPathsProvider                     plugin_paths_provider,
-    QObject *                                       parent = nullptr);
+  PluginScanManager (
+    std::shared_ptr<PluginCatalog>           catalog,
+    std::shared_ptr<PluginScanFormatManager> format_manager,
+    ProtocolPluginPathsProvider              plugin_paths_provider,
+    std::unique_ptr<PluginScanner>           plugin_scanner,
+    QObject *                                parent = nullptr);
 
   ~PluginScanManager () override;
 
@@ -177,51 +160,32 @@ public:
    */
   QString getCurrentlyScanningPlugin () const;
 
-  /**
-   * @brief Emitted after the scan has finished and after this instance has been
-   * moved to the main thread.
-   */
   Q_SIGNAL void scanningFinished ();
 
-  /**
-   * @brief Emitted from the scan thread (not the main thread) when a new (not
-   * known) plugin is added to the list.
-   *
-   * @note Currently unused.
-   */
-  // Q_SIGNAL void pluginsAdded ();
-
-  /**
-   * @brief Connected to by @ref PluginManager to relay the signal.
-   *
-   * @warning Do not use directly in other places.
-   */
   Q_SIGNAL void currentlyScanningPluginChanged (const QString &plugin);
 
-  /**
-   * @brief To be called after scanning is finished to obtain the scan result.
-   */
-  // auto get_scanned_plugins () const { return known_plugin_list_; }
-
 private:
-  void scan_for_plugins ();
-
   void set_currently_scanning_plugin (const QString &plugin);
 
-  /**
-   * @brief Slot to be called by the Worker to let us know plugin scan finished.
-   *
-   * This is called right before the Worker deletes itself (via deleteLater()).
-   */
   Q_SLOT void scan_finished ();
 
+  /** Starts a new scan generation. Must be called with no scan thread active. */
+  void start_scan ();
+
+  /** Discards a finished scan generation and starts a requested restart. */
+  void finish_scan (std::uint64_t scan_generation);
+
 private:
-  std::shared_ptr<juce::KnownPluginList>          known_plugin_list_;
-  ProtocolPluginPathsProvider                     plugin_paths_provider_;
-  std::shared_ptr<juce::AudioPluginFormatManager> format_manager_;
+  std::shared_ptr<PluginCatalog>           catalog_;
+  ProtocolPluginPathsProvider              plugin_paths_provider_;
+  std::shared_ptr<PluginScanFormatManager> format_manager_;
+  std::unique_ptr<PluginScanner>           plugin_scanner_;
 
   mutable QMutex currently_scanning_plugin_mutex_;
   QString        currently_scanning_plugin_;
+
+  std::uint64_t active_generation_ = 0;
+  bool          restart_pending_ = false;
 
   // Temporaries
   utils::QObjectUniquePtr<QThread>                 scan_thread_;

@@ -3,18 +3,22 @@
 
 #include "zrythm-config.h"
 
+#include <algorithm>
+#include <memory>
+
 #include "gui/backend/plugin_manager.h"
 #include "gui/backend/plugin_protocol_paths.h"
-#include "plugins/CLAPPluginFormat.h"
 #include "plugins/faust/faust_registry.h"
 #include "plugins/lv2_plugin_format.h"
 #include "plugins/lv2_world.h"
 #include "plugins/out_of_process_scanner.h"
-#include "plugins/vst3_plugin_format.h"
+#include "plugins/plugin_scan_format.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 
 #include <QtConcurrent>
+
+#include <nlohmann/json.hpp>
 
 using namespace Qt::StringLiterals;
 
@@ -22,68 +26,45 @@ using namespace zrythm::gui::old_dsp::plugins;
 
 bool
 zrythm::gui::old_dsp::plugins::known_plugin_file_missing (
-  const juce::PluginDescription &desc)
+  const zrythm::plugins::PluginDescriptor &descriptor)
 {
   // internal (Faust) plugins are not file-based
-  if (desc.pluginFormatName == "Internal")
+  if (descriptor.protocol_ == zrythm::plugins::Protocol::ProtocolType::Internal)
     return false;
 
-  // only prune absolute file paths (other formats use identifiers or URIs)
-  if (!juce::File::isAbsolutePath (desc.fileOrIdentifier))
+  const auto path = std::get_if<std::filesystem::path> (&descriptor.path_or_id_);
+  if (path == nullptr || !path->is_absolute ())
     return false;
 
-  return !juce::File (desc.fileOrIdentifier).exists ();
+  return !std::filesystem::exists (*path);
 }
 
 PluginManager::PluginManager (
   zrythm::plugins::ProtocolPluginPathsProvider plugin_paths_provider,
   QObject *                                    parent)
-    : QObject (parent),
-      format_manager_ (std::make_shared<juce::AudioPluginFormatManager> ()),
-      known_plugin_list_ (std::make_shared<juce::KnownPluginList> ()),
-      plugin_descriptors_ (new zrythm::plugins::discovery::PluginDescriptorList (
-        known_plugin_list_,
-        this)),
-      collections_ (PluginCollections::read_or_new ())
+    : QObject (parent), collections_ (PluginCollections::read_or_new ())
 {
   // One LV2 world per process, shared by the scan format and the plugins
   // instantiated through get_lv2_world()
   lv2_world_ = std::make_shared<zrythm::plugins::Lv2World> (
     zrythm::plugins::Lv2PluginFormat::get_spec_bundles_dir ());
-
-  juce::addDefaultFormatsToManager (*format_manager_);
-  format_manager_->addFormat (
-    std::make_unique<zrythm::plugins::CLAPPluginFormat> ());
-  format_manager_->addFormat (
-    std::make_unique<zrythm::plugins::Vst3PluginFormat> ());
-  format_manager_->addFormat (
-    std::make_unique<zrythm::plugins::Lv2PluginFormat> (lv2_world_));
-  known_plugin_list_->setCustomScanner (
-    std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
+  scan_formats_ =
+    std::make_shared<zrythm::plugins::PluginScanFormatManager> (lv2_world_);
+  catalog_ = std::make_shared<zrythm::plugins::discovery::PluginCatalog> ();
   scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (
-    known_plugin_list_, format_manager_, plugin_paths_provider);
+    catalog_, scan_formats_, std::move (plugin_paths_provider),
+    std::make_unique<zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
 
-  add_internal_plugins_to_known_list ();
+  add_internal_plugins_to_catalog ();
 }
 
 void
-PluginManager::add_internal_plugins_to_known_list ()
+PluginManager::add_internal_plugins_to_catalog ()
 {
   for (const auto &info : zrythm::plugins::faust::available_faust_plugins ())
     {
-      auto juce_desc =
-        zrythm::plugins::faust::make_faust_plugin_descriptor (info)
-          ->to_juce_description ();
-
-      const auto &existing = known_plugin_list_->getTypes ();
-      const auto  it = std::ranges::find_if (existing, [&] (const auto &pd) {
-        return pd.pluginFormatName == juce_desc->pluginFormatName
-               && pd.fileOrIdentifier == juce_desc->fileOrIdentifier;
-      });
-      if (it == existing.end ())
-        {
-          known_plugin_list_->addType (*juce_desc);
-        }
+      catalog_->add_descriptor (
+        zrythm::plugins::faust::make_faust_plugin_descriptor (info));
     }
 }
 
@@ -112,88 +93,67 @@ PluginManager::add_category_and_author (
     }
 }
 
-void
-PluginManager::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
-{
-#if 0
-  z_return_if_fail (descr.protocol_ > Protocol::ProtocolType::Internal);
-  plugin_descriptors_->addDescriptor (descr);
-  add_category_and_author (descr.category_str_, descr.author_);
-#endif
-}
-
 std::filesystem::path
-PluginManager::get_known_plugins_xml_path ()
+PluginManager::get_known_plugins_json_path ()
 {
   QString local_app_data_path =
     QStandardPaths::writableLocation (QStandardPaths::AppLocalDataLocation);
   QDir dir (local_app_data_path);
   return utils::Utf8String::from_qstring (
-    dir.absoluteFilePath (u"known_plugins.xml"_s));
+    dir.absoluteFilePath (u"known_plugins.json"_s));
 }
 
 void
 PluginManager::serialize_known_plugins ()
 {
-  const auto known_plugins_xml_path = get_known_plugins_xml_path ();
-  const auto known_plugins_xml_path_str =
-    utils::Utf8String::from_path (known_plugins_xml_path);
-  z_return_if_fail (known_plugin_list_);
+  const auto known_plugins_path = get_known_plugins_json_path ();
+  const auto known_plugins_path_str =
+    utils::Utf8String::from_path (known_plugins_path);
 
-  // create parent dir
   try
     {
-      utils::io::mkdir (known_plugins_xml_path.parent_path ());
+      utils::io::mkdir (known_plugins_path.parent_path ());
+      utils::io::set_file_contents (
+        known_plugins_path,
+        utils::Utf8String::from_utf8_encoded_string (
+          catalog_->serialize ().dump ()));
+      z_debug ("Saved known plugins to {}", known_plugins_path_str);
     }
   catch (const std::exception &e)
     {
-      z_warning ("Failed to create directory for known plugins: {}", e.what ());
-      return;
-    }
-
-  if (
-    known_plugin_list_->createXml ()->writeTo (
-      known_plugins_xml_path_str.to_juce_file ()))
-    {
-      z_debug ("Saved known plugins to {}", known_plugins_xml_path_str);
-    }
-  else
-    {
       z_warning (
-        "Failed to save known plugins to {}", known_plugins_xml_path_str);
+        "Failed to save known plugins to {}: {}", known_plugins_path_str,
+        e.what ());
     }
 }
 
 void
 PluginManager::deserialize_known_plugins ()
 {
-  const auto known_plugins_xml_path = get_known_plugins_xml_path ();
-  const auto known_plugins_xml_path_str =
-    utils::Utf8String::from_path (known_plugins_xml_path);
-  known_plugin_list_->clear ();
-  const juce::File jfile (known_plugins_xml_path_str.to_juce_file ());
-  if (jfile.existsAsFile ())
-    {
-      z_debug ("Loading known plugins from {}", known_plugins_xml_path_str);
-      const auto xml_doc = juce::XmlDocument::parse (jfile);
-      if (xml_doc)
-        {
-          known_plugin_list_->recreateFromXml (*xml_doc);
-        }
-      else
-        {
-          z_warning (
-            "Failed to load known plugins from {}", known_plugins_xml_path_str);
-        }
+  const auto known_plugins_path = get_known_plugins_json_path ();
+  const auto known_plugins_path_str =
+    utils::Utf8String::from_path (known_plugins_path);
 
-      // prune entries whose plugin files no longer exist
-      const auto types = known_plugin_list_->getTypes ();
-      int        num_pruned = 0;
-      for (const auto &desc : types)
+  if (!std::filesystem::exists (known_plugins_path))
+    {
+      z_info ("No known plugins file found at {}", known_plugins_path_str);
+      add_internal_plugins_to_catalog ();
+      return;
+    }
+
+  try
+    {
+      const auto contents = utils::io::read_file_contents (known_plugins_path);
+      const auto json = nlohmann::json::parse (utils::to_std_string (contents));
+      catalog_->deserialize (json);
+      z_debug ("Loaded known plugins from {}", known_plugins_path_str);
+
+      int num_pruned = 0;
+      for (const auto &descriptor : catalog_->descriptors ())
         {
-          if (known_plugin_file_missing (desc))
+          if (known_plugin_file_missing (*descriptor))
             {
-              known_plugin_list_->removeType (desc);
+              catalog_->remove_descriptor (*descriptor);
               ++num_pruned;
             }
         }
@@ -202,23 +162,21 @@ PluginManager::deserialize_known_plugins ()
           z_info ("Pruned {} known plugins with missing files", num_pruned);
         }
     }
-  else
+  catch (const std::exception &e)
     {
-      z_info ("No known plugins file found at {}", known_plugins_xml_path_str);
+      z_warning (
+        "Failed to load known plugins from {}: {}", known_plugins_path_str,
+        e.what ());
+      catalog_->clear ();
     }
 
-  add_internal_plugins_to_known_list ();
+  add_internal_plugins_to_catalog ();
 }
 
 void
 PluginManager::onScannerScanFinished ()
 {
-  // serialize
   serialize_known_plugins ();
-
-  known_plugin_list_->sort (juce::KnownPluginList::sortAlphabetically, true);
-
-  // relay the signal
   Q_EMIT scanFinished ();
 }
 
@@ -318,9 +276,9 @@ PluginManager::pick_instrument () const
 void
 PluginManager::clear_plugins ()
 {
-  known_plugin_list_->clear ();
+  catalog_->clear ();
   plugin_categories_.clear ();
   plugin_authors_.clear ();
 
-  add_internal_plugins_to_known_list ();
+  add_internal_plugins_to_catalog ();
 }

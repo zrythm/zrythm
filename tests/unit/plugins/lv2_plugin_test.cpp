@@ -103,18 +103,16 @@ protected:
     int                     plugin_index = 0,
     PluginHostWindowFactory window_factory = {})
   {
-    Lv2PluginFormat                           format{ world_ };
-    juce::OwnedArray<juce::PluginDescription> found;
-    format.findAllTypesForFile (
-      found,
-      utils::Utf8String::from_path (bundle_path (bundle_name)).to_juce_string ());
-    ASSERT_FALSE (found.isEmpty ()) << "No plugins found in " << bundle_name;
-    ASSERT_LT (plugin_index, found.size ())
+    Lv2PluginFormat format{ world_ };
+    auto            scan_result = format.scan_identifier (
+      utils::Utf8String::from_path (bundle_path (bundle_name)));
+    ASSERT_TRUE (scan_result.has_value ())
+      << "No plugins found in " << bundle_name;
+    ASSERT_LT (plugin_index, scan_result->size ())
       << "Bundle has no plugin index " << plugin_index;
 
     auto config = std::make_unique<PluginConfiguration> ();
-    config->descr_ =
-      PluginDescriptor::from_juce_description (*found[plugin_index]);
+    config->descr_ = std::move ((*scan_result)[plugin_index]);
     ASSERT_NE (config->descr_, nullptr);
 
     window_state_ = std::make_shared<test_helpers::MockPluginHostWindowState> ();
@@ -1901,15 +1899,14 @@ TEST_F (Lv2PluginTest, ScalePointsWithLanguageTaggedLabelsAreRead)
 // is a no-op and no state exists
 TEST_F (Lv2PluginTest, MalformedPluginIsRefusedCleanly)
 {
-  Lv2PluginFormat                           format{ world_ };
-  juce::OwnedArray<juce::PluginDescription> found;
-  format.findAllTypesForFile (
-    found,
-    utils::Utf8String::from_path (bundle_path ("broken.lv2")).to_juce_string ());
-  ASSERT_FALSE (found.isEmpty ()) << "No plugins found in broken.lv2";
+  Lv2PluginFormat format{ world_ };
+  auto            scan_result = format.scan_identifier (
+    utils::Utf8String::from_path (bundle_path ("broken.lv2")));
+  ASSERT_TRUE (scan_result.has_value ()) << "No plugins found in broken.lv2";
+  ASSERT_EQ (scan_result->size (), 1);
 
   auto config = std::make_unique<PluginConfiguration> ();
-  config->descr_ = PluginDescriptor::from_juce_description (*found[0]);
+  config->descr_ = std::move ((*scan_result)[0]);
   ASSERT_NE (config->descr_, nullptr);
 
   window_state_ = std::make_shared<test_helpers::MockPluginHostWindowState> ();

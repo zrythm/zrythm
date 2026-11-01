@@ -131,7 +131,7 @@ protected:
     descriptor->num_audio_ins_ = is_instrument ? 0 : 2;
     descriptor->num_audio_outs_ = 2;
     descriptor->num_midi_ins_ = 1;
-    descriptor->num_midi_outs_ = 1;
+    descriptor->num_midi_outs_ = is_midi_modifier ? 1 : 0;
     descriptor->category_ =
       is_instrument
         ? plugins::PluginCategory::Instrument

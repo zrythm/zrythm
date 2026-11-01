@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -39,31 +39,21 @@
 
 #pragma once
 
+#include "plugins/plugin_scan_protocol.h"
+
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
-#include <juce_audio_processors/juce_audio_processors.h>
-
 namespace zrythm::plugins::discovery
-
 {
 
 /**
- * @brief Scans for plugins in an out-of-process manner.
+ * @brief Scans plugins in a separate scanner process.
  *
- * This class is responsible for scanning for audio plugins in an out-of-process
- * manner, using a separate child process to perform the scanning. This is done
- * to avoid potential crashes or hangs in the main process when scanning for
- * plugins.
- *
- * The scanning is performed asynchronously, and a `scanCompleted()` signal is
- * emitted when the scan is finished.
- *
- * TODO: write unit tests.
+ * Plugin binaries are loaded only by the scanner subprocess, so scanner crashes
+ * and hangs cannot take down the application.
  */
-class OutOfProcessPluginScanner final
-    : public QObject,
-      public juce::KnownPluginList::CustomScanner
+class OutOfProcessPluginScanner final : public QObject, public PluginScanner
 {
   Q_OBJECT
 
@@ -71,27 +61,24 @@ public:
   OutOfProcessPluginScanner (QObject * parent = nullptr);
   ~OutOfProcessPluginScanner () override;
 
-  bool findPluginTypesFor (
-    juce::AudioPluginFormat                   &format,
-    juce::OwnedArray<juce::PluginDescription> &result,
-    const juce::String                        &fileOrIdentifier) override;
-
   /**
-   * @brief Used to let Qt know when the scan is done.
+   * @brief Scans one plugin identifier in the subprocess.
+   *
+   * @param format_name Name reported by PluginScanFormat::format_name().
+   * @param identifier File path or format-specific plugin identifier.
+   * @param cancelled Polled while waiting for the subprocess; the scan aborts
+   * with no plugins once it returns true.
+   *
+   * @return The descriptors found (possibly none), or a scan/transport error.
    */
-  Q_SIGNAL void scanCompleted ();
+  [[nodiscard]] PluginScanResult scan (
+    const utils::Utf8String      &format_name,
+    const utils::Utf8String      &identifier,
+    const std::function<bool ()> &cancelled) override;
 
 private:
   /**
-   * @brief Coordinates the execution of a subprocess to scan for plugins.
-   *
-   * This class is responsible for managing the communication with a child
-   * process that is used to scan for audio plugins. It handles sending messages
-   * to the child process, receiving responses, and managing the state of the
-   * communication.
-   *
-   * The class is designed to be used in a thread-safe manner, with a mutex and
-   * condition variable to synchronize access to the shared state.
+   * @brief Coordinates communication with the scanner subprocess.
    */
   class SubprocessCoordinator final : private juce::ChildProcessCoordinator
   {
@@ -108,8 +95,8 @@ private:
 
     struct Response
     {
-      State                             state;
-      std::unique_ptr<juce::XmlElement> xml;
+      State             state;
+      utils::Utf8String payload;
     };
 
     Response getResponse ();
@@ -124,26 +111,18 @@ private:
     std::mutex              mutex;
     std::condition_variable condvar;
 
-    std::unique_ptr<juce::XmlElement> pluginDescription;
-    bool                              connectionLost = false;
-    bool                              gotResult = false;
+    utils::Utf8String payload;
+    bool              connectionLost = false;
+    bool              gotResult = false;
 
     JUCE_DECLARE_NON_MOVEABLE (SubprocessCoordinator)
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubprocessCoordinator)
-  }; // class Superprocess
+  };
 
-  /*  Scans for a plugin with format 'formatName' and ID 'fileOrIdentifier'
-    using a subprocess, and adds discovered plugin descriptions to 'result'.
-
-     Returns true on success.
-
-     Failure indicates that the subprocess is unrecoverable and should be
-    terminated.
-  */
-  bool add_plugin_descriptions (
-    juce::AudioPluginFormat                   &format,
-    const juce::String                        &file_or_identifier,
-    juce::OwnedArray<juce::PluginDescription> &result);
+  [[nodiscard]] PluginScanResult add_plugin_descriptions (
+    const utils::Utf8String      &format_name,
+    const utils::Utf8String      &identifier,
+    const std::function<bool ()> &cancelled);
 
   std::unique_ptr<SubprocessCoordinator> coordinator_;
 

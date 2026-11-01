@@ -79,147 +79,139 @@ Lv2PluginFormat::Lv2PluginFormat (std::shared_ptr<Lv2World> world)
 
 Lv2PluginFormat::~Lv2PluginFormat () = default;
 
-void
-Lv2PluginFormat::findAllTypesForFile (
-  juce::OwnedArray<juce::PluginDescription> &results,
-  const juce::String                        &fileOrIdentifier)
+Protocol::ProtocolType
+Lv2PluginFormat::protocol () const
 {
-  if (!fileMightContainThisPluginType (fileOrIdentifier))
-    return;
-
-  const auto bundle_path = canonical_bundle_path (fileOrIdentifier);
-  const auto plugin_infos = get_plugins_in_bundle (*world_, bundle_path);
-
-  if (plugin_infos.empty ())
-    {
-      // valid outcome, e.g. for bundles that only contain presets
-      z_debug ("Found no LV2 plugins in bundle '{}'", bundle_path);
-      return;
-    }
-
-  const auto mod_time = effective_modification_time (
-    juce::File (utils::Utf8String::from_path (bundle_path).to_juce_string ()));
-  for (const auto &info : plugin_infos)
-    {
-      auto desc = std::make_unique<juce::PluginDescription> ();
-      // Keyed by the bundle path (the scan identifier) so that
-      // KnownPluginList can match existing entries and skip unchanged
-      // bundles; the plugin URI is folded into uniqueId
-      desc->fileOrIdentifier =
-        utils::Utf8String::from_path (bundle_path).to_juce_string ();
-      desc->lastFileModTime = mod_time;
-      desc->lastInfoUpdateTime = juce::Time::getCurrentTime ();
-      desc->pluginFormatName = getFormatName ();
-      desc->name = info.name_.to_juce_string ();
-      desc->manufacturerName = info.author_.to_juce_string ();
-      desc->uniqueId = get_hash_for_range (info.uri_.view ());
-      desc->deprecatedUid = desc->uniqueId;
-      desc->version = info.version_.to_juce_string ();
-      desc->isInstrument = info.is_instrument_;
-      desc->category =
-        info.category_str_.to_juce_string ().isEmpty ()
-          ? (info.is_instrument_ ? "Instrument" : "Effect")
-          : info.category_str_.to_juce_string ();
-      // Unlike VST3, LV2 declares its port counts statically
-      desc->numInputChannels = info.num_audio_ins_;
-      desc->numOutputChannels = info.num_audio_outs_;
-      results.add (std::move (desc));
-    }
+  return Protocol::ProtocolType::LV2;
 }
 
-void
-Lv2PluginFormat::createPluginInstance (
-  const juce::PluginDescription &,
-  double,
-  int,
-  PluginCreationCallback callback)
+utils::Utf8String
+Lv2PluginFormat::format_name () const
 {
-  // LV2 plugins are hosted natively (future Lv2Plugin), not via
-  // juce::AudioPluginInstance
-  callback (nullptr, "unsupported");
+  return u8"LV2";
 }
 
 bool
-Lv2PluginFormat::requiresUnblockedMessageThreadDuringCreation (
-  const juce::PluginDescription &) const
+Lv2PluginFormat::file_might_contain_this_plugin_type (
+  const utils::Utf8String &identifier) const
 {
-  // Discovery is pure ttl parsing (no message-thread APIs), so the scanner
-  // subprocess can scan LV2 bundles directly on its connection thread
-  // instead of deferring to the message thread. JUCE's generic async
-  // creation paths also consult this; it has no effect while instantiation
-  // is unsupported.
-  return true;
+  return identifier.to_qstring ().endsWith (
+    QStringLiteral (".lv2"), Qt::CaseInsensitive);
 }
 
-bool
-Lv2PluginFormat::fileMightContainThisPluginType (
-  const juce::String &fileOrIdentifier)
+std::vector<utils::Utf8String>
+Lv2PluginFormat::search_identifiers (
+  const utils::FilePathList &search_paths,
+  bool                       recursive) const
 {
-  const auto f = juce::File::createFileWithoutCheckingPath (fileOrIdentifier);
-  return f.hasFileExtension ("lv2");
-}
-
-juce::String
-Lv2PluginFormat::getNameOfPluginFromIdentifier (
-  const juce::String &fileOrIdentifier)
-{
-  return juce::File (fileOrIdentifier).getFileNameWithoutExtension ();
-}
-
-bool
-Lv2PluginFormat::pluginNeedsRescanning (const juce::PluginDescription &desc)
-{
-  // the bundle's effective modification time is recorded at scan time
-  // (see findAllTypesForFile)
-  return effective_modification_time (juce::File (desc.fileOrIdentifier))
-         != desc.lastFileModTime;
-}
-
-bool
-Lv2PluginFormat::doesPluginStillExist (const juce::PluginDescription &desc)
-{
-  return juce::File (desc.fileOrIdentifier).exists ();
-}
-
-juce::StringArray
-Lv2PluginFormat::searchPathsForPlugins (
-  const juce::FileSearchPath &directoriesToSearch,
-  const bool                  recursive,
-  bool)
-{
-  juce::StringArray results;
-
-  for (const auto i : std::views::iota (0, directoriesToSearch.getNumPaths ()))
+  std::vector<utils::Utf8String> results;
+  std::error_code                ec;
+  for (const auto &search_path : search_paths)
     {
       for (
-        const auto &iter : juce::RangedDirectoryIterator (
-          directoriesToSearch[i], false, "*", juce::File::findDirectories))
+        const auto &entry :
+        std::filesystem::directory_iterator (search_path, ec))
         {
-          const auto f = iter.getFile ();
-          if (fileMightContainThisPluginType (f.getFullPathName ()))
+          const auto path = entry.path ();
+          const auto path_string = utils::Utf8String::from_path (path);
+          if (file_might_contain_this_plugin_type (path_string))
             {
-              results.add (
+              results.push_back (
                 utils::Utf8String::from_path (
-                  canonical_bundle_path (f.getFullPathName ()))
-                  .to_juce_string ());
+                  canonical_bundle_path (path_string.to_juce_string ())));
             }
-          else if (recursive)
+          else if (recursive && entry.is_directory (ec))
             {
-              results.addArray (searchPathsForPlugins (
-                juce::FileSearchPath{ f.getFullPathName () }, true, false));
+              utils::FilePathList nested_paths;
+              nested_paths.add_path (path);
+              const auto nested_results =
+                search_identifiers (nested_paths, true);
+              results.insert (
+                results.end (), nested_results.begin (), nested_results.end ());
             }
         }
     }
-
+  if (ec)
+    {
+      z_warning ("LV2: failed to search paths: {}", ec.message ());
+    }
   return results;
 }
 
-juce::FileSearchPath
-Lv2PluginFormat::getDefaultLocationsToSearch ()
+std::expected<std::vector<std::unique_ptr<PluginDescriptor>>, utils::Utf8String>
+Lv2PluginFormat::scan_identifier (const utils::Utf8String &identifier)
 {
-  // Unused in our scan flow: search paths come from PluginProtocolPaths
-  // (user settings + platform defaults), not from the format
-  return {};
+  if (!file_might_contain_this_plugin_type (identifier))
+    return std::vector<std::unique_ptr<PluginDescriptor>>{};
+
+  const auto bundle_path = canonical_bundle_path (identifier.to_juce_string ());
+  const auto plugin_infos = get_plugins_in_bundle (*world_, bundle_path);
+  if (plugin_infos.empty ())
+    return std::vector<std::unique_ptr<PluginDescriptor>>{};
+
+  const auto modification_time = effective_modification_time (
+    juce::File (utils::Utf8String::from_path (bundle_path).to_juce_string ()));
+  const auto info_update_time = juce::Time::getCurrentTime ().toMilliseconds ();
+
+  std::vector<std::unique_ptr<PluginDescriptor>> descriptors;
+  for (const auto &info : plugin_infos)
+    {
+      auto descriptor = std::make_unique<PluginDescriptor> ();
+      // Keyed by the canonical bundle path (the scan identifier); the plugin
+      // URI is folded into the unique ID
+      descriptor->path_or_id_ = bundle_path;
+      descriptor->last_file_mod_time_ms_ = modification_time.toMilliseconds ();
+      descriptor->last_info_update_time_ms_ = info_update_time;
+      descriptor->protocol_ = Protocol::ProtocolType::LV2;
+      descriptor->name_ = info.name_;
+      descriptor->author_ = info.author_;
+      descriptor->version_ = info.version_;
+      descriptor->unique_id_ = get_hash_for_range (info.uri_.view ());
+      descriptor->juce_compat_deprecated_unique_id_ =
+        static_cast<int> (descriptor->unique_id_);
+      descriptor->category_ =
+        info.is_instrument_ ? PluginCategory::Instrument : PluginCategory::None;
+      descriptor->category_str_ =
+        info.category_str_.empty ()
+          ? (info.is_instrument_
+               ? utils::Utf8String{ u8"Instrument" }
+               : utils::Utf8String{ u8"Effect" })
+          : info.category_str_;
+      descriptor->num_audio_ins_ = info.num_audio_ins_;
+      descriptor->num_audio_outs_ = info.num_audio_outs_;
+      descriptor->num_midi_ins_ = info.num_midi_ins_;
+      descriptor->num_midi_outs_ = info.num_midi_outs_;
+      descriptor->num_ctrl_ins_ = info.num_ctrl_ins_;
+      descriptor->num_ctrl_outs_ = info.num_ctrl_outs_;
+      descriptor->num_cv_ins_ = info.num_cv_ins_;
+      descriptor->num_cv_outs_ = info.num_cv_outs_;
+      descriptor->has_custom_ui_ = info.has_custom_ui_;
+      descriptors.push_back (std::move (descriptor));
+    }
+
+  return descriptors;
+}
+
+bool
+Lv2PluginFormat::plugin_needs_rescanning (
+  const PluginDescriptor &descriptor) const
+{
+  return effective_modification_time (
+           juce::File (descriptor.source_identifier ().to_juce_string ()))
+           .toMilliseconds ()
+         != descriptor.last_file_mod_time_ms_;
+}
+
+bool
+Lv2PluginFormat::plugin_exists (const PluginDescriptor &descriptor) const
+{
+  return std::filesystem::exists (descriptor.source_identifier ().to_path ());
+}
+
+bool
+Lv2PluginFormat::scan_uses_message_thread (const utils::Utf8String &) const
+{
+  return false;
 }
 
 } // namespace zrythm::plugins

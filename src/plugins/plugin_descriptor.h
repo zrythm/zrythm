@@ -141,6 +141,12 @@ public:
    */
   Q_INVOKABLE QString serializeToString () const;
 
+  /**
+   * @brief Returns the identifier (file path or format-specific ID) the plugin
+   * was scanned from.
+   */
+  [[nodiscard]] utils::Utf8String source_identifier () const;
+
   Q_INVOKABLE bool isInstrument () const;
   Q_INVOKABLE bool isEffect () const;
   Q_INVOKABLE bool isModulator () const;
@@ -174,9 +180,11 @@ public:
 private:
   static constexpr auto kAuthorKey = "author"sv;
   static constexpr auto kNameKey = "name"sv;
+  static constexpr auto kDescriptiveNameKey = "descriptiveName"sv;
   static constexpr auto kWebsiteKey = "website"sv;
   static constexpr auto kCategoryKey = "category"sv;
   static constexpr auto kCategoryStringKey = "categoryString"sv;
+  static constexpr auto kVersionKey = "version"sv;
   static constexpr auto kNumAudioInsKey = "numAudioIns"sv;
   static constexpr auto kNumAudioOutsKey = "numAudioOuts"sv;
   static constexpr auto kNumMidiInsKey = "numMidiIns"sv;
@@ -191,7 +199,10 @@ private:
   static constexpr auto kProtocolKey = "protocol"sv;
   static constexpr auto kPathOrIdKey = "pathOrId"sv;
   static constexpr auto kHasCustomUIKey = "hasCustomUI"sv;
-  friend void           to_json (nlohmann::json &j, const PluginDescriptor &p);
+  static constexpr auto kLastFileModTimeKey = "lastFileModTimeMs"sv;
+  static constexpr auto kLastInfoUpdateTimeKey = "lastInfoUpdateTimeMs"sv;
+
+  friend void to_json (nlohmann::json &j, const PluginDescriptor &p);
   friend void from_json (const nlohmann::json &j, PluginDescriptor &p);
 
   friend bool operator== (const PluginDescriptor &a, const PluginDescriptor &b)
@@ -207,12 +218,21 @@ private:
 public:
   utils::Utf8String author_;
   utils::Utf8String name_;
+
+  /** Longer plugin description, when the format reports one. */
+  utils::Utf8String descriptive_name_;
+
   utils::Utf8String website_;
   PluginCategory    category_ = PluginCategory::None;
   /** Lv2 plugin subcategory. */
   utils::Utf8String category_str_;
+
+  /** Plugin version, in the format's own version-string format. */
+  utils::Utf8String version_;
+
   /** Number of audio input ports. */
   int num_audio_ins_ = 0;
+
   /** Number of MIDI input ports. */
   int num_midi_ins_ = 0;
   /** Number of audio output ports. */
@@ -244,6 +264,14 @@ public:
   /** This is additionally needed by JUCE for some plugin formats. */
   int juce_compat_deprecated_unique_id_{};
 
+  /** Modification time of the scanned plugin file/bundle, in Unix epoch
+   * milliseconds. */
+  std::int64_t last_file_mod_time_ms_{};
+
+  /** Time at which the stored scan information was gathered, in Unix epoch
+   * milliseconds. */
+  std::int64_t last_info_update_time_ms_{};
+
   bool has_custom_ui_{};
 
   BOOST_DESCRIBE_CLASS (
@@ -251,13 +279,17 @@ public:
     (),
     (author_,
      name_,
+     descriptive_name_,
      website_,
      category_,
      category_str_,
+     version_,
      protocol_,
      path_or_id_,
      unique_id_,
      juce_compat_deprecated_unique_id_,
+     last_file_mod_time_ms_,
+     last_info_update_time_ms_,
      num_cv_ins_,
      num_cv_outs_,
      arch_,

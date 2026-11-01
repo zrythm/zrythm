@@ -150,8 +150,9 @@ Item {
       }
     ]
     sorters: [
-      RoleSorter {
-        priority: 0
+      StringSorter {
+        caseSensitivity: Qt.CaseInsensitive
+        numericMode: true
         roleName: "name"
       }
     ]

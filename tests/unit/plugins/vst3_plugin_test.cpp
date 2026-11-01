@@ -111,12 +111,12 @@ protected:
 
   void load_test_plugin (const juce::String &name)
   {
-    const auto juce_desc = test_helpers::find_test_vst3_plugin_by_name (name);
-    ASSERT_NE (juce_desc, nullptr)
+    auto descriptor = test_helpers::find_test_vst3_plugin_by_name (name);
+    ASSERT_NE (descriptor, nullptr)
       << "Test VST3 plugin '" << name << "' not found";
 
     auto config = std::make_unique<PluginConfiguration> ();
-    config->descr_ = PluginDescriptor::from_juce_description (*juce_desc);
+    config->descr_ = std::move (descriptor);
     ASSERT_NE (config->descr_, nullptr);
 
     window_state_ = std::make_shared<test_helpers::MockPluginHostWindowState> ();
@@ -711,11 +711,11 @@ TEST_F (Vst3PluginTest, StateSaveLoadRoundtrip)
 
   // Load the state into a fresh instance
   auto       registry2 = std::make_unique<utils::ObjectRegistry> ();
-  const auto juce_desc =
+  const auto descriptor =
     test_helpers::find_test_vst3_plugin_by_name ("Test Gain");
-  ASSERT_NE (juce_desc, nullptr);
+  ASSERT_NE (descriptor, nullptr);
   auto config2 = std::make_unique<PluginConfiguration> ();
-  config2->descr_ = PluginDescriptor::from_juce_description (*juce_desc);
+  config2->descr_ = utils::clone_unique (*descriptor);
   auto plugin2 = std::make_unique<Vst3Plugin> (
     *registry2,
     test_helpers::make_mock_plugin_host_window_factory (window_state_));
@@ -759,11 +759,11 @@ TEST_F (Vst3PluginTest, PluginContextTracksInstanceLifetime)
 
   // A second instance claims the context for itself on load
   auto       registry2 = std::make_unique<utils::ObjectRegistry> ();
-  const auto juce_desc =
+  const auto descriptor =
     test_helpers::find_test_vst3_plugin_by_name ("Test Gain");
-  ASSERT_NE (juce_desc, nullptr);
+  ASSERT_NE (descriptor, nullptr);
   auto config2 = std::make_unique<PluginConfiguration> ();
-  config2->descr_ = PluginDescriptor::from_juce_description (*juce_desc);
+  config2->descr_ = utils::clone_unique (*descriptor);
   ASSERT_NE (config2->descr_, nullptr);
   auto plugin2 = std::make_unique<Vst3Plugin> (
     *registry2,

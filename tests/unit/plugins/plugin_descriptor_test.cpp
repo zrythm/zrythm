@@ -25,8 +25,6 @@ create_test_descriptor (
   desc->protocol_ = protocol;
   desc->num_audio_ins_ = 2;
   desc->num_audio_outs_ = 2;
-  desc->num_midi_ins_ = 1;
-  desc->num_midi_outs_ = 1;
   return desc;
 }
 
@@ -35,6 +33,8 @@ create_test_descriptor (
 TEST (PluginDescriptorTest, TypeDetection)
 {
   auto instrument = create_test_descriptor (PluginCategory::Instrument);
+  instrument->num_audio_ins_ = 0;
+  instrument->num_midi_ins_ = 1;
   EXPECT_TRUE (instrument->isInstrument ());
   EXPECT_FALSE (instrument->isEffect ());
   EXPECT_FALSE (instrument->isModulator ());
@@ -46,18 +46,79 @@ TEST (PluginDescriptorTest, TypeDetection)
   EXPECT_FALSE (effect->isModulator ());
   EXPECT_FALSE (effect->isMidiModifier ());
 
-  auto modulator = create_test_descriptor (PluginCategory::MODULATOR);
+  auto modulator = create_test_descriptor ();
+  modulator->num_audio_ins_ = 0;
+  modulator->num_audio_outs_ = 0;
   modulator->num_cv_outs_ = 1;
   EXPECT_FALSE (modulator->isInstrument ());
-  EXPECT_TRUE (modulator->isEffect ());
+  EXPECT_FALSE (modulator->isEffect ());
   EXPECT_TRUE (modulator->isModulator ());
   EXPECT_FALSE (modulator->isMidiModifier ());
 
-  auto midi_mod = create_test_descriptor (PluginCategory::MIDI);
-  EXPECT_FALSE (midi_mod->isInstrument ());
-  EXPECT_FALSE (midi_mod->isEffect ());
-  EXPECT_FALSE (midi_mod->isModulator ());
-  EXPECT_TRUE (midi_mod->isMidiModifier ());
+  auto midi_effect = create_test_descriptor ();
+  midi_effect->num_audio_ins_ = 0;
+  midi_effect->num_audio_outs_ = 0;
+  midi_effect->num_midi_ins_ = 1;
+  midi_effect->num_midi_outs_ = 1;
+  EXPECT_FALSE (midi_effect->isInstrument ());
+  EXPECT_FALSE (midi_effect->isEffect ());
+  EXPECT_FALSE (midi_effect->isModulator ());
+  EXPECT_TRUE (midi_effect->isMidiModifier ());
+}
+
+TEST (PluginDescriptorTest, ModulatorDetectionRequiresCvOutputs)
+{
+  auto without_cv_outputs = create_test_descriptor (PluginCategory::MODULATOR);
+  without_cv_outputs->num_audio_ins_ = 0;
+  without_cv_outputs->num_audio_outs_ = 0;
+  EXPECT_FALSE (without_cv_outputs->isModulator ());
+
+  auto with_cv_outputs = create_test_descriptor (PluginCategory::Delay);
+  with_cv_outputs->num_audio_ins_ = 0;
+  with_cv_outputs->num_audio_outs_ = 0;
+  with_cv_outputs->num_cv_outs_ = 1;
+  EXPECT_TRUE (with_cv_outputs->isModulator ());
+}
+
+TEST (PluginDescriptorTest, MidiDetectionRequiresMidiOutputs)
+{
+  auto without_midi_outputs = create_test_descriptor (PluginCategory::MIDI);
+  without_midi_outputs->num_audio_ins_ = 0;
+  without_midi_outputs->num_audio_outs_ = 0;
+  without_midi_outputs->num_midi_ins_ = 1;
+  EXPECT_FALSE (without_midi_outputs->isMidiModifier ());
+
+  auto with_midi_outputs = create_test_descriptor (PluginCategory::Delay);
+  with_midi_outputs->num_audio_ins_ = 0;
+  with_midi_outputs->num_audio_outs_ = 0;
+  with_midi_outputs->num_midi_ins_ = 1;
+  with_midi_outputs->num_midi_outs_ = 1;
+  EXPECT_TRUE (with_midi_outputs->isMidiModifier ());
+}
+
+TEST (PluginDescriptorTest, TypesAreNotExclusive)
+{
+  auto descriptor = create_test_descriptor (PluginCategory::Instrument);
+  descriptor->num_audio_ins_ = 0;
+  descriptor->num_midi_ins_ = 1;
+  descriptor->num_midi_outs_ = 1;
+  descriptor->num_cv_outs_ = 1;
+  EXPECT_TRUE (descriptor->isInstrument ());
+  EXPECT_TRUE (descriptor->isModulator ());
+  EXPECT_TRUE (descriptor->isMidiModifier ());
+}
+
+TEST (PluginDescriptorTest, UncategorizedInstrumentRequiresNoAudioInputs)
+{
+  auto with_audio_inputs = create_test_descriptor ();
+  with_audio_inputs->num_midi_ins_ = 1;
+  EXPECT_FALSE (with_audio_inputs->isInstrument ());
+  EXPECT_TRUE (with_audio_inputs->isEffect ());
+
+  auto without_audio_inputs = create_test_descriptor ();
+  without_audio_inputs->num_audio_ins_ = 0;
+  without_audio_inputs->num_midi_ins_ = 1;
+  EXPECT_TRUE (without_audio_inputs->isInstrument ());
 }
 
 TEST (PluginDescriptorTest, CategoryConversion)
@@ -93,5 +154,24 @@ TEST (PluginDescriptorTest, Serialization)
   from_json (j, *deserialized);
 
   EXPECT_TRUE (original->is_same_plugin (*deserialized));
+}
+
+TEST (PluginDescriptorTest, DeserializationAcceptsMissingScanTimestamps)
+{
+  auto original = create_test_descriptor (PluginCategory::Delay);
+  original->path_or_id_ = utils::Utf8String (u8"http://example.org/plugin");
+  original->unique_id_ = 12345;
+  original->last_file_mod_time_ms_ = 1000;
+  original->last_info_update_time_ms_ = 2000;
+
+  nlohmann::json j = *original;
+  j.erase ("lastFileModTimeMs");
+  j.erase ("lastInfoUpdateTimeMs");
+
+  PluginDescriptor deserialized;
+  from_json (j, deserialized);
+  EXPECT_EQ (deserialized.last_file_mod_time_ms_, 0);
+  EXPECT_EQ (deserialized.last_info_update_time_ms_, 0);
+  EXPECT_EQ (deserialized.name_, original->name_);
 }
 }

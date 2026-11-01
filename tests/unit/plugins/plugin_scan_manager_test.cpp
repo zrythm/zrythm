@@ -1,304 +1,337 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <atomic>
+#include <fstream>
+#include <future>
+#include <stdexcept>
+
+#include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_scan_manager.h"
+#include "utils/icloneable.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 
 #include <QSignalSpy>
-#include <QTest>
-#include <QtConcurrent>
 
 #include "helpers/scoped_juce_qapplication.h"
-#include "helpers/scoped_qcoreapplication.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 using namespace zrythm::test_helpers;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::Return;
 
 namespace zrythm::plugins
 {
 
-class TestPathsProvider
+namespace
+{
+
+class TestScanner final : public discovery::PluginScanner
 {
 public:
-  auto operator() (Protocol::ProtocolType prot)
-    -> std::unique_ptr<utils::FilePathList>
+  discovery::PluginScanResult scan (
+    const utils::Utf8String &format_name,
+    const utils::Utf8String &identifier,
+    const std::function<bool ()> &) override
   {
-    auto list = std::make_unique<utils::FilePathList> ();
-    switch (prot)
+    ++call_count;
+    scanned_identifiers.push_back (identifier);
+    if (throw_exception)
+      throw std::runtime_error ("requested scanner exception");
+    if (fail)
+      return std::unexpected (
+        utils::Utf8String::from_utf8_encoded_string ("requested scan failure"));
+    if (block_next_scan.exchange (false))
       {
-      case Protocol::ProtocolType::LV2:
-        list->add_path (std::filesystem::path ("test/path/lv2"));
-        break;
-      case Protocol::ProtocolType::VST:
-        list->add_path (std::filesystem::path ("test/path/vst"));
-        break;
-      default:
-        break;
+        scan_started.set_value ();
+        scan_release_future.wait ();
       }
-    return list;
+
+    auto descriptor = std::make_unique<PluginDescriptor> ();
+    descriptor->name_ = u8"Test Plugin";
+    descriptor->protocol_ = Protocol::ProtocolType::VST3;
+    descriptor->path_or_id_ = identifier.to_path ();
+    descriptor->unique_id_ = 12345;
+    descriptor->juce_compat_deprecated_unique_id_ = 12345;
+    descriptor->last_file_mod_time_ms_ = file_modification_ms.value_or (0);
+    descriptor->last_info_update_time_ms_ = 2000;
+    descriptor->num_audio_ins_ = 2;
+    descriptor->num_audio_outs_ = 2;
+    descriptor->num_midi_outs_ = 1;
+
+    std::vector<std::unique_ptr<PluginDescriptor>> descriptors;
+    if (return_descriptor)
+      {
+        descriptors.push_back (std::move (descriptor));
+        if (duplicate_descriptors)
+          descriptors.push_back (utils::clone_unique (*descriptors.front ()));
+      }
+    return descriptors;
   }
+
+  bool                     fail = false;
+  bool                     return_descriptor = true;
+  bool                     duplicate_descriptors = false;
+  bool                     throw_exception = false;
+  std::atomic<bool>        block_next_scan{ false };
+  std::promise<void>       scan_started;
+  std::promise<void>       scan_release;
+  std::shared_future<void> scan_started_future =
+    scan_started.get_future ().share ();
+  std::shared_future<void> scan_release_future =
+    scan_release.get_future ().share ();
+  std::optional<std::int64_t>    file_modification_ms;
+  int                            call_count = 0;
+  std::vector<utils::Utf8String> scanned_identifiers;
 };
 
-class MockPluginList : public juce::KnownPluginList
+class TempVst3Path
 {
 public:
-  MOCK_METHOD (
-    bool,
-    scanAndAddFile,
-    (const juce::String &,
-     bool,
-     juce::OwnedArray<juce::PluginDescription> &,
-     juce::AudioPluginFormat &),
-    ());
+  explicit TempVst3Path (const QString &test_name)
+      : dir_ (utils::io::make_tmp_dir (test_name + "_XXXXXX"))
+  {
+    const auto dir_path =
+      utils::Utf8String::from_qstring (dir_->path ()).to_path ();
+    plugin_path_ = dir_path / "test-plugin.vst3";
+    std::ofstream file (plugin_path_);
+    file << "placeholder";
+  }
+
+  utils::Utf8String identifier () const
+  {
+    return utils::Utf8String::from_path (plugin_path_);
+  }
+
+  std::filesystem::path search_path () const
+  {
+    return plugin_path_.parent_path ();
+  }
+
+  // Rescan detection compares juce Unix-epoch milliseconds, so the test
+  // reads the timestamp through the same utility
+  std::int64_t modification_ms () const
+  {
+    return zrythm::plugins::effective_modification_time (
+             utils::Utf8String::from_path (plugin_path_).to_juce_file ())
+      .toMilliseconds ();
+  }
+
+private:
+  std::unique_ptr<QTemporaryDir> dir_;
+  std::filesystem::path          plugin_path_;
 };
 
-class MockAudioFormat : public juce::AudioPluginFormat
+struct ScanManagerTest : ::testing::Test, private ScopedJuceQApplication
 {
-public:
-  MOCK_METHOD (juce::String, getName, (), (const override));
-  MOCK_METHOD (
-    juce::StringArray,
-    searchPathsForPlugins,
-    (const juce::FileSearchPath &, bool, bool),
-    (override));
-  bool canScanForPlugins () const override { return true; }
-  bool isTrivialToScan () const override { return false; }
+  std::shared_ptr<discovery::PluginCatalog> catalog =
+    std::make_shared<discovery::PluginCatalog> ();
+  std::shared_ptr<PluginScanFormatManager> formats =
+    std::make_shared<PluginScanFormatManager> (nullptr);
 
-  void findAllTypesForFile (
-    juce::OwnedArray<juce::PluginDescription> &,
-    const juce::String &) override
+  ProtocolPluginPathsProvider
+  paths_for (const std::filesystem::path &search_path)
   {
-  }
-  void createPluginInstance (
-    const juce::PluginDescription &,
-    double,
-    int,
-    PluginCreationCallback callback) override
-  {
-    callback (nullptr, "unsupported");
-  }
-  bool fileMightContainThisPluginType (const juce::String &) override
-  {
-    return true;
-  }
-  juce::String
-  getNameOfPluginFromIdentifier (const juce::String &fileOrIdentifier) override
-  {
-    return fileOrIdentifier;
-  }
-  bool pluginNeedsRescanning (const juce::PluginDescription &) override
-  {
-    return false;
-  }
-  bool doesPluginStillExist (const juce::PluginDescription &) override
-  {
-    return true;
-  }
-  juce::FileSearchPath getDefaultLocationsToSearch () override { return {}; }
-  bool                 requiresUnblockedMessageThreadDuringCreation (
-    const juce::PluginDescription &) const override
-  {
-    return false;
-  }
-};
-
-class MockScanner : public juce::KnownPluginList::CustomScanner
-{
-public:
-  MOCK_METHOD (
-    bool,
-    findPluginTypesFor,
-    (juce::AudioPluginFormat & format,
-     juce::OwnedArray<juce::PluginDescription> &result,
-     const juce::String                        &fileOrIdentifier),
-    (override));
-};
-
-class PluginScannerTest
-    : public ::testing::TestWithParam<bool>,
-      private ScopedJuceQApplication
-{
-protected:
-  void SetUp () override
-  {
-    // set up scanner dependencies
-    {
-      auto customScannerUniquePtr = std::make_unique<MockScanner> ();
-      customScanner_ = customScannerUniquePtr.get ();
-      pluginList_ = std::make_shared<NiceMock<MockPluginList>> ();
-      pluginList_->setCustomScanner (std::move (customScannerUniquePtr));
-    }
-    {
-      formatManager_ = std::make_shared<juce::AudioPluginFormatManager> ();
-      formatManager_->addFormat (std::make_unique<MockAudioFormat> ());
-      mockFormat_ =
-        dynamic_cast<MockAudioFormat *> (formatManager_->getFormat (0));
-      // this needs to be an actual format supported by
-      // Protocol::from_juce_format_name()
-      EXPECT_CALL (*mockFormat_, getName ()).WillRepeatedly (Return ("VST3"));
-    }
-  }
-
-  void mock_single_plugin ()
-  {
-    // Set up mock expectations
-    constexpr auto test_descriptor_generator = [] () {
-      auto * descr = new juce::PluginDescription ();
-      descr->name = "Test Plugin";
-      return descr;
+    return [search_path] (Protocol::ProtocolType protocol) {
+      auto paths = std::make_unique<utils::FilePathList> ();
+      if (protocol == Protocol::ProtocolType::VST3)
+        paths->add_path (search_path);
+      return paths;
     };
-
-    EXPECT_CALL (*mockFormat_, searchPathsForPlugins (_, _, _))
-      .WillRepeatedly (Return (juce::StringArray{ "test-plugin" }));
-
-    EXPECT_CALL (*pluginList_, scanAndAddFile (_, _, _, _))
-      .WillRepeatedly (
-        [test_descriptor_generator] (
-          const juce::String &, bool,
-          juce::OwnedArray<juce::PluginDescription> &outTypes,
-          juce::AudioPluginFormat &) {
-          outTypes.add (test_descriptor_generator ());
-          z_debug ("scanAndAddFile called");
-          return true;
-        });
-
-    EXPECT_CALL (*customScanner_, findPluginTypesFor (_, _, _))
-      .WillRepeatedly (
-        [test_descriptor_generator] (
-          const juce::AudioPluginFormat &,
-          juce::OwnedArray<juce::PluginDescription> &outTypes,
-          const juce::String &) {
-          outTypes.add (test_descriptor_generator ());
-          z_debug ("findPluginTypesFor called");
-          return true;
-        });
   }
-
-  void TearDown () override { }
-
-  // non-owning pointer (owned by pluginList_)
-  MockScanner * customScanner_{};
-
-  // non-owning pointer (owned by formatManager_)
-  MockAudioFormat * mockFormat_{};
-
-  std::shared_ptr<NiceMock<MockPluginList>>       pluginList_;
-  std::shared_ptr<juce::AudioPluginFormatManager> formatManager_;
-  TestPathsProvider                               pathsProvider_;
 };
 
-// There is a thread leak reported here but I can't make sense of it.
-// PluginScanManager's scan_thread_ is wait()'ed, quit()'ed and destroyed but
-// its thread is reported as leaked.
-// Just skip this test entirely for now...
-#if !defined(__has_feature) || !__has_feature(thread_sanitizer)
-TEST_P (PluginScannerTest, SinglePluginScan)
+} // namespace
+
+TEST_F (ScanManagerTest, SuccessfulScanAddsDescriptor)
 {
-  PluginScanManager scanner (
-    pluginList_, formatManager_, pathsProvider_, nullptr);
+  TempVst3Path temp_path ("plugin_scan_success");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->file_modification_ms = temp_path.modification_ms ();
+  TestScanner * scanner_ptr = scanner.get ();
 
-  QSignalSpy finishedSpy (&scanner, &PluginScanManager::scanningFinished);
-  QSignalSpy pluginChangedSpy (
-    &scanner, &PluginScanManager::currentlyScanningPluginChanged);
+  PluginScanManager manager (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
 
-  const bool test_with_plugin = GetParam ();
-  if (test_with_plugin)
-    {
-      mock_single_plugin ();
-    }
+  QSignalSpy finished_spy (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  ASSERT_TRUE (finished_spy.wait (5000));
 
-  scanner.beginScan ();
-
-  if (test_with_plugin)
-    {
-      pluginChangedSpy.wait (1000);
-      EXPECT_FALSE (scanner.getCurrentlyScanningPlugin ().isEmpty ());
-      EXPECT_EQ (
-        utils::Utf8String::from_qstring (scanner.getCurrentlyScanningPlugin ())
-          .str (),
-        "test-plugin");
-    }
-
-  finishedSpy.wait (1000);
-
-  EXPECT_EQ (finishedSpy.count (), 1);
-  if (test_with_plugin)
-    {
-      EXPECT_EQ (pluginList_->getNumTypes (), 1);
-      EXPECT_EQ (
-        pluginList_->getTypes ().getFirst ().name, juce::String ("Test Plugin"));
-      EXPECT_GT (pluginChangedSpy.count (), 0);
-    }
-  else
-    {
-      EXPECT_EQ (pluginList_->getNumTypes (), 0);
-    }
+  EXPECT_EQ (scanner_ptr->call_count, 1);
+  ASSERT_EQ (catalog->rowCount (), 1);
+  EXPECT_EQ (
+    catalog
+      ->data (catalog->index (0, 0), discovery::PluginCatalog::DescriptorNameRole)
+      .toString (),
+    QString ("Test Plugin"));
 }
 
-// A scan that succeeds with no plugins (e.g. an LV2 preset or extension
-// bundle) must not be blacklisted, while a failed scan (crash, timeout)
-// must be
-TEST_P (PluginScannerTest, ScanResultBlacklisting)
+TEST_F (ScanManagerTest, FailedScanIsBlacklisted)
 {
-  EXPECT_CALL (*mockFormat_, searchPathsForPlugins (_, _, _))
-    .WillRepeatedly (Return (juce::StringArray{ "test-plugin" }));
+  TempVst3Path temp_path ("plugin_scan_failure");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->fail = true;
+  TestScanner * scanner_ptr = scanner.get ();
 
-  const auto run_scan = [this] (bool scan_succeeds) {
-    auto plugin_list = std::make_shared<juce::KnownPluginList> ();
-    {
-      auto scanner = std::make_unique<MockScanner> ();
-      EXPECT_CALL (*scanner, findPluginTypesFor (_, _, _))
-        .WillRepeatedly (
-          [scan_succeeds] (
-            juce::AudioPluginFormat &,
-            juce::OwnedArray<juce::PluginDescription> &, const juce::String &) {
-            return scan_succeeds;
-          });
-      plugin_list->setCustomScanner (std::move (scanner));
-    }
+  PluginScanManager manager (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
 
-    PluginScanManager scanner (
-      plugin_list, formatManager_, pathsProvider_, nullptr);
-    QSignalSpy finished_spy (&scanner, &PluginScanManager::scanningFinished);
-    scanner.beginScan ();
-    finished_spy.wait (1000);
-    return plugin_list->getBlacklistedFiles ().contains ("test-plugin");
-  };
+  QSignalSpy finished_spy (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  ASSERT_TRUE (finished_spy.wait (5000));
 
-  EXPECT_FALSE (run_scan (true));
-  EXPECT_TRUE (run_scan (false));
+  EXPECT_EQ (scanner_ptr->call_count, 1);
+  EXPECT_EQ (catalog->rowCount (), 0);
+  EXPECT_TRUE (catalog->is_blacklisted (
+    Protocol::ProtocolType::VST3, temp_path.identifier ()));
 }
 
-INSTANTIATE_TEST_SUITE_P (
-  PluginScanTests,
-  PluginScannerTest,
-  ::testing::Values (false, true));
-#endif
+TEST_F (ScanManagerTest, EmptySuccessfulScanIsNotBlacklisted)
+{
+  TempVst3Path temp_path ("plugin_scan_empty");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->return_descriptor = false;
+
+  PluginScanManager manager (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
+
+  QSignalSpy finished_spy (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  ASSERT_TRUE (finished_spy.wait (5000));
+
+  EXPECT_EQ (catalog->rowCount (), 0);
+  EXPECT_FALSE (catalog->is_blacklisted (
+    Protocol::ProtocolType::VST3, temp_path.identifier ()));
 }
 
-/*
- * TODO: Test Suite Improvements Needed:
- *
- * 1. Test Coverage:
- *    - Add tests for edge cases (invalid paths, empty paths, unsupported
- * formats)
- *    - Test scan cancellation if supported
- *    - Verify plugin_paths_provider interaction with all protocol types
- *
- * 2. Behavioral Verification:
- *    - Explicitly test scan_for_plugins() protocol iteration logic
- *    - Add thread-safety verification for currentlyScanningPlugin_
- *
- * 3. Code Structure:
- *    - Refactor mock_single_plugin() into reusable helper
- *    - Add negative tests (scan failures, false returns)
- *
- * 4. Documentation:
- *    - Clarify test descriptions with expected behavior
- *    - Add comments explaining mock roles
- */
+TEST_F (ScanManagerTest, UnchangedIdentifierIsNotScannedAgain)
+{
+  TempVst3Path temp_path ("plugin_scan_unchanged");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->file_modification_ms = temp_path.modification_ms ();
+  TestScanner * scanner_ptr = scanner.get ();
+
+  PluginScanManager manager (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
+
+  QSignalSpy first_finished (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  ASSERT_TRUE (first_finished.wait (5000));
+  ASSERT_EQ (catalog->rowCount (), 1);
+
+  QSignalSpy second_finished (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  ASSERT_TRUE (second_finished.wait (5000));
+  EXPECT_EQ (scanner_ptr->call_count, 1);
+  EXPECT_EQ (catalog->rowCount (), 1);
+}
+
+TEST_F (ScanManagerTest, RestartDuringActiveScanRunsNewScan)
+{
+  TempVst3Path temp_path ("plugin_scan_restart");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->block_next_scan = true;
+  scanner->file_modification_ms = temp_path.modification_ms () - 1000;
+  TestScanner * scanner_ptr = scanner.get ();
+
+  PluginScanManager manager (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
+
+  QSignalSpy finished_spy (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  scanner_ptr->scan_started_future.wait ();
+
+  manager.beginScan ();
+  scanner_ptr->scan_release.set_value ();
+
+  ASSERT_TRUE (finished_spy.wait (5000));
+  EXPECT_EQ (finished_spy.count (), 1);
+  EXPECT_EQ (scanner_ptr->call_count, 2);
+  ASSERT_EQ (catalog->rowCount (), 1);
+}
+
+TEST_F (ScanManagerTest, DestructionDuringActiveScanStopsWorker)
+{
+  TempVst3Path temp_path ("plugin_scan_destruction");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->block_next_scan = true;
+  scanner->file_modification_ms = temp_path.modification_ms ();
+  TestScanner * scanner_ptr = scanner.get ();
+
+  auto manager = std::make_unique<PluginScanManager> (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
+  manager->beginScan ();
+  scanner_ptr->scan_started_future.wait ();
+
+  scanner_ptr->scan_release.set_value ();
+  manager.reset ();
+  EXPECT_EQ (catalog->rowCount (), 0);
+}
+
+// A scan result containing two descriptors with the same identity is rejected
+// and the identifier is blacklisted, like any other failed scan
+TEST_F (ScanManagerTest, DuplicateScanResultsAreBlacklisted)
+{
+  TempVst3Path temp_path ("plugin_scan_duplicates");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->duplicate_descriptors = true;
+  scanner->file_modification_ms = temp_path.modification_ms ();
+
+  PluginScanManager manager (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
+
+  QSignalSpy finished_spy (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  ASSERT_TRUE (finished_spy.wait (5000));
+
+  EXPECT_EQ (catalog->rowCount (), 0);
+  EXPECT_TRUE (catalog->is_blacklisted (
+    Protocol::ProtocolType::VST3, temp_path.identifier ()));
+}
+
+// A scan result obtained while a stop was requested is discarded: it is
+// neither applied nor recorded as a failure
+TEST_F (ScanManagerTest, StopDuringScanDiscardsResult)
+{
+  TempVst3Path temp_path ("plugin_scan_stop_discard");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->block_next_scan = true;
+  scanner->file_modification_ms = temp_path.modification_ms ();
+  TestScanner * scanner_ptr = scanner.get ();
+
+  PluginScanManager manager (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
+
+  QSignalSpy finished_spy (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  scanner_ptr->scan_started_future.wait ();
+
+  manager.requestStop ();
+  scanner_ptr->scan_release.set_value ();
+
+  ASSERT_TRUE (finished_spy.wait (5000));
+  EXPECT_EQ (catalog->rowCount (), 0);
+  EXPECT_FALSE (catalog->is_blacklisted (
+    Protocol::ProtocolType::VST3, temp_path.identifier ()));
+}
+
+TEST_F (ScanManagerTest, ScannerExceptionStillReportsCompletion)
+{
+  TempVst3Path temp_path ("plugin_scan_exception");
+  auto         scanner = std::make_unique<TestScanner> ();
+  scanner->throw_exception = true;
+
+  PluginScanManager manager (
+    catalog, formats, paths_for (temp_path.search_path ()), std::move (scanner));
+
+  QSignalSpy finished_spy (&manager, &PluginScanManager::scanningFinished);
+  manager.beginScan ();
+  ASSERT_TRUE (finished_spy.wait (5000));
+
+  EXPECT_EQ (catalog->rowCount (), 0);
+  EXPECT_FALSE (catalog->is_blacklisted (
+    Protocol::ProtocolType::VST3, temp_path.identifier ()));
+}
+
+} // namespace zrythm::plugins

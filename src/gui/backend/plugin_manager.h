@@ -6,28 +6,30 @@
 #include <filesystem>
 
 #include "gui/backend/plugin_collections.h"
+#include "plugins/plugin_catalog.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
-#include "plugins/plugin_descriptor_list.h"
 #include "plugins/plugin_scan_manager.h"
+#include "utils/qt.h"
 
 namespace zrythm::plugins
 {
 class Lv2World;
+class PluginScanFormatManager;
 }
 
 namespace zrythm::gui::old_dsp::plugins
 {
 
 /**
- * @brief Returns whether the given known plugin list entry refers to a plugin
- * file that no longer exists.
+ * @brief Returns whether a descriptor refers to a plugin file that no longer
+ * exists.
  *
- * Only file-based formats whose fileOrIdentifier is an absolute path are
- * considered; internal and other non-file-based entries always return false.
+ * Only file-based formats whose identifier is an absolute path are considered;
+ * internal and other non-file-based identifiers always return false.
  */
 bool
-known_plugin_file_missing (const juce::PluginDescription &desc);
+known_plugin_file_missing (const zrythm::plugins::PluginDescriptor &descriptor);
 
 /**
  * The PluginManager is responsible for scanning and keeping track of available
@@ -37,7 +39,7 @@ class PluginManager : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    zrythm::plugins::discovery::PluginDescriptorList * pluginDescriptors READ
+    zrythm::plugins::discovery::PluginCatalog * pluginDescriptors READ
       getPluginDescriptors CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::plugins::PluginScanManager * scanner READ getScanner CONSTANT FINAL)
@@ -65,15 +67,17 @@ public:
     return scanner_.get ();
   }
 
-  zrythm::plugins::discovery::PluginDescriptorList *
-  getPluginDescriptors () const
+  zrythm::plugins::discovery::PluginCatalog * getPluginDescriptors () const
   {
-    return plugin_descriptors_.get ();
+    return catalog_.get ();
   }
 
   Q_INVOKABLE void beginScan ();
 
-  auto &get_format_manager () const { return format_manager_; }
+  std::shared_ptr<juce::AudioPluginFormatManager> get_format_manager () const
+  {
+    return scan_formats_->juce_format_manager ();
+  }
 
   /**
    * @brief Returns the process-wide LV2 world owned by this manager,
@@ -84,10 +88,6 @@ public:
     return lv2_world_;
   }
 
-  /**
-   * Adds a new descriptor.
-   */
-  void add_descriptor (const zrythm::plugins::PluginDescriptor &descr);
   /**
    * Returns a PluginDescriptor for the given URI.
    */
@@ -130,15 +130,15 @@ private:
     const utils::Utf8String &category,
     const utils::Utf8String &author);
 
-  static std::filesystem::path get_known_plugins_xml_path ();
+  static std::filesystem::path get_known_plugins_json_path ();
   void                         serialize_known_plugins ();
   void                         deserialize_known_plugins ();
 
   /**
-   * @brief Adds descriptors for bundled internal (Faust) plugins to the known
-   * plugin list, if not already present.
+   * @brief Adds descriptors for bundled internal (Faust) plugins to the
+   * catalog, if not already present.
    */
-  void add_internal_plugins_to_known_list ();
+  void add_internal_plugins_to_catalog ();
 
 private:
   /** Plugin categories. */
@@ -147,18 +147,12 @@ private:
   /** Plugin authors. */
   std::vector<utils::Utf8String> plugin_authors_;
 
-  std::shared_ptr<juce::AudioPluginFormatManager> format_manager_;
+  std::shared_ptr<zrythm::plugins::PluginScanFormatManager> scan_formats_;
 
   std::shared_ptr<zrythm::plugins::Lv2World> lv2_world_;
 
-  /** Current known plugin list. */
-  std::shared_ptr<juce::KnownPluginList> known_plugin_list_;
-
-  /**
-   * Wrapper over known_plugin_list_ that provides QML list functionality.
-   */
-  std::unique_ptr<zrythm::plugins::discovery::PluginDescriptorList>
-    plugin_descriptors_;
+  /** Catalog of scanned plugin descriptors exposed to QML. */
+  std::shared_ptr<zrythm::plugins::discovery::PluginCatalog> catalog_;
 
   /** Plugin collections. */
   std::unique_ptr<PluginCollections> collections_;

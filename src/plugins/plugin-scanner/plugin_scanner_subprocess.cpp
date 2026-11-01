@@ -39,12 +39,13 @@
 
 #include "zrythm-config.h"
 
-#include "plugins/CLAPPluginFormat.h"
 #include "plugins/lv2_plugin_format.h"
 #include "plugins/lv2_world.h"
-#include "plugins/vst3_plugin_format.h"
+#include "plugins/plugin_scan_format.h"
+#include "plugins/plugin_scan_protocol.h"
 
 #include "plugin_scanner_subprocess.h"
+#include <fmt/format.h>
 
 namespace zrythm::plugins::scanner
 {
@@ -110,89 +111,85 @@ PluginScannerSubprocess::handleAsyncUpdate ()
     }
 }
 
-std::optional<juce::OwnedArray<juce::PluginDescription>>
+std::optional<discovery::PluginScanResult>
 PluginScannerSubprocess::do_scan (const juce::MemoryBlock &block)
 {
   juce::MemoryInputStream stream{ block, false };
-  const auto              formatName = stream.readString ();
-  const auto              identifier = stream.readString ();
+  const auto              format_name =
+    utils::Utf8String::from_juce_string (stream.readString ());
+  const auto identifier =
+    utils::Utf8String::from_juce_string (stream.readString ());
 
   juce::Logger::writeToLog (
-    "Scanning " + formatName + " identifier: " + identifier);
+    "Scanning " + format_name.to_juce_string ()
+    + " identifier: " + identifier.to_juce_string ());
 
-  juce::PluginDescription pd;
-  pd.fileOrIdentifier = identifier;
-  pd.uniqueId = pd.deprecatedUid = 0;
-
-  auto * const matchingFormat = [&] () -> juce::AudioPluginFormat * {
-    for (auto * format : format_manager_.getFormats ())
-      if (format->getName () == formatName)
-        return format;
-    return nullptr;
-  }();
-
-  if (matchingFormat == nullptr)
-    return juce::OwnedArray<juce::PluginDescription>{};
+  auto * const matching_format = format_manager_->find_format (format_name);
+  if (matching_format == nullptr)
+    {
+      // An unregistered format is an environment condition that applies to
+      // every identifier of the format: the scan answers with no plugins and
+      // the identifier is not recorded as failed
+      juce::Logger::writeToLog (
+        "No format registered for '" + format_name.to_juce_string ()
+        + "': reporting no plugins");
+      return discovery::PluginScanResult{
+        std::vector<std::unique_ptr<plugins::PluginDescriptor>>{}
+      };
+    }
 
   if (
     !juce::MessageManager::getInstance ()->isThisTheMessageThread ()
-    && !matchingFormat->requiresUnblockedMessageThreadDuringCreation (pd))
+    && matching_format->scan_uses_message_thread (identifier))
     return std::nullopt;
 
-  juce::OwnedArray<juce::PluginDescription> results;
+  juce::Logger::writeToLog (
+    "Scanning identifier: " + identifier.to_juce_string ());
+  auto result = matching_format->scan_identifier (identifier);
 
   juce::Logger::writeToLog (
-    "DEBUG: Attempting to find all types for identifier: " + identifier);
-  matchingFormat->findAllTypesForFile (results, identifier);
-
-  juce::Logger::writeToLog (
-    "Found " + juce::String (results.size ())
-    + " plugins in identifier: " + identifier);
-
-  return results;
+    result.has_value ()
+      ? "Found " + juce::String (result->size ())
+          + " plugins in identifier: " + identifier.to_juce_string ()
+      : "Scan failed for identifier: " + identifier.to_juce_string ());
+  return result;
 }
 
 void
 PluginScannerSubprocess::send_results (
-  const juce::OwnedArray<juce::PluginDescription> &results)
+  const discovery::PluginScanResult &results)
 {
-  juce::XmlElement xml ("LIST");
+  const auto payload = discovery::serialize_plugin_scan_response (results);
 
-  for (const auto &desc : results)
-    xml.addChildElement (desc->createXml ().release ());
+  juce::Logger::writeToLog ("Sending scan response to coordinator...");
 
-  const auto str = xml.toString ();
-
-  juce::Logger::writeToLog ("Sending XML to coordinator...");
-
-  sendMessageToCoordinator ({ str.toRawUTF8 (), str.getNumBytesAsUTF8 () });
+  const auto juce_payload = payload.to_juce_string ();
+  sendMessageToCoordinator (
+    { juce_payload.toRawUTF8 (), juce_payload.getNumBytesAsUTF8 () });
 }
 
 void
 PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
 {
   // formats must be initialized before starting to receive messages
-  juce::Logger::writeToLog ("Adding default formats");
-  juce::addDefaultFormatsToManager (format_manager_);
-  format_manager_.addFormat (std::make_unique<plugins::CLAPPluginFormat> ());
-  format_manager_.addFormat (std::make_unique<plugins::Vst3PluginFormat> ());
-  // the subprocess continues without LV2 scanning when the LV2 world
-  // cannot be created; the application reports the cause at startup
+  juce::Logger::writeToLog ("Creating scan formats");
   try
     {
-      format_manager_.addFormat (
-        std::make_unique<plugins::Lv2PluginFormat> (
-          std::make_shared<plugins::Lv2World> (
-            plugins::Lv2PluginFormat::get_spec_bundles_dir ())));
+      format_manager_ = std::make_unique<plugins::PluginScanFormatManager> (
+        std::make_shared<plugins::Lv2World> (
+          plugins::Lv2PluginFormat::get_spec_bundles_dir ()));
     }
   catch (const std::exception &e)
     {
       juce::Logger::writeToLog (
         "LV2 format unavailable: " + juce::String (e.what ()));
+      format_manager_ =
+        std::make_unique<plugins::PluginScanFormatManager> (nullptr);
     }
-  for (auto * format : format_manager_.getFormats ())
+  for (const auto * format : format_manager_->formats ())
     {
-      juce::Logger::writeToLog ("Found format: " + format->getName ());
+      juce::Logger::writeToLog (
+        "Found format: " + format->format_name ().to_juce_string ());
     }
 
   // start timer to end the subprocess if it takes too long

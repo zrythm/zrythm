@@ -1,0 +1,197 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schema:known-plugins",
+  "title": "Zrythm Known Plugins",
+  "description": "Catalog of scanned plugin descriptors and identifiers whose scan failed",
+  "type": "object",
+  "required": [
+    "documentType",
+    "schemaVersion",
+    "plugins",
+    "blacklistedIdentifiers"
+  ],
+  "properties": {
+    "documentType": {
+      "type": "string",
+      "const": "ZrythmKnownPlugins",
+      "description": "Document type identifier"
+    },
+    "schemaVersion": {
+      "$ref": "common.schema.json#/definitions/version",
+      "description": "Known-plugins cache format version"
+    },
+    "plugins": {
+      "type": "array",
+      "maxItems": 100000,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "protocol",
+          "pathOrId",
+          "uniqueId",
+          "lastFileModTimeMs"
+        ],
+        "properties": {
+          "author": {
+            "type": "string",
+            "description": "Plugin vendor"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Plugin display name"
+          },
+          "descriptiveName": {
+            "type": "string",
+            "description": "Longer description reported by the plugin format"
+          },
+          "website": {
+            "type": "string",
+            "description": "Plugin website URI, when reported"
+          },
+          "category": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 39,
+            "description": "PluginCategory enum value"
+          },
+          "categoryString": {
+            "type": "string",
+            "description": "Format-specific plugin category"
+          },
+          "version": {
+            "type": "string",
+            "description": "Plugin version string"
+          },
+          "numAudioIns": {
+            "$ref": "#/definitions/portCount",
+            "description": "Audio input port count"
+          },
+          "numAudioOuts": {
+            "$ref": "#/definitions/portCount",
+            "description": "Audio output port count"
+          },
+          "numMidiIns": {
+            "$ref": "#/definitions/portCount",
+            "description": "MIDI input port count"
+          },
+          "numMidiOuts": {
+            "$ref": "#/definitions/portCount",
+            "description": "MIDI output port count"
+          },
+          "numCtrlIns": {
+            "$ref": "#/definitions/portCount",
+            "description": "Control input port count"
+          },
+          "numCtrlOuts": {
+            "$ref": "#/definitions/portCount",
+            "description": "Control output port count"
+          },
+          "numCvIns": {
+            "$ref": "#/definitions/portCount",
+            "description": "CV input port count"
+          },
+          "numCvOuts": {
+            "$ref": "#/definitions/portCount",
+            "description": "CV output port count"
+          },
+          "uniqueId": {
+            "type": "integer",
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807,
+            "description": "Stable plugin identifier used by the format"
+          },
+          "deprecatedUniqueId": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647,
+            "description": "Legacy JUCE identifier retained for instantiation"
+          },
+          "architecture": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "PluginArchitecture enum value"
+          },
+          "protocol": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "ProtocolType enum value"
+          },
+          "pathOrId": {
+            "type": "object",
+            "required": [
+              "variantType",
+              "nonObjectValue"
+            ],
+            "properties": {
+              "variantType": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1
+                ],
+                "description": "0=filesystem path, 1=format-specific identifier"
+              },
+              "nonObjectValue": {
+                "type": "string",
+                "description": "Serialized variant value"
+              }
+            },
+            "additionalProperties": false
+          },
+          "hasCustomUI": {
+            "type": "boolean",
+            "description": "Whether the plugin has a hostable custom UI"
+          },
+          "lastFileModTimeMs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Plugin file/bundle modification time in Unix epoch milliseconds"
+          },
+          "lastInfoUpdateTimeMs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Scan time in Unix epoch milliseconds"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "blacklistedIdentifiers": {
+      "type": "array",
+      "maxItems": 100000,
+      "items": {
+        "type": "object",
+        "required": [
+          "protocol",
+          "identifier"
+        ],
+        "properties": {
+          "protocol": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "ProtocolType enum value of the scanned format"
+          },
+          "identifier": {
+            "type": "string",
+            "minLength": 1,
+            "description": "File path or format-specific identifier whose scan failed"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "portCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    }
+  }
+}

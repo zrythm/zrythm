@@ -51,6 +51,12 @@ PluginDescriptor::from_juce_description (
     }
   descr->category_str_ =
     utils::Utf8String::from_juce_string (juce_desc.category);
+  descr->descriptive_name_ =
+    utils::Utf8String::from_juce_string (juce_desc.descriptiveName);
+  descr->version_ = utils::Utf8String::from_juce_string (juce_desc.version);
+  descr->last_file_mod_time_ms_ = juce_desc.lastFileModTime.toMilliseconds ();
+  descr->last_info_update_time_ms_ =
+    juce_desc.lastInfoUpdateTime.toMilliseconds ();
 
   descr->num_audio_ins_ = juce_desc.numInputChannels;
   descr->num_audio_outs_ = juce_desc.numOutputChannels;
@@ -80,6 +86,10 @@ PluginDescriptor::to_juce_description () const
   juce_desc->name = name_.to_juce_string ();
   juce_desc->manufacturerName = author_.to_juce_string ();
   juce_desc->category = category_str_.to_juce_string ();
+  juce_desc->descriptiveName = descriptive_name_.to_juce_string ();
+  juce_desc->version = version_.to_juce_string ();
+  juce_desc->lastFileModTime = juce::Time (last_file_mod_time_ms_);
+  juce_desc->lastInfoUpdateTime = juce::Time (last_info_update_time_ms_);
   juce_desc->uniqueId = static_cast<int> (unique_id_);
   juce_desc->deprecatedUid = juce_compat_deprecated_unique_id_;
   juce_desc->isInstrument = category_ == PluginCategory::Instrument;
@@ -120,6 +130,24 @@ PluginDescriptor::pathOrId () const
   return {};
 }
 
+utils::Utf8String
+PluginDescriptor::source_identifier () const
+{
+  return std::visit (
+    [] (const auto &value) {
+      using T = std::decay_t<decltype (value)>;
+      if constexpr (std::is_same_v<T, utils::Utf8String>)
+        {
+          return value;
+        }
+      else
+        {
+          return utils::Utf8String::from_path (value);
+        }
+    },
+    path_or_id_);
+}
+
 QString
 PluginDescriptor::category () const
 {
@@ -134,9 +162,11 @@ init_from (
 {
   obj.author_ = other.author_;
   obj.name_ = other.name_;
+  obj.descriptive_name_ = other.descriptive_name_;
   obj.website_ = other.website_;
   obj.category_ = other.category_;
   obj.category_str_ = other.category_str_;
+  obj.version_ = other.version_;
   obj.protocol_ = other.protocol_;
   obj.num_audio_ins_ = other.num_audio_ins_;
   obj.num_audio_outs_ = other.num_audio_outs_;
@@ -152,6 +182,8 @@ init_from (
   obj.unique_id_ = other.unique_id_;
   obj.juce_compat_deprecated_unique_id_ =
     other.juce_compat_deprecated_unique_id_;
+  obj.last_file_mod_time_ms_ = other.last_file_mod_time_ms_;
+  obj.last_info_update_time_ms_ = other.last_info_update_time_ms_;
   obj.has_custom_ui_ = other.has_custom_ui_;
 }
 
@@ -168,12 +200,11 @@ PluginDescriptor::isInstrument () const
       return false;
     }
 
-  return
-    /* if VSTs are instruments their category must be INSTRUMENT, otherwise
-       they are not */
-    this->protocol_ != Protocol::ProtocolType::VST
-    && this->category_ == PluginCategory::None && this->num_midi_ins_ > 0
-    && this->num_audio_outs_ > 0;
+  // Uncategorized plugins that turn MIDI into audio without consuming any
+  // audio input are instruments; effects with an extra MIDI input are not
+  return this->protocol_ != Protocol::ProtocolType::VST
+         && this->category_ == PluginCategory::None && this->num_midi_ins_ > 0
+         && this->num_audio_ins_ == 0 && this->num_audio_outs_ > 0;
 }
 
 bool
@@ -226,22 +257,13 @@ PluginDescriptor::isEffect () const
 bool
 PluginDescriptor::isModulator () const
 {
-  constexpr std::array<PluginCategory, 37> modulator_categories = {
-    PluginCategory::ENVELOPE,  PluginCategory::GENERATOR,
-    PluginCategory::CONSTANT,  PluginCategory::OSCILLATOR,
-    PluginCategory::MODULATOR, PluginCategory::UTILITY,
-    PluginCategory::CONVERTER, PluginCategory::FUNCTION,
-  };
-  return (category_ == PluginCategory::None
-          || (category_ > PluginCategory::None && (std::ranges::contains (modulator_categories, category_))))
-         && num_cv_outs_ > 0;
+  return num_cv_outs_ > 0;
 }
 
 bool
 PluginDescriptor::isMidiModifier () const
 {
-  return (category_ > PluginCategory::None && category_ == PluginCategory::MIDI)
-         || (category_ == PluginCategory::None && num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != Protocol::ProtocolType::VST);
+  return num_midi_outs_ > 0;
 }
 
 namespace
@@ -377,47 +399,58 @@ void
 to_json (nlohmann::json &j, const PluginDescriptor &p)
 {
   j = nlohmann::json{
-    { PluginDescriptor::kAuthorKey,             p.author_         },
-    { PluginDescriptor::kNameKey,               p.name_           },
-    { PluginDescriptor::kWebsiteKey,            p.website_        },
-    { PluginDescriptor::kCategoryKey,           p.category_       },
-    { PluginDescriptor::kCategoryStringKey,     p.category_str_   },
-    { PluginDescriptor::kNumAudioInsKey,        p.num_audio_ins_  },
-    { PluginDescriptor::kNumAudioOutsKey,       p.num_audio_outs_ },
-    { PluginDescriptor::kNumMidiInsKey,         p.num_midi_ins_   },
-    { PluginDescriptor::kNumMidiOutsKey,        p.num_midi_outs_  },
-    { PluginDescriptor::kNumCtrlInsKey,         p.num_ctrl_ins_   },
-    { PluginDescriptor::kNumCtrlOutsKey,        p.num_ctrl_outs_  },
-    { PluginDescriptor::kNumCvInsKey,           p.num_cv_ins_     },
-    { PluginDescriptor::kNumCvOutsKey,          p.num_cv_outs_    },
-    { PluginDescriptor::kUniqueIdKey,           p.unique_id_      },
+    { PluginDescriptor::kAuthorKey,             p.author_                   },
+    { PluginDescriptor::kNameKey,               p.name_                     },
+    { PluginDescriptor::kDescriptiveNameKey,    p.descriptive_name_         },
+    { PluginDescriptor::kWebsiteKey,            p.website_                  },
+    { PluginDescriptor::kCategoryKey,           p.category_                 },
+    { PluginDescriptor::kCategoryStringKey,     p.category_str_             },
+    { PluginDescriptor::kVersionKey,            p.version_                  },
+    { PluginDescriptor::kNumAudioInsKey,        p.num_audio_ins_            },
+    { PluginDescriptor::kNumAudioOutsKey,       p.num_audio_outs_           },
+    { PluginDescriptor::kNumMidiInsKey,         p.num_midi_ins_             },
+    { PluginDescriptor::kNumMidiOutsKey,        p.num_midi_outs_            },
+    { PluginDescriptor::kNumCtrlInsKey,         p.num_ctrl_ins_             },
+    { PluginDescriptor::kNumCtrlOutsKey,        p.num_ctrl_outs_            },
+    { PluginDescriptor::kNumCvInsKey,           p.num_cv_ins_               },
+    { PluginDescriptor::kNumCvOutsKey,          p.num_cv_outs_              },
+    { PluginDescriptor::kUniqueIdKey,           p.unique_id_                },
     { PluginDescriptor::kDeprecatedUniqueIdKey,
-     p.juce_compat_deprecated_unique_id_                          },
-    { PluginDescriptor::kArchitectureKey,       p.arch_           },
-    { PluginDescriptor::kProtocolKey,           p.protocol_       },
-    { PluginDescriptor::kPathOrIdKey,           p.path_or_id_     },
-    { PluginDescriptor::kHasCustomUIKey,        p.has_custom_ui_  },
+     p.juce_compat_deprecated_unique_id_                                    },
+    { PluginDescriptor::kArchitectureKey,       p.arch_                     },
+    { PluginDescriptor::kProtocolKey,           p.protocol_                 },
+    { PluginDescriptor::kPathOrIdKey,           p.path_or_id_               },
+    { PluginDescriptor::kHasCustomUIKey,        p.has_custom_ui_            },
+    { PluginDescriptor::kLastFileModTimeKey,    p.last_file_mod_time_ms_    },
+    { PluginDescriptor::kLastInfoUpdateTimeKey, p.last_info_update_time_ms_ },
   };
 }
 
 void
 from_json (const nlohmann::json &j, PluginDescriptor &p)
 {
-  j.at (PluginDescriptor::kAuthorKey).get_to (p.author_);
   j.at (PluginDescriptor::kNameKey).get_to (p.name_);
-  j.at (PluginDescriptor::kWebsiteKey).get_to (p.website_);
-  j.at (PluginDescriptor::kCategoryKey).get_to (p.category_);
-  j.at (PluginDescriptor::kCategoryStringKey).get_to (p.category_str_);
-  j.at (PluginDescriptor::kNumAudioInsKey).get_to (p.num_audio_ins_);
-  j.at (PluginDescriptor::kNumAudioOutsKey).get_to (p.num_audio_outs_);
-  j.at (PluginDescriptor::kNumMidiInsKey).get_to (p.num_midi_ins_);
-  j.at (PluginDescriptor::kNumMidiOutsKey).get_to (p.num_midi_outs_);
-  j.at (PluginDescriptor::kNumCtrlInsKey).get_to (p.num_ctrl_ins_);
-  j.at (PluginDescriptor::kNumCtrlOutsKey).get_to (p.num_ctrl_outs_);
-  j.at (PluginDescriptor::kNumCvInsKey).get_to (p.num_cv_ins_);
-  j.at (PluginDescriptor::kNumCvOutsKey).get_to (p.num_cv_outs_);
+  p.author_ = j.value (PluginDescriptor::kAuthorKey, utils::Utf8String{});
+  p.descriptive_name_ =
+    j.value (PluginDescriptor::kDescriptiveNameKey, utils::Utf8String{});
+  p.website_ = j.value (PluginDescriptor::kWebsiteKey, utils::Utf8String{});
+  p.category_ = j.value (PluginDescriptor::kCategoryKey, PluginCategory::None);
+  p.category_str_ =
+    j.value (PluginDescriptor::kCategoryStringKey, utils::Utf8String{});
+  p.version_ = j.value (PluginDescriptor::kVersionKey, utils::Utf8String{});
+  p.num_audio_ins_ = j.value (PluginDescriptor::kNumAudioInsKey, 0);
+  p.num_audio_outs_ = j.value (PluginDescriptor::kNumAudioOutsKey, 0);
+  p.num_midi_ins_ = j.value (PluginDescriptor::kNumMidiInsKey, 0);
+  p.num_midi_outs_ = j.value (PluginDescriptor::kNumMidiOutsKey, 0);
+  p.num_ctrl_ins_ = j.value (PluginDescriptor::kNumCtrlInsKey, 0);
+  p.num_ctrl_outs_ = j.value (PluginDescriptor::kNumCtrlOutsKey, 0);
+  p.num_cv_ins_ = j.value (PluginDescriptor::kNumCvInsKey, 0);
+  p.num_cv_outs_ = j.value (PluginDescriptor::kNumCvOutsKey, 0);
   j.at (PluginDescriptor::kUniqueIdKey).get_to (p.unique_id_);
-  j.at (PluginDescriptor::kArchitectureKey).get_to (p.arch_);
+  p.juce_compat_deprecated_unique_id_ =
+    j.value (PluginDescriptor::kDeprecatedUniqueIdKey, 0);
+  p.arch_ = j.value (
+    PluginDescriptor::kArchitectureKey, PluginArchitecture::ARCH_64_BIT);
   j.at (PluginDescriptor::kProtocolKey).get_to (p.protocol_);
   {
     const auto &val = j.at (PluginDescriptor::kPathOrIdKey);
@@ -434,6 +467,10 @@ from_json (const nlohmann::json &j, PluginDescriptor &p)
             .get<utils::Utf8String> ();
       }
   }
-  j.at (PluginDescriptor::kHasCustomUIKey).get_to (p.has_custom_ui_);
+  p.has_custom_ui_ = j.value (PluginDescriptor::kHasCustomUIKey, false);
+  p.last_file_mod_time_ms_ =
+    j.value (PluginDescriptor::kLastFileModTimeKey, std::int64_t{ 0 });
+  p.last_info_update_time_ms_ =
+    j.value (PluginDescriptor::kLastInfoUpdateTimeKey, int64_t{ 0 });
 }
 } // namespace zrythm::plugins
