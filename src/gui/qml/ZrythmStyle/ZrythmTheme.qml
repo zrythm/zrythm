@@ -88,6 +88,15 @@ QtObject {
     windowText: root.textColor
   }
   property bool darkMode: true
+  readonly property var accentTokenColors: ({
+      "zrythm-orange": root.zrythmColor,
+      "celestial-blue": root.celestialBlueColor,
+      "jonquil-yellow": root.jonquilYellowColor,
+      "spring-green": root.springGreen,
+      "munsell-red": root.munsellRed,
+      "gunmetal": root.gunmetalColor,
+      "electric-purple": root.electricPurple
+    })
   readonly property var darkOnlyThemeColors: [zrythmColor, jonquilYellowColor, springGreen, munsellRed]
   readonly property real disabledOpacityFactor: 0.7
   readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
@@ -408,6 +417,31 @@ QtObject {
     if (blackRatio >= 4.5)
       return root.darkInkColor;
     return whiteRatio >= blackRatio ? root.lightInkColor : root.darkInkColor;
+  }
+
+  // The accent color a stable token string resolves to; unknown tokens
+  // resolve to the Zrythm orange color
+  function accentColorForToken(token: string): color {
+    return root.accentTokenColors[token] ?? root.zrythmColor;
+  }
+
+  // Whether the token resolves to a color usable in the given mode; unknown
+  // tokens are unavailable in both modes
+  function accentAvailableInMode(token: string, dark: bool): bool {
+    if (!(token in root.accentTokenColors))
+      return false;
+    const accent = root.accentTokenColors[token];
+    return dark
+      ? !root.lightOnlyThemeColors.includes(accent)
+      : !root.darkOnlyThemeColors.includes(accent);
+  }
+
+  // The token itself if usable in the given mode, otherwise the mode's
+  // fallback token
+  function effectiveAccentToken(token: string, dark: bool): string {
+    if (!root.accentAvailableInMode(token, dark))
+      return dark ? "zrythm-orange" : "celestial-blue";
+    return token;
   }
 
   function toggleDarkMode(): void {

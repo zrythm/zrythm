@@ -48,16 +48,20 @@ struct DeviceManager::MidiImpl
         return;
       const auto ident =
         utils::Utf8String::from_juce_string (source->getIdentifier ());
-      std::shared_lock lock (owner_.buffers_mutex);
-      auto             it = owner_.buffers.find (ident);
-      if (it != owner_.buffers.end ())
-        {
-          if (!it->second->push (message.withTimeStamp (
-                juce::Time::getMillisecondCounterHiRes () * 0.001)))
-            {
+      bool pushed = false;
+      {
+        std::shared_lock lock (owner_.buffers_mutex);
+        auto             it = owner_.buffers.find (ident);
+        if (it != owner_.buffers.end ())
+          {
+            pushed = it->second->push (message.withTimeStamp (
+              juce::Time::getMillisecondCounterHiRes () * 0.001));
+            if (!pushed)
               ++owner_.overflow_count;
-            }
-        }
+          }
+      }
+      if (pushed && message.isNoteOn ())
+        owner_.notify_midi_note_on ();
     }
 
   private:
@@ -72,6 +76,10 @@ struct DeviceManager::MidiImpl
 
   explicit MidiImpl (DeviceManager &owner)
       : callback (*this), owner_ (owner) { }
+
+  // The JUCE MIDI callback runs on a device thread (not the audio render
+  // thread), so emitting this cross-thread signal is safe.
+  void notify_midi_note_on () { Q_EMIT owner_.midiNoteOnReceived (); }
 
   void register_with_device_manager ()
   {

@@ -123,6 +123,8 @@ public:
 
   Q_INVOKABLE void showDeviceSelector ();
 
+  Q_SIGNAL void midiNoteOnReceived ();
+
   QVector<AudioInputInfo> availableAudioInputs () const;
   Q_SIGNAL void           availableAudioInputsChanged ();
 

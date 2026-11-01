@@ -113,6 +113,7 @@ ApplicationWindow {
     importFileDialog: importFileDialog
     loadController: loadController
     pasteAction: root.pasteAction
+    preferencesDialog: preferencesDialog
     saveController: saveController
     session: root.session
   }
@@ -172,6 +173,17 @@ ApplicationWindow {
     }
 
     target: root.session.fileImporter
+  }
+
+  Connections {
+    function onMidiNoteOnReceived() {
+      if (root.appSettings.startPlaybackOnMidiInput
+          && !root.project.transport.isRolling()) {
+        root.project.transport.requestRoll();
+      }
+    }
+
+    target: root.deviceManager
   }
 
   Connections {
@@ -270,6 +282,12 @@ ApplicationWindow {
     exportDirectory: root.session.projectDirectory + "/exports"
     notificationCenter: root.notificationCenter
     session: root.session
+  }
+
+  PreferencesDialog {
+    id: preferencesDialog
+
+    appSettings: root.appSettings
   }
 
   FileDialog {

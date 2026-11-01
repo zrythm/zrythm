@@ -610,9 +610,7 @@ ZrythmApplication::setup_ui ()
   }
 
   // icon theme
-  const auto icon_theme_name = impl_->app_settings_->iconTheme ();
-  z_info ("Setting icon theme to '{}'", icon_theme_name);
-  QIcon::setThemeName (icon_theme_name);
+  QIcon::setThemeName (u"zrythm-dark"_s);
 
   // KDDockWidgets::initFrontend (KDDockWidgets::FrontendType::QtQuick);
 

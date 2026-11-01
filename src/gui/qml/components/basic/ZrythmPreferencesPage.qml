@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -9,7 +9,7 @@ import ZrythmStyle
 ScrollView {
   id: control
 
-  default property alias content: contentLayout.children
+  default property alias content: contentLayout.data
   property string title: ""
 
   Layout.fillWidth: true

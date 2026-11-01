@@ -140,6 +140,27 @@ TestCase {
     }
   }
 
+  // Accent availability follows the mode: dark-only accents fall back to
+  // celestial blue in light mode, light-only accents to Zrythm orange in dark
+  function test_accent_mode_fallbacks() {
+    verify(ZrythmTheme.accentAvailableInMode("jonquil-yellow", true));
+    verify(!ZrythmTheme.accentAvailableInMode("jonquil-yellow", false));
+    verify(!ZrythmTheme.accentAvailableInMode("gunmetal", true));
+    verify(ZrythmTheme.accentAvailableInMode("gunmetal", false));
+
+    compare(ZrythmTheme.effectiveAccentToken("jonquil-yellow", false),
+            "celestial-blue");
+    compare(ZrythmTheme.effectiveAccentToken("gunmetal", true),
+            "zrythm-orange");
+    compare(ZrythmTheme.effectiveAccentToken("electric-purple", false),
+            "electric-purple");
+    compare(ZrythmTheme.effectiveAccentToken("not-a-token", true),
+            "zrythm-orange");
+    compareNear(
+      ZrythmTheme.accentColorForToken("celestial-blue"), "#009DFF");
+    compareNear(ZrythmTheme.accentColorForToken("not-a-token"), "#FFAE00");
+  }
+
   // Achromatic sources yield gray surfaces whatever their hue
   function test_achromatic_stays_gray() {
     const cc = ZrythmTheme.clipColors("#5A5A5A", false);

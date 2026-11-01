@@ -36,17 +36,20 @@ public: \
   } \
   [[nodiscard]] ptype name () const \
   { \
-    return backend_->value (QStringLiteral (#name), default_value) \
+    return backend_ \
+      ->value (QStringLiteral (#name), QVariant::fromValue (default_value)) \
       .value<ptype> (); \
   } \
   void set_##name (ptype value) \
   { \
     const auto current_value = \
-      backend_->value (QStringLiteral (#name), default_value).value<ptype> (); \
+      backend_ \
+        ->value (QStringLiteral (#name), QVariant::fromValue (default_value)) \
+        .value<ptype> (); \
     if (utils::values_equal_for_qproperty_type (current_value, value)) \
       return; \
     detail::log_setting_change (#name, QVariant::fromValue (value)); \
-    backend_->setValue (QStringLiteral (#name), value); \
+    backend_->setValue (QStringLiteral (#name), QVariant::fromValue (value)); \
     Q_EMIT name##Changed (value); \
   } \
   Q_SIGNAL void name##Changed (ptype value);
@@ -59,12 +62,22 @@ class AppSettings : public QObject
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
+public:
+  enum class ThemeMode
+  {
+    Dark,
+    Light,
+  };
+  Q_ENUM (ThemeMode)
+
   // FIXME: should be part of DirectoryManager, not an editable setting
   DEFINE_SETTING_PROPERTY (
     QString,
     zrythmUserPath,
     QStandardPaths::writableLocation (QStandardPaths::AppDataLocation))
   DEFINE_SETTING_PROPERTY (bool, firstRun, true)
+  DEFINE_SETTING_PROPERTY (ThemeMode, themeMode, ThemeMode::Dark)
+  DEFINE_SETTING_PROPERTY (QString, accentToken, u"zrythm-orange"_s)
   // DEFINE_SETTING_PROPERTY (bool, transportLoop, true)
   DEFINE_SETTING_PROPERTY (bool, transportReturnToCue, true)
   DEFINE_SETTING_PROPERTY (bool, showCacheActivity, false)
@@ -77,7 +90,6 @@ class AppSettings : public QObject
   DEFINE_SETTING_PROPERTY (int, recordingMode, 2)     // takes
   DEFINE_SETTING_PROPERTY (int, recordingPreroll, 0)  // number of bars
   DEFINE_SETTING_PROPERTY (int, jackTransportType, 0) // timebase master
-  DEFINE_SETTING_PROPERTY (QString, iconTheme, u"zrythm-dark"_s)
   DEFINE_SETTING_PROPERTY (QStringList, recentProjects, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, lv2SearchPaths, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, vst2SearchPaths, QStringList ())
@@ -108,7 +120,7 @@ class AppSettings : public QObject
   DEFINE_SETTING_PROPERTY (QStringList, midiControllers, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, audioInputs, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, fileBrowserBookmarks, QStringList ())
-  DEFINE_SETTING_PROPERTY (QString, fileBrowserLastLocation, {})
+  DEFINE_SETTING_PROPERTY (QString, fileBrowserLastLocation, QString ())
   DEFINE_SETTING_PROPERTY (int, undoStackLength, 128)
   DEFINE_SETTING_PROPERTY (int, pianoRollHighlight, 3)    // both
   DEFINE_SETTING_PROPERTY (int, pianoRollMidiModifier, 0) // velocity
@@ -130,7 +142,7 @@ class AppSettings : public QObject
     QStringList,
     monitorRightOutputDeviceList,
     QStringList ())
-  DEFINE_SETTING_PROPERTY (QString, rtAudioAudioDeviceName, {})
+  DEFINE_SETTING_PROPERTY (QString, rtAudioAudioDeviceName, QString ())
   DEFINE_SETTING_PROPERTY (int, sampleRate, 3)         // 48000
   DEFINE_SETTING_PROPERTY (int, audioBufferSize, 5)    // 512
   DEFINE_SETTING_PROPERTY (int, bounceTailLength, 100) // 100ms
@@ -144,21 +156,30 @@ class AppSettings : public QObject
   DEFINE_SETTING_PROPERTY (int, lastMidiFunction, -1)
   // JSON object of last-used parameter values per editor function id
   DEFINE_SETTING_PROPERTY (QString, editorFunctionLastParams, u"{}"_s)
-  DEFINE_SETTING_PROPERTY (QString, fileBrowserInstrument, {})
-  DEFINE_SETTING_PROPERTY (QString, pluginBrowserSearchText, {})
+  DEFINE_SETTING_PROPERTY (QString, fileBrowserInstrument, QString ())
+  DEFINE_SETTING_PROPERTY (QString, pluginBrowserSearchText, QString ())
   DEFINE_SETTING_PROPERTY (QStringList, pluginBrowserSpecTypes, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, pluginBrowserSpecFormats, QStringList ())
   // Plugin descriptors the user favorited, as "format:uniqueId" keys
-  DEFINE_SETTING_PROPERTY (QStringList, pluginBrowserFavorites, {})
+  DEFINE_SETTING_PROPERTY (QStringList, pluginBrowserFavorites, QStringList ())
   DEFINE_SETTING_PROPERTY (int, automationCurveAlgorithm, 1) // superellipse
   DEFINE_SETTING_PROPERTY (double, timelineLastCreatedObjectLengthInTicks, 3840.0)
   DEFINE_SETTING_PROPERTY (double, editorLastCreatedObjectLengthInTicks, 480.0)
-  DEFINE_SETTING_PROPERTY (QString, uiLocale, {})
+  DEFINE_SETTING_PROPERTY (QString, uiLocale, QString ())
 
 public:
   explicit AppSettings (
     std::unique_ptr<ISettingsBackend> backend,
     QObject *                         parent = nullptr);
+
+  /**
+   * @brief Resets the settings exposed in the preferences dialog to their
+   *   defaults.
+   *
+   * Settings without a preferences row (e.g. recent projects) and any other
+   * application state are preserved.
+   */
+  Q_INVOKABLE void reset_preference_settings ();
 
 private:
   std::unique_ptr<ISettingsBackend> backend_;

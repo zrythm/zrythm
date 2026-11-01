@@ -50,6 +50,9 @@ public:
   bool canUndo () const { return stack_->canUndo (); }
   bool canRedo () const { return stack_->canRedo (); }
 
+  void              set_undo_limit (int limit) { stack_->setUndoLimit (limit); }
+  [[nodiscard]] int undo_limit () const { return stack_->undoLimit (); }
+
   const QUndoCommand * command (int index) const
   {
     return stack_->command (index);

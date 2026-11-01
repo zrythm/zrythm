@@ -71,6 +71,10 @@ ApplicationWindow {
     }
   }
 
+  ThemeSettingsController {
+    appSettings: root.appSettings
+  }
+
   Component.onCompleted: {
     // the scan runs in the background; the selector page shows progress
     if (root.pluginManager !== null) {

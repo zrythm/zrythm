@@ -146,12 +146,12 @@ ProjectSession::ProjectSession (
           *undo_stack_,
           *project_->plugin_factory_,
           *track_creator_,
-          [controller = generic_plugin_ui_controller_.get ()] (
+          [this, controller = generic_plugin_ui_controller_.get ()] (
             plugins::PluginUuidReference plugin_ref) {
             z_debug ("Plugin instantiation completed");
             auto * pl = plugin_ref.get ();
             controller->trackPluginUiVisibility (pl);
-            pl->setUiVisible (true);
+            pl->setUiVisible (app_settings_.openPluginsOnInstantiation ());
           },
           this)),
       plugin_operator_ (
@@ -183,6 +183,12 @@ ProjectSession::ProjectSession (
           this))
 {
   project_->setParent (this);
+
+  undo_stack_->set_undo_limit (app_settings_.undoStackLength ());
+  QObject::connect (
+    &app_settings_, &utils::AppSettings::undoStackLengthChanged,
+    undo_stack_.get (),
+    [this] (int limit) { undo_stack_->set_undo_limit (limit); });
 
   timeline_arranger_objects_ =
     utils::make_qobject_unique<TimelineArrangerObjectsModel> (this);

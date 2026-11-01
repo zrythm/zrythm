@@ -272,6 +272,13 @@ set(rel_qml_file_paths
   components/editors/ChordEditorPane.qml
   components/editors/PianoRollKeys.qml
   components/editors/ChordRowLabels.qml
+  components/preferences/PreferencesAdvancedPage.qml
+  components/preferences/PreferencesAppearancePage.qml
+  components/preferences/PreferencesEditingPage.qml
+  components/preferences/PreferencesPathListEditorDialog.qml
+  components/preferences/PreferencesPlaybackMixingPage.qml
+  components/preferences/PreferencesPluginsPage.qml
+  components/preferences/PreferencesSearchResultsPage.qml
   components/AboutDialog.qml
   components/AboutThirdPartyLicensesPage.qml
   components/ActionRow.qml
@@ -332,6 +339,7 @@ set(rel_qml_file_paths
   components/TrackSelectionModel.qml
   components/TrackView.qml
   components/TransportControls.qml
+  components/ThemeSettingsController.qml
   components/UndoSplitButton.qml
   components/ViewContext.qml
   components/WaveformViewer.qml
@@ -342,6 +350,7 @@ set(rel_qml_file_paths
   utils/SelectionTracker.qml
   utils/TrackColors.qml
   views/ExportDialog.qml
+  views/PreferencesDialog.qml
   views/ProjectWindow.qml
 )
 set(qml_file_paths)

@@ -12,6 +12,11 @@ qt_add_qml_module(zrythm_gui_qml_unit_tests
 
 target_link_libraries(zrythm_gui_qml_unit_tests PRIVATE
   Qt6::QuickTest
+  zrythm_utils_lib
+)
+
+target_include_directories(zrythm_gui_qml_unit_tests PRIVATE
+  "${CMAKE_SOURCE_DIR}/tests"
 )
 
 target_compile_definitions(zrythm_gui_qml_unit_tests PRIVATE

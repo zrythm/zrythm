@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/plugin_protocol_paths.h"
@@ -401,11 +401,21 @@ PluginProtocolPaths::get_au_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  ret->add_path ("/Library/Audio/Plug-ins/Components");
-  auto user_components =
-    utils::io::get_home_path () / "Library" / "Audio" / "Plug-ins"
-    / "Components";
-  ret->add_path (user_components);
+  auto paths_from_settings = app_settings_.auSearchPaths ();
+  if (paths_from_settings.empty ())
+    {
+      /* no paths given - use default */
+      ret->add_path ("/Library/Audio/Plug-ins/Components");
+      auto user_components =
+        utils::io::get_home_path () / "Library" / "Audio" / "Plug-ins"
+        / "Components";
+      ret->add_path (user_components);
+    }
+  else
+    {
+      /* use paths given */
+      add_expanded_paths (ret, paths_from_settings);
+    }
 
   ret->print (u8"AU paths");
 
