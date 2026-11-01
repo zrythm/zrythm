@@ -139,6 +139,15 @@ ProcessorParameter::ProcessorParameter (
         utils::create_object<
           dsp::CVPort> (registry, label_ + u8" Mod In", dsp::PortFlow::Input))
 {
+  // Modulation inputs stay detached until a connection attaches them, so
+  // unmodulated parameters add no nodes to the processing graph.
+  if (
+    auto * mod_port = modulation_input_uuid_.get_object_as<dsp::CVPort> ();
+    mod_port != nullptr)
+    {
+      mod_port->set_attachment_follows_connections (true);
+      mod_port->set_detached (true);
+    }
 }
 
 void

@@ -14,6 +14,7 @@ target_sources(zrythm_actions_lib
     parameter_operator.cpp
     plugin_importer.cpp
     plugin_operator.cpp
+    port_connection_operator.cpp
     track_collection_operator.cpp
     track_creator.cpp
     track_operator.cpp
@@ -31,6 +32,7 @@ target_sources(zrythm_actions_lib
       parameter_operator.h
       plugin_importer.h
       plugin_operator.h
+      port_connection_operator.h
       track_collection_operator.h
       track_creator.h
       track_operator.h

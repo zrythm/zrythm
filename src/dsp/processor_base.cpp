@@ -280,6 +280,17 @@ ProcessorGraphBuilder::add_nodes (
     {
       add_node_for_processable (*port_ref.get ());
     }
+  for (const auto &param_ref : processor.get_parameters ())
+    {
+      const auto * param = param_ref.get ();
+      if (param == nullptr)
+        continue;
+      auto * mod_port = param->get_modulation_input_port_ref ().get ();
+      // Modulation inputs join the graph only while attached, i.e. while
+      // the parameter has a connection.
+      if (mod_port != nullptr && !mod_port->detached ())
+        add_node_for_processable (*mod_port);
+    }
 }
 
 void
@@ -303,6 +314,19 @@ ProcessorGraphBuilder::add_connections (
         graph.get_nodes ().find_node_for_processable (*port_ref.get ());
       z_return_if_fail (port_node);
       processor_node->connect_to (*port_node);
+    }
+  for (const auto &param_ref : processor.get_parameters ())
+    {
+      const auto * param = param_ref.get ();
+      if (param == nullptr)
+        continue;
+      auto * mod_port = param->get_modulation_input_port_ref ().get ();
+      if (mod_port == nullptr || mod_port->detached ())
+        continue;
+      auto * port_node =
+        graph.get_nodes ().find_node_for_processable (*mod_port);
+      z_return_if_fail (port_node);
+      port_node->connect_to (*processor_node);
     }
 }
 

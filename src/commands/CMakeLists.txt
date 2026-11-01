@@ -13,6 +13,7 @@ target_sources(zrythm_commands_lib
     move_arranger_objects_command.cpp
     move_plugins_command.cpp
     move_tracks_command.cpp
+    port_connection_commands.cpp
     remove_plugins_command.cpp
     resize_arranger_objects_command.cpp
     set_audio_clip_transforms_command.cpp
@@ -41,6 +42,7 @@ target_sources(zrythm_commands_lib
       move_arranger_objects_command.h
       move_plugins_command.h
       move_tracks_command.h
+      port_connection_commands.h
       relocate_arranger_object_command.h
       remove_arranger_object_command.h
       remove_plugins_command.h

@@ -25,6 +25,12 @@ public:
 
   explicit PortConnectionsManager (QObject * parent = nullptr);
 
+Q_SIGNALS:
+  /**
+   * @brief Emitted after connections are added, updated, or removed.
+   */
+  void connectionsChanged ();
+
 private:
   /**
    * Hashtable to speedup lookups by port identifier.
@@ -217,6 +223,7 @@ public:
   {
     connections_.clear ();
     regenerate_hashtables ();
+    Q_EMIT connectionsChanged ();
   }
 
   auto &connections () const { return connections_; }

@@ -225,6 +225,10 @@ ProjectSession::ProjectSession (
     ui_state_.get (),
     &structure::project::ProjectUiState::midiInputDeviceChanged, this,
     recalc_graph);
+  QObject::connect (
+    project_->port_connections_manager_.get (),
+    &structure::project::PortConnectionsManager::connectionsChanged, this,
+    recalc_graph);
 
   wire_midi_input_selections_to_tracks ();
   wire_chord_track_to_pad_bank ();

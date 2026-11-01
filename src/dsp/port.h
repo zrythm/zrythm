@@ -126,6 +126,19 @@ public:
    */
   void set_detached (bool new_detached) [[clang::blocking]];
 
+  /**
+   * @brief Whether this port joins the processing graph only while it has a
+   * connection.
+   *
+   * Parameter modulation inputs use this lifecycle: they are created detached
+   * and attach when connected. Regular processor ports are statically
+   * attached and must not be detached when their last connection is removed.
+   */
+  bool attachment_follows_connections () const
+  {
+    return attachment_follows_connections_;
+  }
+
   // ========================================================================
   // QML Interface
   // ========================================================================
@@ -158,6 +171,19 @@ protected:
   init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type);
 
 private:
+  /**
+   * @brief Marks the port as joining the graph only while it has connections.
+   *
+   * Only creators of dynamic ports (currently parameter modulation inputs)
+   * may set this; it is a category of the port, not persisted state.
+   */
+  void set_attachment_follows_connections (bool value)
+  {
+    attachment_follows_connections_ = value;
+  }
+
+  friend class ProcessorParameter;
+
   static constexpr auto kFlowId = "flow"sv;
   static constexpr auto kLabelId = "label"sv;
   static constexpr auto kSymbolId = "symbol"sv;
@@ -190,6 +216,9 @@ private:
 
   /** Whether this port is detached from processing (see detached()). */
   bool detached_{};
+
+  /** See attachment_follows_connections(). */
+  bool attachment_follows_connections_{};
 
   BOOST_DESCRIBE_CLASS (
     Port,

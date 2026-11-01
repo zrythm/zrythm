@@ -68,6 +68,7 @@ PortConnectionsManager::update_connection (
 
   it->reset (utils::clone_qobject (after, this));
   regenerate_hashtables ();
+  Q_EMIT connectionsChanged ();
 
   return true;
 }
@@ -86,6 +87,10 @@ PortConnectionsManager::update_connection (
       return false;
     }
   conn->update (multiplier, locked, enabled);
+  // The hashtables hold clones of the connections, so they must be
+  // rebuilt after an in-place update.
+  regenerate_hashtables ();
+  Q_EMIT connectionsChanged ();
   return true;
 }
 
@@ -245,6 +250,7 @@ PortConnectionsManager::add_connection (
         {
           conn->update (multiplier, locked, enabled);
           regenerate_hashtables ();
+          Q_EMIT connectionsChanged ();
           return conn.get ();
         }
     }
@@ -258,6 +264,7 @@ PortConnectionsManager::add_connection (
     "New connection: <{}>; have {} connections", *conn, connections_.size ());
 
   regenerate_hashtables ();
+  Q_EMIT connectionsChanged ();
 
   return conn.get ();
 }
@@ -273,6 +280,7 @@ PortConnectionsManager::remove_connection (const size_t idx)
   connections_.erase (std::ranges::next (connections_.begin (), (int) idx));
 
   regenerate_hashtables ();
+  Q_EMIT connectionsChanged ();
 }
 
 bool
@@ -327,6 +335,7 @@ PortConnectionsManager::reset_connections_from_other (
         }
       regenerate_hashtables ();
     }
+  Q_EMIT connectionsChanged ();
 }
 
 void
@@ -377,6 +386,7 @@ from_json (const nlohmann::json &j, PortConnectionsManager &pcm)
       pcm.connections_.push_back (std::move (conn));
     }
   pcm.regenerate_hashtables ();
+  Q_EMIT pcm.connectionsChanged ();
 }
 
 } // namespace zrythm::structure::project
