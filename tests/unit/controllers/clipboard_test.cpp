@@ -156,8 +156,8 @@ TEST_F (ClipboardTest, ReloadIgnoresOwnWrites)
 
   // The dataChanged handler firing for our own write must not emit or
   // replace anything
-  int                           changes = 0;
-  const QMetaObject::Connection conn = QObject::connect (
+  int  changes = 0;
+  auto conn = QObject::connect (
     clipboard.get (), &Clipboard::payloadChanged, clipboard.get (),
     [&changes] () { ++changes; });
   clipboard->reloadFromSystemClipboard ();
