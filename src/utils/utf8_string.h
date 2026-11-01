@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -186,7 +186,12 @@ public:
   Utf8String symbolify () const;
 
   /**
-   * Expands environment variables enclosed in ${} in the given string.
+   * Returns a new string with environment variable references replaced by
+   * their values.
+   *
+   * ${VAR} expands on every platform, the bare $VAR form on non-Windows
+   * platforms and %VAR% on Windows. References to undefined variables and
+   * markers not followed by a variable name stay as written.
    */
   Utf8String expand_env_vars () const;
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -191,21 +191,39 @@ Utf8String::symbolify () const
 Utf8String
 Utf8String::expand_env_vars () const
 {
-  std::regex  env_var_regex (R"(\$\{([^}]+)\})");
-  auto        result = *this;
-  std::smatch match;
+  /* braced ${VAR} works on every platform; the bare $VAR form is POSIX-only
+   * and %VAR% Windows-only so the other platforms' marker characters stay
+   * literal in paths */
+#ifdef _WIN32
+  static const std::regex env_var_regex (
+    R"((\$\{([^}]+)\})|(%([A-Za-z_][A-Za-z0-9_]*)%))");
+#else
+  static const std::regex env_var_regex (
+    R"((\$\{([^}]+)\})|(\$([A-Za-z_][A-Za-z0-9_]*)))");
+#endif
 
-  while (std::regex_search (result.str (), match, env_var_regex))
+  const std::string subject = str ();
+  std::string       result;
+  result.reserve (subject.size ());
+
+  auto it =
+    std::sregex_iterator (subject.begin (), subject.end (), env_var_regex);
+  const auto end = std::sregex_iterator ();
+  size_t     consumed = 0;
+  for (; it != end; ++it)
     {
-      std::string  env_var = match[1].str ();
-      const char * env_val = std::getenv (env_var.c_str ());
-      std::string  replacement = env_val ? env_val : "";
-      result = result.replace (
-        Utf8String::from_utf8_encoded_string (match[0].str ()),
-        Utf8String::from_utf8_encoded_string (replacement));
+      const auto &match = *it;
+      result += subject.substr (consumed, match.position () - consumed);
+      const auto   name = match[2].matched ? match[2].str () : match[4].str ();
+      const char * env_val = std::getenv (name.c_str ());
+      /* keep the reference as written when the variable is undefined so the
+       * typo stays visible in the result */
+      result += env_val != nullptr ? env_val : match.str ();
+      consumed = match.position () + match.length ();
     }
+  result += subject.substr (consumed);
 
-  return result;
+  return Utf8String::from_utf8_encoded_string (result);
 }
 
 void

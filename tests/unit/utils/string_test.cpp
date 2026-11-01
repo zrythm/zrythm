@@ -106,6 +106,74 @@ TEST (StringTest, EnvironmentVariables)
   qunsetenv ("TEST_VAR");
 }
 
+// ${VAR} expands on every platform; undefined variables stay as written so a
+// typo remains visible in the result
+TEST (StringTest, ExpandEnvVarsBracedForm)
+{
+  qputenv ("ZRYTHM_TEST_VAR_A", "alpha");
+  EXPECT_EQ (
+    Utf8String (u8"pre/${ZRYTHM_TEST_VAR_A}/post").expand_env_vars (),
+    "pre/alpha/post");
+  EXPECT_EQ (
+    Utf8String (u8"${ZRYTHM_TEST_VAR_A}${ZRYTHM_TEST_VAR_A}").expand_env_vars (),
+    "alphaalpha");
+  EXPECT_EQ (
+    Utf8String (u8"${ZRYTHM_TEST_UNDEFINED_VAR}").expand_env_vars (),
+    "${ZRYTHM_TEST_UNDEFINED_VAR}");
+  EXPECT_EQ (Utf8String (u8"${}").expand_env_vars (), "${}");
+  qunsetenv ("ZRYTHM_TEST_VAR_A");
+}
+
+#ifndef _WIN32
+// the bare POSIX form expands on non-Windows platforms and shares the
+// leave-literal behavior for undefined names
+TEST (StringTest, ExpandEnvVarsBarePosixForm)
+{
+  qputenv ("ZRYTHM_TEST_VAR_B", "beta");
+  EXPECT_EQ (
+    Utf8String (u8"$ZRYTHM_TEST_VAR_B/lv2").expand_env_vars (), "beta/lv2");
+  EXPECT_EQ (
+    Utf8String (u8"$ZRYTHM_TEST_VAR_B$ZRYTHM_TEST_VAR_B").expand_env_vars (),
+    "betabeta");
+  EXPECT_EQ (
+    Utf8String (u8"${ZRYTHM_TEST_VAR_B}/$ZRYTHM_TEST_VAR_B").expand_env_vars (),
+    "beta/beta");
+  EXPECT_EQ (
+    Utf8String (u8"$ZRYTHM_TEST_UNDEFINED_VAR").expand_env_vars (),
+    "$ZRYTHM_TEST_UNDEFINED_VAR");
+  qunsetenv ("ZRYTHM_TEST_VAR_B");
+}
+#endif
+
+#ifdef _WIN32
+// the percent form expands on Windows and stays literal for undefined names
+TEST (StringTest, ExpandEnvVarsPercentWindowsForm)
+{
+  qputenv ("ZRYTHM_TEST_VAR_C", "gamma");
+  EXPECT_EQ (
+    Utf8String (u8"%ZRYTHM_TEST_VAR_C%\\Plugins").expand_env_vars (),
+    "gamma\\Plugins");
+  EXPECT_EQ (
+    Utf8String (u8"%ZRYTHM_TEST_UNDEFINED_VAR%").expand_env_vars (),
+    "%ZRYTHM_TEST_UNDEFINED_VAR%");
+  qunsetenv ("ZRYTHM_TEST_VAR_C");
+}
+#endif
+
+// markers not followed by a variable name stay literal; the percent form is
+// Windows-only so it stays literal elsewhere even when the variable exists
+TEST (StringTest, ExpandEnvVarsLeavesNonVariablesLiteral)
+{
+  qputenv ("ZRYTHM_TEST_VAR_D", "delta");
+  EXPECT_EQ (Utf8String (u8"$5 $$ $").expand_env_vars (), "$5 $$ $");
+#ifndef _WIN32
+  EXPECT_EQ (
+    Utf8String (u8"50%_done %ZRYTHM_TEST_VAR_D%").expand_env_vars (),
+    "50%_done %ZRYTHM_TEST_VAR_D%");
+#endif
+  qunsetenv ("ZRYTHM_TEST_VAR_D");
+}
+
 TEST (StringTest, StringConversions)
 {
   // juce::String <-> std::string
