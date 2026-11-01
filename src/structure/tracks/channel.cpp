@@ -184,6 +184,12 @@ Channel::get_plugins () const
   return plugins;
 }
 
+std::vector<plugins::PluginGroup *>
+Channel::plugin_groups () const
+{
+  return { midi_fx_.get (), instruments_.get (), inserts_.get () };
+}
+
 std::vector<dsp::ProcessorBase *>
 Channel::get_builtin_processors () const
 {

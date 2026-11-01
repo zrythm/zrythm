@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/timebase.h"
@@ -70,6 +70,34 @@ TEST_F (TrackTest, TrackTypeEnum)
   EXPECT_EQ (
     static_cast<int> (Track::Type::MidiGroup),
     static_cast<int> (Track::get_type_for_class<MidiGroupTrack> ()));
+}
+
+// A track's plugin groups are its channel's groups followed by its
+// modulator rack; groups the track does not own are omitted.
+TEST_F (TrackTest, PluginGroupsCoverChannelGroupsAndModulatorRack)
+{
+  const auto with_modulators =
+    MockTrack::TrackFeatures::Automation | MockTrack::TrackFeatures::Modulators;
+
+  auto track = createMockTrack (
+    Track::Type::Audio, dsp::PortType::Audio, dsp::PortType::Audio,
+    with_modulators);
+  const auto groups = track->plugin_groups ();
+  ASSERT_EQ (groups.size (), 4u);
+  EXPECT_EQ (groups[0], track->channel ()->midiFx ());
+  EXPECT_EQ (groups[1], track->channel ()->instruments ());
+  EXPECT_EQ (groups[2], track->channel ()->inserts ());
+  EXPECT_EQ (groups[3], track->modulators ());
+
+  auto without_modulators = createMockTrack (
+    Track::Type::Audio, dsp::PortType::Audio, dsp::PortType::Audio,
+    MockTrack::TrackFeatures::Automation);
+  EXPECT_EQ (without_modulators->plugin_groups ().size (), 3u);
+
+  auto channel_less = createMockTrack (
+    Track::Type::Marker, dsp::PortType::Audio, dsp::PortType::CV,
+    MockTrack::TrackFeatures::Automation);
+  EXPECT_TRUE (channel_less->plugin_groups ().empty ());
 }
 
 TEST_F (TrackTest, TrackTypeProperties)

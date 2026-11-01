@@ -630,6 +630,21 @@ Track::collect_plugins (std::vector<plugins::PluginUuidReference> &plugins) cons
     }
 }
 
+std::vector<plugins::PluginGroup *>
+Track::plugin_groups () const
+{
+  std::vector<plugins::PluginGroup *> groups;
+  if (channel_ != nullptr)
+    {
+      groups.append_range (channel_->plugin_groups ());
+    }
+  if (modulators_ != nullptr)
+    {
+      groups.push_back (modulators_.get ());
+    }
+  return groups;
+}
+
 #if 0
 bool
 Track::is_plugin_descriptor_valid_for_slot_type (

@@ -460,6 +460,15 @@ public:
 
   plugins::PluginGroup * modulators () const { return modulators_.get (); }
 
+  /**
+   * @brief Returns the plugin groups holding the track's plugins: the
+   * channel's groups (MIDI FX, instruments, inserts) followed by the
+   * modulator rack.
+   *
+   * Groups the track does not own are omitted.
+   */
+  std::vector<plugins::PluginGroup *> plugin_groups () const;
+
   TrackLaneList * lanes () const { return lanes_.get (); }
 
   dsp::ProcessorParameter * recordingParam () const;

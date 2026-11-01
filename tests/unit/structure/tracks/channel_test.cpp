@@ -273,6 +273,19 @@ TEST_F (ChannelTest, BuiltinProcessorsMatchChannelSignalTypes)
     instrument_processors, &instrument_channel->get_audio_post_fader ()));
 }
 
+// The channel's plugin groups are its MIDI FX, instrument and insert
+// groups, in signal-flow order.
+TEST_F (ChannelTest, PluginGroupsAreMidiFxInstrumentsAndInserts)
+{
+  audio_channel_ = createAudioChannel ();
+
+  const auto groups = audio_channel_->plugin_groups ();
+  ASSERT_EQ (groups.size (), 3u);
+  EXPECT_EQ (groups[0], audio_channel_->midiFx ());
+  EXPECT_EQ (groups[1], audio_channel_->instruments ());
+  EXPECT_EQ (groups[2], audio_channel_->inserts ());
+}
+
 TEST_F (ChannelTest, PostMidiFxPortIsStablePostMidiFxOutput)
 {
   midi_channel_ = createMidiChannel ();

@@ -155,6 +155,12 @@ public:
   std::vector<plugins::PluginUuidReference> get_plugins () const;
 
   /**
+   * @brief Returns the plugin groups holding the channel's plugins, in
+   * signal-flow order (MIDI FX, instruments, inserts).
+   */
+  std::vector<plugins::PluginGroup *> plugin_groups () const;
+
+  /**
    * @brief Returns the channel's built-in processors, in signal-flow
    * order.
    *
