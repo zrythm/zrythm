@@ -8,6 +8,7 @@ add_executable(zrythm_structure_project_unit_tests
   clipboard_payload_test.cpp
   editor_settings_test.cpp
   midi_editor_test.cpp
+  modular_view_state_test.cpp
   port_connection_test.cpp
   port_connections_manager_test.cpp
   project_graph_builder_test.cpp

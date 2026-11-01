@@ -191,6 +191,7 @@ TEST_F (ProjectUiStateTest, AllAccessorsNonNull)
   EXPECT_NE (ui_state->timeline (), nullptr);
   EXPECT_NE (ui_state->snapGridTimeline (), nullptr);
   EXPECT_NE (ui_state->snapGridEditor (), nullptr);
+  EXPECT_NE (ui_state->modularViewState (), nullptr);
 }
 
 // ========================================================================
@@ -321,5 +322,38 @@ TEST_F (ProjectUiStateTest, AudioInputSelectionSerializationRoundtrip)
   EXPECT_EQ (restored_sel->deviceName (), u"My Device"_s);
   EXPECT_EQ (restored_sel->firstChannel (), 4);
   EXPECT_FALSE (restored_sel->stereo ());
+}
+
+TEST_F (ProjectUiStateTest, ModularViewStateRoundTripsThroughProjectUiState)
+{
+  project = create_minimal_project ();
+  project->add_default_tracks ();
+  ui_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+
+  auto * track = get_first_track (*project);
+  ASSERT_NE (track, nullptr);
+  auto * modular_state = ui_state->modularViewState ();
+  ASSERT_NE (modular_state, nullptr);
+  modular_state->set_scope (ModularViewState::Scope::Global);
+  modular_state->set_selected_track (track->get_uuid ());
+  const QString track_node_id = "track:" + track->uuidString ();
+  modular_state->set_node_position (track_node_id, QPointF (120.5, 340.25));
+
+  nlohmann::json j;
+  to_json (j, *ui_state);
+  ASSERT_TRUE (j.contains (ProjectUiState::kModularViewStateKey));
+
+  auto restored_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+  from_json (j, *restored_state);
+  auto * restored_modular = restored_state->modularViewState ();
+  ASSERT_NE (restored_modular, nullptr);
+  EXPECT_EQ (restored_modular->scope (), ModularViewState::Scope::Global);
+  ASSERT_TRUE (restored_modular->selected_track ().has_value ());
+  EXPECT_EQ (*restored_modular->selected_track (), track->get_uuid ());
+  const auto position = restored_modular->find_node_position (track_node_id);
+  ASSERT_TRUE (position.has_value ());
+  EXPECT_EQ (*position, QPointF (120.5, 340.25));
 }
 }

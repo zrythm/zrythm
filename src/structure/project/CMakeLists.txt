@@ -85,6 +85,7 @@ target_sources(zrythm_structure_project_lib
     clipboard_payload.cpp
     editor_settings.cpp
     midi_editor.cpp
+    modular_view_state.cpp
     port_connection.cpp
     port_connections_manager.cpp
     project.cpp
@@ -106,6 +107,7 @@ target_sources(zrythm_structure_project_lib
       clipboard_payload.h
       editor_settings.h
       midi_editor.h
+      modular_view_state.h
       port_connection.h
       port_connections_manager.h
       project.h

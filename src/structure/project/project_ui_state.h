@@ -4,6 +4,7 @@
 #pragma once
 
 #include <map>
+#include <optional>
 #include <string_view>
 
 #include "dsp/audio_input_selection.h"
@@ -12,6 +13,7 @@
 #include "structure/project/arranger_tool.h"
 #include "structure/project/chord_pad_bank.h"
 #include "structure/project/clip_editor.h"
+#include "structure/project/modular_view_state.h"
 #include "structure/project/project.h"
 #include "structure/project/timeline_editor.h"
 #include "structure/tracks/track.h"
@@ -32,6 +34,7 @@ namespace zrythm::structure::project
  * - Clip editor state (selected clip, etc.)
  * - Timeline state
  * - Snap/grid settings for timeline and editor
+ * - Modular view layout state (node positions, viewports, scope)
  *
  * This class does NOT own the Project; it receives a reference to access
  * necessary components (tempo map, registries) during construction.
@@ -39,6 +42,8 @@ namespace zrythm::structure::project
 class ProjectUiState : public QObject
 {
   Q_OBJECT
+
+public:
   Q_PROPERTY (
     zrythm::structure::project::TimelineEditor * timeline READ timeline CONSTANT
       FINAL)
@@ -54,6 +59,9 @@ class ProjectUiState : public QObject
     zrythm::dsp::SnapGrid * snapGridTimeline READ snapGridTimeline CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::SnapGrid * snapGridEditor READ snapGridEditor CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::structure::project::ModularViewState * modularViewState READ
+      modularViewState CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -72,6 +80,7 @@ public:
   TimelineEditor *                   timeline () const;
   dsp::SnapGrid *                    snapGridTimeline () const;
   dsp::SnapGrid *                    snapGridEditor () const;
+  ModularViewState *                 modularViewState () const;
 
   Q_INVOKABLE dsp::AudioInputSelection *
   audioInputSelectionForTrack (const structure::tracks::Track * track);
@@ -90,10 +99,16 @@ public:
   static constexpr auto kChordPadBankKey = "chordPadBank"sv;
   static constexpr auto kAudioInputSelectionsKey = "audioInputSelections"sv;
   static constexpr auto kMidiInputSelectionsKey = "midiInputSelections"sv;
+  static constexpr auto kModularViewStateKey = "modularView"sv;
 
 Q_SIGNALS:
   void audioInputSelectionChanged ();
   void midiInputDeviceChanged ();
+
+  /**
+   * @brief Emitted after this state is populated from serialized data.
+   */
+  void restored ();
 
 private:
   dsp::AudioInputSelection * get_or_create_audio_input_selection (
@@ -126,6 +141,9 @@ private:
 
   /** Snap/grid settings for the editor (piano roll). */
   utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
+
+  /** Persisted layout state of the Modular view. */
+  utils::QObjectUniquePtr<ModularViewState> modular_view_state_;
 
   /** Map of track UUID to audio input selection (lazy-created, pruned on save).
    */

@@ -5,6 +5,7 @@
 #include "utils/app_settings.h"
 #include "utils/logger.h"
 #include "utils/registry_utils.h"
+#include "utils/serialization.h"
 
 namespace zrythm::structure::project
 {
@@ -35,7 +36,10 @@ ProjectUiState::ProjectUiState (
           [this] {
             return app_settings_.editorLastCreatedObjectLengthInTicks ();
           },
-          this))
+          this)),
+      modular_view_state_ (
+        utils::make_qobject_unique<
+          ModularViewState> (project.get_registry (), this))
 {
 }
 
@@ -73,6 +77,12 @@ dsp::SnapGrid *
 ProjectUiState::snapGridEditor () const
 {
   return snap_grid_editor_.get ();
+}
+
+ModularViewState *
+ProjectUiState::modularViewState () const
+{
+  return modular_view_state_.get ();
 }
 
 dsp::AudioInputSelection *
@@ -163,7 +173,8 @@ to_json (nlohmann::json &j, const ProjectUiState &p)
   j = nlohmann::json{
     { ProjectUiState::kSnapGridTimelineKey, *p.snap_grid_timeline_ },
     { ProjectUiState::kSnapGridEditorKey,   *p.snap_grid_editor_   },
-    { ProjectUiState::kChordPadBankKey,     *p.chord_pad_bank_     }
+    { ProjectUiState::kChordPadBankKey,     *p.chord_pad_bank_     },
+    { ProjectUiState::kModularViewStateKey, *p.modular_view_state_ }
   };
 
   nlohmann::json selections_json = nlohmann::json::array ();
@@ -246,6 +257,12 @@ from_json (const nlohmann::json &j, ProjectUiState &p)
           from_json (entry[1], *sel);
         }
     }
+  if (j.contains (ProjectUiState::kModularViewStateKey))
+    {
+      from_json (
+        j.at (ProjectUiState::kModularViewStateKey), *p.modular_view_state_);
+    }
+  Q_EMIT p.restored ();
 }
 
 } // namespace zrythm::structure::project
