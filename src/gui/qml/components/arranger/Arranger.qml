@@ -287,6 +287,7 @@ Item {
     } else if (hovered) {
       root.hoveredObject = arrangerObject;
     }
+    root.updateCursor();
   }
 
   function handleObjectSelection(sourceModel: var, index: int, mouse: var) {
@@ -616,6 +617,14 @@ Item {
 
   Connections {
     function onHoveredPointChanged() {
+      root.updateCursor();
+    }
+
+    function onIsResizeLHoveredChanged() {
+      root.updateCursor();
+    }
+
+    function onIsResizeRHoveredChanged() {
       root.updateCursor();
     }
 
