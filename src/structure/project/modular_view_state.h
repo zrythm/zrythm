@@ -16,6 +16,8 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+using namespace std::string_view_literals;
+
 namespace zrythm::structure::project
 {
 
