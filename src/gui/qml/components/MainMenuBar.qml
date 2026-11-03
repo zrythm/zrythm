@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import Zrythm
+import ZrythmDocking
 import Qt.labs.synchronizer
 
 MenuBar {
@@ -15,6 +18,7 @@ MenuBar {
   required property Action cutAction
   required property Action deleteAction
   required property DeviceManager deviceManager
+  required property ProjectDockWorkspace dockWorkspace
   required property Action duplicateAction
   required property ExportDialog exportDialog
   required property FileDialog importFileDialog
@@ -146,6 +150,51 @@ MenuBar {
         sourceObject: GlobalState.application.appSettings
         sourceProperty: "rightPanelVisible"
       }
+    }
+
+    MenuSeparator {
+    }
+
+    Menu {
+      id: panelsMenu
+
+      title: qsTr("Panels")
+
+      Instantiator {
+        model: root.dockWorkspace.dockingController.panelIds
+
+        delegate: MenuItem {
+          required property string modelData
+          readonly property DockPanel panel: root.dockWorkspace.dockingController.panelById(modelData)
+
+          checkable: true
+          checked: root.dockWorkspace.dockingController.layout.hidden.indexOf(modelData) < 0
+          icon.source: panel.icon
+          text: panel.title
+
+          onTriggered: {
+            if (root.dockWorkspace.dockingController.isPanelHidden(modelData))
+              root.dockWorkspace.dockingController.presentPanel(modelData);
+            else
+              root.dockWorkspace.dockingController.hidePanel(modelData);
+          }
+        }
+
+        onObjectAdded: (index, object) => panelsMenu.addItem(object)
+        onObjectRemoved: (index, object) => panelsMenu.removeItem(object)
+      }
+    }
+
+    MenuItem {
+      text: qsTr("Save Layout")
+
+      onTriggered: root.dockWorkspace.saveLayout()
+    }
+
+    MenuItem {
+      text: qsTr("Reset Layout")
+
+      onTriggered: root.dockWorkspace.resetLayout()
     }
 
     MenuSeparator {

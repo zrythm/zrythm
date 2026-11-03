@@ -87,6 +87,17 @@ ApplicationWindow {
     root.project.engine.deactivate();
   }
 
+  function updateActiveViewContext(focusItem: Item): void {
+    let item = focusItem;
+    while (item !== null && item !== undefined) {
+      if (item.viewContext !== undefined) {
+        activeViewContext = item.viewContext;
+        return;
+      }
+      item = item.parent;
+    }
+  }
+
   height: 720
   title: session.title
   visible: true
@@ -108,6 +119,7 @@ ApplicationWindow {
     cutAction: root.cutAction
     deleteAction: root.deleteAction
     deviceManager: root.deviceManager
+    dockWorkspace: projectDockWorkspace
     duplicateAction: root.duplicateAction
     exportDialog: exportDialog
     importFileDialog: importFileDialog
@@ -129,16 +141,11 @@ ApplicationWindow {
   // keeps the last resolved context; the property clears automatically
   // when the providing view is destroyed. Text inputs consume the
   // standard edit shortcuts while focused.
-  onActiveFocusItemChanged: {
-    let item = activeFocusItem;
-    while (item !== null && item !== undefined) {
-      if (item.viewContext !== undefined) {
-        activeViewContext = item.viewContext;
-        return;
-      }
-      item = item.parent;
-    }
+  onActiveChanged: {
+    if (active)
+      updateActiveViewContext(activeFocusItem);
   }
+  onActiveFocusItemChanged: updateActiveViewContext(activeFocusItem)
   onClosing: {
     console.log("Closing project window...");
     closeAndDestroy();
@@ -466,76 +473,21 @@ ApplicationWindow {
     anchors.fill: parent
     spacing: 0
 
-    SplitView {
-      id: mainSplitView
+    ProjectDockWorkspace {
+      id: projectDockWorkspace
 
       Layout.fillHeight: true
       Layout.fillWidth: true
-      orientation: Qt.Horizontal
+      appSettings: root.appSettings
+      cacheActivityAggregator: cacheActivityAggregator
+      chordPresetManager: root.chordPresetManager
+      deviceManager: root.deviceManager
+      dockPalette: root.palette
+      importFileDialog: importFileDialog
+      session: root.session
+      trackSelectionModel: trackSelectionModel
 
-      LeftDock {
-        id: leftDock
-
-        SplitView.fillHeight: true
-        SplitView.minimumWidth: implicitWidth
-        SplitView.preferredWidth: 200
-        deviceManager: root.deviceManager
-        pluginImporter: root.session.pluginImporter
-        pluginOperator: root.session.pluginOperator
-        project: root.project
-        session: root.session
-        trackSelectionModel: trackSelectionModel
-        tracklist: root.project.tracklist
-        undoStack: root.session.undoStack
-        visible: root.appSettings.leftPanelVisible
-      }
-
-      SplitView {
-        id: centerSplitView
-
-        SplitView.fillHeight: true
-        SplitView.fillWidth: true
-        SplitView.minimumWidth: 120
-        orientation: Qt.Vertical
-
-        CenterDock {
-          id: centerDock
-
-          SplitView.fillHeight: true
-          SplitView.fillWidth: true
-          SplitView.minimumHeight: 120
-          SplitView.preferredHeight: 200
-          cacheActivityAggregator: cacheActivityAggregator
-          importFileDialog: importFileDialog
-          session: root.session
-          trackSelectionModel: trackSelectionModel
-        }
-
-        BottomDock {
-          SplitView.fillWidth: true
-          SplitView.minimumHeight: implicitHeight
-          SplitView.preferredHeight: 240
-          chordPresetManager: root.chordPresetManager
-          session: root.session
-          trackSelectionModel: trackSelectionModel
-          visible: root.appSettings.bottomPanelVisible
-
-          onPluginClicked: function (plugin: Plugin) {
-            PluginInspectorController.showInspector(plugin);
-          }
-        }
-      }
-
-      RightDock {
-        id: rightDock
-
-        SplitView.fillHeight: true
-        SplitView.minimumWidth: implicitWidth
-        SplitView.preferredWidth: 200
-        pluginImporter: root.session.pluginImporter
-        project: root.project
-        visible: root.appSettings.rightPanelVisible
-      }
+      onFocusItemChanged: focusItem => root.updateActiveViewContext(focusItem)
     }
 
     StatusBar {

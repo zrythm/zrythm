@@ -227,6 +227,10 @@ set(rel_qml_file_paths
   components/basic/StatusBarText.qml
   components/basic/WarpDragArea.qml
   components/basic/ZrythmToolBar.qml
+  components/docking/ArrangementPanel.qml
+  components/docking/ClipEditorPanel.qml
+  components/docking/ProjectDockWorkspace.qml
+  components/docking/TrackInspectorPanel.qml
   components/dragndrop/DescriptorDragItem.qml
   components/dragndrop/PluginDragItem.qml
   components/arranger/AudioClipContent.qml
@@ -291,8 +295,6 @@ set(rel_qml_file_paths
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
   components/BalanceControl.qml
-  components/BottomDock.qml
-  components/CenterDock.qml
   components/ChannelView.qml
   components/ChordPadPanel.qml
   components/ChordSelectorDialog.qml
@@ -307,7 +309,6 @@ set(rel_qml_file_paths
   components/FaderControl.qml
   components/FileBrowserPage.qml
   components/GenericPluginEditorWindow.qml
-  components/LeftDock.qml
   components/MainMenuBar.qml
   components/Meter.qml
   components/MetronomeSplitButton.qml
@@ -326,7 +327,6 @@ set(rel_qml_file_paths
   components/PluginWindowHeaderBar.qml
   components/RecordSplitButton.qml
   components/RecordingIndicator.qml
-  components/RightDock.qml
   components/Ruler.qml
   components/LoadController.qml
   components/SaveController.qml
@@ -415,6 +415,7 @@ qt_add_qml_module(zrythm_qml_lib
     TARGET zrythm_controllers_lib
     TARGET zrythm_actions_lib
     TARGET zrythm_gui_lib
+    TARGET zrythm_docking
     TARGET zrythm_style
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Zrythm
   QML_FILES
@@ -454,6 +455,7 @@ target_link_libraries(zrythm_qml_lib
     zrythm_controllers_lib
     zrythm_actions_lib
     zrythm_gui_lib
+    zrythm_docking
     zrythm_style
 )
 

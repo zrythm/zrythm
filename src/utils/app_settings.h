@@ -114,6 +114,7 @@ public:
   DEFINE_SETTING_PROPERTY (bool, leftPanelVisible, true)
   DEFINE_SETTING_PROPERTY (bool, rightPanelVisible, true)
   DEFINE_SETTING_PROPERTY (bool, bottomPanelVisible, true)
+  DEFINE_SETTING_PROPERTY (QString, dockLayout, QString ())
   DEFINE_SETTING_PROPERTY (bool, trackAutoArm, true)
   DEFINE_SETTING_PROPERTY (int, panLaw, 1)
   DEFINE_SETTING_PROPERTY (int, panAlgorithm, 2)

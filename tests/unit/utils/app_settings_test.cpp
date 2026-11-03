@@ -192,6 +192,41 @@ TEST_F (AppSettingsTest, AccentTokenProperty)
   app_settings_->set_accentToken (u"gunmetal"_s);
 }
 
+TEST_F (AppSettingsTest, DockLayoutProperty)
+{
+  const QString default_value;
+  const QString test_layout = u"{\"version\":1}"_s;
+  EXPECT_EQ (app_settings_->dockLayoutDefaultValue (), default_value);
+
+  EXPECT_CALL (
+    *mock_backend_,
+    value (QAnyStringView ("dockLayout"), QVariant (default_value)))
+    .WillOnce (Return (QVariant (test_layout)));
+  EXPECT_EQ (app_settings_->dockLayout (), test_layout);
+
+  EXPECT_CALL (
+    *mock_backend_,
+    value (QAnyStringView ("dockLayout"), QVariant (default_value)))
+    .WillOnce (Return (QVariant (default_value)));
+  EXPECT_CALL (
+    *mock_backend_,
+    setValue (QAnyStringView ("dockLayout"), QVariant (test_layout)))
+    .Times (1);
+
+  app_settings_->set_dockLayout (test_layout);
+
+  EXPECT_CALL (
+    *mock_backend_,
+    value (QAnyStringView ("dockLayout"), QVariant (default_value)))
+    .WillOnce (Return (QVariant (test_layout)));
+  EXPECT_CALL (
+    *mock_backend_,
+    setValue (QAnyStringView ("dockLayout"), QVariant (default_value)))
+    .Times (1);
+
+  app_settings_->reset_dockLayout ();
+}
+
 TEST_F (AppSettingsTest, ResetPreferenceSettingsRestoresOnlyPreferenceRows)
 {
   auto   backend = std::make_unique<test_helpers::InMemorySettingsBackend> ();
