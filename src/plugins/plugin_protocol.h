@@ -24,7 +24,7 @@ public:
   /**
    * Plugin protocol.
    */
-  enum class ProtocolType : std::uint8_t
+  enum class ProtocolType
   {
     /** Dummy protocol for tests. */
     Internal,

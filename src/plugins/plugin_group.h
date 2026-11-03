@@ -50,7 +50,7 @@ class PluginGroup : public QAbstractListModel
   QML_UNCREATABLE ("")
 
 public:
-  enum class ProcessingTypeHint : std::uint8_t
+  enum class ProcessingTypeHint
   {
     /**
      * @brief Process each element in sequence, connecting the output to the
@@ -74,7 +74,7 @@ public:
   };
   Q_ENUM (ProcessingTypeHint)
 
-  enum class DeviceGroupType : std::uint8_t
+  enum class DeviceGroupType
   {
     Audio,
     MIDI,

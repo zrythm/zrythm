@@ -57,7 +57,7 @@ public:
   /**
    * The type of the object.
    */
-  enum class Type : std::uint8_t
+  enum class Type
   {
     MidiClip,
     AudioClip,

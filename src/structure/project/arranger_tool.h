@@ -20,11 +20,11 @@ class ArrangerTool : public QObject
   Q_PROPERTY (
     int toolValue READ toolValue WRITE setToolValue NOTIFY toolValueChanged)
   Q_PROPERTY (
-    ToolType effectiveToolValue READ effectiveToolValue NOTIFY
-      effectiveToolValueChanged FINAL)
+    zrythm::structure::project::ArrangerTool::ToolType effectiveToolValue READ
+      effectiveToolValue NOTIFY effectiveToolValueChanged FINAL)
 
 public:
-  enum ToolType : std::uint8_t
+  enum ToolType
   {
     Select,
     Edit,

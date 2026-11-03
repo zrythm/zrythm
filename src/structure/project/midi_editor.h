@@ -87,7 +87,7 @@ public:
   /**
    * Highlighting for the piano roll.
    */
-  enum class Highlighting : std::uint8_t
+  enum class Highlighting
   {
     None,
     Chord,

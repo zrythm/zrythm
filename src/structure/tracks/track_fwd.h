@@ -81,7 +81,7 @@ template <typename TrackT>
 concept PianoRollTrack =
   std::is_same_v<TrackT, InstrumentTrack> || std::is_same_v<TrackT, MidiTrack>;
 
-enum class ClipQuantizeOption : uint8_t
+enum class ClipQuantizeOption
 {
   Immediate,
   NextBar,

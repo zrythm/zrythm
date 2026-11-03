@@ -30,7 +30,7 @@ Q_NAMESPACE
  * - Absolute: clip locked to wall-clock time at its source tempo (default
  *   for audio tracks, where the file's native BPM is the reference).
  */
-enum class Timebase : std::uint8_t
+enum class Timebase
 {
   Musical,
   Absolute,

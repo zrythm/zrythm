@@ -41,7 +41,7 @@ public:
    *               a future Resampler engine (@ref
    * TimeStretchEngineId::Resampler).
    */
-  enum class Algorithm : std::uint8_t
+  enum class Algorithm
   {
     Beats,
     Monophonic,

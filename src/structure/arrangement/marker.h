@@ -25,7 +25,7 @@ public:
   /**
    * Marker type.
    */
-  enum class MarkerType : std::uint8_t
+  enum class MarkerType
   {
     /** Song start Marker that cannot be deleted. */
     Start,

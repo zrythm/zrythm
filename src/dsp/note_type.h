@@ -14,7 +14,7 @@ namespace zrythm::dsp::notes
 Q_NAMESPACE
 QML_ELEMENT
 
-enum class NoteLength : std::uint8_t
+enum class NoteLength
 {
   Bar,
   Beat,
@@ -30,7 +30,7 @@ enum class NoteLength : std::uint8_t
 };
 Q_ENUM_NS (NoteLength)
 
-enum class NoteType : std::uint8_t
+enum class NoteType
 {
   Normal,
   Dotted, ///< 2/3 of its original size

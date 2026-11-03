@@ -109,7 +109,7 @@ public:
     structure::arrangement::ArrangerObjectPtrVariant;
   using Color = utils::Color;
 
-  enum class Type : uint8_t
+  enum class Type
   {
     /**
      * Instrument tracks must have an Instrument plugin at the first slot and

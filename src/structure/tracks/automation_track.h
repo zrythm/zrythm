@@ -52,7 +52,7 @@ public:
   /** Release time in ms when in touch record mode. */
   static constexpr int AUTOMATION_RECORDING_TOUCH_REL_MS = 800;
 
-  enum class AutomationMode : uint8_t
+  enum class AutomationMode
   {
     Read,
     Record,
@@ -60,7 +60,7 @@ public:
   };
   Q_ENUM (AutomationMode)
 
-  enum class AutomationRecordMode : uint8_t
+  enum class AutomationRecordMode
   {
     Touch,
     Latch,

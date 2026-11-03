@@ -357,6 +357,7 @@ Zrythm makes extensive use of modern C++ features:
 - Implement proper model/view separation
 - Use the following naming pattern for property declarations: `Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)`
 - Q_PROPERTY types must use fully qualified class names (e.g., `zrythm::dsp::ProcessorParameter *`, not `ProcessorParameter *`) — even for types declared in the same namespace or included via headers. Note: this only applies to Q_PROPERTY, not to Q_INVOKABLE (which can use local type aliases or unqualified names)
+- Enums exposed to QML through `Q_PROPERTY`, `Q_ENUM`, or `Q_ENUM_NS` must use C++'s default `int` underlying type. A narrow underlying type (e.g. `std::uint8_t`) makes AOT-compiled QML strict equality against the enum value fail even when both values are numerically equal
 - When connecting signals, use the overload that takes:
   1. The source object instance
   2. The source object signal

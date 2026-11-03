@@ -24,7 +24,7 @@ namespace zrythm::dsp::chords
 Q_NAMESPACE
 QML_ELEMENT
 
-enum class MusicalNote : std::uint8_t
+enum class MusicalNote
 {
   C = 0,
   CSharp,
@@ -44,7 +44,7 @@ Q_ENUM_NS (MusicalNote)
 /**
  * Chord type.
  */
-enum class ChordType : std::uint8_t
+enum class ChordType
 {
   None,
   Major,
@@ -60,7 +60,7 @@ Q_ENUM_NS (ChordType)
 /**
  * Chord accents.
  */
-enum class ChordAccent : std::uint8_t
+enum class ChordAccent
 {
   None,
   /** b7 is 10 semitones from chord root, or 9

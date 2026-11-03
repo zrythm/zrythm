@@ -31,7 +31,7 @@ class ParameterRange
   Q_PROPERTY (float defaultNormalizedValue READ defaultNormalizedValue CONSTANT)
 
 public:
-  enum class Type : std::uint8_t
+  enum class Type
   {
     /**
      * @brief Linearly-scaled float parameter.

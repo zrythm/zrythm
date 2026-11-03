@@ -32,7 +32,7 @@ public:
   /**
    * @brief Purpose of this port.
    */
-  enum class Purpose : uint8_t
+  enum class Purpose
   {
     Main,
     Sidechain,

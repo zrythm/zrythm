@@ -48,7 +48,7 @@ class Fader : public dsp::ProcessorBase
   };
 
 public:
-  enum class MidiFaderMode : uint8_t
+  enum class MidiFaderMode
   {
     /** Multiply velocity of all MIDI note ons. */
     MIDI_FADER_MODE_VEL_MULTIPLIER,

@@ -13,7 +13,7 @@ namespace zrythm::controllers::recording
 Q_NAMESPACE
 QML_ELEMENT
 
-enum class RecordingMode : std::uint8_t
+enum class RecordingMode
 {
   ///< Unimplemented
   OverwriteEvents,

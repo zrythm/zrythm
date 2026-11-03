@@ -26,7 +26,7 @@ class MidiControlEvent final : public ArrangerObject
   QML_UNCREATABLE ("")
 
 public:
-  enum class EventType : std::uint8_t
+  enum class EventType
   {
     ControlChange,
     PitchBend,

@@ -115,7 +115,7 @@ class Plugin : public dsp::ProcessorBase
 
   Q_DISABLE_COPY_MOVE (Plugin)
 public:
-  enum class InstantiationStatus : std::uint8_t
+  enum class InstantiationStatus
   {
     Pending,    ///< Instantiation underway
     Successful, ///< Instantiation successful
