@@ -4,6 +4,10 @@
 # Base requirements - minimum set of direct dependencies
 # Transitive dependencies will be pulled in automatically
 # Versions are not pinned to allow latest compatible versions
+#
+# Regenerate requirements.txt by installing this file in a fresh Python 3.12
+# venv (the CI minimum) and running pip freeze: newer interpreters resolve
+# versions that older ones cannot install.
 
 # Build tools
 conan

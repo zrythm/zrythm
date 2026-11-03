@@ -20,7 +20,7 @@ cyclonedx-python-lib==11.12.0
 defusedxml==0.7.1
 distlib==0.4.4
 distro==1.9.0
-docutils==0.23
+docutils==0.22.4
 fasteners==0.20
 filelock==4.2.7
 fonttools==4.68.0
@@ -64,8 +64,8 @@ s3transfer==0.19.3
 six==1.17.0
 snowballstemmer==3.1.1
 sortedcontainers==2.4.0
-soupsieve==3.0.4
-Sphinx==9.2.0
+soupsieve==4.0
+Sphinx==9.1.1
 sphinx-basic-ng==1.0.0b2
 sphinx-copybutton==0.5.2
 sphinx-intl==2.4.0
