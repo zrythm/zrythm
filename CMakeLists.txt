@@ -1101,6 +1101,14 @@ include(DependencyInventory)
 
 add_subdirectory(src)
 
+# qmlls keeps only the last .qmlls.build.ini workspace entry per source
+# path, and src/gui declares two QML modules (Zrythm and ZrythmApp), so
+# merge duplicate entries after Qt's deferred write of the file. Deferred
+# calls run in scheduling order, and Qt's is scheduled during
+# add_subdirectory(src) above.
+include(MergeQmllsBuildIni)
+cmake_language(DEFER CALL zrythm_merge_qmlls_build_ini_part)
+
 # below errors out on Xcode
 if(NOT XCODE)
   set(QT_NO_MISSING_CATALOG_LANGUAGE_WARNING ON)

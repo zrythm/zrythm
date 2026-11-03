@@ -14,6 +14,8 @@
   "clang-tidy.buildPath": "conanbuild/Debug",
   "qt-qml.qmlls.customArgs": [
     "-v",
+    "-b",
+    "${workspaceFolder}/conanbuild/Debug",
   ],
   "[qml]": {
     "editor.formatOnSave": false,
