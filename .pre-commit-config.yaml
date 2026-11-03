@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: FSFAP
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
@@ -42,7 +42,8 @@ repos:
     language: system
     pass_filenames: false
     files: ^\.gitlab-ci\.yml$
-- repo: https://github.com/fsfe/reuse-tool
-  rev: v6.2.0
-  hooks:
   - id: reuse-lint-file
+    name: reuse-lint-file
+    description: Lint changed files for REUSE compliance.
+    entry: reuse lint-file
+    language: system
