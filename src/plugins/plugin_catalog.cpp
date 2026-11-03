@@ -11,6 +11,7 @@
 #include "utils/exceptions.h"
 #include "utils/icloneable.h"
 #include "utils/logger.h"
+#include "utils/views.h"
 
 #include <QHash>
 #include <QReadLocker>
@@ -294,7 +295,7 @@ PluginCatalog::replace_results_for_scan (
         "Scan results do not match the scanned protocol and identifier")));
 
   QHash<QString, int> fresh_by_key;
-  for (const auto [row, descriptor] : descriptors | std::views::enumerate)
+  for (const auto [row, descriptor] : descriptors | utils::views::enumerate)
     {
       const auto key = descriptor_key (*descriptor);
       if (fresh_by_key.contains (key))
@@ -342,7 +343,7 @@ PluginCatalog::replace_results_for_scan (
       }
 
     std::vector<bool> fresh_used (descriptors.size (), false);
-    for (const auto [row, descriptor] : descriptors_ | std::views::enumerate)
+    for (const auto [row, descriptor] : descriptors_ | utils::views::enumerate)
       {
         if (!belongs_to_scan (descriptor))
           continue;
@@ -362,7 +363,7 @@ PluginCatalog::replace_results_for_scan (
       }
 
     std::vector<std::unique_ptr<PluginDescriptor>> new_descriptors;
-    for (const auto [row, used] : fresh_used | std::views::enumerate)
+    for (const auto [row, used] : fresh_used | utils::views::enumerate)
       {
         if (!used)
           new_descriptors.push_back (

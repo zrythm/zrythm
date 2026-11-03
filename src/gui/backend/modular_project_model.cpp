@@ -29,6 +29,7 @@
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
+#include "utils/views.h"
 
 #include <QAbstractItemModel>
 #include <QJsonArray>
@@ -457,7 +458,7 @@ apply_layered_layout (
     })
     | std::ranges::to<std::vector> ();
   std::map<int, std::vector<qsizetype>> columns;
-  for (const auto [index, node_variant] : nodes | std::views::enumerate)
+  for (const auto [index, node_variant] : nodes | utils::views::enumerate)
     {
       const auto id = node_variant.toMap ().value ("nodeId").toString ();
       columns[rank.contains (id) ? rank.at (id) : 0].push_back (index);
