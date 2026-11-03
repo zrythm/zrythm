@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "main": {
+    "areas": {
+      "start": null,
+      "end": null,
+      "top": null,
+      "bottom": null,
+      "center": null
+    },
+    "sizes": { "start": 0, "end": 240, "top": 200, "bottom": 240 }
+  },
+  "floating": [],
+  "hidden": []
+}

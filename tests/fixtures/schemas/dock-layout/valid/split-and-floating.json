@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "main": {
+    "areas": {
+      "start": {
+        "id": "left",
+        "kind": "frame",
+        "panels": ["track-inspector", "plugin-inspector"],
+        "active": "track-inspector",
+        "showLabels": false
+      },
+      "end": {
+        "id": "right",
+        "kind": "frame",
+        "panels": ["plugin-browser", "file-browser", "monitor"],
+        "active": "plugin-browser",
+        "showLabels": false,
+        "headerVisible": true
+      },
+      "top": null,
+      "bottom": {
+        "id": "bottom",
+        "kind": "frame",
+        "panels": ["editor", "mixer", "chord-pad"],
+        "active": "editor",
+        "tabsAtBottom": true
+      },
+      "center": {
+        "id": "center-split",
+        "kind": "split",
+        "orientation": "horizontal",
+        "children": [
+          {
+            "id": "center-left",
+            "kind": "frame",
+            "panels": ["arrangement"],
+            "active": "arrangement",
+            "tabsAtBottom": true
+          },
+          {
+            "id": "center-right",
+            "kind": "frame",
+            "panels": ["modular"],
+            "active": "modular",
+            "showLabels": true
+          }
+        ],
+        "sizes": [0.7, 0.3]
+      }
+    },
+    "sizes": {
+      "start": 220.5,
+      "end": 260,
+      "top": 180,
+      "bottom": 269.60546875
+    }
+  },
+  "floating": [
+    {
+      "id": "floating-1",
+      "root": {
+        "id": "floating-frame",
+        "kind": "frame",
+        "panels": ["floating-notes"],
+        "active": "floating-notes"
+      },
+      "returnFrames": {
+        "floating-notes": "center-left"
+      },
+      "x": -80,
+      "y": 120,
+      "width": 640,
+      "height": 480
+    }
+  ],
+  "hidden": ["hidden-panel"]
+}

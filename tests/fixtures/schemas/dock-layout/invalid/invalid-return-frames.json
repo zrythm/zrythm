@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "main": {
+    "areas": {
+      "start": null,
+      "end": null,
+      "top": null,
+      "bottom": null,
+      "center": null
+    },
+    "sizes": { "start": 240, "end": 240, "top": 200, "bottom": 240 }
+  },
+  "floating": [
+    {
+      "id": "floating-1",
+      "root": { "id": "floating-frame", "kind": "frame", "panels": ["alpha"], "active": "alpha" },
+      "returnFrames": { "alpha": 42 },
+      "x": 80,
+      "y": 80,
+      "width": 480,
+      "height": 360
+    }
+  ],
+  "hidden": []
+}

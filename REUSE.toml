@@ -531,3 +531,9 @@ path = "data/schemas/known-plugins.schema.json"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"
+
+[[annotations]]
+path = ["data/schemas/dock-layout.schema.json", "tests/fixtures/schemas/dock-layout/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Alexandros Theodotou <alex@zrythm.org>"
+SPDX-License-Identifier = "LicenseRef-ZrythmLicense"

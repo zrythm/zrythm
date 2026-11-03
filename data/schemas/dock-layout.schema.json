@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schema:dock-layout",
+  "title": "Zrythm Dock Layout",
+  "description": "Versioned docking workspace state stored in application settings. Panel, frame, split and window identifiers refer to objects registered by the application.",
+  "type": "object",
+  "required": [
+    "version",
+    "main",
+    "floating",
+    "hidden"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Dock layout format version"
+    },
+    "main": {
+      "$ref": "#/definitions/mainWorkspace"
+    },
+    "floating": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/floatingWindow"
+      },
+      "description": "Detached workspaces and their screen geometry"
+    },
+    "hidden": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      },
+      "description": "Registered panel IDs that are not present in a workspace"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "positiveNumber": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "mainWorkspace": {
+      "type": "object",
+      "required": [
+        "areas",
+        "sizes"
+      ],
+      "properties": {
+        "areas": {
+          "type": "object",
+          "required": [
+            "start",
+            "end",
+            "top",
+            "bottom",
+            "center"
+          ],
+          "properties": {
+            "start": {
+              "$ref": "#/definitions/nodeOrNull"
+            },
+            "end": {
+              "$ref": "#/definitions/nodeOrNull"
+            },
+            "top": {
+              "$ref": "#/definitions/nodeOrNull"
+            },
+            "bottom": {
+              "$ref": "#/definitions/nodeOrNull"
+            },
+            "center": {
+              "$ref": "#/definitions/nodeOrNull"
+            }
+          },
+          "additionalProperties": false
+        },
+        "sizes": {
+          "type": "object",
+          "required": [
+            "start",
+            "end",
+            "top",
+            "bottom"
+          ],
+          "properties": {
+            "start": {
+              "$ref": "#/definitions/positiveNumber"
+            },
+            "end": {
+              "$ref": "#/definitions/positiveNumber"
+            },
+            "top": {
+              "$ref": "#/definitions/positiveNumber"
+            },
+            "bottom": {
+              "$ref": "#/definitions/positiveNumber"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Sizes of the outer workspace areas in logical pixels"
+        }
+      },
+      "additionalProperties": false
+    },
+    "nodeOrNull": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/node"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "node": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/frame"
+        },
+        {
+          "$ref": "#/definitions/split"
+        }
+      ]
+    },
+    "frame": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "panels",
+        "active"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "kind": {
+          "type": "string",
+          "const": "frame"
+        },
+        "panels": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/nonEmptyString"
+          },
+          "description": "Panel IDs in tab order"
+        },
+        "active": {
+          "$ref": "#/definitions/nonEmptyString",
+          "description": "Active panel ID; the runtime selects the first remaining panel if this reference is stale"
+        },
+        "showLabels": {
+          "type": "boolean",
+          "description": "Whether tab labels are shown in addition to icons"
+        },
+        "tabsAtBottom": {
+          "type": "boolean",
+          "description": "Whether the tab bar appears below the panel content"
+        },
+        "headerVisible": {
+          "type": "boolean",
+          "description": "Whether the frame tab bar is visible"
+        }
+      },
+      "additionalProperties": false
+    },
+    "split": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "orientation",
+        "children",
+        "sizes"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "kind": {
+          "type": "string",
+          "const": "split"
+        },
+        "orientation": {
+          "type": "string",
+          "enum": [
+            "horizontal",
+            "vertical"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/definitions/node"
+          },
+          "description": "The two child nodes in display order"
+        },
+        "sizes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "description": "Normalized positive sizes corresponding to the two children"
+        }
+      },
+      "additionalProperties": false
+    },
+    "floatingWindow": {
+      "type": "object",
+      "required": [
+        "id",
+        "root",
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "root": {
+          "$ref": "#/definitions/node"
+        },
+        "returnFrames": {
+          "type": "object",
+          "propertyNames": {
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/nonEmptyString"
+          },
+          "description": "Preferred main-window frame IDs by floating panel ID"
+        },
+        "x": {
+          "type": "number",
+          "description": "Horizontal screen position in logical pixels"
+        },
+        "y": {
+          "type": "number",
+          "description": "Vertical screen position in logical pixels"
+        },
+        "width": {
+          "type": "number",
+          "minimum": 200,
+          "description": "Window width in logical pixels"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 140,
+          "description": "Window height in logical pixels"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

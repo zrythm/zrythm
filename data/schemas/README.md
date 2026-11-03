@@ -3,9 +3,9 @@ SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 SPDX-License-Identifier: FSFAP
 -->
 
-# Zrythm Project Schemas
+# Zrythm JSON Schemas
 
-JSON Schema specifications for Zrythm file formats.
+JSON Schema specifications for Zrythm file formats and persisted UI state.
 
 > [!WARNING]
 > **UNSTABLE** - v2.alpha under active development
@@ -56,6 +56,29 @@ When `formatMajor` changes:
 3. Test round-trip conversion (old → new → old)
 
 See `doc/dev/project_serialization_flow.md` for serialization architecture.
+
+## dock-layout.schema.json
+
+Schema for the docking workspace state stored globally in `AppSettings`.
+
+- `version` identifies the layout format.
+- `main` contains the five workspace areas and their outer sizes. Areas hold
+  tabbed frames, binary splits, or `null`.
+- Split `sizes` contain two positive fractions, each at most 1;
+  restoration normalizes them.
+- `floating` contains detached workspaces, their geometry, and optional
+  panel-to-frame return mappings. Floating windows are at least 200 by 140
+  logical pixels.
+- `hidden` lists registered panels excluded from all workspaces.
+
+`DockingController.restoreState()` applies equivalent structural checks without
+a runtime schema-validator dependency. Invalid documents leave the active
+layout unchanged. Restoration then removes unknown panel references and
+duplicate panel, frame, split, and window IDs, repairs stale active-panel
+references, and reinserts missing registered panels.
+
+Valid and invalid fixtures live under `tests/fixtures/schemas/dock-layout/`.
+`scripts/validate_json_schemas.py` checks them together with the schema.
 
 ## clipboard.schema.json
 

@@ -26,11 +26,11 @@ repos:
     pass_filenames: true
   - id: validate-json-schemas
     name: validate-json-schemas
-    description: Validate the JSON schema files against their $schema.
+    description: Validate JSON schemas and their valid/invalid fixtures.
     entry: python3 scripts/validate_json_schemas.py
     language: system
     pass_filenames: false
-    files: ^data/schemas/.*\.schema\.json$
+    files: ^(data/schemas/.*\.schema\.json|tests/fixtures/schemas/.*\.json|scripts/validate_json_schemas\.py)$
   - id: gitlab-ci-lint
     name: gitlab-ci-lint
     description: >-

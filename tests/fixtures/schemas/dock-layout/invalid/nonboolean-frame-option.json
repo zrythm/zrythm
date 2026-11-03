@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "main": {
+    "areas": {
+      "start": {
+        "id": "left",
+        "kind": "frame",
+        "panels": ["alpha"],
+        "active": "alpha",
+        "showLabels": "false"
+      },
+      "end": null,
+      "top": null,
+      "bottom": null,
+      "center": null
+    },
+    "sizes": { "start": 240, "end": 240, "top": 200, "bottom": 240 }
+  },
+  "floating": [],
+  "hidden": []
+}
