@@ -15,6 +15,21 @@ ItemSelectionModel {
     return sourceIndex.data(TrackCollection.TrackPtrRole);
   }
 
+  function getUuidStringFromModelIndex(sourceIndex: var): string {
+    return sourceIndex.data(TrackCollection.TrackUuidStringRole);
+  }
+
+  // Returns the current track's UUID, or the first selected track's when the
+  // current index is unset.
+  function currentOrFirstSelectedUuidString(): string {
+    let index = currentIndex;
+    if (!(index && index.valid))
+      index = selectedIndexes.length > 0 ? selectedIndexes[0] : null;
+    if (!(index && index.valid))
+      return "";
+    return getUuidStringFromModelIndex(index);
+  }
+
   function selectSingleTrack(trackModelIndex: var) {
     if (!root.isSelected(trackModelIndex)) {
       root.clear();

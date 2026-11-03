@@ -190,6 +190,12 @@ ProjectSession::ProjectSession (
     undo_stack_.get (),
     [this] (int limit) { undo_stack_->set_undo_limit (limit); });
 
+  modular_project_model_ = utils::make_qobject_unique<ModularProjectModel> (
+    *project_, *ui_state_, this);
+
+  port_connection_operator_ = utils::make_qobject_unique<
+    actions::PortConnectionOperator> (*undo_stack_, *project_, this);
+
   timeline_arranger_objects_ =
     utils::make_qobject_unique<TimelineArrangerObjectsModel> (this);
   timeline_arranger_objects_->setTracklist (project_->tracklist ());
@@ -606,6 +612,18 @@ qquick::GenericPluginUiController *
 ProjectSession::genericPluginUiController () const
 {
   return generic_plugin_ui_controller_.get ();
+}
+
+ModularProjectModel *
+ProjectSession::modularProjectModel () const
+{
+  return modular_project_model_.get ();
+}
+
+actions::PortConnectionOperator *
+ProjectSession::portConnectionOperator () const
+{
+  return port_connection_operator_.get ();
 }
 
 actions::FileImporter *

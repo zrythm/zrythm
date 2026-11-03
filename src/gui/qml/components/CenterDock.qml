@@ -322,11 +322,13 @@ ColumnLayout {
       }
     }
 
-    Item {
+    ModularView {
       id: portConnectionsTab
 
       Layout.fillHeight: true
       Layout.fillWidth: true
+      session: root.session
+      trackSelectionModel: root.trackSelectionModel
     }
 
     Item {
@@ -348,8 +350,8 @@ ColumnLayout {
     }
 
     TabButton {
-      icon.source: ResourceManager.getIconUrl("zrythm-dark", "connector.svg")
-      text: qsTr("Port Connections")
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "connected-dots-symbolic.svg")
+      text: qsTr("Modular")
     }
 
     TabButton {

@@ -272,6 +272,12 @@ set(rel_qml_file_paths
   components/editors/ChordEditorPane.qml
   components/editors/PianoRollKeys.qml
   components/editors/ChordRowLabels.qml
+  components/modular/ModularCanvas.qml
+  components/modular/ModularConnection.qml
+  components/modular/ModularGrid.qml
+  components/modular/ModularMinimap.qml
+  components/modular/ModularNode.qml
+  components/modular/ModularView.qml
   components/preferences/PreferencesAdvancedPage.qml
   components/preferences/PreferencesAppearancePage.qml
   components/preferences/PreferencesEditingPage.qml

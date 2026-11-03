@@ -9,6 +9,7 @@
 #include "actions/file_importer.h"
 #include "actions/plugin_importer.h"
 #include "actions/plugin_operator.h"
+#include "actions/port_connection_operator.h"
 #include "actions/track_collection_operator.h"
 #include "actions/track_creator.h"
 #include "actions/uuid_property_operator.h"
@@ -18,6 +19,7 @@
 #include "controllers/transport_controller.h"
 #include "gui/backend/editor_arranger_objects_model.h"
 #include "gui/backend/editor_function_registry.h"
+#include "gui/backend/modular_project_model.h"
 #include "gui/backend/timeline_arranger_objects_model.h"
 #include "gui/qquick/generic_plugin_ui_controller.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
@@ -86,8 +88,14 @@ class ProjectSession : public QObject
     zrythm::actions::PluginOperator * pluginOperator READ pluginOperator
       CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::actions::PortConnectionOperator * portConnectionOperator READ
+      portConnectionOperator CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::gui::qquick::GenericPluginUiController * genericPluginUiController
       READ genericPluginUiController CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::ModularProjectModel * modularProjectModel READ
+      modularProjectModel CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::FileImporter * fileImporter READ fileImporter CONSTANT FINAL)
   Q_PROPERTY (
@@ -128,7 +136,9 @@ public:
   zrythm::actions::TrackCollectionOperator * trackCollectionOperator () const;
   actions::PluginImporter *                  pluginImporter () const;
   actions::PluginOperator *                  pluginOperator () const;
+  actions::PortConnectionOperator *          portConnectionOperator () const;
   qquick::GenericPluginUiController *        genericPluginUiController () const;
+  ModularProjectModel *                      modularProjectModel () const;
   actions::FileImporter *                    fileImporter () const;
   actions::UuidPropertyOperator *            uuidPropertyOperator () const;
   controllers::TransportController *         transportController () const;
@@ -238,10 +248,13 @@ private:
   utils::QObjectUniquePtr<actions::TrackCollectionOperator>
     track_collection_operator_;
   utils::QObjectUniquePtr<qquick::GenericPluginUiController>
-    generic_plugin_ui_controller_;
+                                               generic_plugin_ui_controller_;
+  utils::QObjectUniquePtr<ModularProjectModel> modular_project_model_;
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
   utils::QObjectUniquePtr<actions::PluginOperator> plugin_operator_;
-  utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
+  utils::QObjectUniquePtr<actions::PortConnectionOperator>
+                                                 port_connection_operator_;
+  utils::QObjectUniquePtr<actions::FileImporter> file_importer_;
   utils::QObjectUniquePtr<actions::UuidPropertyOperator> uuid_property_operator_;
   utils::QObjectUniquePtr<controllers::TransportController> transport_controller_;
   utils::QObjectUniquePtr<controllers::RecordingCoordinator>

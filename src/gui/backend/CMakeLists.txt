@@ -18,6 +18,8 @@ target_sources(zrythm_gui_lib
     global_state.h
     juce_event_loop_bridge.h
     juce_event_loop_bridge.cpp
+    modular_project_model.h
+    modular_project_model.cpp
     notification.h
     notification.cpp
     notification_center.h
