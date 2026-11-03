@@ -7,6 +7,7 @@ qt_add_qml_module(zrythm_gui_qml_unit_tests
   URI QmlTests
   VERSION 1.0
   IMPORTS
+    TARGET zrythm_docking
     TARGET zrythm_qml_lib
 )
 
