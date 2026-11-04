@@ -11,6 +11,7 @@
 #include "utils/exceptions.h"
 #include "utils/icloneable.h"
 #include "utils/logger.h"
+#include "utils/serialization.h"
 #include "utils/views.h"
 
 #include <QHash>
@@ -529,14 +530,14 @@ PluginCatalog::deserialize (const nlohmann::json &json)
     }
   catch (const std::exception &e)
     {
-      throw ZrythmException (
+      throw utils::ZrythmException (
         fmt::format ("Known plugins JSON validation failed: {}", e.what ()));
     }
 
   const auto &format_version = json.at (utils::serialization::kSchemaVersionKey);
   if (format_version.at ("major").get<int> () > kMajorSchemaVersion)
     {
-      throw ZrythmException (
+      throw utils::ZrythmException (
         "Known plugins cache is from a newer format version");
     }
 

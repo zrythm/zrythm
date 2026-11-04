@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <fmt/std.h>
+
 #include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_scan_format.h"
 #include "plugins/vst3_plugin_format.h"

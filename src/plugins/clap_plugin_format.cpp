@@ -41,6 +41,8 @@
 #include <string_view>
 #include <vector>
 
+#include <fmt/std.h>
+
 #include "plugins/clap_plugin_format.h"
 #include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_library.h"
