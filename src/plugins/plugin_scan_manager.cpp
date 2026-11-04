@@ -160,11 +160,11 @@ Worker::process_scan ()
             &scanner_,
             [manager = &scanner_, generation = scan_generation_,
              catalog = catalog_, protocol, identifier,
-             descriptors = std::move (descriptors)] () mutable {
+             scan_results = std::move (descriptors)] () mutable {
               if (manager->active_generation_ != generation)
                 return;
               const auto replacement = catalog->replace_results_for_scan (
-                protocol, identifier, std::move (*descriptors));
+                protocol, identifier, std::move (*scan_results));
               if (!replacement.has_value ())
                 {
                   z_warning (
