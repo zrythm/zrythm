@@ -55,8 +55,8 @@ SnapGrid::defaultTicks (int64_t ticks) const
   const auto ticks_per_beat = ticks_per_bar / time_sig.time_signature.numerator;
 
   return get_ticks_from_length_and_type (
-    default_note_length_, dsp::notes::NoteType::Normal,
-    ticks_per_bar.in (units::ticks), ticks_per_beat.in (units::ticks));
+    default_note_length_, default_note_type_, ticks_per_bar.in (units::ticks),
+    ticks_per_beat.in (units::ticks));
 }
 
 static auto
@@ -79,6 +79,12 @@ SnapGrid::stringize_length_and_type (
   const auto first_part = dsp::notes::note_length_to_str (note_length);
 
   return QString::fromStdString (fmt::format ("{}{}", first_part, c));
+}
+
+QString
+SnapGrid::defaultNoteLengthString () const
+{
+  return stringize_length_and_type (default_note_length_, default_note_type_);
 }
 
 QString
@@ -348,6 +354,26 @@ SnapGrid::setLengthType (NoteLengthType type)
   length_type_ = type;
   Q_EMIT lengthTypeChanged ();
   Q_EMIT snapChanged ();
+}
+
+void
+SnapGrid::setDefaultNoteLength (dsp::notes::NoteLength length)
+{
+  if (length == default_note_length_)
+    return;
+
+  default_note_length_ = length;
+  Q_EMIT defaultNoteLengthChanged ();
+}
+
+void
+SnapGrid::setDefaultNoteType (dsp::notes::NoteType type)
+{
+  if (type == default_note_type_)
+    return;
+
+  default_note_type_ = type;
+  Q_EMIT defaultNoteTypeChanged ();
 }
 
 void

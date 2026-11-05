@@ -37,7 +37,7 @@ Button {
     case SnapGrid.NoteLengthType.LastObject:
       return qsTr("%1 - Last object").arg(snapStr);
     case SnapGrid.NoteLengthType.Custom:
-      const defaultStr = SnapGrid.stringize_length_and_type(snapGrid.default_note_length, snapGrid.default_note_type);
+      const defaultStr = snapGrid.defaultNoteLengthString();
       return "%1 - %2".arg(snapStr).arg(defaultStr);
     default:
       return snapStr;
@@ -260,7 +260,7 @@ Button {
 
             ComboBox {
               currentIndex: {
-                switch (root.snapGrid.default_note_length) {
+                switch (root.snapGrid.defaultNoteLength) {
                 case SnapGrid.NoteLength.Bar:
                   return 0;
                 case SnapGrid.NoteLength.Note_1_1:
@@ -288,7 +288,7 @@ Button {
 
               onActivated: {
                 const lengths = [SnapGrid.NoteLength.Bar, SnapGrid.NoteLength.Note_1_1, SnapGrid.NoteLength.Note_1_2, SnapGrid.NoteLength.Note_1_4, SnapGrid.NoteLength.Note_1_8, SnapGrid.NoteLength.Note_1_16, SnapGrid.NoteLength.Note_1_32, SnapGrid.NoteLength.Note_1_64, SnapGrid.NoteLength.Note_1_128];
-                root.snapGrid.default_note_length = lengths[currentIndex];
+                root.snapGrid.defaultNoteLength = lengths[currentIndex];
               }
             }
           }
@@ -304,7 +304,7 @@ Button {
 
             ComboBox {
               currentIndex: {
-                switch (root.snapGrid.default_note_type) {
+                switch (root.snapGrid.defaultNoteType) {
                 case SnapGrid.NoteType.Normal:
                   return 0;
                 case SnapGrid.NoteType.Triplet:
@@ -320,7 +320,7 @@ Button {
 
               onActivated: {
                 const types = [SnapGrid.NoteType.Normal, SnapGrid.NoteType.Triplet, SnapGrid.NoteType.Dotted];
-                root.snapGrid.default_note_type = types[currentIndex];
+                root.snapGrid.defaultNoteType = types[currentIndex];
               }
             }
           }

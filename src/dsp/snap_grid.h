@@ -47,6 +47,12 @@ class SnapGrid : public QObject
   Q_PROPERTY (
     NoteLengthType lengthType READ lengthType WRITE setLengthType NOTIFY
       lengthTypeChanged)
+  Q_PROPERTY (
+    zrythm::dsp::notes::NoteLength defaultNoteLength READ defaultNoteLength
+      WRITE setDefaultNoteLength NOTIFY defaultNoteLengthChanged)
+  Q_PROPERTY (
+    zrythm::dsp::notes::NoteType defaultNoteType READ defaultNoteType WRITE
+      setDefaultNoteType NOTIFY defaultNoteTypeChanged)
   Q_PROPERTY (QString snapString READ snapString NOTIFY snapChanged)
   QML_ELEMENT
   QML_EXTENDED_NAMESPACE (zrythm::dsp::notes)
@@ -104,6 +110,15 @@ public:
   NoteLengthType lengthType () const { return length_type_; }
   void           setLengthType (NoteLengthType type);
 
+  dsp::notes::NoteLength defaultNoteLength () const
+  {
+    return default_note_length_;
+  }
+  void setDefaultNoteLength (dsp::notes::NoteLength length);
+
+  dsp::notes::NoteType defaultNoteType () const { return default_note_type_; }
+  void                 setDefaultNoteType (dsp::notes::NoteType type);
+
   QString snapString () const;
 
   // QML Invokable Methods
@@ -121,6 +136,11 @@ public:
   Q_INVOKABLE double closestSnapPoint (double ticks) const;
   Q_INVOKABLE double snapTicks (int64_t ticks) const;
   Q_INVOKABLE double defaultTicks (int64_t ticks) const;
+
+  /**
+   * @brief Human-readable string of the default note length and type.
+   */
+  Q_INVOKABLE QString defaultNoteLengthString () const;
 
   /**
    * @brief
@@ -221,6 +241,8 @@ Q_SIGNALS:
   void snapNoteLengthChanged ();
   void snapNoteTypeChanged ();
   void lengthTypeChanged ();
+  void defaultNoteLengthChanged ();
+  void defaultNoteTypeChanged ();
   void snapChanged ();
 
 private:
@@ -289,6 +311,8 @@ private:
    * objects.
    */
   dsp::notes::NoteLength default_note_length_;
+
+  dsp::notes::NoteType default_note_type_{ dsp::notes::NoteType::Normal };
 
   const TempoMap                  &tempo_map_;
   std::optional<SnapEventCallback> event_callback_;
