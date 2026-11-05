@@ -103,7 +103,13 @@ set_target_properties(zrythm_test_helpers_lib PROPERTIES
 add_library(zrythm_test_warning_suppressions_link_last INTERFACE)
 if(compiler_gnulike)
   target_compile_options(zrythm_test_warning_suppressions_link_last INTERFACE
-    -Wno-inline -Wno-interference-size)
+    -Wno-inline)
+endif()
+# -Winterference-size is a GCC-only diagnostic; Clang rejects the flag
+# with -Wunknown-warning-option
+if(compiler_is_gcc)
+  target_compile_options(zrythm_test_warning_suppressions_link_last INTERFACE
+    -Wno-interference-size)
 endif()
 
 add_subdirectory(unit)
