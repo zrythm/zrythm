@@ -207,7 +207,7 @@ ColumnLayout {
       Label {
         required property var modelData
 
-        color: scoreToColor(modelData.score)
+        color: root.scoreToColor(modelData.score)
         font.bold: true
         text: modelData.chordName
       }
@@ -319,7 +319,7 @@ ColumnLayout {
         Rectangle {
           id: scoreStrip
 
-          color: scoreToColor(padWrapper.suggestionScore)
+          color: root.scoreToColor(padWrapper.suggestionScore)
           height: 5
           opacity: 0
           radius: 1.5

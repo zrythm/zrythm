@@ -11,9 +11,9 @@ Rectangle {
   property int algorithm
   required property AudioEngine audioEngine
   property int channel
-  readonly property real currentPx: meterProcessor.toFader(meterProcessor.currentAmplitude) * root.height
-  readonly property alias meterProcessor: meterProcessor
-  readonly property real peakPx: meterProcessor.toFader(meterProcessor.peakAmplitude) * root.height
+  readonly property real currentPx: meterProcessorItem.toFader(meterProcessorItem.currentAmplitude) * root.height
+  readonly property alias meterProcessor: meterProcessorItem
+  readonly property real peakPx: meterProcessorItem.toFader(meterProcessorItem.peakAmplitude) * root.height
   required property Port port
   required property PortObservationManager portObservationManager
 
@@ -24,7 +24,7 @@ Rectangle {
   width: 4
 
   MeterProcessor {
-    id: meterProcessor
+    id: meterProcessorItem
 
     algorithm: root.algorithm
     channel: root.channel
@@ -68,11 +68,11 @@ Rectangle {
   Rectangle {
     id: peakRect
 
-    readonly property bool isOver: meterProcessor.peakAmplitude > 1
+    readonly property bool isOver: meterProcessorItem.peakAmplitude > 1
 
     color: isOver ? ZrythmTheme.errorColor : ZrythmTheme.backgroundAppendColor
     height: isOver ? 2 : 1.5
-    opacity: isOver ? 1 : meterProcessor.peakAmplitude
+    opacity: isOver ? 1 : meterProcessorItem.peakAmplitude
     y: root.height - root.peakPx
 
     Behavior on y {

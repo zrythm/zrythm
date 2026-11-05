@@ -28,14 +28,14 @@ Item {
   property bool clickActivates: true
 
   // Item count from the ListView; can go stale while never shown
-  readonly property int count: listView.count
+  readonly property int count: presetListView.count
 
   // Index of the item to highlight, or -1 for none
   property int currentIndex: -1
   // Role on the model that holds each item's group
   property string groupRole: "group"
   // The list view, for hosts that need direct access (e.g. focus checks)
-  readonly property alias listView: listView
+  readonly property alias listView: presetListView
   // Model providing the items; must be a QAbstractItemModel (e.g.
   // PluginPresetListModel or ListModel) — the modelReset signal is
   // required (plain JS arrays/ints are not supported)
@@ -59,17 +59,17 @@ Item {
   // Emitted when the user dismisses the list without selecting (Escape)
   signal closeRequested
 
-  implicitHeight: Math.min(listView.contentHeight, 360) + 4
+  implicitHeight: Math.min(presetListView.contentHeight, 360) + 4
   implicitWidth: 180
 
   // The list only becomes visible when its host shows it (popup open,
   // window shown); grab keyboard focus and scroll to the current item
   onVisibleChanged: {
     if (visible) {
-      if (root.currentIndex >= 0 && listView.contentHeight > listView.height)
-        listView.positionViewAtIndex(root.currentIndex, ListView.Center);
+      if (root.currentIndex >= 0 && presetListView.contentHeight > presetListView.height)
+        presetListView.positionViewAtIndex(root.currentIndex, ListView.Center);
       if (root.ownsKeyboardFocus)
-        listView.forceActiveFocus();
+        presetListView.forceActiveFocus();
     }
   }
 
@@ -107,7 +107,7 @@ Item {
   }
 
   ListView {
-    id: listView
+    id: presetListView
 
     anchors.fill: parent
     anchors.margins: 2
@@ -125,7 +125,7 @@ Item {
     // Interactive scrollbar; stays transient but is revealed on hover so
     // it can be dragged
     ScrollBar.vertical: ScrollBar {
-      active: listView.moving || hovered || pressed
+      active: presetListView.moving || hovered || pressed
       hoverEnabled: true
       policy: ScrollBar.AsNeeded
     }
@@ -138,15 +138,15 @@ Item {
       // Clicks must not steal keyboard focus from composite hosts (e.g.
       // the browser's search field), or arrow-key navigation dies
       focusPolicy: Qt.NoFocus
-      highlighted: listView.currentIndex === index
+      highlighted: presetListView.currentIndex === index
       text: model[root.textRole]
-      width: listView.width
+      width: presetListView.width
 
       onClicked: {
         if (root.clickActivates)
           root.activated(presetDelegate.index);
         else
-          listView.currentIndex = presetDelegate.index;
+          presetListView.currentIndex = presetDelegate.index;
       }
 
       // In browser mode (single click only selects), double-click applies
@@ -165,7 +165,7 @@ Item {
       height: section.length > 0 ? sectionLabel.implicitHeight + 10 : 0
       objectName: "groupHeader"
       visible: section.length > 0
-      width: listView.width
+      width: presetListView.width
 
       Label {
         id: sectionLabel
@@ -182,9 +182,9 @@ Item {
       }
     }
 
-    Keys.onEnterPressed: root.activated(listView.currentIndex)
+    Keys.onEnterPressed: root.activated(presetListView.currentIndex)
     Keys.onEscapePressed: root.closeRequested()
-    Keys.onReturnPressed: root.activated(listView.currentIndex)
+    Keys.onReturnPressed: root.activated(presetListView.currentIndex)
 
     // Internal navigation (clicks, keyboard) assigns currentIndex
     // directly, which removes the binding above; external updates are
@@ -192,7 +192,7 @@ Item {
     // binding staying intact
     Connections {
       function onCurrentIndexChanged() {
-        listView.currentIndex = root.currentIndex;
+        presetListView.currentIndex = root.currentIndex;
       }
 
       target: root
@@ -202,7 +202,7 @@ Item {
     // current index; re-apply the external selection
     Connections {
       function onModelReset() {
-        listView.currentIndex = root.currentIndex;
+        presetListView.currentIndex = root.currentIndex;
       }
 
       target: root.model

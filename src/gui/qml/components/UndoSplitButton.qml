@@ -22,7 +22,7 @@ SplitButton {
   tooltipText: enabled ? "%1: %2".arg(undoString).arg(isUndo ? undoStack.undoActions[0] : undoStack.redoActions[0]) : undoString
 
   menuItems: Menu {
-    id: menu
+    id: undoMenu
 
     Repeater {
       model: undoBtn.actions
@@ -36,7 +36,7 @@ SplitButton {
 
         onTriggered: {
           undoBtn.undoStack.index = undoBtn.undoStack.index + indexToAdd;
-          menu.close();
+          undoMenu.close();
         }
       }
     }

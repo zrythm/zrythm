@@ -39,7 +39,7 @@ GridLayout {
 
   function _selectedChordObjects(): QVariantList {
     const list = [];
-    const idxs = arrangerSelectionModel.selectedIndexes;
+    const idxs = paneSelectionModel.selectedIndexes;
     for (let i = 0; i < idxs.length; i++) {
       const srcIdx = unifiedObjectsModel.mapToSource(idxs[i]);
       // mapToSource can return an invalid index if the proxy mapping is stale
@@ -73,7 +73,7 @@ GridLayout {
 
   // Cell (0,1): ruler
   Ruler {
-    id: ruler
+    id: paneRuler
 
     Layout.fillWidth: true
     clipObject: root.chordClip
@@ -112,7 +112,7 @@ GridLayout {
     ChordRowLabels {
       id: rowLabels
 
-      chordRowModel: chordRowModel
+      chordRowModel: paneChordRowModel
       chordTrack: root.chordTrack
       rowHeight: root.rowHeight
       undoStack: root.session.undoStack
@@ -126,7 +126,7 @@ GridLayout {
       onRowEditRequested: function (row) {
         editDialogLoader.active = true;
         editDialogLoader.item._batchRow = row;
-        editDialogLoader.item.applyFromDescriptor(chordRowModel.descriptorAtRow(row));
+        editDialogLoader.item.applyFromDescriptor(paneChordRowModel.descriptorAtRow(row));
         editDialogLoader.item.open();
       }
     }
@@ -142,13 +142,13 @@ GridLayout {
   // --- Non-visual items (don't take grid cells) ---
 
   ChordRowListModel {
-    id: chordRowModel
+    id: paneChordRowModel
 
     chordClip: root.chordClip
   }
 
   ItemSelectionModel {
-    id: arrangerSelectionModel
+    id: paneSelectionModel
 
     model: root.unifiedObjectsModel
   }
@@ -160,14 +160,14 @@ GridLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     arrangerContentHeight: rowLabels.height
-    arrangerSelectionModel: arrangerSelectionModel
-    chordRowModel: chordRowModel
+    arrangerSelectionModel: paneSelectionModel
+    chordRowModel: paneChordRowModel
     chordTrack: root.chordTrack
     clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
     objectCreator: root.session.arrangerObjectCreator
     rowHeight: root.rowHeight
-    ruler: ruler
+    ruler: paneRuler
     selectionOperator: root.selectionOperator
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
@@ -232,7 +232,7 @@ GridLayout {
           _applyDesc.bassNote = editDialog.tempBassNote;
 
         if (editDialog._batchRow >= 0) {
-          const objs = chordRowModel.chordObjectsAtRow(editDialog._batchRow);
+          const objs = paneChordRowModel.chordObjectsAtRow(editDialog._batchRow);
           root.applyChordToObjects(_applyDesc, objs);
         } else {
           root.applyChordToObjects(_applyDesc, root._selectedChordObjects());

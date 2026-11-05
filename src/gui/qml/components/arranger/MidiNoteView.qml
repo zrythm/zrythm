@@ -6,7 +6,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Zrythm
 import ZrythmGui
-import ZrythmStyle
 
 ArrangerObjectBaseView {
   id: root

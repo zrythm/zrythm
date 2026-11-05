@@ -44,7 +44,7 @@ Item {
 
   // Index of the selected preset, as a source-model row, or -1 for none
   property int currentIndex: -1
-  readonly property alias groupList: groupList
+  readonly property alias groupList: presetGroupList
   // Source row of the last audition-applied preset; skips redundant
   // applies when the debounce fires without navigation
   property int lastAuditionedSourceRow: -1
@@ -69,7 +69,7 @@ Item {
   // invokables, since C++ cannot connect to this component's QML-declared
   // signals. Must outlive this item.
   property var popupHost: null
-  readonly property alias searchField: searchField
+  readonly property alias searchField: presetSearchField
 
   // Whether the plugin accepted the audition session (a state snapshot
   // exists to revert to). When false the browser is pick-only: nothing
@@ -111,15 +111,15 @@ Item {
     if (root.sessionActive)
       return;
     root.sessionActive = true;
-    searchField.clear();
+    presetSearchField.clear();
     root.currentGroup = "";
-    groupList.currentIndex = 0;
+    presetGroupList.currentIndex = 0;
     root.lastAuditionedSourceRow = root.currentIndex;
     root.loadedSourceRow = root.currentIndex;
     if (root.plugin)
       root.pluginSessionActive = root.plugin.beginPresetAudition();
     listPane.currentIndex = root.proxyRowForSourceRow(root.currentIndex);
-    searchField.forceInputFocus();
+    presetSearchField.forceInputFocus();
   }
 
   function commitCurrentOrFirst() {
@@ -266,7 +266,7 @@ Item {
 
     filters: [
       FunctionFilter {
-        property string searchText: searchField.text.toLowerCase()
+        property string searchText: presetSearchField.text.toLowerCase()
 
         function filter(name: string, group: string): bool {
           return searchText.length === 0 || name.toLowerCase().includes(searchText) || group.toLowerCase().includes(searchText);
@@ -316,7 +316,7 @@ Item {
     spacing: 4
 
     ZrythmSearchField {
-      id: searchField
+      id: presetSearchField
 
       Layout.fillWidth: true
       placeholderText: qsTr("Search presets")
@@ -326,8 +326,8 @@ Item {
       Keys.onEscapePressed: root.dismiss()
       Keys.onReturnPressed: root.commitCurrentOrFirst()
       Keys.onTabPressed: {
-        if (groupList.visible)
-          groupList.forceActiveFocus();
+        if (presetGroupList.visible)
+          presetGroupList.forceActiveFocus();
       }
       Keys.onUpPressed: listPane.listView.decrementCurrentIndex()
     }
@@ -338,7 +338,7 @@ Item {
       spacing: 4
 
       ListView {
-        id: groupList
+        id: presetGroupList
 
         Layout.fillHeight: true
         Layout.preferredWidth: 160
@@ -359,7 +359,7 @@ Item {
         // Interactive scrollbar; stays transient but is revealed on hover
         // so it can be dragged
         ScrollBar.vertical: ScrollBar {
-          active: groupList.moving || hovered || pressed
+          active: presetGroupList.moving || hovered || pressed
           hoverEnabled: true
           policy: ScrollBar.AsNeeded
         }
@@ -378,7 +378,7 @@ Item {
           // Subtler than the accent highlight used for the preset list:
           // this marks the active filter, not the committable selection
           background: Rectangle {
-            color: groupDelegate.hovered ? groupDelegate.palette.light : (groupDelegate.index === groupList.currentIndex ? groupDelegate.palette.mid : "transparent")
+            color: groupDelegate.hovered ? groupDelegate.palette.light : (groupDelegate.index === presetGroupList.currentIndex ? groupDelegate.palette.mid : "transparent")
             radius: 4
           }
           contentItem: RowLayout {
@@ -386,7 +386,7 @@ Item {
 
             Label {
               Layout.fillWidth: true
-              color: groupDelegate.index === groupList.currentIndex ? groupDelegate.palette.buttonText : groupDelegate.palette.text
+              color: groupDelegate.index === presetGroupList.currentIndex ? groupDelegate.palette.buttonText : groupDelegate.palette.text
               elide: Text.ElideRight
               text: groupDelegate.modelData.name === "" ? qsTr("All") : groupDelegate.modelData.name
             }
@@ -399,21 +399,21 @@ Item {
             }
           }
 
-          onClicked: groupList.currentIndex = groupDelegate.index
+          onClicked: presetGroupList.currentIndex = groupDelegate.index
         }
 
         // Keyboard navigation: Up/Down move the highlight (which filters
         // immediately, mirroring mouse clicks); Right/Tab return to the
         // search field
-        Keys.onDownPressed: groupList.incrementCurrentIndex()
+        Keys.onDownPressed: presetGroupList.incrementCurrentIndex()
         Keys.onEnterPressed: root.commitCurrentOrFirst()
         Keys.onEscapePressed: root.dismiss()
         Keys.onReturnPressed: root.commitCurrentOrFirst()
-        Keys.onRightPressed: searchField.forceActiveFocus()
-        Keys.onTabPressed: searchField.forceActiveFocus()
-        Keys.onUpPressed: groupList.decrementCurrentIndex()
+        Keys.onRightPressed: presetSearchField.forceActiveFocus()
+        Keys.onTabPressed: presetSearchField.forceActiveFocus()
+        Keys.onUpPressed: presetGroupList.decrementCurrentIndex()
         onCurrentIndexChanged: {
-          root.currentGroup = groupList.model[groupList.currentIndex]?.name ?? "";
+          root.currentGroup = presetGroupList.model[presetGroupList.currentIndex]?.name ?? "";
         }
       }
 

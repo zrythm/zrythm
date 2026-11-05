@@ -10,7 +10,7 @@ import ZrythmGui
 Loader {
   id: root
 
-  readonly property bool _dragActive: selectionTracker.isSelected && dragMode !== ArrangerDragState.DragMode.None && dragMode !== ArrangerDragState.DragMode.Velocity
+  readonly property bool _dragActive: tracker.isSelected && dragMode !== ArrangerDragState.DragMode.None && dragMode !== ArrangerDragState.DragMode.Velocity
   required property ArrangerObject arrangerObject
   required property ItemSelectionModel arrangerSelectionModel
   // When true, the delegate is centered on its position instead of having its
@@ -37,7 +37,7 @@ Loader {
   readonly property real resizeContentOffset: (_dragActive && dragMode === ArrangerDragState.DragMode.ResizeFromStart && !isLoopResize) ? dragDeltaPx : 0
   required property real scrollViewWidth
   required property real scrollX
-  readonly property alias selectionTracker: selectionTracker
+  readonly property alias selectionTracker: tracker
 
   // The width this loader would have without any drag override. Clip views
   // bind this to their canvas item's referenceWidth so content density stays
@@ -89,7 +89,7 @@ Loader {
   }
 
   SelectionTracker {
-    id: selectionTracker
+    id: tracker
 
     modelIndexProvider: () => root.unifiedObjectsModel.mapFromSource(root.model.index(root.index, 0))
     selectionModel: root.arrangerSelectionModel

@@ -798,7 +798,7 @@ Arranger {
         visible: active
 
         sourceComponent: ListView {
-          id: lanesListView
+          id: lanesView
 
           anchors.fill: parent
           clip: true
@@ -808,7 +808,7 @@ Arranger {
           spacing: 0
 
           delegate: TrackLaneDelegateItem {
-            lanesListView: lanesListView
+            lanesListView: lanesView
             track: trackDelegate.track
           }
         }

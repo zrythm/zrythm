@@ -105,7 +105,7 @@ GridLayout {
   }
 
   Ruler {
-    id: ruler
+    id: paneRuler
 
     Layout.fillWidth: true
     clipObject: root.midiClip
@@ -131,7 +131,7 @@ GridLayout {
   }
 
   MidiActivityProvider {
-    id: noteActivityProvider
+    id: paneActivityProvider
 
     port: root.track ? root.track.trackProcessorMidiOut : null
     portObservationManager: root.project.portObservationManager
@@ -154,7 +154,7 @@ GridLayout {
       height: implicitHeight
       highlightMode: root.highlightMode
       midiEditor: root.midiEditor
-      noteActivityProvider: noteActivityProvider
+      noteActivityProvider: paneActivityProvider
     }
 
     Synchronizer {
@@ -166,7 +166,7 @@ GridLayout {
   }
 
   // Selection of the pane's arrangers, exposed for toolbar function menus.
-  readonly property alias selectionModel: arrangerSelectionModel
+  readonly property alias selectionModel: paneSelectionModel
 
   // Shared between MidiArranger and VelocityArranger so velocity bars react
   // to note drags (and vice versa) in real time.
@@ -175,7 +175,7 @@ GridLayout {
   }
 
   ItemSelectionModel {
-    id: arrangerSelectionModel
+    id: paneSelectionModel
 
     function getObjectFromUnifiedIndex(unifiedIndex: var): ArrangerObject {
       const sourceIndex = root.unifiedObjectsModel.mapToSource(unifiedIndex);
@@ -191,7 +191,7 @@ GridLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     arrangerContentHeight: pianoRollKeys.height
-    arrangerSelectionModel: arrangerSelectionModel
+    arrangerSelectionModel: paneSelectionModel
     chordTrack: root.chordTrack
     clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
@@ -199,7 +199,7 @@ GridLayout {
     highlightMode: root.highlightMode
     midiEditor: root.midiEditor
     objectCreator: root.session.arrangerObjectCreator
-    ruler: ruler
+    ruler: paneRuler
     selectionOperator: root.selectionOperator
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
@@ -220,13 +220,13 @@ GridLayout {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
-    arrangerSelectionModel: arrangerSelectionModel
+    arrangerSelectionModel: paneSelectionModel
     clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
     dragState: editorDragState
     midiEditor: root.midiEditor
     objectCreator: root.session.arrangerObjectCreator
-    ruler: ruler
+    ruler: paneRuler
     selectionOperator: root.selectionOperator
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap

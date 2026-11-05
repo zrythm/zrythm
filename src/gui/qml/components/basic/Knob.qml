@@ -117,10 +117,10 @@ Control {
 
       // Draw arc if enabled
       if (root.arc) {
-        var innerRadius = scale * 0.38;
-        var outerRadius = scale * 0.48;
-        var progressWidth = outerRadius - innerRadius;
-        var progressRadius = innerRadius + progressWidth / 2;
+        const innerRadius = scale * 0.38;
+        const outerRadius = scale * 0.48;
+        const progressWidth = outerRadius - innerRadius;
+        const progressRadius = innerRadius + progressWidth / 2;
 
         // Dark arc background
         ctx.beginPath();
@@ -130,11 +130,11 @@ Control {
         ctx.stroke();
 
         // Colored arc based on value intensity
-        var intensity = Math.abs(root.normalizedValue - zeroNormalized) / Math.max(zeroNormalized, 1.0 - zeroNormalized);
-        var intensityInv = 1.0 - intensity;
-        var r = intensityInv * root.colorAtZero.r + intensity * root.colorAtMax.r;
-        var g = intensityInv * root.colorAtZero.g + intensity * root.colorAtMax.g;
-        var b = intensityInv * root.colorAtZero.b + intensity * root.colorAtMax.b;
+        const intensity = Math.abs(root.normalizedValue - zeroNormalized) / Math.max(zeroNormalized, 1.0 - zeroNormalized);
+        const intensityInv = 1.0 - intensity;
+        const r = intensityInv * root.colorAtZero.r + intensity * root.colorAtMax.r;
+        const g = intensityInv * root.colorAtZero.g + intensity * root.colorAtMax.g;
+        const b = intensityInv * root.colorAtZero.b + intensity * root.colorAtMax.b;
 
         ctx.beginPath();
         if (zeroAngle > valueAngle) {
@@ -165,7 +165,7 @@ Control {
 
         if (root.bevel) {
           // Bevel effect
-          var gradient = ctx.createLinearGradient(centerX, centerY - centerRadius, centerX, centerY + centerRadius);
+          const gradient = ctx.createLinearGradient(centerX, centerY - centerRadius, centerX, centerY + centerRadius);
           gradient.addColorStop(0, Qt.rgba(1, 1, 1, 0.2));
           gradient.addColorStop(0.2, Qt.rgba(1, 1, 1, 0.2));
           gradient.addColorStop(0.8, Qt.rgba(0, 0, 0, 0.2));
@@ -183,7 +183,7 @@ Control {
           ctx.fill();
         } else {
           // Radial gradient
-          var radialGradient = ctx.createRadialGradient(centerX - centerRadius, centerY - centerRadius, 1, centerX - centerRadius, centerY - centerRadius, centerRadius * 2.5);
+          const radialGradient = ctx.createRadialGradient(centerX - centerRadius, centerY - centerRadius, 1, centerX - centerRadius, centerY - centerRadius, centerRadius * 2.5);
           radialGradient.addColorStop(0, Qt.rgba(1, 1, 1, 0.2));
           radialGradient.addColorStop(1, Qt.rgba(0, 0, 0, 0.3));
 
@@ -255,7 +255,7 @@ Control {
       switch (root.unit) {
       case 3 // dB
       :
-        var db = 20 * Math.log10(realVal);
+        const db = 20 * Math.log10(realVal);
         if (db < -100)
           return "-∞ dB";
         return db.toFixed(1) + " dB";

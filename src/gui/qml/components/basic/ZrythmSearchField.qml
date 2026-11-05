@@ -8,8 +8,8 @@ import QtQuick.Controls
 import ZrythmStyle
 
 /**
- * Search field filling gaps in the Qt template: placeholder text support,
- * a clear() function, and a focus check that follows the inner text input
+ * Search field filling gaps in the Qt template: a clear() function, and a
+ * focus check that follows the inner text input
  * (active focus lands on the content item, not this control).
  *
  * Key events reach attached Keys handlers here once the inner text input
@@ -22,9 +22,6 @@ SearchField {
 
   // Whether the text input holds active focus
   readonly property bool fieldActiveFocus: control.activeFocus || control.contentItem.activeFocus
-
-  // Hint shown when the field is empty
-  property string placeholderText: ""
 
   function clear() {
     control.text = "";

@@ -50,7 +50,7 @@ ColumnLayout {
     rows: 2
 
     Ruler {
-      id: ruler
+      id: paneRuler
 
       Layout.row: 0
       Layout.column: 1
@@ -101,7 +101,7 @@ ColumnLayout {
     }
 
     QObjectPropertyOperator {
-      id: fadePropertyOperator
+      id: paneFadePropertyOperator
 
       undoStack: root.session.undoStack
     }
@@ -118,9 +118,9 @@ ColumnLayout {
       clipContext: root.clipEditor.clipObject
       clipEditor: root.clipEditor
       selectedTransformEntryIndex: root.selectedTransformEntryIndex
-      fadePropertyOperator: fadePropertyOperator
+      fadePropertyOperator: paneFadePropertyOperator
       objectCreator: root.session.arrangerObjectCreator
-      ruler: ruler
+      ruler: paneRuler
       selectionOperator: root.session.arrangerObjectSelectionOperator
       snapGrid: root.session.uiState.snapGridEditor
       tempoMap: root.project.tempoMap

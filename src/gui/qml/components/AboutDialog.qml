@@ -17,25 +17,25 @@ Dialog {
   modal: true
   popupType: Popup.Window
   standardButtons: Dialog.Ok
-  title: stackView.currentItem ? stackView.currentItem.title : qsTr("About Zrythm")
+  title: dialogStackView.currentItem ? dialogStackView.currentItem.title : qsTr("About Zrythm")
   x: (parent.width - width) / 2
   y: (parent.height - height) / 2
 
   onAccepted: {
     // Ensure we return to main page when dialog is closed
-    if (stackView.depth > 1) {
-      stackView.pop(null, StackView.Immediate);
+    if (dialogStackView.depth > 1) {
+      dialogStackView.pop(null, StackView.Immediate);
     }
   }
   onRejected: {
     // Ensure we return to main page when dialog is closed
-    if (stackView.depth > 1) {
-      stackView.pop(null, StackView.Immediate);
+    if (dialogStackView.depth > 1) {
+      dialogStackView.pop(null, StackView.Immediate);
     }
   }
 
   StackView {
-    id: stackView
+    id: dialogStackView
 
     anchors.fill: parent
     initialItem: mainPage
@@ -116,7 +116,7 @@ Dialog {
           flat: true
           text: qsTr("View License")
 
-          onClicked: stackView.push(licensePage, {
+          onClicked: dialogStackView.push(licensePage, {
             licenseTitle: "Zrythm License",
             licenseText: QmlUtils.readTextFileContent(":/qt/qml/Zrythm/licenses/LicenseRef-ZrythmLicense.txt")
           })
@@ -126,7 +126,7 @@ Dialog {
           flat: true
           text: qsTr("Trademark Policy")
 
-          onClicked: stackView.push(licensePage, {
+          onClicked: dialogStackView.push(licensePage, {
             licenseTitle: "Zrythm Trademark Policy",
             licenseText: QmlUtils.readTextFileContent(":/qt/qml/Zrythm/licenses/TRADEMARKS.md")
           })
@@ -136,7 +136,7 @@ Dialog {
           flat: true
           text: qsTr("Third-Party Licenses")
 
-          onClicked: stackView.push(thirdPartyLicensesPage)
+          onClicked: dialogStackView.push(thirdPartyLicensesPage)
         }
 
         Button {
@@ -212,7 +212,7 @@ Dialog {
         Layout.alignment: Qt.AlignHCenter
         text: qsTr("Back")
 
-        onClicked: stackView.pop()
+        onClicked: dialogStackView.pop()
       }
     }
   }
@@ -221,7 +221,7 @@ Dialog {
     id: thirdPartyLicensesPage
 
     AboutThirdPartyLicensesPage {
-      stackView: stackView
+      stackView: dialogStackView
     }
   }
 }
