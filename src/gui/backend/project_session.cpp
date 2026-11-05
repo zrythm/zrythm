@@ -777,7 +777,7 @@ ProjectSession::saveAs (const QString &path)
       z_warning ("Save As failed to start: {}", e.what ());
       project_->set_project_id (previous_id);
       save_as_in_flight_ = false;
-      future = QtFuture::makeReadyFuture (QString ());
+      future = QtFuture::makeReadyValueFuture (QString ());
     }
 
   auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
