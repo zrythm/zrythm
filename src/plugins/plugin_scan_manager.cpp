@@ -102,6 +102,14 @@ Worker::process_scan ()
       z_debug ("Scanning plugins for format {}", format->format_name ());
       const auto protocol = format->protocol ();
       const auto paths = scanner_.plugin_paths_provider_ (protocol);
+      // A protocol without configured search paths is not scanned. Formats
+      // that ignore search paths (e.g. AudioUnit, which enumerates the
+      // system component registry) are also bound by this rule.
+      if (paths->empty ())
+        {
+          z_debug ("Skipping {}: no search paths", format->format_name ());
+          continue;
+        }
       const auto identifiers = format->search_identifiers (*paths, true);
       for (const auto &identifier : identifiers)
         {

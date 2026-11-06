@@ -159,6 +159,8 @@ TEST_F (ScanManagerTest, SuccessfulScanAddsDescriptor)
   ASSERT_TRUE (finished_spy.wait (5000));
 
   EXPECT_EQ (scanner_ptr->call_count, 1);
+  ASSERT_EQ (scanner_ptr->scanned_identifiers.size (), 1u);
+  EXPECT_EQ (scanner_ptr->scanned_identifiers.front (), temp_path.identifier ());
   ASSERT_EQ (catalog->rowCount (), 1);
   EXPECT_EQ (
     catalog
