@@ -157,5 +157,17 @@ private:
 
   // Engine operations
   CallbackWithPausedEngineRequester callback_with_paused_engine_requester_;
+
+  /**
+   * @brief True while the underlying QUndoStack is executing a push, undo
+   * or redo.
+   *
+   * QUndoStack is not re-entrant: a nested push from inside another
+   * command's undo()/redo() (e.g. a UI control reacting to a value it
+   * restores by pushing an echo edit) corrupts the command list. Pushes,
+   * undos and redos arriving while this is set are refused with an error
+   * log instead.
+   */
+  bool executing_ = false;
 };
 };

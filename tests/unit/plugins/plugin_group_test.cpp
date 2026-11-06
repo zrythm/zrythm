@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/faust/faust_plugin.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
 #include "plugins/plugin_group.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
@@ -48,6 +50,28 @@ protected:
 TEST_F (DeviceGroupTest, ConstructionAndBasicProperties)
 {
   EXPECT_EQ (device_group_->rowCount (), 0);
+}
+
+// Descriptors with CV outputs classify into the CV device group, so
+// modulators route to modulator racks.
+TEST_F (DeviceGroupTest, GroupTypeForModulatorDescriptors)
+{
+  const auto macro_descriptor = modulators::Modulator::make_descriptor (
+    modulators::MacroEngine::kDescriptorId);
+  ASSERT_NE (macro_descriptor, nullptr);
+  EXPECT_TRUE (macro_descriptor->isModulator ());
+  EXPECT_EQ (
+    PluginGroup::group_type_for_descriptor (*macro_descriptor),
+    PluginGroup::DeviceGroupType::CV);
+
+  auto effect_descriptor = std::make_unique<PluginDescriptor> ();
+  effect_descriptor->name_ = u8"Test Effect";
+  effect_descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  effect_descriptor->num_audio_ins_ = 2;
+  effect_descriptor->num_audio_outs_ = 2;
+  EXPECT_EQ (
+    PluginGroup::group_type_for_descriptor (*effect_descriptor),
+    PluginGroup::DeviceGroupType::Audio);
 }
 
 TEST_F (DeviceGroupTest, AppendPlugin)

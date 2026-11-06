@@ -7,12 +7,23 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
+import ZrythmActions
 
 ListView {
   id: root
 
   property int maximumContentHeight: 240
+  // Pushes undoable parameter edits; when null (e.g. from surfaces without
+  // operator access), edits apply directly without undo
+  property ProcessorParameterOperator parameterOperator: null
   required property Plugin plugin
+
+  function applyValue(param: ProcessorParameter, value: real): void {
+    if (parameterOperator !== null)
+      parameterOperator.setValue(param, value);
+    else
+      param.setBaseValueByUser(value);
+  }
 
   clip: true
   implicitHeight: Math.min(contentHeight, maximumContentHeight)
@@ -74,7 +85,7 @@ ListView {
         checked: paramDelegate.parameter.baseValue >= 0.5
 
         onToggled: {
-          paramDelegate.parameter.setBaseValueByUser(checked ? 1.0 : 0.0);
+          root.applyValue(paramDelegate.parameter, checked ? 1.0 : 0.0);
         }
       }
     }
@@ -108,7 +119,7 @@ ListView {
           value: paramDelegate.parameter.baseValue
 
           onMoved: {
-            paramDelegate.parameter.setBaseValueByUser(value);
+            root.applyValue(paramDelegate.parameter, value);
           }
           onPressedChanged: {
             if (pressed) {

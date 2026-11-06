@@ -300,6 +300,10 @@
             }
           }
         },
+        "modulators": {
+          "$ref": "common.schema.json#/definitions/pluginGroup",
+          "description": "Global modulator rack"
+        },
         "portConnectionsManager": {
           "type": "object",
           "description": "Manual port connections (user routing)",

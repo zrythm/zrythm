@@ -6,6 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Zrythm
+import ZrythmActions
 
 Window {
   id: root
@@ -14,6 +15,8 @@ Window {
   // The content components require a non-null plugin and are only
   // instantiated while one is set (see the Loader below)
   property Plugin plugin: null
+  // Pushes undoable parameter edits; assigned by the Instantiator
+  property ProcessorParameterOperator parameterOperator: null
 
   color: palette.window
   // Match the native plugin host windows: normal frame, kept above the
@@ -52,6 +55,7 @@ Window {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.margins: 8
+        parameterOperator: root.parameterOperator
         plugin: root.plugin
       }
     }

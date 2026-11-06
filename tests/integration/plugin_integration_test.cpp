@@ -192,7 +192,7 @@ protected:
 
     auto importer = std::make_unique<actions::PluginImporter> (
       *undo_stack, *project->plugin_factory_, *track_creator,
-      std::move (handler), project.get ());
+      *project->modulators (), std::move (handler), project.get ());
 
     importer->importPluginToNewTrack (&(*descriptor));
 
@@ -330,7 +330,7 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
 
   auto importer = std::make_unique<actions::PluginImporter> (
     *undo_stack2, *project2->plugin_factory_, *track_creator,
-    std::move (handler), project2.get ());
+    *project2->modulators (), std::move (handler), project2.get ());
 
   importer->importPluginToNewTrack (&(*descriptor));
 

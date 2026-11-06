@@ -23,6 +23,25 @@
 
 namespace zrythm::undo
 {
+namespace
+{
+// Marks the stack as executing for the lifetime of the guard, covering the
+// synchronous part of the QUndoStack call
+class ScopedExecution
+{
+public:
+  explicit ScopedExecution (bool &executing) : executing_ (executing)
+  {
+    executing_ = true;
+  }
+  ~ScopedExecution () { executing_ = false; }
+  Q_DISABLE_COPY_MOVE (ScopedExecution)
+
+private:
+  bool &executing_;
+};
+} // namespace
+
 UndoStack::UndoStack (
   CallbackWithPausedEngineRequester callback_with_paused_engine_requester,
   QObject *                         parent)
@@ -155,6 +174,14 @@ UndoStack::endMacro ()
 void
 UndoStack::push (QUndoCommand * cmd)
 {
+  if (executing_)
+    {
+      z_critical (
+        "Refusing nested push of '{}' while the undo stack is executing another command: undo/redo must not trigger new edits",
+        cmd->text ());
+      delete cmd;
+      return;
+    }
   z_debug ("Performing action '{}'", cmd->text ());
   // Realize any pending (lazy) macros so this command lands inside them (done
   // before the engine pause so macro realization doesn't depend on the pause
@@ -165,6 +192,7 @@ UndoStack::push (QUndoCommand * cmd)
     }
   pending_macros_.clear ();
   execute_with_engine_pause_if_needed (*cmd, [this, cmd] () {
+    ScopedExecution executing (executing_);
     stack_->push (cmd);
   });
 }
@@ -189,7 +217,16 @@ UndoStack::redo ()
       z_warning ("Ignoring redo(): command not found");
       return;
     }
-  execute_with_engine_pause_if_needed (*cmd, [this] () { stack_->redo (); });
+  if (executing_)
+    {
+      z_critical (
+        "Refusing nested redo() while the undo stack is executing another command: undo/redo must not trigger further undos");
+      return;
+    }
+  execute_with_engine_pause_if_needed (*cmd, [this] () {
+    ScopedExecution executing (executing_);
+    stack_->redo ();
+  });
 }
 
 void
@@ -212,7 +249,16 @@ UndoStack::undo ()
       z_warning ("Ignoring undo(): command not found");
       return;
     }
-  execute_with_engine_pause_if_needed (*cmd, [this] () { stack_->undo (); });
+  if (executing_)
+    {
+      z_critical (
+        "Refusing nested undo() while the undo stack is executing another command: undo/redo must not trigger further undos");
+      return;
+    }
+  execute_with_engine_pause_if_needed (*cmd, [this] () {
+    ScopedExecution executing (executing_);
+    stack_->undo ();
+  });
 }
 
 QStringList

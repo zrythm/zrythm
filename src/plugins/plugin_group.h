@@ -85,7 +85,7 @@ public:
 
   /**
    * @brief Returns the device-group category @p descriptor belongs to:
-   * instruments, MIDI modifiers, or audio (everything else).
+   * instruments, MIDI modifiers, CV modulators, or audio (everything else).
    */
   static DeviceGroupType
   group_type_for_descriptor (const PluginDescriptor &descriptor)
@@ -94,6 +94,8 @@ public:
       return DeviceGroupType::Instrument;
     if (descriptor.isMidiModifier ())
       return DeviceGroupType::MIDI;
+    if (descriptor.isModulator ())
+      return DeviceGroupType::CV;
     return DeviceGroupType::Audio;
   }
 

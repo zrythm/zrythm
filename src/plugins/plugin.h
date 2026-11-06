@@ -1026,8 +1026,18 @@ class Vst3Plugin;
 class FaustPlugin;
 class Lv2Plugin;
 
-using PluginVariant =
-  std::variant<JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin, Lv2Plugin>;
+namespace modulators
+{
+class Modulator;
+}
+
+using PluginVariant = std::variant<
+  JucePlugin,
+  ClapPlugin,
+  Vst3Plugin,
+  FaustPlugin,
+  Lv2Plugin,
+  modulators::Modulator>;
 using PluginPtrVariant = utils::to_pointer_variant<PluginVariant>;
 
 using PluginUuidReference = utils::TypedUuidReference<Plugin>;

@@ -36,13 +36,13 @@ protected:
 
 TEST_F (ChangeParameterValueCommandTest, InitialState)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.75f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.75f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
 }
 
 TEST_F (ChangeParameterValueCommandTest, RedoOperation)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.75f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.75f);
 
   // Initial state
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
@@ -58,7 +58,7 @@ TEST_F (ChangeParameterValueCommandTest, RedoOperation)
 
 TEST_F (ChangeParameterValueCommandTest, UndoOperation)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.75f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.75f);
 
   // First execute redo to set the value
   cmd.redo ();
@@ -71,7 +71,7 @@ TEST_F (ChangeParameterValueCommandTest, UndoOperation)
 
 TEST_F (ChangeParameterValueCommandTest, UndoRedoCycle)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.75f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.75f);
 
   // Initial state
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
@@ -95,7 +95,7 @@ TEST_F (ChangeParameterValueCommandTest, UndoRedoCycle)
 
 TEST_F (ChangeParameterValueCommandTest, SameValueNoChange)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.5f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.5f);
 
   // Initial state
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
@@ -113,7 +113,7 @@ TEST_F (ChangeParameterValueCommandTest, BoundaryValues)
 {
   // Test minimum boundary
   {
-    ChangeParameterValueCommand cmd (*param_, 0.0f);
+    ChangeParameterValueCommand cmd (*param_, registry_, 0.0f);
     cmd.redo ();
     EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
     cmd.undo ();
@@ -122,7 +122,7 @@ TEST_F (ChangeParameterValueCommandTest, BoundaryValues)
 
   // Test maximum boundary
   {
-    ChangeParameterValueCommand cmd (*param_, 1.0f);
+    ChangeParameterValueCommand cmd (*param_, registry_, 1.0f);
     cmd.redo ();
     EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
     cmd.undo ();
@@ -132,7 +132,7 @@ TEST_F (ChangeParameterValueCommandTest, BoundaryValues)
 
 TEST_F (ChangeParameterValueCommandTest, NegativeValue)
 {
-  ChangeParameterValueCommand cmd (*param_, -0.5f);
+  ChangeParameterValueCommand cmd (*param_, registry_, -0.5f);
 
   // Parameter should clamp negative values to 0
   cmd.redo ();
@@ -144,8 +144,8 @@ TEST_F (ChangeParameterValueCommandTest, NegativeValue)
 
 TEST_F (ChangeParameterValueCommandTest, MergeWithSameType)
 {
-  ChangeParameterValueCommand cmd1 (*param_, 0.25f);
-  ChangeParameterValueCommand cmd2 (*param_, 0.75f);
+  ChangeParameterValueCommand cmd1 (*param_, registry_, 0.25f);
+  ChangeParameterValueCommand cmd2 (*param_, registry_, 0.75f);
 
   // First command
   cmd1.redo ();
@@ -161,7 +161,7 @@ TEST_F (ChangeParameterValueCommandTest, MergeWithSameType)
 
 TEST_F (ChangeParameterValueCommandTest, MergeWithDifferentType)
 {
-  ChangeParameterValueCommand cmd1 (*param_, 0.25f);
+  ChangeParameterValueCommand cmd1 (*param_, registry_, 0.25f);
 
   // Create a mock command with different ID
   class MockCommand : public QUndoCommand
@@ -176,8 +176,8 @@ TEST_F (ChangeParameterValueCommandTest, MergeWithDifferentType)
 
 TEST_F (ChangeParameterValueCommandTest, MergeWithTimeLimit)
 {
-  ChangeParameterValueCommand cmd1 (*param_, 0.25f);
-  ChangeParameterValueCommand cmd2 (*param_, 0.75f);
+  ChangeParameterValueCommand cmd1 (*param_, registry_, 0.25f);
+  ChangeParameterValueCommand cmd2 (*param_, registry_, 0.75f);
 
   // Execute first command
   cmd1.redo ();
@@ -193,7 +193,7 @@ TEST_F (ChangeParameterValueCommandTest, MergeWithTimeLimit)
 
 TEST_F (ChangeParameterValueCommandTest, ValueGreaterThanOne)
 {
-  ChangeParameterValueCommand cmd (*param_, 1.5f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 1.5f);
 
   // Parameter should clamp values > 1 to 1
   cmd.redo ();
@@ -206,12 +206,12 @@ TEST_F (ChangeParameterValueCommandTest, ValueGreaterThanOne)
 TEST_F (ChangeParameterValueCommandTest, MultipleCommands)
 {
   // Create first command
-  ChangeParameterValueCommand cmd1 (*param_, 0.25f);
+  ChangeParameterValueCommand cmd1 (*param_, registry_, 0.25f);
   cmd1.redo ();
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.25f);
 
   // Create second command with new value
-  ChangeParameterValueCommand cmd2 (*param_, 0.75f);
+  ChangeParameterValueCommand cmd2 (*param_, registry_, 0.75f);
   cmd2.redo ();
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
 
@@ -226,7 +226,7 @@ TEST_F (ChangeParameterValueCommandTest, MultipleCommands)
 
 TEST_F (ChangeParameterValueCommandTest, CommandText)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.75f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.75f);
 
   // Check that the command text is properly formatted
   QString expected_text =
@@ -250,7 +250,7 @@ TEST_F (ChangeParameterValueCommandTest, DifferentParameterTypes)
   param2->setBaseValue (0.5f);
 
   // Test with gain parameter
-  ChangeParameterValueCommand cmd (*param2, 1.0f);
+  ChangeParameterValueCommand cmd (*param2, registry_, 1.0f);
   cmd.redo ();
   EXPECT_FLOAT_EQ (param2->baseValue (), 1.0f);
 
@@ -260,7 +260,7 @@ TEST_F (ChangeParameterValueCommandTest, DifferentParameterTypes)
 
 TEST_F (ChangeParameterValueCommandTest, VerySmallValueChanges)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.50001f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.50001f);
 
   // Test very small changes
   cmd.redo ();
@@ -272,7 +272,7 @@ TEST_F (ChangeParameterValueCommandTest, VerySmallValueChanges)
 
 TEST_F (ChangeParameterValueCommandTest, LargeValueChanges)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.99999f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.99999f);
 
   // Test large changes
   cmd.redo ();
@@ -284,7 +284,7 @@ TEST_F (ChangeParameterValueCommandTest, LargeValueChanges)
 
 TEST_F (ChangeParameterValueCommandTest, ZeroValueChange)
 {
-  ChangeParameterValueCommand cmd (*param_, 0.0f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 0.0f);
 
   // Test zero value
   cmd.redo ();
@@ -296,7 +296,7 @@ TEST_F (ChangeParameterValueCommandTest, ZeroValueChange)
 
 TEST_F (ChangeParameterValueCommandTest, OneValueChange)
 {
-  ChangeParameterValueCommand cmd (*param_, 1.0f);
+  ChangeParameterValueCommand cmd (*param_, registry_, 1.0f);
 
   // Test maximum value
   cmd.redo ();

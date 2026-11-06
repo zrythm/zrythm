@@ -7,6 +7,7 @@
 #include "actions/arranger_object_selection_operator.h"
 #include "actions/clip_operator.h"
 #include "actions/file_importer.h"
+#include "actions/parameter_operator.h"
 #include "actions/plugin_importer.h"
 #include "actions/plugin_operator.h"
 #include "actions/port_connection_operator.h"
@@ -88,6 +89,9 @@ class ProjectSession : public QObject
     zrythm::actions::PluginOperator * pluginOperator READ pluginOperator
       CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::actions::ProcessorParameterOperator * processorParameterOperator
+      READ processorParameterOperator CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::actions::PortConnectionOperator * portConnectionOperator READ
       portConnectionOperator CONSTANT FINAL)
   Q_PROPERTY (
@@ -136,13 +140,14 @@ public:
   zrythm::actions::TrackCollectionOperator * trackCollectionOperator () const;
   actions::PluginImporter *                  pluginImporter () const;
   actions::PluginOperator *                  pluginOperator () const;
-  actions::PortConnectionOperator *          portConnectionOperator () const;
-  qquick::GenericPluginUiController *        genericPluginUiController () const;
-  ModularProjectModel *                      modularProjectModel () const;
-  actions::FileImporter *                    fileImporter () const;
-  actions::UuidPropertyOperator *            uuidPropertyOperator () const;
-  controllers::TransportController *         transportController () const;
-  controllers::RecordingCoordinator *        recordingCoordinator () const;
+  actions::ProcessorParameterOperator * processorParameterOperator () const;
+  actions::PortConnectionOperator *     portConnectionOperator () const;
+  qquick::GenericPluginUiController *   genericPluginUiController () const;
+  ModularProjectModel *                 modularProjectModel () const;
+  actions::FileImporter *               fileImporter () const;
+  actions::UuidPropertyOperator *       uuidPropertyOperator () const;
+  controllers::TransportController *    transportController () const;
+  controllers::RecordingCoordinator *   recordingCoordinator () const;
 
   /**
    * @brief Returns the application-wide object clipboard.
@@ -252,6 +257,8 @@ private:
   utils::QObjectUniquePtr<ModularProjectModel> modular_project_model_;
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
   utils::QObjectUniquePtr<actions::PluginOperator> plugin_operator_;
+  utils::QObjectUniquePtr<actions::ProcessorParameterOperator>
+    processor_parameter_operator_;
   utils::QObjectUniquePtr<actions::PortConnectionOperator>
                                                  port_connection_operator_;
   utils::QObjectUniquePtr<actions::FileImporter> file_importer_;

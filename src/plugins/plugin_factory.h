@@ -261,6 +261,14 @@ public:
       }
     if (protocol == plugins::Protocol::ProtocolType::Internal)
       {
+        if (modulators::Modulator::descriptor_is_native_modulator (*descriptor))
+          {
+            return get_builder<modulators::Modulator> ()
+              .with_setting (setting)
+              .with_instantiation_finished_options (instantiation_finish_options)
+              .build ();
+          }
+
         return get_builder<plugins::FaustPlugin> ()
           .with_setting (setting)
           .with_instantiation_finished_options (instantiation_finish_options)

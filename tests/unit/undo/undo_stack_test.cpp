@@ -315,4 +315,67 @@ TEST_F (UndoStackTest, UndoRedoOnEmptyStackIsIgnored)
   EXPECT_FALSE (undo_stack_->canRedo ());
 }
 
+// A push from inside a command's redo() (a UI control reacting to a value
+// the command applies by pushing an echo edit) must be refused. QUndoStack
+// is not re-entrant: executing the nested push would corrupt the command
+// list.
+TEST_F (UndoStackTest, PushFromInsideRedoIsRefused)
+{
+  class EchoingCommand : public QUndoCommand
+  {
+  public:
+    EchoingCommand (UndoStack &stack, bool &echo_flag)
+        : stack_ (stack), echo_flag_ (echo_flag)
+    {
+    }
+
+    void redo () override
+    {
+      stack_.push (new ToggleCommand (echo_flag_, QStringLiteral ("Echo")));
+    }
+    void undo () override { }
+
+  private:
+    UndoStack &stack_;
+    bool      &echo_flag_;
+  };
+
+  bool echo_flag = false;
+  undo_stack_->push (new EchoingCommand (*undo_stack_, echo_flag));
+
+  // Only the outer command is on the stack and the echo never executed
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_FALSE (echo_flag);
+}
+
+TEST_F (UndoStackTest, UndoFromInsideRedoIsRefused)
+{
+  class UndoingCommand : public QUndoCommand
+  {
+  public:
+    explicit UndoingCommand (UndoStack &stack) : stack_ (stack) { }
+
+    void redo () override { stack_.undo (); }
+    void undo () override { }
+
+  private:
+    UndoStack &stack_;
+  };
+
+  bool flag = false;
+  undo_stack_->push (new ToggleCommand (flag, QStringLiteral ("Cmd")));
+  undo_stack_->push (new UndoingCommand (*undo_stack_));
+
+  // The nested undo() was refused: both commands remain done
+  EXPECT_EQ (undo_stack_->count (), 2);
+  EXPECT_EQ (undo_stack_->index (), 2);
+  EXPECT_TRUE (flag);
+
+  // Regular undo still works afterwards
+  undo_stack_->undo ();
+  undo_stack_->undo ();
+  EXPECT_FALSE (flag);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
 } // namespace zrythm::undo

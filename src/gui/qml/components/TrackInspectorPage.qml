@@ -502,7 +502,7 @@ ScrollView {
           BalanceControl {
             Layout.fillWidth: true
             balanceParameter: root.track.channel.fader.balance
-            undoStack: root.undoStack
+            parameterOperator: root.session.processorParameterOperator
           }
 
           RowLayout {
@@ -516,7 +516,7 @@ ScrollView {
 
             FaderControl {
               faderGain: root.track.channel.fader.gain
-              undoStack: root.undoStack
+              parameterOperator: root.session.processorParameterOperator
             }
 
             TrackMeters {

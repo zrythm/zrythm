@@ -16,10 +16,12 @@ PluginImporter::PluginImporter (
   undo::UndoStack        &undo_stack,
   plugins::PluginFactory &plugin_factory,
   const TrackCreator     &track_creator,
+  plugins::PluginGroup   &global_modulators,
   PluginImportedHandler   instantiation_finished_handler,
   QObject *               parent)
     : QObject (parent), undo_stack_ (undo_stack),
       plugin_factory_ (plugin_factory), track_creator_ (track_creator),
+      global_modulators_ (global_modulators),
       instantiation_finished_handler_ (std::move (instantiation_finished_handler))
 {
 }
@@ -152,6 +154,15 @@ PluginImporter::import (
                               structure::tracks::Track::Type::MidiBus)
                             .value<structure::tracks::MidiBusTrack *> ();
                     return t->channel ()->midiFx ();
+                  }
+                case plugins::PluginGroup::DeviceGroupType::CV:
+                  {
+                    // Modulators belong to the given track's rack, or
+                    // the project's global rack when no target was
+                    // given or the track has no rack
+                    if (track != nullptr && track->modulators () != nullptr)
+                      return track->modulators ();
+                    return &global_modulators_;
                   }
                 default:
                   {

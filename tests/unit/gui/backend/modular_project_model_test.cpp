@@ -4,9 +4,11 @@
 #include <algorithm>
 #include <map>
 
-#include "dsp/modulator_macro_processor.h"
 #include "dsp/port.h"
 #include "gui/backend/modular_project_model.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
+#include "plugins/plugin_configuration.h"
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
 #include "structure/tracks/audio_bus_track.h"
@@ -435,6 +437,37 @@ add_audio_bus (
     find_port (*track, dsp::PortFlow::Output),
     find_port (*track, dsp::PortFlow::Input),
   };
+}
+
+plugins::modulators::Modulator *
+add_macro_to_group (
+  plugins::PluginGroup        &group,
+  structure::project::Project &project)
+{
+  const auto descriptor = plugins::modulators::Modulator::make_descriptor (
+    plugins::modulators::MacroEngine::kDescriptorId);
+  auto config =
+    plugins::PluginConfiguration::create_new_for_descriptor (*descriptor);
+  auto plugin_ref = project.plugin_factory_->create_plugin_from_setting (
+    *config,
+    plugins::PluginFactory::InstantiationFinishOptions{
+      .handler_ = [] (plugins::PluginUuidReference, bool, const QString &) { },
+      .handler_context_ = nullptr });
+  group.append_plugin (plugin_ref);
+  return plugin_ref.get_object_as<plugins::modulators::Modulator> ();
+}
+
+plugins::modulators::Modulator *
+add_macro (structure::project::Project &project)
+{
+  return add_macro_to_group (*project.modulators (), project);
+}
+
+dsp::CVPort *
+macro_cv_out (plugins::modulators::Modulator &macro)
+{
+  return qobject_cast<dsp::CVPort *> (
+    macro.get_all_output_ports ().front ().get ());
 }
 
 QString
@@ -935,23 +968,10 @@ TEST_F (ModularProjectModelTest, CvConnectionToParameterIsEditableEdge)
   model.showGlobal ();
   add_audio_bus (*project, u8"Bus 1");
 
-  // CV source: the first modulator macro processor's CV output.
-  dsp::CVPort * cv_out = nullptr;
-  for (const auto &ref : project->tracklist ()->collection ()->tracks ())
-    {
-      auto * mod_track =
-        qobject_cast<structure::tracks::ModulatorTrack *> (ref.get ());
-      if (
-        mod_track != nullptr
-        && !mod_track->get_modulator_macro_processors ().empty ())
-        {
-          cv_out =
-            &mod_track->get_modulator_macro_processors ()
-               .front ()
-               ->get_cv_out_port ();
-          break;
-        }
-    }
+  // CV source: a Macro modulator plugin in the global rack.
+  auto * macro = add_macro (*project);
+  ASSERT_NE (macro, nullptr);
+  auto * cv_out = macro_cv_out (*macro);
   ASSERT_NE (cv_out, nullptr);
 
   // Destination: the first bus fader's first parameter modulation input.
@@ -1030,22 +1050,9 @@ TEST_F (ModularProjectModelTest, ConnectedParameterSlotsExposeConnections)
   model.showGlobal ();
   add_audio_bus (*project, u8"Bus 1");
 
-  dsp::CVPort * cv_out = nullptr;
-  for (const auto &ref : project->tracklist ()->collection ()->tracks ())
-    {
-      auto * mod_track =
-        qobject_cast<structure::tracks::ModulatorTrack *> (ref.get ());
-      if (
-        mod_track != nullptr
-        && !mod_track->get_modulator_macro_processors ().empty ())
-        {
-          cv_out =
-            &mod_track->get_modulator_macro_processors ()
-               .front ()
-               ->get_cv_out_port ();
-          break;
-        }
-    }
+  auto * macro = add_macro (*project);
+  ASSERT_NE (macro, nullptr);
+  auto * cv_out = macro_cv_out (*macro);
   ASSERT_NE (cv_out, nullptr);
 
   structure::tracks::AudioBusTrack * bus = nullptr;
@@ -1104,6 +1111,201 @@ TEST_F (ModularProjectModelTest, ConnectedParameterSlotsExposeConnections)
   EXPECT_DOUBLE_EQ (
     connections.at (0).toObject ().value ("multiplier").toDouble (), 0.75);
   EXPECT_FALSE (connections.at (0).toObject ().value ("locked").toBool ());
+}
+
+QString
+processor_node_id (const dsp::ProcessorBase &processor)
+{
+  return QStringLiteral ("processor:")
+         + processor.raw_uuid ().toString (QUuid::WithoutBraces);
+}
+
+// Global-rack members are projected in Track scope too, marked Global, and
+// native modulator nodes carry their descriptor ID for editor selection.
+TEST_F (ModularProjectModelTest, GlobalRackMembersAreProjectedInTrackScope)
+{
+  auto project = create_minimal_project ();
+  project->add_default_tracks ();
+  auto * macro = add_macro (*project);
+  ASSERT_NE (macro, nullptr);
+
+  structure::project::ProjectUiState ui_state (*project, *app_settings_);
+  ModularProjectModel                model (*project, ui_state);
+
+  const auto * collection = project->tracklist ()->collection ();
+  ASSERT_FALSE (collection->tracks ().empty ());
+  model.showTrack (collection->tracks ().front ().get ()->uuidString ());
+
+  const auto  macro_node_id = processor_node_id (*macro);
+  QVariantMap macro_node;
+  for (const auto &node : model.nodes ())
+    {
+      const auto map = node.toMap ();
+      if (map.value ("nodeId").toString () == macro_node_id)
+        macro_node = map;
+    }
+  ASSERT_FALSE (macro_node.isEmpty ());
+  EXPECT_EQ (
+    macro_node.value ("nodeType").toString (), QStringLiteral ("Global"));
+  EXPECT_EQ (
+    macro_node.value ("modulatorDescriptorId").toString (),
+    QString::fromUtf8 (plugins::modulators::MacroEngine::kDescriptorId));
+}
+
+// rackMemberInfo resolves the rack group and plugin of a rack member node
+// and returns an empty map for non-members.
+TEST_F (ModularProjectModelTest, RackMemberInfoResolvesRackMembers)
+{
+  auto project = create_minimal_project ();
+  project->add_default_tracks ();
+  auto * macro = add_macro (*project);
+  ASSERT_NE (macro, nullptr);
+
+  structure::project::ProjectUiState ui_state (*project, *app_settings_);
+  ModularProjectModel                model (*project, ui_state);
+
+  const auto member_info = model.rackMemberInfo (processor_node_id (*macro));
+  EXPECT_EQ (
+    member_info.value ("plugin").value<plugins::Plugin *> (),
+    static_cast<plugins::Plugin *> (macro));
+  EXPECT_EQ (
+    member_info.value ("group").value<plugins::PluginGroup *> (),
+    project->modulators ());
+  // The global rack is not owned by a track
+  EXPECT_FALSE (member_info.contains (QStringLiteral ("track")));
+
+  EXPECT_TRUE (
+    model.rackMemberInfo (processor_node_id (project->monitor_fader ()))
+      .isEmpty ());
+  EXPECT_TRUE (
+    model.rackMemberInfo (QStringLiteral ("track:not-a-processor")).isEmpty ());
+}
+
+// nodeParameter resolves a node's parameter through its stable parameter ID.
+TEST_F (ModularProjectModelTest, NodeParameterResolvesByStableId)
+{
+  auto project = create_minimal_project ();
+  project->add_default_tracks ();
+  auto * macro = add_macro (*project);
+  ASSERT_NE (macro, nullptr);
+
+  structure::project::ProjectUiState ui_state (*project, *app_settings_);
+  ModularProjectModel                model (*project, ui_state);
+
+  const auto node_id = processor_node_id (*macro);
+  auto * param = qobject_cast<dsp::ProcessorParameter *> (model.nodeParameter (
+    node_id,
+    QString::fromUtf8 (plugins::modulators::MacroEngine::kParameterId)));
+  ASSERT_NE (param, nullptr);
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.75f);
+  EXPECT_EQ (
+    model.nodeParameter (node_id, QStringLiteral ("/no/such/parameter")),
+    nullptr);
+}
+
+// scopeRack targets the scope track's rack when it has one, and falls back
+// to the global rack for tracks without racks.
+TEST_F (ModularProjectModelTest, ScopeRackFallsBackToTheGlobalRack)
+{
+  auto project = create_minimal_project ();
+  project->add_default_tracks ();
+  structure::project::ProjectUiState ui_state (*project, *app_settings_);
+  ModularProjectModel                model (*project, ui_state);
+
+  model.showGlobal ();
+  EXPECT_EQ (
+    model.scopeRack (), static_cast<QObject *> (project->modulators ()));
+
+  // Channel-bearing tracks own a local modulator rack
+  structure::tracks::Track * channel_track = nullptr;
+  for (const auto &ref : project->tracklist ()->collection ()->tracks ())
+    {
+      auto * track = ref.get ();
+      if (track->channel () != nullptr && track->modulators () != nullptr)
+        {
+          channel_track = track;
+          break;
+        }
+    }
+  ASSERT_NE (channel_track, nullptr);
+  model.showTrack (channel_track->uuidString ());
+  EXPECT_EQ (
+    model.scopeRack (), static_cast<QObject *> (channel_track->modulators ()));
+
+  // Tracks without a rack fall back to the global rack
+  const auto * marker_track =
+    project->tracklist ()->singletonTracks ()->markerTrack ();
+  ASSERT_NE (marker_track, nullptr);
+  ASSERT_EQ (marker_track->modulators (), nullptr);
+  model.showTrack (marker_track->uuidString ());
+  EXPECT_EQ (
+    model.scopeRack (), static_cast<QObject *> (project->modulators ()));
+}
+
+// Rack membership edits rebuild the projection in every scope.
+TEST_F (ModularProjectModelTest, GlobalRackMembershipChangeRebuildsProjection)
+{
+  auto project = create_minimal_project ();
+  project->add_default_tracks ();
+  structure::project::ProjectUiState ui_state (*project, *app_settings_);
+  ModularProjectModel                model (*project, ui_state);
+  model.showTrack (
+    project->tracklist ()->collection ()->tracks ().front ().get ()->uuidString ());
+  const int node_count_before = model.nodes ().size ();
+
+  add_macro (*project);
+
+  QTRY_VERIFY (model.nodes ().size () > node_count_before);
+}
+
+// A macro in the scope track's own rack projects as a node in Track scope,
+// and rackMemberInfo resolves its owning track rack.
+TEST_F (ModularProjectModelTest, TrackRackMembersAreProjectedInTrackScope)
+{
+  auto project = create_minimal_project ();
+  project->add_default_tracks ();
+
+  structure::tracks::Track * channel_track = nullptr;
+  for (const auto &ref : project->tracklist ()->collection ()->tracks ())
+    {
+      auto * track = ref.get ();
+      if (track->channel () != nullptr && track->modulators () != nullptr)
+        {
+          channel_track = track;
+          break;
+        }
+    }
+  ASSERT_NE (channel_track, nullptr);
+  auto * macro = add_macro_to_group (*channel_track->modulators (), *project);
+  ASSERT_NE (macro, nullptr);
+
+  structure::project::ProjectUiState ui_state (*project, *app_settings_);
+  ModularProjectModel                model (*project, ui_state);
+  model.showTrack (channel_track->uuidString ());
+
+  const auto  macro_node_id = processor_node_id (*macro);
+  QVariantMap macro_node;
+  for (const auto &node : model.nodes ())
+    {
+      const auto map = node.toMap ();
+      if (map.value ("nodeId").toString () == macro_node_id)
+        macro_node = map;
+    }
+  ASSERT_FALSE (macro_node.isEmpty ());
+  EXPECT_EQ (
+    macro_node.value ("nodeType").toString (), QStringLiteral ("Modulator"));
+  EXPECT_EQ (
+    macro_node.value ("modulatorDescriptorId").toString (),
+    QString::fromUtf8 (plugins::modulators::MacroEngine::kDescriptorId));
+
+  const auto member_info = model.rackMemberInfo (macro_node_id);
+  EXPECT_EQ (
+    member_info.value ("group").value<plugins::PluginGroup *> (),
+    channel_track->modulators ());
+  // The owning track is included so removal can clean up automation tracks
+  EXPECT_EQ (
+    member_info.value ("track").value<structure::tracks::Track *> (),
+    channel_track);
 }
 
 } // namespace zrythm::gui

@@ -10,7 +10,7 @@ AudioBusTrack::AudioBusTrack (FinalTrackDependencies dependencies)
         Track::Type::AudioBus,
         PortType::Audio,
         PortType::Audio,
-        TrackFeatures::Automation,
+        TrackFeatures::Automation | TrackFeatures::Modulators,
         dependencies.to_base_dependencies ())
 {
   icon_name_ = u8"effect";

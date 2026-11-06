@@ -9,6 +9,8 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2_plugin_format.h"
 #include "plugins/lv2_world.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
@@ -170,6 +172,35 @@ TEST_F (PluginFactoryTest, CreateDifferentPluginTypes)
   EXPECT_NE (vst3_plugin, nullptr);
   EXPECT_EQ (vst3_plugin->get_protocol (), Protocol::ProtocolType::VST3);
   EXPECT_TRUE (utils::contains (*registry_, vst3_plugin->get_uuid ()));
+}
+
+// A native modulator descriptor builds the shared Modulator host rather than
+// the Faust pass-through fallback.
+TEST_F (PluginFactoryTest, InternalDescriptorCreatesNativeModulatorForMacro)
+{
+  auto config = std::make_unique<PluginConfiguration> ();
+  config->descr_ = modulators::Modulator::make_descriptor (
+    modulators::MacroEngine::kDescriptorId);
+  ASSERT_NE (config->descr_, nullptr);
+
+  bool       instantiation_successful = false;
+  const auto finish_options = PluginFactory::InstantiationFinishOptions{
+    .handler_ =
+      [&instantiation_successful] (
+        plugins::PluginUuidReference, bool successful, const QString &) {
+        instantiation_successful = successful;
+      },
+    .handler_context_ = nullptr
+  };
+
+  const auto plugin_ref =
+    factory_->create_plugin_from_setting (*config, finish_options);
+  auto * modulator = plugin_ref.get_object_as<modulators::Modulator> ();
+  ASSERT_NE (modulator, nullptr);
+  EXPECT_EQ (modulator->get_all_input_ports ().size (), 1u);
+  EXPECT_EQ (modulator->get_all_output_ports ().size (), 1u);
+  EXPECT_EQ (modulator->get_parameters ().size (), 3u);
+  EXPECT_TRUE (instantiation_successful);
 }
 
 // Test create_plugin_from_setting with different protocols

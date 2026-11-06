@@ -648,8 +648,8 @@
             "variantType": {
               "type": "integer",
               "minimum": 0,
-              "maximum": 4,
-              "description": "Index in PluginVariant (JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin, Lv2Plugin)"
+              "maximum": 5,
+              "description": "Index in PluginVariant (JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin, Lv2Plugin, Modulator)"
             },
             "protocol": {
               "type": "integer",
@@ -790,6 +790,10 @@
             },
             "processor": {
               "$ref": "#/definitions/processorBase"
+            },
+            "modulators": {
+              "$ref": "#/definitions/pluginGroup",
+              "description": "Track-local modulator rack, present on tracks that support modulators"
             },
             "automationTracklist": {
               "type": "object",
@@ -998,16 +1002,6 @@
           "properties": {
             "variantType": {
               "const": 5
-            },
-            "modulators": {
-              "$ref": "#/definitions/pluginGroup"
-            },
-            "modulatorMacroProcessors": {
-              "type": "array",
-              "description": "Modulator macro processors",
-              "items": {
-                "$ref": "#/definitions/processorBase"
-              }
             }
           }
         }

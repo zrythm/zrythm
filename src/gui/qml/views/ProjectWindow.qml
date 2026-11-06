@@ -460,6 +460,7 @@ ApplicationWindow {
 
     onObjectAdded: (index, object) => {
       object.plugin = genericPluginWindows.model.pluginAt(index);
+      object.parameterOperator = root.session.processorParameterOperator;
       // Set the transient parent before the window is shown so the WM keeps
       // it stacked above the project window (must happen pre-mapping on
       // Wayland), and inherit the palette (not propagated across windows)

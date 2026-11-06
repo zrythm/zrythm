@@ -276,6 +276,7 @@ set(rel_qml_file_paths
   components/editors/ChordEditorPane.qml
   components/editors/PianoRollKeys.qml
   components/editors/ChordRowLabels.qml
+  components/modular/MacroModulatorEditor.qml
   components/modular/ModularCanvas.qml
   components/modular/ModularConnection.qml
   components/modular/ModularGrid.qml

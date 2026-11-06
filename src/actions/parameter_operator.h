@@ -1,69 +1,46 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include <stdexcept>
-
 #include "dsp/parameter.h"
 #include "undo/undo_stack.h"
+#include "utils/iobject_registry.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::actions
 {
+
+/**
+ * @brief Pushes undoable edits of processor parameter values.
+ *
+ * Each edit names its parameter explicitly. Editable parameters must be
+ * registered in the registry passed at construction (the project
+ * registry); edits of parameters from other registries are refused.
+ */
 class ProcessorParameterOperator : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY (
-    zrythm::dsp::ProcessorParameter * processorParameter READ processorParameter
-      WRITE setProcessorParameter NOTIFY processorParameterChanged)
-  Q_PROPERTY (
-    zrythm::undo::UndoStack * undoStack READ undoStack WRITE setUndoStack NOTIFY
-      undoStackChanged)
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
-  explicit ProcessorParameterOperator (QObject * parent = nullptr)
-      : QObject (parent)
-  {
-  }
+  ProcessorParameterOperator (
+    undo::UndoStack        &undo_stack,
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 
-  Q_SIGNAL void processorParameterChanged ();
-  Q_SIGNAL void undoStackChanged ();
-
-  dsp::ProcessorParameter * processorParameter () const { return param_; }
-  void setProcessorParameter (dsp::ProcessorParameter * param)
-  {
-    if (param == nullptr)
-      {
-        throw std::invalid_argument ("Param cannot be null");
-      }
-    if (param_ != param)
-      {
-        param_ = param;
-        Q_EMIT processorParameterChanged ();
-      }
-  }
-
-  undo::UndoStack * undoStack () const { return undo_stack_; }
-  void              setUndoStack (undo::UndoStack * undoStack)
-  {
-    if (undoStack == nullptr)
-      {
-        throw std::invalid_argument ("UndoStack cannot be null");
-      }
-    if (undo_stack_ != undoStack)
-      {
-        undo_stack_ = undoStack;
-        Q_EMIT undoStackChanged ();
-      }
-  }
-
-  Q_INVOKABLE void setValue (float value);
+  /**
+   * @brief Pushes an undoable edit of @p param's value.
+   *
+   * Consecutive edits of the same parameter within a short window merge
+   * into a single undo step, so a control drag undoes as one action.
+   */
+  Q_INVOKABLE void setValue (dsp::ProcessorParameter * param, float value);
 
 private:
-  dsp::ProcessorParameter * param_{};
-  undo::UndoStack *         undo_stack_{};
+  undo::UndoStack *        undo_stack_ = nullptr;
+  utils::IObjectRegistry * registry_ = nullptr;
 };
-}
+} // namespace zrythm::actions

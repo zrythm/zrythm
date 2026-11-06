@@ -84,6 +84,48 @@ public:
    */
   Q_INVOKABLE QVariantList modulatableParameters (const QString &node_id) const;
 
+  /**
+   * @brief Rack membership of a node's processor, for rack editing.
+   *
+   * @param node_id A processor projection node ID.
+   * @return A map with "plugin" (plugins::Plugin *) and "group"
+   * (plugins::PluginGroup *) when the node's processor is a member of a
+   * modulator rack; otherwise an empty map.
+   */
+  Q_INVOKABLE QVariantMap rackMemberInfo (const QString &node_id) const;
+
+  /**
+   * @brief Parameter of a node's processor, looked up by stable parameter ID.
+   *
+   * @param node_id A processor projection node ID.
+   * @param parameter_id Stable parameter unique ID.
+   * @return The parameter object, or null when the node or parameter does
+   * not exist.
+   */
+  Q_INVOKABLE QObject *
+  nodeParameter (const QString &node_id, const QString &parameter_id) const;
+
+  /**
+   * @brief Plugin group that rack membership edits target in the current
+   * scope.
+   *
+   * Track scope returns the scope track's modulator rack when it has one,
+   * otherwise the project's global rack; Global scope returns the global
+   * rack.
+   */
+  Q_INVOKABLE QObject * scopeRack () const;
+
+  /**
+   * @brief Stable IDs of the native Macro modulator and its value
+   * parameter.
+   *
+   * The Modular view uses these to match nodes against the inline Macro
+   * editor and to resolve its parameter, so the IDs exist in QML only
+   * through these accessors.
+   */
+  Q_INVOKABLE QString macroDescriptorId () const;
+  Q_INVOKABLE QString macroValueParameterId () const;
+
 Q_SIGNALS:
   void nodesChanged ();
   void edgesChanged ();

@@ -4,6 +4,9 @@
 #include "dsp/audio_input_selection.h"
 #include "dsp/audio_port.h"
 #include "dsp/graph.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
+#include "plugins/plugin_configuration.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
 #include "structure/tracks/audio_track.h"
@@ -115,6 +118,37 @@ protected:
     return raw;
   }
 
+  plugins::modulators::Modulator * add_global_macro (Project &project)
+  {
+    const auto descriptor = plugins::modulators::Modulator::make_descriptor (
+      plugins::modulators::MacroEngine::kDescriptorId);
+    auto config =
+      plugins::PluginConfiguration::create_new_for_descriptor (*descriptor);
+    auto plugin_ref = project.plugin_factory_->create_plugin_from_setting (
+      *config,
+      plugins::PluginFactory::InstantiationFinishOptions{
+        .handler_ = [] (plugins::PluginUuidReference, bool, const QString &) { },
+        .handler_context_ = nullptr });
+    project.modulators ()->append_plugin (plugin_ref);
+    return plugin_ref.get_object_as<plugins::modulators::Modulator> ();
+  }
+
+  plugins::modulators::Modulator *
+  add_track_macro (Project &project, tracks::Track &track)
+  {
+    const auto descriptor = plugins::modulators::Modulator::make_descriptor (
+      plugins::modulators::MacroEngine::kDescriptorId);
+    auto config =
+      plugins::PluginConfiguration::create_new_for_descriptor (*descriptor);
+    auto plugin_ref = project.plugin_factory_->create_plugin_from_setting (
+      *config,
+      plugins::PluginFactory::InstantiationFinishOptions{
+        .handler_ = [] (plugins::PluginUuidReference, bool, const QString &) { },
+        .handler_context_ = nullptr });
+    track.modulators ()->append_plugin (plugin_ref);
+    return plugin_ref.get_object_as<plugins::modulators::Modulator> ();
+  }
+
   bool has_audio_input_connection (
     dsp::graph::Graph &graph,
     Project           &project,
@@ -164,6 +198,43 @@ TEST_F (ProjectGraphBuilderTest, DefaultTracksGraphIsValidAfterFinalizeNodes)
 
   EXPECT_TRUE (graph.is_valid ())
     << "Default tracks should produce a valid graph";
+}
+
+TEST_F (ProjectGraphBuilderTest, GlobalRackModulatorPluginIsPartOfGraph)
+{
+  auto project = create_project ();
+  project->add_default_tracks ();
+  auto * macro = add_global_macro (*project);
+  ASSERT_NE (macro, nullptr);
+
+  dsp::graph::Graph   graph;
+  ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
+  builder.build_graph (graph);
+  graph.finalize_nodes ();
+
+  EXPECT_NE (graph.get_nodes ().find_node_for_processable (*macro), nullptr);
+  EXPECT_TRUE (graph.is_valid ())
+    << "A global-rack modulator plugin should not break the graph";
+}
+
+// A macro in a track's own rack joins the graph as a node
+TEST_F (ProjectGraphBuilderTest, TrackRackModulatorPluginIsPartOfGraph)
+{
+  auto project = create_project ();
+  project->add_default_tracks ();
+  auto * track = add_audio_track (*project);
+  ASSERT_NE (track->modulators (), nullptr);
+  auto * macro = add_track_macro (*project, *track);
+  ASSERT_NE (macro, nullptr);
+
+  dsp::graph::Graph   graph;
+  ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
+  builder.build_graph (graph);
+  graph.finalize_nodes ();
+
+  EXPECT_NE (graph.get_nodes ().find_node_for_processable (*macro), nullptr);
+  EXPECT_TRUE (graph.is_valid ())
+    << "A track-rack modulator plugin should not break the graph";
 }
 
 TEST_F (ProjectGraphBuilderTest, AudioBusTrackWithNoRouteTargetGraphIsValid)

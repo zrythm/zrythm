@@ -11,7 +11,7 @@ MidiGroupTrack::MidiGroupTrack (FinalTrackDependencies dependencies)
         Track::Type::MidiGroup,
         PortType::Midi,
         PortType::Midi,
-        TrackFeatures::Automation,
+        TrackFeatures::Automation | TrackFeatures::Modulators,
         dependencies.to_base_dependencies ())
 {
   icon_name_ = u8"signal-midi";

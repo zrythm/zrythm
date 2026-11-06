@@ -11,7 +11,8 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
         Track::Type::Audio,
         PortType::Audio,
         PortType::Audio,
-        TrackFeatures::Automation | TrackFeatures::Lanes | TrackFeatures::Recording,
+        TrackFeatures::Automation | TrackFeatures::Lanes
+          | TrackFeatures::Recording | TrackFeatures::Modulators,
         dependencies.to_base_dependencies ())
 {
   /* signal-audio also works */

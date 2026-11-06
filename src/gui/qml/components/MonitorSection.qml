@@ -137,6 +137,7 @@ ColumnLayout {
 
       Knob {
         Layout.alignment: Qt.AlignHCenter
+        onValueModified: newValue => value = newValue
         size: root.levelKnobSize
         zero: 0.5
       }
@@ -156,6 +157,7 @@ ColumnLayout {
 
       Knob {
         Layout.alignment: Qt.AlignHCenter
+        onValueModified: newValue => value = newValue
         size: root.levelKnobSize
       }
     }
@@ -174,6 +176,7 @@ ColumnLayout {
 
       Knob {
         Layout.alignment: Qt.AlignHCenter
+        onValueModified: newValue => value = newValue
         size: root.levelKnobSize
       }
     }
@@ -237,6 +240,7 @@ ColumnLayout {
 
     Knob {
       Layout.alignment: Qt.AlignHCenter
+      onValueModified: newValue => value = newValue
       size: root.monitorKnobSize
     }
   }

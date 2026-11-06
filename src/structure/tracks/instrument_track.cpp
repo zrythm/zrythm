@@ -10,8 +10,8 @@ InstrumentTrack::InstrumentTrack (FinalTrackDependencies dependencies)
         Track::Type::Instrument,
         PortType::Midi,
         PortType::Audio,
-        TrackFeatures::Automation | TrackFeatures::Lanes
-          | TrackFeatures::PianoRoll | TrackFeatures::Recording,
+        TrackFeatures::Automation | TrackFeatures::Lanes | TrackFeatures::PianoRoll
+          | TrackFeatures::Recording | TrackFeatures::Modulators,
         dependencies.to_base_dependencies ())
 {
   icon_name_ = u8"instrument";

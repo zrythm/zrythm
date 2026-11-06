@@ -6,6 +6,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ZrythmActions
+import ZrythmGui
 import ZrythmStyle
 
 Control {
@@ -15,6 +17,9 @@ Control {
   required property real canvasZoom
   required property real cardWidth
   property bool connectionPending: false
+  // Height of the compact editor body below the ports of native modulator
+  // nodes; set by the canvas to keep the shared height formula in sync.
+  property int editorBodyHeight: 0
   required property int headerHeight
   required property bool hasModulatableParameters
   required property string inputsJson
@@ -33,11 +38,22 @@ Control {
   property bool linked: false
   property bool selected: false
   required property string parametersJson
+  // Descriptor ID of the node's native modulator, or an empty string for
+  // other processors; selects the compact editor body.
+  required property string modulatorDescriptorId
+  // The project model, through which compact editors resolve their
+  // parameters by stable ID.
+  property ModularProjectModel modularModel: null
+  // Pushes undoable parameter edits for the compact editor body.
+  property ProcessorParameterOperator parameterOperator: null
   required property Item worldItem
 
   readonly property var inputPorts: JSON.parse(inputsJson)
   readonly property var outputPorts: JSON.parse(outputsJson)
   readonly property var parameterPorts: JSON.parse(parametersJson)
+  readonly property bool hasModulatorEditor: modulatorDescriptorId !== ""
+    && modularModel !== null
+  readonly property int editorBodyTop: headerHeight + Math.max(leftPortCount, outputPorts.length) * portHeight + 8
   readonly property bool showsParameterDropTarget: connectionPending
     && pendingSignalKind === "cv"
     && pendingFlow === "output"
@@ -73,6 +89,7 @@ Control {
   signal nodeDragStarted(string nodeId)
   signal nodeDragMoved(string nodeId, point worldPointer)
   signal nodeDragEnded(string nodeId)
+  signal nodeMenuRequested(string nodeId)
   signal parameterEditActiveChanged(bool active)
   signal parameterMultiplierEdited(string sourcePortId, string destinationPortId, real value)
   signal portClicked(string nodeId, var port)
@@ -167,10 +184,15 @@ Control {
     }
   }
 
+  // Stable IDs of the native Macro modulator, shared with its engine.
+  readonly property string macroDescriptorId: root.modularModel?.macroDescriptorId() ?? ""
+  readonly property string macroValueParameterId: root.modularModel?.macroValueParameterId() ?? ""
+
   Accessible.name: nodeTitle
   Accessible.role: Accessible.Grouping
   activeFocusOnTab: true
   height: headerHeight + Math.max(leftPortCount, outputPorts.length) * portHeight + 8
+    + (hasModulatorEditor ? editorBodyHeight : 0)
   hoverEnabled: true
   padding: 0
   width: cardWidth
@@ -182,6 +204,12 @@ Control {
     border.width: root.selected || root.linked ? 2 : 1
     color: ZrythmTheme.cardColor
     radius: 6
+  }
+
+  TapHandler {
+    acceptedButtons: Qt.RightButton
+
+    onTapped: root.nodeMenuRequested(root.nodeId)
   }
 
   Item {
@@ -396,7 +424,7 @@ Control {
               zero: 0
 
               onDraggingChanged: root.parameterEditActiveChanged(dragging)
-              onValueChanged: root.parameterMultiplierEdited(connectionDelegate.modelData.sourcePortId, portButton.modelData.id, amountKnob.value)
+              onValueModified: newValue => root.parameterMultiplierEdited(connectionDelegate.modelData.sourcePortId, portButton.modelData.id, newValue)
             }
 
             Label {
@@ -416,5 +444,22 @@ Control {
         text: root.portToolTip(portButton.modelData)
       }
     }
+  }
+
+  // Compact editor body of a native modulator node, selected by the node's
+  // modulator descriptor ID. Unknown modulators render no editor body.
+  MacroModulatorEditor {
+    height: root.editorBodyHeight
+    parameter: root.hasModulatorEditor
+      && root.modulatorDescriptorId === root.macroDescriptorId
+      ? root.modularModel.nodeParameter(root.nodeId, root.macroValueParameterId)
+      : null
+    parameterOperator: root.parameterOperator
+    visible: root.hasModulatorEditor
+      && root.modulatorDescriptorId === root.macroDescriptorId
+    width: root.cardWidth
+    y: root.editorBodyTop
+
+    onEditActiveChanged: active => root.parameterEditActiveChanged(active)
   }
 }

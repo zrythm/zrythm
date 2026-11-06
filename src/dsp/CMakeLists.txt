@@ -48,7 +48,6 @@ target_sources(zrythm_dsp_lib
     midi_panic_processor.cpp
     midi_port.cpp
     note_type.cpp
-    modulator_macro_processor.cpp
     musical_scale.cpp
     panning.cpp
     parameter.cpp
@@ -126,7 +125,6 @@ target_sources(zrythm_dsp_lib
       midi_input_selection.h
       midi_panic_processor.h
       midi_port.h
-      modulator_macro_processor.h
       musical_scale.h
       note_type.h
       parameter.h

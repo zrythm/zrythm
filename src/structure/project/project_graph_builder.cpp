@@ -71,9 +71,12 @@ process_track_connections (
         }
     }
 
-  if (auto * mod_track = qobject_cast<structure::tracks::ModulatorTrack *> (tr))
+  /* connect the track's modulator rack, if it has one: the track processor
+   * feeds each member's inputs, so rack members receive the track's input
+   * signals */
+  if (auto * rack = tr->modulators ())
     {
-      for (const auto &pl_ref : mod_track->modulators ()->get_plugins ())
+      for (const auto &pl_ref : rack->get_plugins ())
         {
           auto * pl = pl_ref.get ();
           dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
@@ -85,19 +88,7 @@ process_track_connections (
               track_processor_node->connect_to (*port_node);
             }
         }
-
-      /* connect the modulator macro processors */
-      for (const auto &mmp : mod_track->get_modulator_macro_processors ())
-        {
-          dsp::ProcessorGraphBuilder::add_connections (graph, *mmp);
-
-          // special case - track processor connected directly to
-          // the mmp input(s)
-          auto * const cv_in_node = graph.get_nodes ().find_node_for_processable (
-            mmp->get_cv_in_port ());
-          track_processor_node->connect_to (*cv_in_node);
-        }
-    } // if modulator track
+    }
 }
 
 void
@@ -147,6 +138,12 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       dsp::ProcessorGraphBuilder::add_nodes (graph, *mip);
     }
 
+  /* add the global modulator rack */
+  for (const auto &pl_ref : project->modulators ()->get_plugins ())
+    {
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *pl_ref.get ());
+    }
+
   /* add each track */
   for (const auto &cur_tr : tracklist->collection ()->tracks ())
     {
@@ -158,20 +155,12 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           dsp::ProcessorGraphBuilder::add_nodes (graph, *tp);
         }
 
-      /* handle modulator track */
-      if (
-        auto * mod_track = qobject_cast<structure::tracks::ModulatorTrack *> (tr))
+      /* add the track's modulator rack, if it has one */
+      if (auto * rack = tr->modulators ())
         {
-          /* add plugins */
-          for (const auto &pl_ref : mod_track->modulators ()->get_plugins ())
+          for (const auto &pl_ref : rack->get_plugins ())
             {
               dsp::ProcessorGraphBuilder::add_nodes (graph, *pl_ref.get ());
-            }
-
-          /* add macro processors */
-          for (const auto &mp : mod_track->get_modulator_macro_processors ())
-            {
-              dsp::ProcessorGraphBuilder::add_nodes (graph, *mp);
             }
         }
 
@@ -235,6 +224,33 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         graph.get_nodes ().find_node_for_processable (mip_out_port);
       z_return_if_fail (mip_out_node);
       initial_processor_node->connect_to (*mip_out_node);
+    }
+
+  /* connect the global modulator rack: every MIDI input processor feeds the
+   * members' MIDI inputs, so hardware controllers reach global modulators
+   * directly */
+  for (const auto &pl_ref : project->modulators ()->get_plugins ())
+    {
+      auto * pl = pl_ref.get ();
+      dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
+      for (const auto &in_port_ref : pl->get_attached_input_ports ())
+        {
+          auto * midi_in = qobject_cast<dsp::MidiPort *> (in_port_ref.get ());
+          if (midi_in == nullptr)
+            continue;
+          auto * midi_in_node =
+            graph.get_nodes ().find_node_for_processable (*midi_in);
+          assert (midi_in_node != nullptr);
+          for (
+            const auto &mip :
+            engine->midi_input_processors () | std::views::values)
+            {
+              auto * output_node = graph.get_nodes ().find_node_for_processable (
+                mip->get_output_port ());
+              assert (output_node != nullptr);
+              output_node->connect_to (*midi_in_node);
+            }
+        }
     }
 
   /* connect tracks */

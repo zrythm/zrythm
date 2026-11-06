@@ -4,6 +4,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import ZrythmActions
+import ZrythmGui
 import ZrythmStyle
 
 FocusScope {
@@ -11,6 +13,9 @@ FocusScope {
 
   readonly property real defaultZoom: 1.0
   property var edgeModel: null
+  // Height of the compact editor body of native modulator nodes; must match
+  // the layout metrics in modular_project_model.cpp.
+  readonly property int editorBodyHeight: 56
   readonly property int headerHeight: 40
   property int layoutRevision: 0
   property bool autoFitOnModelChange: true
@@ -20,6 +25,10 @@ FocusScope {
   readonly property real minimumZoom: 0.3
   property var nodeModel: null
   readonly property int nodeWidth: 236
+  // The project model, passed to the nodes for compact modulator editors.
+  property ModularProjectModel modularModel: null
+  // Pushes undoable parameter edits, passed to the nodes' editors.
+  property ProcessorParameterOperator parameterOperator: null
   property real panX: 0
   property real panY: 0
   property string pendingFlow: ""
@@ -40,6 +49,7 @@ FocusScope {
     && edgeIsDeletable(selectedConnectionId)
 
   signal nodeMoveFinished(string nodeId, real x, real y)
+  signal nodeMenuRequested(string nodeId)
   signal nodeSelected(string nodeId)
   signal parameterConnectionRequested(string nodeId, string sourcePortId)
   signal parameterEditActiveChanged(bool active)
@@ -203,7 +213,9 @@ FocusScope {
     const inputs = JSON.parse(node.inputsJson);
     const outputs = JSON.parse(node.outputsJson);
     const parameters = JSON.parse(node.parametersJson);
-    return headerHeight + Math.max(inputs.length + parameters.length, outputs.length) * portHeight + 8;
+    const editorBody = node.modulatorDescriptorId !== undefined
+      && node.modulatorDescriptorId !== "" ? editorBodyHeight : 0;
+    return headerHeight + Math.max(inputs.length + parameters.length, outputs.length) * portHeight + 8 + editorBody;
   }
 
   function portCenter(nodeId: string, portId: string, output: bool): point {
@@ -615,7 +627,10 @@ FocusScope {
       delegate: ModularNode {
         canvasZoom: root.zoom
         cardWidth: root.nodeWidth
+        editorBodyHeight: root.editorBodyHeight
         headerHeight: root.headerHeight
+        modularModel: root.modularModel
+        parameterOperator: root.parameterOperator
         portHeight: root.portHeight
         connectionPending: root.hasPendingConnection
         linked: root.linkedNodeId === nodeId
@@ -631,6 +646,7 @@ FocusScope {
         onNodeDragStarted: nodeId => root.beginAutoScroll(nodeId)
         onNodeDragMoved: (nodeId, worldPointer) => root.updateAutoScroll(worldPointer)
         onNodeDragEnded: nodeId => root.endAutoScroll()
+        onNodeMenuRequested: nodeId => root.nodeMenuRequested(nodeId)
         onParameterEditActiveChanged: active => root.parameterEditActiveChanged(active)
         onParameterMultiplierEdited: (sourcePortId, destinationPortId, value) => root.parameterMultiplierEdited(sourcePortId, destinationPortId, value)
         onPortClicked: (nodeId, port) => root.portClicked(nodeId, port)
@@ -648,6 +664,7 @@ FocusScope {
     anchors.bottomMargin: 16
     anchors.right: parent.right
     anchors.rightMargin: 16
+    editorBodyHeight: root.editorBodyHeight
     headerHeight: root.headerHeight
     height: 130
     nodeModel: root.nodeModel

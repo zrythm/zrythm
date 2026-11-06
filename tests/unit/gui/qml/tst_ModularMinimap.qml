@@ -13,6 +13,7 @@ TestCase {
   ModularMinimap {
     id: minimap
 
+    editorBodyHeight: 56
     headerHeight: 40
     height: 100
     nodeModel: ListModel {
@@ -21,6 +22,7 @@ TestCase {
       ListElement {
         accentKind: "neutral"
         inputsJson: "[]"
+        modulatorDescriptorId: ""
         nodeId: "node-a"
         nodeX: 0
         nodeY: 0
@@ -73,6 +75,7 @@ TestCase {
     nodes.append({
         "accentKind": "neutral",
         "inputsJson": "[]",
+        "modulatorDescriptorId": "",
         "nodeId": "node-b",
         "nodeX": 5000,
         "nodeY": 0,

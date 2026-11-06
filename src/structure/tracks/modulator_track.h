@@ -30,11 +30,6 @@ public:
     const ModulatorTrack  &other,
     utils::ObjectCloneType clone_type);
 
-  auto get_modulator_macro_processors () const
-  {
-    return std::span (modulator_macro_processors_);
-  }
-
 private:
   friend void to_json (nlohmann::json &j, const ModulatorTrack &track)
   {

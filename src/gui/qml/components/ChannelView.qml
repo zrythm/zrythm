@@ -18,6 +18,7 @@ ColumnLayout {
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
   required property PortObservationManager portObservationManager
+  required property ProcessorParameterOperator parameterOperator
   required property Track track
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
@@ -167,7 +168,7 @@ ColumnLayout {
         Layout.fillHeight: false
         Layout.fillWidth: true
         balanceParameter: root.channel.fader.balance
-        undoStack: root.undoStack
+        parameterOperator: root.parameterOperator
       }
 
       RowLayout {
@@ -185,7 +186,7 @@ ColumnLayout {
           Layout.fillHeight: true
           Layout.fillWidth: false
           faderGain: root.channel.fader.gain
-          undoStack: root.undoStack
+          parameterOperator: root.parameterOperator
         }
 
         TrackMeters {

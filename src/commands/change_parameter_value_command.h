@@ -13,10 +13,13 @@ class ChangeParameterValueCommand : public QUndoCommand
 {
 
 public:
-  ChangeParameterValueCommand (dsp::ProcessorParameter &param, float value)
+  ChangeParameterValueCommand (
+    dsp::ProcessorParameter &param,
+    utils::IObjectRegistry  &registry,
+    float                    value)
       : QUndoCommand (
           QObject::tr ("Change '%1' value to %2").arg (param.label ()).arg (value)),
-        param_ (param), value_after_ (value)
+        param_ref_ (param.get_uuid (), registry), value_after_ (value)
   {
   }
 
@@ -26,10 +29,17 @@ public:
     if (other->id () != id ())
       return false;
 
-    // only merge if other command was made in quick succession of this
-    // command's redo()
     const auto * other_cmd =
       dynamic_cast<const ChangeParameterValueCommand *> (other);
+    if (other_cmd == nullptr)
+      return false;
+
+    // only merge edits of the same parameter
+    if (!(other_cmd->param_ref_.id () == param_ref_.id ()))
+      return false;
+
+    // only merge if other command was made in quick succession of this
+    // command's redo()
     const auto cur_time = std::chrono::steady_clock::now ();
     const auto duration = cur_time - last_redo_timestamp_;
     if (
@@ -44,16 +54,27 @@ public:
     return true;
   }
 
-  void undo () override { param_.setBaseValueByUser (value_before_); }
+  void undo () override
+  {
+    auto * param = param_ref_.get ();
+    z_return_if_fail (param != nullptr);
+    param->setBaseValueByUser (value_before_);
+  }
+
   void redo () override
   {
-    value_before_ = param_.baseValue ();
-    param_.setBaseValueByUser (value_after_);
+    auto * param = param_ref_.get ();
+    z_return_if_fail (param != nullptr);
+    value_before_ = param->baseValue ();
+    param->setBaseValueByUser (value_after_);
     last_redo_timestamp_ = std::chrono::steady_clock::now ();
   }
 
 private:
-  dsp::ProcessorParameter                           &param_;
+  // Holds a registry reference count so the parameter stays alive while this
+  // command is on the undo stack, even if its owning plugin is detached from
+  // its rack by another command
+  dsp::ProcessorParameterUuidReference               param_ref_;
   float                                              value_before_{};
   float                                              value_after_{};
   std::chrono::time_point<std::chrono::steady_clock> last_redo_timestamp_;

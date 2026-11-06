@@ -42,7 +42,6 @@ add_executable(zrythm_dsp_unit_tests
   midi_input_processor_test.cpp
   midi_panic_processor_test.cpp
   midi_port_test.cpp
-  modulator_macro_processor_test.cpp
   musical_scale_test.cpp
   parameter_test.cpp
   panning_test.cpp

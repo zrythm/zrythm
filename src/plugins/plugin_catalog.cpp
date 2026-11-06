@@ -65,6 +65,9 @@ private:
 QString
 format_name (Protocol::ProtocolType protocol)
 {
+  // User-facing label: matches PluginDescriptor::format()
+  if (protocol == Protocol::ProtocolType::Internal)
+    return QStringLiteral ("Built-in");
   return utils::Utf8String::
     from_utf8_encoded_string (Protocol::to_string (protocol))
       .to_qstring ();

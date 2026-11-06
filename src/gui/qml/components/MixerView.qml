@@ -15,6 +15,7 @@ RowLayout {
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
   required property PortObservationManager portObservationManager
+  required property ProcessorParameterOperator parameterOperator
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -29,6 +30,7 @@ RowLayout {
     delegate: ChannelView {
       audioEngine: root.audioEngine
       channel: track.channel
+      parameterOperator: root.parameterOperator
       pluginImporter: root.pluginImporter
       pluginOperator: root.pluginOperator
       portObservationManager: root.portObservationManager

@@ -18,7 +18,7 @@ Item {
   property real faderValue: faderGain.baseValue
   readonly property int handleHeight: 12
   property bool hovered: false
-  required property UndoStack undoStack
+  required property ProcessorParameterOperator parameterOperator
 
   signal bindMidiCC
   signal resetFader
@@ -33,7 +33,7 @@ Item {
       text: qsTr("Reset")
 
       onTriggered: {
-        paramOp.setValue(root.defaultFaderValue);
+        root.parameterOperator.setValue(root.faderGain, root.defaultFaderValue);
       }
     }
 
@@ -56,26 +56,6 @@ Item {
       root.currentAutomatedValue = root.faderGain.valueAfterAutomationApplied();
       root.currentModulatedValue = root.faderGain.currentValue();
     }
-  }
-
-  ProcessorParameterOperator {
-    id: paramOp
-  }
-
-  Binding {
-    property: "processorParameter"
-    restoreMode: Binding.RestoreNone
-    target: paramOp
-    value: root.faderGain
-    when: root.faderGain !== null
-  }
-
-  Binding {
-    property: "undoStack"
-    restoreMode: Binding.RestoreNone
-    target: paramOp
-    value: root.undoStack
-    when: root.undoStack !== null
   }
 
   Rectangle {
@@ -194,7 +174,7 @@ Item {
       root.hovered = false;
     }
     onValueModified: function (newValue) {
-      paramOp.setValue(newValue);
+      root.parameterOperator.setValue(root.faderGain, newValue);
     }
   }
 }

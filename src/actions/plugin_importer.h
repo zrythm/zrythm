@@ -31,6 +31,7 @@ public:
     undo::UndoStack        &undo_stack,
     plugins::PluginFactory &plugin_factory,
     const TrackCreator     &track_creator,
+    plugins::PluginGroup   &global_modulators,
     PluginImportedHandler   instantiation_finished_handler,
     QObject *               parent = nullptr);
 
@@ -78,6 +79,7 @@ private:
   undo::UndoStack        &undo_stack_;
   plugins::PluginFactory &plugin_factory_;
   const TrackCreator     &track_creator_;
+  plugins::PluginGroup   &global_modulators_;
   PluginImportedHandler   instantiation_finished_handler_;
 };
 

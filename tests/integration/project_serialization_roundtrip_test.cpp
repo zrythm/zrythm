@@ -17,6 +17,8 @@
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
 #include "plugins/faust/faust_registry.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
 #include "plugins/plugin_descriptor.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
@@ -218,7 +220,8 @@ protected:
     const utils::Utf8String         &param_label = u8"Level",
     float                            test_value = 0.75f,
     std::function<void (ProjectBundle &, const plugins::PluginPtrVariant &)>
-      post_load_verifier = nullptr)
+         post_load_verifier = nullptr,
+    bool import_to_global_modulator_rack = false)
   {
     // === Step 1: Create project and import plugin via PluginImporter ===
     auto original_bundle = std::make_unique<ProjectBundle> ();
@@ -251,9 +254,18 @@ protected:
 
     auto importer = std::make_unique<actions::PluginImporter> (
       *original_bundle->undo_stack, *original_bundle->project->plugin_factory_,
-      *track_creator, std::move (handler), original_bundle->project.get ());
+      *track_creator, *original_bundle->project->modulators (),
+      std::move (handler), original_bundle->project.get ());
 
-    importer->importPluginToNewTrack (&descriptor);
+    if (import_to_global_modulator_rack)
+      {
+        importer->importPluginToGroup (
+          &descriptor, original_bundle->project->modulators ());
+      }
+    else
+      {
+        importer->importPluginToNewTrack (&descriptor);
+      }
 
     // Wait for instantiation to complete
     ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
@@ -555,6 +567,35 @@ TEST_F (
 }
 
 /**
+ * @brief Tests a save -> load -> save roundtrip with a native Macro modulator
+ * in the project's global modulator rack.
+ *
+ * Native modulators share one PluginVariant alternative; the descriptor inside
+ * the plugin configuration selects the engine. Expected parameters are the two
+ * host-provided controls (bypass, gain) plus Macro's value parameter.
+ */
+TEST_F (
+  ProjectSerializationRoundtripTest,
+  SaveLoadSaveRoundtripWithGlobalRackMacroModulator)
+{
+  auto descriptor = plugins::modulators::Modulator::make_descriptor (
+    plugins::modulators::MacroEngine::kDescriptorId);
+  ASSERT_NE (descriptor, nullptr);
+
+  const auto verify_global_rack_member =
+    [] (ProjectBundle &loaded_bundle, const plugins::PluginPtrVariant &pl_var) {
+      auto * modulator = std::get_if<plugins::modulators::Modulator *> (&pl_var);
+      ASSERT_NE (modulator, nullptr);
+      ASSERT_NE (*modulator, nullptr);
+      EXPECT_EQ (
+        loaded_bundle.project->modulators ()->get_plugins ().size (), 1u);
+    };
+
+  save_load_save_roundtrip_with_plugin (
+    *descriptor, 3, u8"Macro", 0.4f, verify_global_rack_member, true);
+}
+
+/**
  * @brief Tests save -> load -> save with a bundled Faust plugin, verifying
  * that the restored parameter value reaches the DSP after loading.
  *
@@ -734,7 +775,8 @@ TEST_F (
 
   auto importer = std::make_unique<actions::PluginImporter> (
     *bundle->undo_stack, *bundle->project->plugin_factory_, *track_creator,
-    std::move (handler), bundle->project.get ());
+    *bundle->project->modulators (), std::move (handler),
+    bundle->project.get ());
 
   importer->importPluginToNewTrack (&*descriptor);
 
@@ -976,7 +1018,8 @@ TEST_P (ProjectPluginUiRestoreTest, LoadWithVisibleUiRestoresEditorDeferred)
     *tracklist->singletonTracks (), bundle->project.get ());
   auto importer = std::make_unique<actions::PluginImporter> (
     *bundle->undo_stack, *bundle->project->plugin_factory_, *track_creator,
-    std::move (handler), bundle->project.get ());
+    *bundle->project->modulators (), std::move (handler),
+    bundle->project.get ());
 
   importer->importPluginToNewTrack (&*descriptor);
   ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));

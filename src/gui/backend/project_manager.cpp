@@ -513,6 +513,13 @@ ProjectManager::loadProject (const QString &filepath)
                       ->trackPluginUiVisibility (pl_ref.get ());
                   }
               }
+            for (
+              const auto &pl_ref :
+              session->project ()->modulators ()->get_plugins ())
+              {
+                session->genericPluginUiController ()->trackPluginUiVisibility (
+                  pl_ref.get ());
+              }
 
             report_progress (
               kStageRebuildGraph, tr ("Rebuilding audio graph..."));

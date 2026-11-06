@@ -5,9 +5,11 @@
 #include "commands/port_connection_commands.h"
 #include "dsp/graph.h"
 #include "dsp/midi_port.h"
-#include "dsp/modulator_macro_processor.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
+#include "plugins/plugin_configuration.h"
 #include "structure/project/port_connections_manager.h"
 #include "structure/tracks/audio_bus_track.h"
 #include "structure/tracks/modulator_track.h"
@@ -64,6 +66,27 @@ protected:
       find_port (*track, dsp::PortFlow::Output, dsp::PortType::Audio),
       find_port (*track, dsp::PortFlow::Input, dsp::PortType::Audio),
     };
+  }
+
+  plugins::modulators::Modulator * add_macro ()
+  {
+    const auto descriptor = plugins::modulators::Modulator::make_descriptor (
+      plugins::modulators::MacroEngine::kDescriptorId);
+    auto config =
+      plugins::PluginConfiguration::create_new_for_descriptor (*descriptor);
+    auto plugin_ref = project_->plugin_factory_->create_plugin_from_setting (
+      *config,
+      plugins::PluginFactory::InstantiationFinishOptions{
+        .handler_ = [] (plugins::PluginUuidReference, bool, const QString &) { },
+        .handler_context_ = nullptr });
+    project_->modulators ()->append_plugin (plugin_ref);
+    return plugin_ref.get_object_as<plugins::modulators::Modulator> ();
+  }
+
+  dsp::CVPort * macro_cv_out (plugins::modulators::Modulator &macro)
+  {
+    return qobject_cast<dsp::CVPort *> (
+      macro.get_all_output_ports ().front ().get ());
   }
 
   void SetUp () override
@@ -236,23 +259,10 @@ TEST_F (PortConnectionOperatorTest, CyclicConnectionIsRejected)
 
 TEST_F (PortConnectionOperatorTest, CvToParameterConnection)
 {
-  // CV source: the first modulator macro processor's CV output.
-  dsp::CVPort * cv_out = nullptr;
-  for (const auto &ref : project_->tracklist ()->collection ()->tracks ())
-    {
-      auto * mod_track =
-        qobject_cast<structure::tracks::ModulatorTrack *> (ref.get ());
-      if (
-        mod_track != nullptr
-        && !mod_track->get_modulator_macro_processors ().empty ())
-        {
-          cv_out =
-            &mod_track->get_modulator_macro_processors ()
-               .front ()
-               ->get_cv_out_port ();
-          break;
-        }
-    }
+  // CV source: a Macro modulator plugin in the global rack.
+  auto * macro = add_macro ();
+  ASSERT_NE (macro, nullptr);
+  auto * cv_out = macro_cv_out (*macro);
   ASSERT_NE (cv_out, nullptr);
 
   // Destination: the first bus fader's first parameter modulation input.
@@ -322,18 +332,15 @@ TEST_F (PortConnectionOperatorTest, CvToParameterConnection)
 
 TEST_F (PortConnectionOperatorTest, LastParameterModInputConnectionDetaches)
 {
-  std::vector<dsp::CVPort *> cv_outputs;
-  for (const auto &ref : project_->tracklist ()->collection ()->tracks ())
-    {
-      auto * mod_track =
-        qobject_cast<structure::tracks::ModulatorTrack *> (ref.get ());
-      if (mod_track == nullptr)
-        continue;
-      for (auto &processor : mod_track->get_modulator_macro_processors ())
-        cv_outputs.push_back (&processor->get_cv_out_port ());
-      break;
-    }
-  ASSERT_GE (cv_outputs.size (), 2u);
+  auto * macro0 = add_macro ();
+  auto * macro1 = add_macro ();
+  ASSERT_NE (macro0, nullptr);
+  ASSERT_NE (macro1, nullptr);
+  std::vector<dsp::CVPort *> cv_outputs{
+    macro_cv_out (*macro0), macro_cv_out (*macro1)
+  };
+  ASSERT_NE (cv_outputs[0], nullptr);
+  ASSERT_NE (cv_outputs[1], nullptr);
 
   structure::tracks::AudioBusTrack * bus = nullptr;
   for (const auto &ref : project_->tracklist ()->collection ()->tracks ())

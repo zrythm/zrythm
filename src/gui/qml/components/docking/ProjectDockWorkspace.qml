@@ -138,6 +138,7 @@ Item {
 
         sourceComponent: PluginInspectorPage {
           anchors.fill: parent
+          parameterOperator: root.session.processorParameterOperator
           plugin: root.selectedPlugin
         }
       }
@@ -203,6 +204,7 @@ Item {
       MixerView {
         anchors.fill: parent
         audioEngine: root.project.engine
+        parameterOperator: root.session.processorParameterOperator
         pluginImporter: root.session.pluginImporter
         pluginOperator: root.session.pluginOperator
         portObservationManager: root.project.portObservationManager

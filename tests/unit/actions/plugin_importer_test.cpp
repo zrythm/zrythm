@@ -2,9 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/plugin_importer.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
+#include "plugins/plugin_group.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
@@ -96,8 +99,13 @@ protected:
       last_instantiated_plugin_ref_ = ref;
     };
 
+    // Create the project's global modulator rack
+    global_modulators_ = std::make_unique<plugins::PluginGroup> (
+      registry_, plugins::PluginGroup::DeviceGroupType::CV,
+      plugins::PluginGroup::ProcessingTypeHint::Custom);
+
     plugin_importer_ = std::make_unique<PluginImporter> (
-      *undo_stack_, *plugin_factory_, *track_creator_,
+      *undo_stack_, *plugin_factory_, *track_creator_, *global_modulators_,
       instantiation_finished_handler_);
   }
 
@@ -183,6 +191,7 @@ protected:
   std::unique_ptr<structure::tracks::TrackFactory>    track_factory_;
   std::unique_ptr<undo::UndoStack>                    undo_stack_;
   std::unique_ptr<TrackCreator>                       track_creator_;
+  std::unique_ptr<plugins::PluginGroup>               global_modulators_;
   std::unique_ptr<plugins::PluginFactory>             plugin_factory_;
   std::unique_ptr<PluginImporter>                     plugin_importer_;
 
@@ -284,6 +293,67 @@ TEST_F (PluginImporterTest, ImportEffectPlugin)
   EXPECT_GE (audio_bus_count, 1);
 
   // Should have called instantiation handler
+  EXPECT_TRUE (instantiation_finished_called_);
+}
+
+// A modulator descriptor without a target lands in the global modulator rack
+// and creates no track
+TEST_F (PluginImporterTest, ImportModulatorPluginToGlobalRack)
+{
+  const auto singletons_before = track_collection_->tracks ().size ();
+  auto       descriptor = plugins::modulators::Modulator::make_descriptor (
+    plugins::modulators::MacroEngine::kDescriptorId);
+  ASSERT_NE (descriptor, nullptr);
+
+  plugin_importer_->importPluginToNewTrack (descriptor.get ());
+  QCoreApplication::processEvents ();
+
+  ASSERT_EQ (global_modulators_->get_plugins (false).size (), 1u);
+  auto * plugin =
+    global_modulators_->get_plugins (false)
+      .front ()
+      .get_object_as<plugins::modulators::Modulator> ();
+  ASSERT_NE (plugin, nullptr);
+  EXPECT_EQ (track_collection_->tracks ().size (), singletons_before);
+  EXPECT_TRUE (instantiation_finished_called_);
+}
+
+// A modulator descriptor with a track target lands in that track's rack
+TEST_F (PluginImporterTest, ImportModulatorPluginToTrackRack)
+{
+  auto * modulator_track = singleton_tracks_->modulatorTrack ();
+  ASSERT_NE (modulator_track, nullptr);
+  ASSERT_NE (modulator_track->modulators (), nullptr);
+
+  auto descriptor = plugins::modulators::Modulator::make_descriptor (
+    plugins::modulators::MacroEngine::kDescriptorId);
+  plugin_importer_->importPluginToTrack (descriptor.get (), modulator_track);
+  QCoreApplication::processEvents ();
+
+  EXPECT_EQ (modulator_track->modulators ()->get_plugins (false).size (), 1u);
+  EXPECT_TRUE (global_modulators_->get_plugins (false).empty ());
+  EXPECT_TRUE (instantiation_finished_called_);
+}
+
+// Channel-bearing tracks own a rack, so a modulator dropped on one lands in
+// that track's rack
+TEST_F (PluginImporterTest, ImportModulatorPluginToChannelTrackRack)
+{
+  auto track_ref =
+    track_factory_->create_empty_track<structure::tracks::InstrumentTrack> ();
+  auto * instrument_track =
+    track_ref.get_object_as<structure::tracks::InstrumentTrack> ();
+  ASSERT_NE (instrument_track, nullptr);
+  ASSERT_NE (instrument_track->modulators (), nullptr);
+  track_collection_->add_track (track_ref);
+
+  auto descriptor = plugins::modulators::Modulator::make_descriptor (
+    plugins::modulators::MacroEngine::kDescriptorId);
+  plugin_importer_->importPluginToTrack (descriptor.get (), instrument_track);
+  QCoreApplication::processEvents ();
+
+  EXPECT_EQ (instrument_track->modulators ()->get_plugins (false).size (), 1u);
+  EXPECT_TRUE (global_modulators_->get_plugins (false).empty ());
   EXPECT_TRUE (instantiation_finished_called_);
 }
 

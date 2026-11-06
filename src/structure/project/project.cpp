@@ -89,6 +89,12 @@ Project::Project (
       tracklist_ (
         utils::make_qobject_unique<
           structure::tracks::Tracklist> (project_registry_, this)),
+      modulators_ (
+        utils::make_qobject_unique<plugins::PluginGroup> (
+          project_registry_,
+          plugins::PluginGroup::DeviceGroupType::CV,
+          plugins::PluginGroup::ProcessingTypeHint::Custom,
+          this)),
       clip_launcher_ (
         utils::make_qobject_unique<structure::scenes::ClipLauncher> (
           project_registry_,
@@ -197,8 +203,9 @@ Project::Project (
 
   // Flush plugin-reported parameter values to Zrythm params on a
   // single shared timer, visiting the plugins of the tracks currently
-  // in the project. Plugins that leave the tracklist (slot removal,
-  // track deletion) are flushed when they are removed instead
+  // in the project and of the global modulator rack. Plugins that
+  // leave their group (slot removal, track deletion) are flushed when
+  // they are removed instead
   plugin_param_flush_timer_ = utils::make_qobject_unique<QTimer> (this);
   QObject::connect (
     plugin_param_flush_timer_.get (), &QTimer::timeout, this, [this] {
@@ -216,6 +223,13 @@ Project::Project (
                 {
                   plugin->flush_plugin_values ();
                 }
+            }
+        }
+      for (const auto &plugin_ref : modulators_->get_plugins ())
+        {
+          if (auto * plugin = plugin_ref.get (); plugin != nullptr)
+            {
+              plugin->flush_plugin_values ();
             }
         }
     });
@@ -471,6 +485,12 @@ Project::tracklist () const
   return tracklist_.get ();
 }
 
+plugins::PluginGroup *
+Project::modulators () const
+{
+  return modulators_.get ();
+}
+
 structure::scenes::ClipLauncher *
 Project::clipLauncher () const
 {
@@ -531,6 +551,7 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kTempoMapKey] = project.tempo_map_;
   j[Project::kTransportKey] = project.transport_;
   j[Project::kTracklistKey] = project.tracklist_;
+  j[Project::kModulatorsKey] = project.modulators_;
   // j[Project::kClipLinkGroupManagerKey] =
   // project.clip_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
@@ -586,6 +607,10 @@ from_json (const nlohmann::json &j, Project &project)
   if (j.contains (Project::kClipLauncherKey))
     {
       j.at (Project::kClipLauncherKey).get_to (*project.clip_launcher_);
+    }
+  if (j.contains (Project::kModulatorsKey))
+    {
+      j.at (Project::kModulatorsKey).get_to (*project.modulators_);
     }
 
   /* chord track MIDI expansion wiring is done in ProjectSession after

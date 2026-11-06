@@ -8,6 +8,7 @@
 #include "gui/backend/project_session.h"
 #include "gui/dsp/quantize_options.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
+#include "plugins/modulators/modulator.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/app_settings.h"
@@ -146,12 +147,24 @@ ProjectSession::ProjectSession (
           *undo_stack_,
           *project_->plugin_factory_,
           *track_creator_,
+          *project_->modulators (),
           [this, controller = generic_plugin_ui_controller_.get ()] (
             plugins::PluginUuidReference plugin_ref) {
             z_debug ("Plugin instantiation completed");
             auto * pl = plugin_ref.get ();
             controller->trackPluginUiVisibility (pl);
-            pl->setUiVisible (app_settings_.openPluginsOnInstantiation ());
+            // Native modulators edit inline in the Modular view; their
+            // generic window stays available on demand
+            const auto * configuration = pl->configuration ();
+            const auto * descriptor =
+              configuration != nullptr ? configuration->descriptor () : nullptr;
+            const bool is_native_modulator =
+              descriptor != nullptr
+              && plugins::modulators::Modulator::descriptor_is_native_modulator (
+                *descriptor);
+            pl->setUiVisible (
+              app_settings_.openPluginsOnInstantiation ()
+              && !is_native_modulator);
           },
           this)),
       plugin_operator_ (
@@ -162,6 +175,11 @@ ProjectSession::ProjectSession (
           [this] () -> QString {
             return project_->project_id ().toString (QUuid::WithoutBraces);
           },
+          this)),
+      processor_parameter_operator_ (
+        utils::make_qobject_unique<actions::ProcessorParameterOperator> (
+          *undo_stack_,
+          project_->projectRegistry (),
           this)),
       file_importer_ (
         utils::make_qobject_unique<actions::FileImporter> (
@@ -606,6 +624,12 @@ actions::PluginOperator *
 ProjectSession::pluginOperator () const
 {
   return plugin_operator_.get ();
+}
+
+actions::ProcessorParameterOperator *
+ProjectSession::processorParameterOperator () const
+{
+  return processor_parameter_operator_.get ();
 }
 
 qquick::GenericPluginUiController *

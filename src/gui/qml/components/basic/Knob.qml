@@ -61,6 +61,11 @@ Control {
   signal bindMidiCC
   signal resetKnob
 
+  /// Emitted when a drag, wheel step or reset requests a new value.
+  /// value is not written directly: the consumer applies the edit (e.g. to
+  /// a processor parameter) and value follows through its binding
+  signal valueModified(real newValue)
+
   implicitHeight: size
   implicitWidth: size
 
@@ -71,7 +76,7 @@ Control {
       text: qsTr("Reset")
 
       onTriggered: {
-        root.value = root.defaultValue;
+        root.valueModified(root.defaultValue);
       }
     }
 
@@ -307,7 +312,7 @@ Control {
       }
     }
     onValueModified: function (newValue) {
-      root.value = newValue;
+      root.valueModified(newValue);
     }
   }
 }

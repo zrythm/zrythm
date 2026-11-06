@@ -10,8 +10,8 @@ MidiTrack::MidiTrack (FinalTrackDependencies dependencies)
         Track::Type::Midi,
         PortType::Midi,
         PortType::Midi,
-        TrackFeatures::Automation | TrackFeatures::Lanes
-          | TrackFeatures::PianoRoll | TrackFeatures::Recording,
+        TrackFeatures::Automation | TrackFeatures::Lanes | TrackFeatures::PianoRoll
+          | TrackFeatures::Recording | TrackFeatures::Modulators,
         dependencies.to_base_dependencies ())
 {
   icon_name_ = u8"signal-midi";

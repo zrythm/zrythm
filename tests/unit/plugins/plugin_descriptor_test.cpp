@@ -30,6 +30,18 @@ create_test_descriptor (
 
 } // namespace
 
+// The Internal protocol's user-facing format label reads "Built-in"; other
+// protocols keep their format name.
+TEST (PluginDescriptorTest, FormatDisplayNames)
+{
+  const auto builtin = create_test_descriptor ();
+  EXPECT_EQ (builtin->format (), QStringLiteral ("Built-in"));
+
+  const auto lv2 =
+    create_test_descriptor (PluginCategory::None, Protocol::ProtocolType::LV2);
+  EXPECT_EQ (lv2->format (), QStringLiteral ("LV2"));
+}
+
 TEST (PluginDescriptorTest, TypeDetection)
 {
   auto instrument = create_test_descriptor (PluginCategory::Instrument);

@@ -10,6 +10,7 @@ import QtQuick.Shapes
 import Zrythm
 import ZrythmGui
 import ZrythmStyle
+import Qt.labs.synchronizer
 
 ColumnLayout {
   id: root
@@ -18,6 +19,7 @@ ColumnLayout {
   required property TrackSelectionModel trackSelectionModel
 
   readonly property ModularProjectModel modularModel: root.session.modularProjectModel
+  readonly property PluginManager pluginManager: GlobalState.application.pluginManager
   readonly property int scopeIndex: root.modularModel.global ? 1 : 0
   readonly property string linkedTrackNodeId: root.modularModel.global
     && root.trackSelectionModel.hasSelection
@@ -94,6 +96,25 @@ ColumnLayout {
       [nodeId.substring("track:".length)]);
   }
 
+  function addModulator(descriptor: PluginDescriptor) {
+    const rack = root.modularModel.scopeRack();
+    if (rack === null) {
+      canvas.message = qsTr("No modulator rack is available in this scope.");
+      return;
+    }
+    root.session.pluginImporter.importPluginToGroup(descriptor, rack, -1);
+  }
+
+  function showNodeMenu(nodeId: string) {
+    const memberInfo = root.modularModel.rackMemberInfo(nodeId);
+    if (Object.keys(memberInfo).length === 0) {
+      canvas.message = qsTr("This node is not a rack member.");
+      return;
+    }
+    nodeMenu.memberInfo = memberInfo;
+    nodeMenu.popup();
+  }
+
   spacing: 0
 
   Component.onCompleted: {
@@ -167,6 +188,9 @@ ColumnLayout {
     function onNodeSelected(nodeId: string) {
       root.selectTrackFromGraphNode(nodeId);
     }
+    function onNodeMenuRequested(nodeId: string) {
+      root.showNodeMenu(nodeId);
+    }
     function onParameterMultiplierEdited(sourcePortId: string, destinationPortId: string, value: real) {
       const error = root.session.portConnectionOperator.setConnectionMultiplier(sourcePortId, destinationPortId, value);
       if (error !== "")
@@ -200,6 +224,138 @@ ColumnLayout {
 
       onObjectAdded: (index, object) => parameterMenu.insertItem(index, object)
       onObjectRemoved: (index, object) => parameterMenu.removeItem(object)
+    }
+  }
+
+  // Format label of the builtin (native and Faust) plugin family, as
+  // returned by PluginDescriptor::format().
+  readonly property string builtinFormatName: "Built-in"
+
+  SortFilterProxyModel {
+    id: builtinModulatorFilter
+
+    filters: [
+      FunctionFilter {
+        function filter(descriptor: PluginDescriptor): bool {
+          return descriptor.isModulator() && descriptor.format === root.builtinFormatName;
+        }
+      }
+    ]
+    sorters: [
+      StringSorter {
+        caseSensitivity: Qt.CaseInsensitive
+        roleName: "name"
+      }
+    ]
+    sourceModel: root.pluginManager.pluginDescriptors
+  }
+
+  SortFilterProxyModel {
+    id: thirdPartyModulatorFilter
+
+    filters: [
+      FunctionFilter {
+        function filter(descriptor: PluginDescriptor): bool {
+          return descriptor.isModulator() && descriptor.format !== root.builtinFormatName;
+        }
+      }
+    ]
+    sorters: [
+      StringSorter {
+        caseSensitivity: Qt.CaseInsensitive
+        roleName: "name"
+      }
+    ]
+    sourceModel: root.pluginManager.pluginDescriptors
+  }
+
+  // One modulator descriptor row: name on the left, right-aligned grey
+  // source label ("Built-in" or the plugin format) mirroring the style's
+  // shortcut-label treatment.
+  component ModulatorMenuItem: MenuItem {
+    id: item
+
+    required property PluginDescriptor descriptor
+
+    contentItem: RowLayout {
+      Label {
+        Layout.fillWidth: true
+
+        color: item.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
+        elide: Text.ElideRight
+        font: item.font
+        text: item.descriptor.name
+      }
+
+      Label {
+        color: Qt.alpha(item.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText, 0.62)
+        font: ZrythmTheme.fadedTextFont
+        leftPadding: 16
+        text: item.descriptor.format
+      }
+    }
+
+    onTriggered: root.addModulator(item.descriptor)
+  }
+
+  Menu {
+    id: addModulatorMenu
+
+    Instantiator {
+      delegate: ModulatorMenuItem {
+      }
+      model: builtinModulatorFilter
+
+      onObjectAdded: (index, object) => addModulatorMenu.insertItem(index, object)
+      onObjectRemoved: (index, object) => addModulatorMenu.removeItem(object)
+    }
+
+    MenuSeparator {
+      visible: thirdPartyItems.count > 0
+    }
+
+    Instantiator {
+      id: thirdPartyItems
+
+      delegate: ModulatorMenuItem {
+      }
+      model: thirdPartyModulatorFilter
+
+      // Appended after the declared separator so third-party entries
+      // stay below the builtin block for any builtin count
+      onObjectAdded: (index, object) => addModulatorMenu.addItem(object)
+      onObjectRemoved: (index, object) => addModulatorMenu.removeItem(object)
+    }
+  }
+
+  Menu {
+    id: nodeMenu
+
+    property var memberInfo: ({})
+
+    MenuItem {
+      text: qsTr("Remove From Rack")
+
+      onTriggered: root.session.pluginOperator.removePlugins(
+        [nodeMenu.memberInfo.plugin], nodeMenu.memberInfo.group,
+        nodeMenu.memberInfo.track ?? null)
+    }
+
+    MenuItem {
+      text: qsTr("Duplicate in Rack")
+
+      onTriggered: root.session.pluginOperator.duplicatePlugins(
+        [nodeMenu.memberInfo.plugin], nodeMenu.memberInfo.group)
+    }
+
+    MenuSeparator {
+    }
+
+    MenuItem {
+      text: nodeMenu.memberInfo.plugin?.uiVisible ? qsTr("Hide Plugin Window") : qsTr("Show Plugin Window")
+
+      onTriggered: nodeMenu.memberInfo.plugin.uiVisible
+        = !nodeMenu.memberInfo.plugin.uiVisible
     }
   }
 
@@ -266,6 +422,15 @@ ColumnLayout {
           objectName: "globalScopeButton"
           text: qsTr("Global")
         }
+      }
+
+      ToolButton {
+        objectName: "addModulatorButton"
+        text: qsTr("Add Modulator")
+
+        onClicked: addModulatorMenu.popup()
+
+        Accessible.name: qsTr("Add modulator")
       }
 
       Item {
@@ -385,6 +550,8 @@ ColumnLayout {
       internalDeleteShortcutEnabled: false
       nodeModel: displayNodes
       objectName: "modularCanvas"
+      modularModel: root.modularModel
+      parameterOperator: root.session.processorParameterOperator
       linkedNodeId: root.linkedTrackNodeId
     }
   }

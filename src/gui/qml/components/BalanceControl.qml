@@ -14,7 +14,7 @@ Item {
   readonly property real defaultBalanceValue: balanceParameter?.range.defaultNormalizedValue ?? 0.5
   readonly property bool dragging: mouseArea.dragging
   property bool hovered: false
-  required property UndoStack undoStack
+  required property ProcessorParameterOperator parameterOperator
 
   signal bindMidiCC
   signal resetBalance
@@ -29,7 +29,7 @@ Item {
       text: qsTr("Reset")
 
       onTriggered: {
-        paramOp.setValue(root.defaultBalanceValue);
+        root.parameterOperator.setValue(root.balanceParameter, root.defaultBalanceValue);
       }
     }
 
@@ -40,26 +40,6 @@ Item {
         root.bindMidiCC();
       }
     }
-  }
-
-  ProcessorParameterOperator {
-    id: paramOp
-  }
-
-  Binding {
-    property: "processorParameter"
-    restoreMode: Binding.RestoreNone
-    target: paramOp
-    value: root.balanceParameter
-    when: root.balanceParameter !== null
-  }
-
-  Binding {
-    property: "undoStack"
-    restoreMode: Binding.RestoreNone
-    target: paramOp
-    value: root.undoStack
-    when: root.undoStack !== null
   }
 
   Rectangle {
@@ -213,7 +193,7 @@ Item {
       root.hovered = false;
     }
     onValueModified: function (newValue) {
-      paramOp.setValue(newValue);
+      root.parameterOperator.setValue(root.balanceParameter, newValue);
     }
   }
 }

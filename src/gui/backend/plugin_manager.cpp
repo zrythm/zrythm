@@ -11,6 +11,7 @@
 #include "plugins/faust/faust_registry.h"
 #include "plugins/lv2_plugin_format.h"
 #include "plugins/lv2_world.h"
+#include "plugins/modulators/modulator.h"
 #include "plugins/out_of_process_scanner.h"
 #include "plugins/plugin_scan_format.h"
 #include "utils/io_utils.h"
@@ -65,6 +66,13 @@ PluginManager::add_internal_plugins_to_catalog ()
     {
       catalog_->add_descriptor (
         zrythm::plugins::faust::make_faust_plugin_descriptor (info));
+    }
+  for (
+    const auto &descriptor_id :
+    zrythm::plugins::modulators::Modulator::available_descriptor_ids ())
+    {
+      catalog_->add_descriptor (
+        zrythm::plugins::modulators::Modulator::make_descriptor (descriptor_id));
     }
 }
 

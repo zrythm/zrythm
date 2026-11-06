@@ -49,6 +49,7 @@ TestCase {
             accentKind: "cv"
             hasModulatableParameters: false
             inputsJson: "[]"
+            modulatorDescriptorId: ""
             nodeId: "source-node"
             nodeSubtitle: ""
             nodeTitle: "Source"
@@ -63,6 +64,7 @@ TestCase {
             accentKind: "neutral"
             hasModulatableParameters: true
             inputsJson: "[]"
+            modulatorDescriptorId: ""
             nodeId: "destination-node"
             nodeSubtitle: ""
             nodeTitle: "Destination"
@@ -181,5 +183,19 @@ TestCase {
     mouseClick(window.canvas, center.x, center.y);
     verify(!window.canvas.hasPendingConnection);
     compare(connectSpy.count, 0);
+  }
+
+  // A native modulator node is one editor-body taller than a plain node
+  // with the same ports, in both the canvas geometry and the node item.
+  function test_modulatorNodeHasEditorBody(): void {
+    const plainHeight = window.canvas.nodeHeight(window.canvas.nodeModel.get(0));
+    const macroNode = {
+      "inputsJson": "[{\"id\":\"cv-in\",\"label\":\"CV in\",\"kind\":\"cv\"}]",
+      "modulatorDescriptorId": "zrythm.modulators.macro",
+      "outputsJson": "[{\"id\":\"cv-out\",\"label\":\"CV out\",\"kind\":\"cv\"}]",
+      "parametersJson": "[]"
+    };
+    const macroHeight = window.canvas.nodeHeight(macroNode);
+    compare(macroHeight, plainHeight + window.canvas.editorBodyHeight);
   }
 }

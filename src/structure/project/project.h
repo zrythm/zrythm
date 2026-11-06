@@ -12,8 +12,8 @@
 #include "dsp/port_observation_manager.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
-#include "plugins/plugin.h"
 #include "plugins/plugin_factory.h"
+#include "plugins/plugin_group.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/tempo_object_manager.h"
 #include "structure/project/port_connections_manager.h"
@@ -66,6 +66,8 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::structure::tracks::Tracklist * tracklist READ tracklist CONSTANT
       FINAL)
+  Q_PROPERTY (
+    zrythm::plugins::PluginGroup * modulators READ modulators CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::structure::scenes::ClipLauncher * clipLauncher READ clipLauncher
       CONSTANT FINAL)
@@ -122,6 +124,7 @@ public:
   // =========================================================
 
   structure::tracks::Tracklist *               tracklist () const;
+  plugins::PluginGroup *                       modulators () const;
   structure::scenes::ClipLauncher *            clipLauncher () const;
   structure::scenes::ClipPlaybackService *     clipPlaybackService () const;
   dsp::Transport *                             getTransport () const;
@@ -246,6 +249,7 @@ private:
   static constexpr auto kProjectIdKey = "projectId"sv;
   static constexpr auto kTransportKey = "transport"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
+  static constexpr auto kModulatorsKey = "modulators"sv;
   static constexpr auto kClipLinkGroupManagerKey = "clipLinkGroupManager"sv;
   static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;
   static constexpr auto kTempoObjectManagerKey = "tempoObjectManager"sv;
@@ -334,6 +338,12 @@ public:
   std::vector<structure::tracks::Track *> tracks_rt_;
 
 private:
+  /**
+   * @brief Global modulator rack: project-owned modulator plugins whose CV
+   * outputs can modulate any target in the graph.
+   */
+  utils::QObjectUniquePtr<plugins::PluginGroup> modulators_;
+
   utils::QObjectUniquePtr<structure::scenes::ClipLauncher> clip_launcher_;
   utils::QObjectUniquePtr<structure::scenes::ClipPlaybackService>
     clip_playback_service_;

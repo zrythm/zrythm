@@ -12,11 +12,12 @@
 
 #include "dsp/engine.h"
 #include "dsp/midi_input_processor.h"
-#include "dsp/modulator_macro_processor.h"
 #include "dsp/parameter.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
 #include "gui/backend/modular_project_model.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_group.h"
 #include "structure/project/modular_view_state.h"
@@ -158,13 +159,15 @@ track_type_label (const Track &track)
 QString
 processor_type_label (const dsp::ProcessorBase &processor)
 {
+  if (
+    qobject_cast<const zrythm::plugins::modulators::Modulator *> (&processor)
+    != nullptr)
+    {
+      return QObject::tr ("Modulator");
+    }
   if (qobject_cast<const zrythm::plugins::Plugin *> (&processor) != nullptr)
     {
       return QObject::tr ("Plugin");
-    }
-  if (qobject_cast<const dsp::ModulatorMacroProcessor *> (&processor) != nullptr)
-    {
-      return QObject::tr ("Macro processor");
     }
   return QObject::tr ("Processor");
 }
@@ -261,13 +264,6 @@ processors_for_track (Track &track, const utils::IObjectRegistry &registry)
             processors.push_back (processor);
         }
     }
-  if (
-    auto * modulator_track =
-      qobject_cast<structure::tracks::ModulatorTrack *> (&track))
-    {
-      for (auto &processor : modulator_track->get_modulator_macro_processors ())
-        processors.push_back (processor.get ());
-    }
   return processors;
 }
 
@@ -308,6 +304,11 @@ find_processor_by_uuid (Project &project, QStringView processor_uuid)
     }
   if (matches (&project.monitor_fader ()))
     return &project.monitor_fader ();
+  for (const auto &pl_ref : project.modulators ()->get_plugins ())
+    {
+      if (auto * plugin = pl_ref.get (); plugin != nullptr && matches (plugin))
+        return plugin;
+    }
   return nullptr;
 }
 
@@ -320,6 +321,40 @@ has_modulatable_parameters (const dsp::ProcessorBase &processor)
     return ref.get () != nullptr
            && ref.get ()->get_modulation_input_port_ref ().get () != nullptr;
   });
+}
+
+/**
+ * @brief Node-map entries of a native modulator: its descriptor ID, which
+ * selects the node's compact editor.
+ *
+ * Non-modulator processors get an empty entry so that every node carries the
+ * same key. Editors resolve their parameters live through nodeParameter()
+ * instead of pointers stored in the projection.
+ */
+QVariantMap
+modulator_node_extras (const dsp::ProcessorBase &processor)
+{
+  const auto * modulator =
+    qobject_cast<const zrythm::plugins::modulators::Modulator *> (&processor);
+  QString descriptor_id;
+  if (modulator != nullptr)
+    {
+      const auto * configuration = modulator->configuration ();
+      const auto * descriptor =
+        configuration != nullptr ? configuration->descriptor () : nullptr;
+      if (descriptor != nullptr)
+        {
+          if (
+            const auto * id =
+              std::get_if<utils::Utf8String> (&descriptor->path_or_id_))
+            {
+              descriptor_id = id->to_qstring ();
+            }
+        }
+    }
+  return QVariantMap{
+    { "modulatorDescriptorId", descriptor_id },
+  };
 }
 
 QVariantList
@@ -376,6 +411,9 @@ connected_parameter_slots (
 constexpr int kLayoutNodeWidth = 236;
 constexpr int kLayoutHeaderHeight = 40;
 constexpr int kLayoutPortHeight = 26;
+// Height of the compact modulator editor body shown below the ports of
+// native modulator nodes.
+constexpr int kLayoutEditorBodyHeight = 56;
 constexpr int kLayoutColumnGap = 140;
 constexpr int kLayoutRowGap = 48;
 constexpr int kLayoutMarginX = 90;
@@ -393,8 +431,11 @@ layout_node_height (const QVariantMap &node)
     + static_cast<int> (count_slots (node.value ("parametersJson")));
   const int output_slots =
     static_cast<int> (count_slots (node.value ("outputsJson")));
+  const bool has_modulator_editor =
+    !node.value ("modulatorDescriptorId").toString ().isEmpty ();
   return kLayoutHeaderHeight
-         + std::max (input_slots, output_slots) * kLayoutPortHeight + 8;
+         + (std::max) (input_slots, output_slots) * kLayoutPortHeight + 8
+         + (has_modulator_editor ? kLayoutEditorBodyHeight : 0);
 }
 
 /**
@@ -789,6 +830,104 @@ ModularProjectModel::modulatableParameters (const QString &node_id) const
   return result;
 }
 
+QVariantMap
+ModularProjectModel::rackMemberInfo (const QString &node_id) const
+{
+  QVariantMap result;
+  if (!node_id.startsWith (kProcessorIdPrefix.data ()))
+    return result;
+  auto * processor = find_processor_by_uuid (
+    project_,
+    node_id.sliced (static_cast<qsizetype> (kProcessorIdPrefix.size ())));
+  auto * plugin =
+    processor != nullptr ? qobject_cast<plugins::Plugin *> (processor) : nullptr;
+  if (plugin == nullptr)
+    return result;
+
+  const auto group_contains_plugin =
+    [plugin] (const plugins::PluginGroup * group) {
+      return group != nullptr
+             && std::ranges::any_of (
+               group->get_plugins (), [plugin] (const auto &ref) {
+                 return ref.id () == plugin->get_uuid ();
+               });
+    };
+  if (group_contains_plugin (project_.modulators ()))
+    {
+      result.insert ("plugin", QVariant::fromValue (plugin));
+      result.insert ("group", QVariant::fromValue (project_.modulators ()));
+      return result;
+    }
+  for (const auto &ref : project_.tracklist ()->collection ()->tracks ())
+    {
+      auto * rack = ref.get ()->modulators ();
+      if (group_contains_plugin (rack))
+        {
+          result.insert ("plugin", QVariant::fromValue (plugin));
+          result.insert ("group", QVariant::fromValue (rack));
+          // Needed for automation track cleanup when the plugin is removed
+          result.insert ("track", QVariant::fromValue (ref.get ()));
+          break;
+        }
+    }
+  return result;
+}
+
+QObject *
+ModularProjectModel::nodeParameter (
+  const QString &node_id,
+  const QString &parameter_id) const
+{
+  if (!node_id.startsWith (kProcessorIdPrefix.data ()))
+    return nullptr;
+  auto * processor = find_processor_by_uuid (
+    project_,
+    node_id.sliced (static_cast<qsizetype> (kProcessorIdPrefix.size ())));
+  if (processor == nullptr)
+    return nullptr;
+  const auto wanted_id = dsp::ProcessorParameter::UniqueId (
+    utils::Utf8String::from_qstring (parameter_id));
+  for (const auto &param_ref : processor->get_parameters ())
+    {
+      auto * param = param_ref.get ();
+      if (param != nullptr && param->get_unique_id () == wanted_id)
+        return param;
+    }
+  return nullptr;
+}
+
+QObject *
+ModularProjectModel::scopeRack () const
+{
+  if (!global_ && impl_->scope_track.has_value ())
+    {
+      const auto &tracks = project_.tracklist ()->collection ()->tracks ();
+      const auto  found = std::ranges::find_if (
+        tracks, [scope = *impl_->scope_track] (const auto &ref) {
+          return ref.get ()->get_uuid () == scope;
+        });
+      if (found != tracks.end ())
+        {
+          auto * rack = found->get ()->modulators ();
+          if (rack != nullptr)
+            return rack;
+        }
+    }
+  return project_.modulators ();
+}
+
+QString
+ModularProjectModel::macroDescriptorId () const
+{
+  return QString::fromUtf8 (plugins::modulators::MacroEngine::kDescriptorId);
+}
+
+QString
+ModularProjectModel::macroValueParameterId () const
+{
+  return QString::fromUtf8 (plugins::modulators::MacroEngine::kParameterId);
+}
+
 void
 ModularProjectModel::setNodePosition (const QString &node_id, double x, double y)
 {
@@ -954,28 +1093,63 @@ ModularProjectModel::rebuild_projection ()
       const QString &id, const QString &title, const QString &subtitle,
       const QString &type, const QVariantList &inputs,
       const QVariantList &outputs, const QVariantList &parameters,
-      bool has_parameters, const QString &accent) {
+      bool has_parameters, const QString &accent,
+      const QVariantMap &extras = QVariantMap{}) {
       const auto stored_position =
         ui_state_.modularViewState ()->find_node_position (id);
       if (stored_position.has_value ())
         impl_->nodes_with_stored_positions.insert (id);
       const auto position = stored_position.value_or (QPointF (0, 0));
       impl_->node_accents.emplace (id, accent);
-      impl_->nodes.append (
-        QVariantMap{
-          { "nodeId",                   id                      },
-          { "nodeTitle",                title                   },
-          { "nodeSubtitle",             subtitle                },
-          { "nodeType",                 type                    },
-          { "nodeX",                    position.x ()           },
-          { "nodeY",                    position.y ()           },
-          { "accentKind",               accent                  },
-          { "inputsJson",               ports_json (inputs)     },
-          { "outputsJson",              ports_json (outputs)    },
-          { "parametersJson",           ports_json (parameters) },
-          { "hasModulatableParameters", has_parameters          },
-      });
+      QVariantMap node_map{
+        { "nodeId",                   id                      },
+        { "nodeTitle",                title                   },
+        { "nodeSubtitle",             subtitle                },
+        { "nodeType",                 type                    },
+        { "nodeX",                    position.x ()           },
+        { "nodeY",                    position.y ()           },
+        { "accentKind",               accent                  },
+        { "inputsJson",               ports_json (inputs)     },
+        { "outputsJson",              ports_json (outputs)    },
+        { "parametersJson",           ports_json (parameters) },
+        { "hasModulatableParameters", has_parameters          },
+        // Present on every node so the QML ListModel role always exists;
+        // modulator nodes override it through the extras
+        { "modulatorDescriptorId",    QString ()              },
+      };
+      for (auto it = extras.begin (); it != extras.end (); ++it)
+        {
+          node_map.insert (it.key (), it.value ());
+        }
+      impl_->nodes.append (node_map);
     };
+  // Global-rack members are projected in every scope: Track scope needs
+  // their modulation sources at hand alongside the scope track's nodes.
+  const auto append_global_rack_nodes = [&] {
+    for (const auto &pl_ref : project_.modulators ()->get_plugins ())
+      {
+        auto * global_plugin = pl_ref.get ();
+        if (global_plugin == nullptr)
+          continue;
+        const auto inputs =
+          attached_ports (*global_plugin, dsp::PortFlow::Input);
+        const auto outputs =
+          attached_ports (*global_plugin, dsp::PortFlow::Output);
+        const QString node_id = "processor:" + uuid_string (*global_plugin);
+        append_node (
+          node_id, global_plugin->get_node_name ().to_qstring (), QString (),
+          QObject::tr ("Global"), inputs, outputs,
+          connected_parameter_slots (
+            *global_plugin, false, connected_destination_ports,
+            project_.port_connections_manager_.get ()),
+          has_modulatable_parameters (*global_plugin),
+          kind_from_port_list (outputs, QStringLiteral ("cv")),
+          modulator_node_extras (*global_plugin));
+        register_processor (node_id, *global_plugin);
+      }
+  };
+  // Rack membership edits rebuild the projection in every scope.
+  watch_model (project_.modulators ());
 
   if (global_)
     {
@@ -1096,6 +1270,7 @@ ModularProjectModel::rebuild_projection ()
           kind_from_port_list (outputs, QStringLiteral ("neutral")));
         register_processor (node_id, monitor_fader);
       }
+      append_global_rack_nodes ();
     }
   else if (scope_track != nullptr)
     {
@@ -1117,11 +1292,12 @@ ModularProjectModel::rebuild_projection ()
               *processor, false, connected_destination_ports,
               project_.port_connections_manager_.get ()),
             has_modulatable_parameters (*processor),
-            kind_from_port_list (outputs, QStringLiteral ("neutral")));
+            kind_from_port_list (outputs, QStringLiteral ("neutral")),
+            modulator_node_extras (*processor));
           register_processor (node_id, *processor);
         }
+      append_global_rack_nodes ();
     }
-
   try
     {
       dsp::graph::Graph                       graph;

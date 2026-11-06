@@ -96,8 +96,6 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
   init_from (*obj.processor_, *other.processor_, clone_type);
   init_from (
     *obj.automation_tracklist_, *other.automation_tracklist_, clone_type);
-  utils::clone_unique_ptr_container (
-    obj.modulator_macro_processors_, other.modulator_macro_processors_);
 }
 
 utils::Utf8String
@@ -731,7 +729,6 @@ to_json (nlohmann::json &j, const Track &track)
   if (track.modulators_)
     {
       j[Track::kModulatorsKey] = track.modulators_;
-      j[Track::kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
     }
   if (track.lanes_)
     {
@@ -785,15 +782,9 @@ from_json (const nlohmann::json &j, Track &track)
     }
   if (track.modulators_)
     {
-      j.at (Track::kModulatorsKey).get_to (*track.modulators_);
-      const auto &macro_procs_json = j.at (Track::kModulatorMacroProcessorsKey);
-      const auto  count = std::min (
-        macro_procs_json.size (), track.modulator_macro_processors_.size ());
-      for (
-        const auto &[index, macro_proc_json] :
-        utils::views::enumerate (macro_procs_json | std::views::take (count)))
+      if (j.contains (Track::kModulatorsKey))
         {
-          from_json (macro_proc_json, *track.modulator_macro_processors_[index]);
+          j.at (Track::kModulatorsKey).get_to (*track.modulators_);
         }
     }
   if (track.lanes_)

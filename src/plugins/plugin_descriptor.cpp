@@ -109,6 +109,10 @@ PluginDescriptor::serializeToString () const
 QString
 PluginDescriptor::format () const
 {
+  // The Internal protocol is Zrythm's own plugin family; its user-facing
+  // format label reads "Built-in"
+  if (protocol_ == Protocol::ProtocolType::Internal)
+    return QStringLiteral ("Built-in");
   return utils::Utf8String::
     from_juce_string (to_juce_description ()->pluginFormatName)
       .to_qstring ();

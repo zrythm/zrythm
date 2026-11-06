@@ -7,7 +7,6 @@
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
 #include "dsp/port_fwd.h"
-#include "plugins/plugin.h"
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/arranger_object_fwd.h"

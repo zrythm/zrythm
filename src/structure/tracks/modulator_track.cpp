@@ -19,14 +19,6 @@ ModulatorTrack::ModulatorTrack (FinalTrackDependencies dependencies)
 
   /* set invisible */
   visible_ = false;
-
-  constexpr int max_macros = 8;
-  for (int i = 0; i < max_macros; i++)
-    {
-      modulator_macro_processors_.emplace_back (
-        utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
-          base_dependencies_.registry_, i, this));
-    }
 }
 
 void

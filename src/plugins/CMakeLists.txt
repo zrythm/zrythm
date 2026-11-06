@@ -79,6 +79,9 @@ target_sources(zrythm_plugins_lib
     lv2_plugin_format.cpp
     lv2_urid_map.cpp
     lv2_world.cpp
+    modulators/engines/macro_engine.cpp
+    modulators/modulator.cpp
+    modulators/modulator_registry.cpp
     out_of_process_scanner.cpp
     plugin.cpp
     plugin_catalog.cpp
@@ -115,6 +118,11 @@ target_sources(zrythm_plugins_lib
       lv2_plugin_format.h
       lv2_urid_map.h
       lv2_world.h
+      modulators/engines/macro_engine.h
+      modulators/modulator.h
+      modulators/modulator_engine.h
+      modulators/modulator_registry.h
+      modulators/modulator_runtime_context.h
       out_of_process_scanner.h
       plugin.h
       plugin_all.h

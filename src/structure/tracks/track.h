@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "dsp/modulator_macro_processor.h"
 #include "dsp/timebase.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel.h"
@@ -651,8 +650,6 @@ private:
   static constexpr auto kAutomationTracklistKey = "automationTracklist"sv;
   static constexpr auto kChannelKey = "channel"sv;
   static constexpr auto kModulatorsKey = "modulators"sv;
-  static constexpr auto kModulatorMacroProcessorsKey =
-    "modulatorMacroProcessors"sv;
   static constexpr auto kPianoRollKey = "pianoRoll"sv;
   static constexpr auto kClipLauncherModeKey = "clipLauncherMode"sv;
   static constexpr auto kTimebaseKey = "timebase"sv;
@@ -762,10 +759,6 @@ protected:
   /** Modulators. */
   utils::QObjectUniquePtr<plugins::PluginGroup> modulators_;
 
-  /** Modulator macros. */
-  std::vector<utils::QObjectUniquePtr<dsp::ModulatorMacroProcessor>>
-    modulator_macro_processors_;
-
   utils::QObjectUniquePtr<TrackLaneList> lanes_;
 
   utils::QObjectUniquePtr<PianoRollTrackMixin> piano_roll_track_mixin_;
@@ -799,7 +792,6 @@ protected:
      processor_,
      channel_,
      modulators_,
-     modulator_macro_processors_,
      lanes_,
      piano_roll_track_mixin_,
      clip_launcher_mode_),

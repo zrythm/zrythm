@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/parameter_operator.h"
@@ -18,7 +18,7 @@ class ParameterOperatorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create test parameter
+    // Create test parameters
     param_ref_ = utils::create_object<dsp::ProcessorParameter> (
       registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
       dsp::ParameterRange (
@@ -27,16 +27,24 @@ protected:
     param_ = param_ref_.get_object_as<dsp::ProcessorParameter> ();
     ASSERT_NE (param_, nullptr);
 
+    second_param_ref_ = utils::create_object<dsp::ProcessorParameter> (
+      registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"second_param"),
+      dsp::ParameterRange (
+        dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
+      utils::Utf8String::from_utf8_encoded_string ("Second Parameter"));
+    second_param_ = second_param_ref_.get_object_as<dsp::ProcessorParameter> ();
+    ASSERT_NE (second_param_, nullptr);
+
     // Create undo stack
     undo_stack_ = create_mock_undo_stack ();
 
-    // Set initial value
+    // Set initial values
     param_->setBaseValue (0.5f);
+    second_param_->setBaseValue (0.5f);
 
     // Create operator
-    operator_ = std::make_unique<ProcessorParameterOperator> ();
-    operator_->setProcessorParameter (param_);
-    operator_->setUndoStack (undo_stack_.get ());
+    operator_ =
+      std::make_unique<ProcessorParameterOperator> (*undo_stack_, registry_);
   }
 
   void TearDown () override
@@ -48,26 +56,11 @@ protected:
   utils::ObjectRegistry                       registry_;
   dsp::ProcessorParameterUuidReference        param_ref_{ registry_ };
   dsp::ProcessorParameter *                   param_ = nullptr;
+  dsp::ProcessorParameterUuidReference        second_param_ref_{ registry_ };
+  dsp::ProcessorParameter *                   second_param_ = nullptr;
   std::unique_ptr<undo::UndoStack>            undo_stack_;
   std::unique_ptr<ProcessorParameterOperator> operator_;
 };
-
-TEST_F (ParameterOperatorTest, InitialState)
-{
-  EXPECT_EQ (operator_->processorParameter (), param_);
-  EXPECT_EQ (operator_->undoStack (), undo_stack_.get ());
-}
-
-TEST_F (ParameterOperatorTest, SetProcessorParameter)
-{
-  EXPECT_THROW (
-    operator_->setProcessorParameter (nullptr), std::invalid_argument);
-}
-
-TEST_F (ParameterOperatorTest, SetUndoStack)
-{
-  EXPECT_THROW (operator_->setUndoStack (nullptr), std::invalid_argument);
-}
 
 TEST_F (ParameterOperatorTest, SetValue)
 {
@@ -76,7 +69,7 @@ TEST_F (ParameterOperatorTest, SetValue)
   EXPECT_EQ (undo_stack_->count (), 0);
 
   // Set new value
-  operator_->setValue (0.75f);
+  operator_->setValue (param_, 0.75f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
   EXPECT_EQ (undo_stack_->count (), 1);
 
@@ -89,10 +82,16 @@ TEST_F (ParameterOperatorTest, SetValue)
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
 }
 
+TEST_F (ParameterOperatorTest, SetValueRejectsNullParameter)
+{
+  operator_->setValue (nullptr, 0.5f);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
 TEST_F (ParameterOperatorTest, SetValueSameValue)
 {
   // Set same value - should still create command
-  operator_->setValue (0.5f);
+  operator_->setValue (param_, 0.5f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
   EXPECT_EQ (undo_stack_->count (), 1);
 }
@@ -100,13 +99,13 @@ TEST_F (ParameterOperatorTest, SetValueSameValue)
 TEST_F (ParameterOperatorTest, SetValueBoundaryValues)
 {
   // Test minimum boundary
-  operator_->setValue (0.0f);
+  operator_->setValue (param_, 0.0f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
   EXPECT_EQ (undo_stack_->count (), 1);
 
   // Undo and test maximum boundary
   undo_stack_->undo ();
-  operator_->setValue (1.0f);
+  operator_->setValue (param_, 1.0f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
   EXPECT_EQ (undo_stack_->count (), 1);
 }
@@ -114,7 +113,7 @@ TEST_F (ParameterOperatorTest, SetValueBoundaryValues)
 TEST_F (ParameterOperatorTest, SetValueNegative)
 {
   // Parameter should clamp negative values to 0
-  operator_->setValue (-0.5f);
+  operator_->setValue (param_, -0.5f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
   EXPECT_EQ (undo_stack_->count (), 1);
 }
@@ -122,131 +121,85 @@ TEST_F (ParameterOperatorTest, SetValueNegative)
 TEST_F (ParameterOperatorTest, SetValueGreaterThanOne)
 {
   // Parameter should clamp values > 1 to 1
-  operator_->setValue (1.5f);
+  operator_->setValue (param_, 1.5f);
   EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
   EXPECT_EQ (undo_stack_->count (), 1);
 }
 
-// This test requires making the mergeWith() threshold in the command class
-// configurable
-#if 0
-TEST_F (ParameterOperatorTest, MultipleSetValueOperations)
+// A control drag pushes one command per change; quick successive edits of
+// the same parameter coalesce into a single undo step
+TEST_F (ParameterOperatorTest, SameParameterEditsMerge)
 {
-  // First operation
-  operator_->setValue (0.25f);
-  EXPECT_FLOAT_EQ (param_->baseValue (), 0.25f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 1);
+  operator_->setValue (param_, 0.6f);
+  operator_->setValue (param_, 0.8f);
+  EXPECT_FLOAT_EQ (param_->baseValue (), 0.8f);
+  EXPECT_EQ (undo_stack_->count (), 1);
 
-  // Second operation
-  operator_->setValue (0.75f);
-  EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
-  EXPECT_EQ (undo_stack_->undoStack ()->count (), 2);
-
-  // Undo second operation
-  undo_stack_->undo ();
-  EXPECT_FLOAT_EQ (param_->baseValue (), 0.25f);
-
-  // Undo first operation
   undo_stack_->undo ();
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
 }
-#endif
 
-TEST_F (ParameterOperatorTest, VerySmallValueChanges)
+// Quick edits of different parameters must never merge: the merged command
+// would apply the other parameter's value and the edit would fall out of
+// the undo stack
+TEST_F (ParameterOperatorTest, DifferentParametersDoNotMerge)
 {
-  operator_->setValue (0.50001f);
-  EXPECT_NEAR (param_->baseValue (), 0.50001f, 1e-5f);
-  EXPECT_EQ (undo_stack_->count (), 1);
+  operator_->setValue (param_, 0.7f);
+  operator_->setValue (second_param_, 0.3f);
+  EXPECT_FLOAT_EQ (param_->baseValue (), 0.7f);
+  EXPECT_FLOAT_EQ (second_param_->baseValue (), 0.3f);
+  EXPECT_EQ (undo_stack_->count (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_FLOAT_EQ (second_param_->baseValue (), 0.5f);
+  EXPECT_FLOAT_EQ (param_->baseValue (), 0.7f);
+
+  undo_stack_->undo ();
+  EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
 }
 
-TEST_F (ParameterOperatorTest, LargeValueChanges)
+// The command references the parameter through the registry, so undo/redo
+// keep working after the last external reference is gone. This mirrors
+// editing a parameter and then removing its plugin from the rack: the
+// removal command keeps the plugin alive, and the edit command keeps the
+// parameter alive independently.
+TEST_F (ParameterOperatorTest, EditRemainsUndoableAfterExternalReferencesDropped)
 {
-  operator_->setValue (0.99999f);
-  EXPECT_NEAR (param_->baseValue (), 0.99999f, 1e-5f);
-  EXPECT_EQ (undo_stack_->count (), 1);
+  operator_->setValue (param_, 0.75f);
+  ASSERT_EQ (undo_stack_->count (), 1);
+
+  const auto param_id = param_->get_uuid ();
+  param_ = nullptr;
+  param_ref_ = dsp::ProcessorParameterUuidReference{ registry_ };
+
+  dsp::ProcessorParameterUuidReference resolved (param_id, registry_);
+  auto *                               param = resolved.get ();
+  ASSERT_NE (param, nullptr);
+
+  undo_stack_->undo ();
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.5f);
+
+  undo_stack_->redo ();
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.75f);
 }
 
-TEST_F (ParameterOperatorTest, ZeroValueChange)
+// Parameters registered in another registry are refused: the command's
+// registry reference would throw for an unknown UUID, and the exception
+// must not escape into QML
+TEST_F (ParameterOperatorTest, SetValueRefusesForeignRegistryParameter)
 {
-  operator_->setValue (0.0f);
-  EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
-  EXPECT_EQ (undo_stack_->count (), 1);
-}
-
-TEST_F (ParameterOperatorTest, OneValueChange)
-{
-  operator_->setValue (1.0f);
-  EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
-  EXPECT_EQ (undo_stack_->count (), 1);
-}
-
-TEST_F (ParameterOperatorTest, DifferentParameterTypes)
-{
-  // Create parameter with different range
-  auto param_ref2 = utils::create_object<dsp::ProcessorParameter> (
-    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"volume_param"),
-    dsp::ParameterRange (
-      dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
-    utils::Utf8String::from_utf8_encoded_string ("Volume"));
-  auto * param2 = param_ref2.get_object_as<dsp::ProcessorParameter> ();
-  ASSERT_NE (param2, nullptr);
-
-  // Set initial value
-  param2->setBaseValue (0.5f);
-
-  // Create new operator
-  auto operator2 = std::make_unique<ProcessorParameterOperator> ();
-  operator2->setProcessorParameter (param2);
-  operator2->setUndoStack (undo_stack_.get ());
-
-  // Test with gain parameter
-  operator2->setValue (1.0f);
-  EXPECT_FLOAT_EQ (param2->baseValue (), 1.0f);
-  EXPECT_EQ (undo_stack_->count (), 1);
-}
-
-TEST_F (ParameterOperatorTest, SignalEmissions)
-{
-  // Test processorParameterChanged signal
-  bool param_changed = false;
-  QObject::connect (
-    operator_.get (), &ProcessorParameterOperator::processorParameterChanged,
-    operator_.get (), [&] () { param_changed = true; });
-
-  auto param_ref2 = utils::create_object<dsp::ProcessorParameter> (
-    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"new_param"),
+  utils::ObjectRegistry other_registry;
+  auto foreign_ref = utils::create_object<dsp::ProcessorParameter> (
+    other_registry, other_registry,
+    dsp::ProcessorParameter::UniqueId (u8"foreign_param"),
     dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
-    utils::Utf8String::from_utf8_encoded_string ("New Parameter"));
-  auto * param2 = param_ref2.get_object_as<dsp::ProcessorParameter> ();
-  operator_->setProcessorParameter (param2);
-  EXPECT_TRUE (param_changed);
+    utils::Utf8String::from_utf8_encoded_string ("Foreign Parameter"));
+  auto * foreign = foreign_ref.get_object_as<dsp::ProcessorParameter> ();
+  ASSERT_NE (foreign, nullptr);
 
-  // Test undoStackChanged signal
-  bool stack_changed = false;
-  QObject::connect (
-    operator_.get (), &ProcessorParameterOperator::undoStackChanged,
-    operator_.get (), [&] () { stack_changed = true; });
-
-  auto new_stack = create_mock_undo_stack ();
-  operator_->setUndoStack (new_stack.get ());
-  EXPECT_TRUE (stack_changed);
-}
-
-TEST_F (ParameterOperatorTest, RapidValueChanges)
-{
-  // Test that rapid successive changes may be merged into a single command
-  // Note: The actual merging depends on the 1-second timeout in mergeWith()
-  operator_->setValue (0.25f);
-  operator_->setValue (0.60f);
-  operator_->setValue (0.75f);
-
-  // Final value should be the last one set
-  EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
-  EXPECT_EQ (undo_stack_->count (), 1);
-
-  // After undo, we should return to the original value
-  undo_stack_->undo ();
-  EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
+  operator_->setValue (foreign, 0.9f);
+  EXPECT_FLOAT_EQ (foreign->baseValue (), 0.5f);
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 } // namespace zrythm::actions

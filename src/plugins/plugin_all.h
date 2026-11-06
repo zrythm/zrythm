@@ -7,6 +7,7 @@
 #include "plugins/faust/faust_plugin.h"
 #include "plugins/juce_plugin.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/modulators/modulator.h"
 #include "plugins/vst3_plugin.h"
 
 namespace zrythm::plugins
@@ -39,6 +40,10 @@ plugin_base_to_ptr_variant (Plugin * pl) -> PluginPtrVariant
   if (auto * faust = qobject_cast<FaustPlugin *> (pl))
     {
       return faust;
+    }
+  if (auto * modulator = qobject_cast<modulators::Modulator *> (pl))
+    {
+      return modulator;
     }
   throw std::invalid_argument ("Invalid plugin ptr");
 }

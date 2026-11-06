@@ -11,6 +11,8 @@ import Zrythm
 ScrollView {
   id: root
 
+  // Pushes undoable parameter edits for the parameter list
+  required property ProcessorParameterOperator parameterOperator
   required property Plugin plugin
 
   ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -104,6 +106,7 @@ ScrollView {
       title: qsTr("Parameters")
 
       frameContentItem: PluginParameterListView {
+        parameterOperator: root.parameterOperator
         plugin: root.plugin
       }
     }
