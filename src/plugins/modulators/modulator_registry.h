@@ -6,6 +6,7 @@
 #include <span>
 
 #include "plugins/modulators/modulator_engine.h"
+#include "plugins/plugin_descriptor.h"
 
 namespace zrythm::plugins::modulators
 {
