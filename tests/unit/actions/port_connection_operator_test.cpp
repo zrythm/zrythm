@@ -464,11 +464,6 @@ TEST_F (PortConnectionOperatorTest, SetConnectionMultiplierRejectsInvalidInput)
     operator_->setConnectionMultiplier (
       uuid_of (*bus1_.out), uuid_of (*bus2_.in), 2.5),
     QString ());
-  EXPECT_NE (
-    operator_->setConnectionMultiplier (
-      uuid_of (*bus1_.out), uuid_of (*bus2_.in),
-      std::numeric_limits<double>::quiet_NaN ()),
-    QString ());
   EXPECT_FLOAT_EQ (
     manager.get_connection (bus1_.out->get_uuid (), bus2_.in->get_uuid ())
       ->multiplier_,

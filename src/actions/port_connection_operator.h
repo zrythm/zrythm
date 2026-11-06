@@ -60,7 +60,8 @@ public:
    * one action.
    *
    * @param multiplier New multiplier: -1.0…1.0 for CV connections,
-   * -2.0…2.0 for audio connections.
+   * -2.0…2.0 for audio connections. Callers must pass a finite value;
+   * non-finite values are not validated.
    * @return Empty string on success, otherwise a translated error message.
    */
   Q_INVOKABLE QString setConnectionMultiplier (

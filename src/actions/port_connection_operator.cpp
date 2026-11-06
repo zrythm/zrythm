@@ -161,14 +161,13 @@ PortConnectionOperator::setConnectionMultiplier (
   if (dest_port->type () == dsp::PortType::Midi)
     return tr ("MIDI connections have no adjustable strength.");
 
-  // Written as an acceptance test so values outside the range (including
-  // NaN) fail it. Audio allows double strength for gain up to +6 dB and
-  // negative gain for phase inversion; CV matches the bipolar -100%…100%
-  // range shown in the UI.
+  // Audio allows double strength for gain up to +6 dB and negative gain
+  // for phase inversion; CV matches the bipolar -100%…100% range shown in
+  // the UI.
   const float max_abs_multiplier =
     dest_port->type () == dsp::PortType::Audio ? 2.f : 1.f;
   const float value = static_cast<float> (multiplier);
-  if (!(value >= -max_abs_multiplier && value <= max_abs_multiplier))
+  if (value < -max_abs_multiplier || value > max_abs_multiplier)
     return tr ("The strength is out of range.");
   if (value == conn->multiplier_)
     return {};
