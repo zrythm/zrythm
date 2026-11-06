@@ -19,8 +19,10 @@ if(ZRYTHM_ENABLE_SANITIZER_THREAD)
   set(_san_env ${CMAKE_COMMAND} -E env
     "TSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/tools/tsan_suppressions.supp")
 elseif(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
+  # Leak checking is disabled for this documentation rule: it runs
+  # third-party libraries whose leaks are not actionable here
   set(_san_env ${CMAKE_COMMAND} -E env
-    "ASAN_OPTIONS=alloc_dealloc_mismatch=0")
+    "ASAN_OPTIONS=alloc_dealloc_mismatch=0:detect_leaks=0")
 endif()
 
 add_custom_command(

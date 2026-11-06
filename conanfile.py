@@ -220,6 +220,10 @@ class Zrythm(ConanFile):
                 ":strict_string_checks=1:detect_stack_use_after_return=1"
                 ":check_initialization_order=1:strict_init_order=1"
                 f":suppressions={os.path.join(self.recipe_folder, 'tools', 'asan_suppressions.supp')}")
+            # LSan reads leak: rules only from LSAN_OPTIONS: the ASan
+            # runtime rejects them in an ASAN_OPTIONS suppressions file
+            san_run_options["LSAN_OPTIONS"] = (
+                f"suppressions={os.path.join(self.recipe_folder, 'tools', 'lsan_suppressions.supp')}")
         if "undefined" in sans:
             san_run_options["UBSAN_OPTIONS"] = (
                 "print_stacktrace=1:halt_on_error=1:abort_on_error=1"

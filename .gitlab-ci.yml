@@ -460,7 +460,10 @@ build:sanitizer-asan-ubsan:mac-arm:
     - conan install . -pr:h ${HOST_PROFILE} -pr:b appleclang_build -o sanitizer=address_undefined --build=missing --lockfile=conan.lock
     - cmake --preset default -DZRYTHM_UNITY_BUILD=OFF
     - cmake --build conanbuild/Debug --parallel 4
-    - source conanbuild/Debug/generators/conanrun.sh && ctest --test-dir conanbuild/Debug --rerun-failed --output-on-failure
+    # LSan is not supported on macOS: ASan aborts at process start when
+    # leak detection is requested, so detect_leaks is overridden here
+    # (later flags win)
+    - source conanbuild/Debug/generators/conanrun.sh && export ASAN_OPTIONS="${ASAN_OPTIONS:+${ASAN_OPTIONS}:}detect_leaks=0" && ctest --test-dir conanbuild/Debug --rerun-failed --output-on-failure
     - cpack -G "DragNDrop" -C Debug --config conanbuild/Debug/CPackConfig.cmake -B package-asan-ubsan-debug
     - >-
       scripts/mac_codesign_dmg_for_debug.sh "package-asan-ubsan-debug"/*.dmg "Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"

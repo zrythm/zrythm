@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: FSFAP
+
+# Leak rules take effect only through LSAN_OPTIONS: the ASan runtime
+# rejects them in the ASAN_OPTIONS suppressions file.
+
+# Qt's xdgdesktopportal platform theme leaks D-Bus watcher connections
+# when QApplication initializes
+leak:QXdgDesktopPortalTheme
