@@ -262,8 +262,8 @@ TEST_F (ProjectSerializationTest, SerializeProject_PortRegistryStructure)
     {
       EXPECT_TRUE (port.contains ("id"));
       assert_valid_uuid (port["id"].get<std::string> ());
-      EXPECT_TRUE (port.contains ("type"));
-      EXPECT_TRUE (port["type"].is_number ());
+      EXPECT_TRUE (port.contains ("variantType"));
+      EXPECT_TRUE (port["variantType"].is_number ());
       EXPECT_TRUE (port.contains ("flow"));
       EXPECT_TRUE (port["flow"].is_number ());
     }
