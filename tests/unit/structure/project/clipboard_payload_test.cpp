@@ -38,7 +38,6 @@
 #include "structure/tracks/midi_bus_track.h"
 #include "structure/tracks/midi_group_track.h"
 #include "structure/tracks/midi_track.h"
-#include "structure/tracks/modulator_track.h"
 #include "structure/tracks/track_factory.h"
 #include "utils/app_settings.h"
 #include "utils/compression.h"
@@ -1193,7 +1192,6 @@ protected:
     add_track<structure::tracks::MasterTrack> (pop);
     const auto chord_track = add_track<structure::tracks::ChordTrack> (pop);
     add_track<structure::tracks::MarkerTrack> (pop);
-    add_track<structure::tracks::ModulatorTrack> (pop);
     const auto audio_bus = add_track<structure::tracks::AudioBusTrack> (pop);
     add_track<structure::tracks::MidiBusTrack> (pop);
     add_track<structure::tracks::AudioGroupTrack> (pop);

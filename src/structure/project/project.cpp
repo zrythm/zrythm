@@ -410,11 +410,6 @@ Project::add_default_tracks ()
   chord_track->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::ScaleObject>::add_object (scale_ref);
 
-  /* modulator */
-  auto * modulator_track =
-    add_track.operator()<ModulatorTrack> (QObject::tr ("Modulators"));
-  tracklist_->singletonTracks ()->setModulatorTrack (modulator_track);
-
   /* add marker track and default markers */
   auto * marker_track =
     add_track.operator()<MarkerTrack> (QObject::tr ("Markers"));

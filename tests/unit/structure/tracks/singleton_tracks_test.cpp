@@ -43,16 +43,6 @@ protected:
     return utils::create_object<ChordTrack> (*registry_, std::move (deps));
   }
 
-  // Helper to create a modulator track
-  TrackUuidReference create_modulator_track ()
-  {
-    FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, [] { return false; }, {}
-    };
-
-    return utils::create_object<ModulatorTrack> (*registry_, std::move (deps));
-  }
-
   // Helper to create a master track
   TrackUuidReference create_master_track ()
   {
@@ -84,7 +74,6 @@ TEST_F (SingletonTracksTest, InitialState)
 {
   // All track pointers should be null initially
   EXPECT_EQ (singleton_tracks->chordTrack (), nullptr);
-  EXPECT_EQ (singleton_tracks->modulatorTrack (), nullptr);
   EXPECT_EQ (singleton_tracks->masterTrack (), nullptr);
   EXPECT_EQ (singleton_tracks->markerTrack (), nullptr);
 }

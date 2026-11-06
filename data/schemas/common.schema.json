@@ -767,7 +767,7 @@
               "description": "Track type discriminator (must be overridden in derived schemas)",
               "type": "integer",
               "minimum": 0,
-              "maximum": 11
+              "maximum": 10
             },
             "name": {
               "type": "string"
@@ -899,7 +899,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 1
+              "const": 9
             }
           }
         }
@@ -914,7 +914,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 0
+              "const": 1
             }
           }
         }
@@ -929,7 +929,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 8
+              "const": 2
             }
           }
         }
@@ -944,7 +944,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 2
+              "const": 3
             }
           }
         }
@@ -959,7 +959,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 3
+              "const": 10
             },
             "clips": {
               "$ref": "#/definitions/uuidArray",
@@ -982,26 +982,11 @@
         {
           "properties": {
             "variantType": {
-              "const": 4
+              "const": 0
             },
             "markers": {
               "$ref": "#/definitions/uuidArray",
               "description": "UUID references to Marker objects in registry.arrangerObjects"
-            }
-          }
-        }
-      ]
-    },
-    "modulatorTrack": {
-      "$comment": "Modulator track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "variantType": {
-              "const": 5
             }
           }
         }
@@ -1016,7 +1001,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 6
+              "const": 8
             }
           }
         }
@@ -1031,7 +1016,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 7
+              "const": 5
             }
           }
         }
@@ -1046,7 +1031,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 9
+              "const": 7
             }
           }
         }
@@ -1061,7 +1046,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 10
+              "const": 4
             }
           }
         }
@@ -1652,7 +1637,7 @@
         {
           "properties": {
             "variantType": {
-              "const": 11
+              "const": 6
             }
           }
         }
@@ -1678,9 +1663,6 @@
         },
         {
           "$ref": "#/definitions/markerTrack"
-        },
-        {
-          "$ref": "#/definitions/modulatorTrack"
         },
         {
           "$ref": "#/definitions/audioBusTrack"

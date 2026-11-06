@@ -13,7 +13,6 @@
 #include "structure/project/project_ui_state.h"
 #include "structure/tracks/audio_bus_track.h"
 #include "structure/tracks/channel.h"
-#include "structure/tracks/modulator_track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/tracklist.h"

@@ -51,8 +51,6 @@ protected:
       track_factory_->create_empty_track<structure::tracks::MasterTrack> ();
     auto chord_track_ref =
       track_factory_->create_empty_track<structure::tracks::ChordTrack> ();
-    auto modulator_track_ref =
-      track_factory_->create_empty_track<structure::tracks::ModulatorTrack> ();
     auto marker_track_ref =
       track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
 
@@ -61,15 +59,12 @@ protected:
       master_track_ref.get_object_as<structure::tracks::MasterTrack> ());
     singleton_tracks_->setChordTrack (
       chord_track_ref.get_object_as<structure::tracks::ChordTrack> ());
-    singleton_tracks_->setModulatorTrack (
-      modulator_track_ref.get_object_as<structure::tracks::ModulatorTrack> ());
     singleton_tracks_->setMarkerTrack (
       marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ());
 
     // Add singleton tracks to collection
     track_collection_->add_track (master_track_ref);
     track_collection_->add_track (chord_track_ref);
-    track_collection_->add_track (modulator_track_ref);
     track_collection_->add_track (marker_track_ref);
 
     // Create track creator
@@ -170,7 +165,7 @@ TEST_F (TrackCreatorTest, CreateMultipleTracks)
   EXPECT_TRUE (track_collection_->contains (track1_id));
   EXPECT_TRUE (track_collection_->contains (track2_id));
   EXPECT_EQ (
-    track_collection_->track_count (), 6); // 4 singletons + 2 new tracks
+    track_collection_->track_count (), 5); // 3 singletons + 2 new tracks
 }
 
 // Test undo/redo functionality
@@ -183,17 +178,17 @@ TEST_F (TrackCreatorTest, UndoRedoTrackCreation)
 
   // Track should be present after creation
   EXPECT_TRUE (track_collection_->contains (track_id));
-  EXPECT_EQ (track_collection_->track_count (), 5); // 4 singletons + 1 new track
+  EXPECT_EQ (track_collection_->track_count (), 4); // 3 singletons + 1 new track
 
   // Undo should remove the track
   undo_stack_->undo ();
   EXPECT_FALSE (track_collection_->contains (track_id));
-  EXPECT_EQ (track_collection_->track_count (), 4); // only singletons remain
+  EXPECT_EQ (track_collection_->track_count (), 3); // only singletons remain
 
   // Redo should add the track back
   undo_stack_->redo ();
   EXPECT_TRUE (track_collection_->contains (track_id));
-  EXPECT_EQ (track_collection_->track_count (), 5); // 4 singletons + 1 new track
+  EXPECT_EQ (track_collection_->track_count (), 4); // 3 singletons + 1 new track
 }
 
 // Test unique name generation
@@ -228,11 +223,6 @@ TEST_F (TrackCreatorTest, CreateSingletonTrackError)
 
   EXPECT_THROW (
     track_creator_->addEmptyTrackFromType (structure::tracks::Track::Type::Chord),
-    std::invalid_argument);
-
-  EXPECT_THROW (
-    track_creator_->addEmptyTrackFromType (
-      structure::tracks::Track::Type::Modulator),
     std::invalid_argument);
 
   EXPECT_THROW (

@@ -4,7 +4,6 @@
 #include "structure/tracks/chord_track.h"
 #include "structure/tracks/marker_track.h"
 #include "structure/tracks/master_track.h"
-#include "structure/tracks/modulator_track.h"
 #include "structure/tracks/singleton_tracks.h"
 
 #include <QPointer>
@@ -15,10 +14,9 @@ namespace zrythm::structure::tracks
 class SingletonTracks::Impl
 {
 public:
-  QPointer<ChordTrack>     chord_track_;
-  QPointer<ModulatorTrack> modulator_track_;
-  QPointer<MasterTrack>    master_track_;
-  QPointer<MarkerTrack>    marker_track_;
+  QPointer<ChordTrack>  chord_track_;
+  QPointer<MasterTrack> master_track_;
+  QPointer<MarkerTrack> marker_track_;
 };
 
 SingletonTracks::SingletonTracks (QObject * parent)
@@ -32,12 +30,6 @@ ChordTrack *
 SingletonTracks::chordTrack () const
 {
   return impl_->chord_track_;
-}
-
-ModulatorTrack *
-SingletonTracks::modulatorTrack () const
-{
-  return impl_->modulator_track_;
 }
 
 MasterTrack *
@@ -59,16 +51,6 @@ SingletonTracks::setChordTrack (ChordTrack * track)
     {
       impl_->chord_track_ = track;
       Q_EMIT chordTrackChanged ();
-    }
-}
-
-void
-SingletonTracks::setModulatorTrack (ModulatorTrack * track)
-{
-  if (impl_->modulator_track_ != track)
-    {
-      impl_->modulator_track_ = track;
-      Q_EMIT modulatorTrackChanged ();
     }
 }
 

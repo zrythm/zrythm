@@ -20,7 +20,6 @@ BootstrapTimelineFixture::SetUp ()
   P_CHORD_TRACK->clear_objects ();
   P_MARKER_TRACK->clear_objects ();
   P_TEMPO_TRACK->clear_objects ();
-  // modulator_track_clear (P_MODULATOR_TRACK);
   for (auto &track : TRACKLIST->tracks_ | std::views::reverse)
     {
       if (track->is_deletable ())

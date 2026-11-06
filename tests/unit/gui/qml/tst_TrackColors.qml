@@ -22,7 +22,6 @@ TestCase {
     { type: Track.AudioGroup, dark: "#00b8a1", light: "#008e7d" },
     { type: Track.Folder, dark: "#00b2c8", light: "#008a9b" },
     { type: Track.Chord, dark: "#3fa3ff", light: "#0083e1" },
-    { type: Track.Modulator, dark: "#9f88ff", light: "#8a62ff" },
     { type: Track.Marker, dark: "#df59fc", light: "#c43be0" },
   ]
 

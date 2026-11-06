@@ -72,7 +72,6 @@ public:
         structure::tracks::Track::Type::AudioGroup,
         structure::tracks::Track::Type::Folder,
         structure::tracks::Track::Type::Chord,
-        structure::tracks::Track::Type::Modulator,
         structure::tracks::Track::Type::Marker,
       };
       std::ranges::sort (all, [] (auto a, auto b) {
@@ -133,8 +132,6 @@ private:
         return 210.;
       case Type::Chord:
         return 250.;
-      case Type::Modulator:
-        return 290.;
       case Type::Marker:
         return 320.;
       }

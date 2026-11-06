@@ -309,7 +309,6 @@ the picker.
 | Audio group | 180° |
 | Folder | 210° |
 | Chord | 250° |
-| Modulator | 290° |
 | Marker | 320° |
 
 Light-mode variants keep the hue and chroma and lower the lightness in

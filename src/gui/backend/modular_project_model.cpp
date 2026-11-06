@@ -25,7 +25,6 @@
 #include "structure/project/project_graph_builder.h"
 #include "structure/project/project_ui_state.h"
 #include "structure/tracks/channel.h"
-#include "structure/tracks/modulator_track.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/tracklist.h"
@@ -138,8 +137,6 @@ track_type_label (const Track &track)
       return QObject::tr ("Chord track");
     case Track::Type::Marker:
       return QObject::tr ("Marker track");
-    case Track::Type::Modulator:
-      return QObject::tr ("Modulator track");
     case Track::Type::AudioBus:
       return QObject::tr ("Audio bus");
     case Track::Type::AudioGroup:

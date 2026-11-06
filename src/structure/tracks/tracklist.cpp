@@ -633,10 +633,6 @@ from_json (const nlohmann::json &j, Tracklist &t)
         {
           t.singletonTracks ()->setMasterTrack (master);
         }
-      else if (auto * modulator = qobject_cast<ModulatorTrack *> (track))
-        {
-          t.singletonTracks ()->setModulatorTrack (modulator);
-        }
     }
   from_json (j, *t.track_routing_);
   Q_EMIT t.track_routing_->routingChanged ();

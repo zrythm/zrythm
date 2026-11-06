@@ -97,14 +97,6 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   EXPECT_EQ (marker_track->type (), Track::Type::Marker);
   EXPECT_TRUE (utils::contains (*registry_, marker_track->get_uuid ()));
 
-  // Test ModulatorTrack creation
-  auto   modulator_track_builder = factory->get_builder<ModulatorTrack> ();
-  auto   modulator_track_ref = modulator_track_builder.build ();
-  auto * modulator_track = modulator_track_ref.get_object_as<ModulatorTrack> ();
-  EXPECT_NE (modulator_track, nullptr);
-  EXPECT_EQ (modulator_track->type (), Track::Type::Modulator);
-  EXPECT_TRUE (utils::contains (*registry_, modulator_track->get_uuid ()));
-
   // Test AudioBusTrack creation
   auto   audio_bus_track_builder = factory->get_builder<AudioBusTrack> ();
   auto   audio_bus_track_ref = audio_bus_track_builder.build ();
@@ -229,13 +221,6 @@ TEST_F (TrackFactoryTest, ConvenienceMethods)
   EXPECT_EQ (marker_track->type (), Track::Type::Marker);
   EXPECT_TRUE (utils::contains (*registry_, marker_track->get_uuid ()));
 
-  auto modulator_track_ref =
-    factory->create_empty_track (Track::Type::Modulator);
-  auto * modulator_track = modulator_track_ref.get_object_as<ModulatorTrack> ();
-  EXPECT_NE (modulator_track, nullptr);
-  EXPECT_EQ (modulator_track->type (), Track::Type::Modulator);
-  EXPECT_TRUE (utils::contains (*registry_, modulator_track->get_uuid ()));
-
   auto audio_bus_track_ref = factory->create_empty_track (Track::Type::AudioBus);
   auto * audio_bus_track = audio_bus_track_ref.get_object_as<AudioBusTrack> ();
   EXPECT_NE (audio_bus_track, nullptr);
@@ -317,7 +302,6 @@ TEST_F (TrackFactoryTest, TrackNamesAreNonEmpty)
   test_track_has_non_empty_name (Track::Type::Master);
   test_track_has_non_empty_name (Track::Type::Chord);
   test_track_has_non_empty_name (Track::Type::Marker);
-  test_track_has_non_empty_name (Track::Type::Modulator);
   test_track_has_non_empty_name (Track::Type::AudioBus);
   test_track_has_non_empty_name (Track::Type::MidiBus);
   test_track_has_non_empty_name (Track::Type::AudioGroup);
@@ -348,8 +332,6 @@ TEST_F (TrackFactoryTest, BuilderTrackNamesAreNonEmpty)
   test_builder_track_has_non_empty_name (factory->get_builder<MasterTrack> ());
   test_builder_track_has_non_empty_name (factory->get_builder<ChordTrack> ());
   test_builder_track_has_non_empty_name (factory->get_builder<MarkerTrack> ());
-  test_builder_track_has_non_empty_name (
-    factory->get_builder<ModulatorTrack> ());
   test_builder_track_has_non_empty_name (factory->get_builder<AudioBusTrack> ());
   test_builder_track_has_non_empty_name (factory->get_builder<MidiBusTrack> ());
   test_builder_track_has_non_empty_name (

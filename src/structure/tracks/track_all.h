@@ -14,7 +14,6 @@
 #include "structure/tracks/midi_bus_track.h"
 #include "structure/tracks/midi_group_track.h"
 #include "structure/tracks/midi_track.h"
-#include "structure/tracks/modulator_track.h"
 
 namespace zrythm::structure::tracks
 {

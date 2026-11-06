@@ -50,9 +50,6 @@ TEST_F (TrackTest, TrackTypeEnum)
     static_cast<int> (Track::Type::Master),
     static_cast<int> (Track::get_type_for_class<MasterTrack> ()));
   EXPECT_EQ (
-    static_cast<int> (Track::Type::Modulator),
-    static_cast<int> (Track::get_type_for_class<ModulatorTrack> ()));
-  EXPECT_EQ (
     static_cast<int> (Track::Type::Marker),
     static_cast<int> (Track::get_type_for_class<MarkerTrack> ()));
   EXPECT_EQ (
@@ -159,8 +156,6 @@ TEST_F (TrackTest, TrackCopyableAndDeletable)
   EXPECT_FALSE (Track::type_is_deletable (Track::Type::Master));
   EXPECT_FALSE (Track::type_is_copyable (Track::Type::Chord));
   EXPECT_FALSE (Track::type_is_deletable (Track::Type::Chord));
-  EXPECT_FALSE (Track::type_is_copyable (Track::Type::Modulator));
-  EXPECT_FALSE (Track::type_is_deletable (Track::Type::Modulator));
   EXPECT_FALSE (Track::type_is_copyable (Track::Type::Marker));
   EXPECT_FALSE (Track::type_is_deletable (Track::Type::Marker));
 

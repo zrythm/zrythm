@@ -17,7 +17,7 @@ using Type = structure::tracks::Track::Type;
 TEST (TrackColorTableTest, CanonicalTypesCoverEveryTypeInHueOrder)
 {
   const QVariantList types = TrackColorTable::canonicalTypes ();
-  EXPECT_EQ (types.size (), 12);
+  EXPECT_EQ (types.size (), 11);
 
   double previous_hue = -1;
   for (const auto &type_variant : types)

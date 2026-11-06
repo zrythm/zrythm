@@ -12,7 +12,6 @@
 #include "plugins/plugin_configuration.h"
 #include "structure/project/port_connections_manager.h"
 #include "structure/tracks/audio_bus_track.h"
-#include "structure/tracks/modulator_track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/registry_utils.h"

@@ -59,8 +59,6 @@ protected:
       track_factory_->create_empty_track<structure::tracks::MasterTrack> ();
     auto chord_track_ref =
       track_factory_->create_empty_track<structure::tracks::ChordTrack> ();
-    auto modulator_track_ref =
-      track_factory_->create_empty_track<structure::tracks::ModulatorTrack> ();
     auto marker_track_ref =
       track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
 
@@ -69,15 +67,12 @@ protected:
       master_track_ref.get_object_as<structure::tracks::MasterTrack> ());
     singleton_tracks_->setChordTrack (
       chord_track_ref.get_object_as<structure::tracks::ChordTrack> ());
-    singleton_tracks_->setModulatorTrack (
-      modulator_track_ref.get_object_as<structure::tracks::ModulatorTrack> ());
     singleton_tracks_->setMarkerTrack (
       marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ());
 
     // Add singleton tracks to collection
     track_collection_->add_track (master_track_ref);
     track_collection_->add_track (chord_track_ref);
-    track_collection_->add_track (modulator_track_ref);
     track_collection_->add_track (marker_track_ref);
 
     // Create mock snap grids with proper constructors

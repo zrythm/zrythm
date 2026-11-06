@@ -51,7 +51,6 @@ namespace zrythm::structure::project
 #define P_CHORD_TRACK (TRACKLIST->singletonTracks ()->chordTrack ())
 #define P_MARKER_TRACK (TRACKLIST->singletonTracks ()->markerTrack ())
 #define P_MASTER_TRACK (TRACKLIST->singletonTracks ()->masterTrack ())
-#define P_MODULATOR_TRACK (TRACKLIST->singletonTracks ()->modulatorTrack ())
 #define MONITOR_FADER (PROJECT->controlRoom ()->monitor_fader_)
 #define ROUTER (&PROJECT->engine ()->graph_dispatcher ())
 #define AUDIO_ENGINE (PROJECT->engine ())

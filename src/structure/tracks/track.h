@@ -139,11 +139,6 @@ public:
     Marker,
 
     /**
-     * Special track to contain global Modulator's.
-     */
-    Modulator,
-
-    /**
      * Buses are channels that receive audio input and have effects on their
      * channel strip. They are similar to Group Tracks, except that they
      * cannot be routed to directly. Buses are used for send effects.
@@ -203,8 +198,7 @@ public:
 
   static constexpr bool type_is_copyable (Type type)
   {
-    return type != Type::Master && type != Type::Chord
-           && type != Type::Modulator && type != Type::Marker;
+    return type != Type::Master && type != Type::Chord && type != Type::Marker;
   }
 
   /**
@@ -265,9 +259,8 @@ public:
 
   static constexpr bool type_can_have_automation (const Type type)
   {
-    return type == Type::Instrument || type == Type::Audio
-           || type == Type::Master || type == Type::Chord
-           || type == Type::Modulator || type == Type::AudioBus
+    return type == Type::Instrument || type == Type::Audio || type == Type::Master
+           || type == Type::Chord || type == Type::AudioBus
            || type == Type::AudioGroup || type == Type::Midi
            || type == Type::MidiBus || type == Type::MidiGroup;
   }
@@ -293,8 +286,6 @@ public:
       return Type::MidiBus;
     else if constexpr (std::is_same_v<T, MasterTrack>)
       return Type::Master;
-    else if constexpr (std::is_same_v<T, ModulatorTrack>)
-      return Type::Modulator;
     else if constexpr (std::is_same_v<T, MarkerTrack>)
       return Type::Marker;
     else if constexpr (std::is_same_v<T, FolderTrack>)
@@ -341,7 +332,6 @@ public:
   bool is_midi_group () const { return type_ == Type::MidiGroup; }
   bool is_audio_bus () const { return type_ == Type::AudioBus; }
   bool is_midi_bus () const { return type_ == Type::MidiBus; }
-  bool is_modulator () const { return type_ == Type::Modulator; }
   bool is_chord () const { return type_ == Type::Chord; }
   bool is_marker () const { return type_ == Type::Marker; }
   bool is_audio () const { return type_ == Type::Audio; }

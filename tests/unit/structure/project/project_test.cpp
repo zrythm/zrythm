@@ -194,7 +194,6 @@ TEST_F (ProjectTest, AddDefaultTracks)
   EXPECT_NE (singleton_tracks->chordTrack (), nullptr);
   EXPECT_NE (singleton_tracks->markerTrack (), nullptr);
   EXPECT_NE (singleton_tracks->masterTrack (), nullptr);
-  EXPECT_NE (singleton_tracks->modulatorTrack (), nullptr);
 
   // Verify the tracks can be found via the registry
   auto chord_track_uuid = singleton_tracks->chordTrack ()->get_uuid ();

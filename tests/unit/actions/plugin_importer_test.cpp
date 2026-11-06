@@ -60,8 +60,6 @@ protected:
       track_factory_->create_empty_track<structure::tracks::MasterTrack> ();
     auto chord_track_ref =
       track_factory_->create_empty_track<structure::tracks::ChordTrack> ();
-    auto modulator_track_ref =
-      track_factory_->create_empty_track<structure::tracks::ModulatorTrack> ();
     auto marker_track_ref =
       track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
 
@@ -70,15 +68,12 @@ protected:
       master_track_ref.get_object_as<structure::tracks::MasterTrack> ());
     singleton_tracks_->setChordTrack (
       chord_track_ref.get_object_as<structure::tracks::ChordTrack> ());
-    singleton_tracks_->setModulatorTrack (
-      modulator_track_ref.get_object_as<structure::tracks::ModulatorTrack> ());
     singleton_tracks_->setMarkerTrack (
       marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ());
 
     // Add singleton tracks to collection
     track_collection_->add_track (master_track_ref);
     track_collection_->add_track (chord_track_ref);
-    track_collection_->add_track (modulator_track_ref);
     track_collection_->add_track (marker_track_ref);
 
     // Create undo stack
@@ -318,23 +313,6 @@ TEST_F (PluginImporterTest, ImportModulatorPluginToGlobalRack)
   EXPECT_TRUE (instantiation_finished_called_);
 }
 
-// A modulator descriptor with a track target lands in that track's rack
-TEST_F (PluginImporterTest, ImportModulatorPluginToTrackRack)
-{
-  auto * modulator_track = singleton_tracks_->modulatorTrack ();
-  ASSERT_NE (modulator_track, nullptr);
-  ASSERT_NE (modulator_track->modulators (), nullptr);
-
-  auto descriptor = plugins::modulators::Modulator::make_descriptor (
-    plugins::modulators::MacroEngine::kDescriptorId);
-  plugin_importer_->importPluginToTrack (descriptor.get (), modulator_track);
-  QCoreApplication::processEvents ();
-
-  EXPECT_EQ (modulator_track->modulators ()->get_plugins (false).size (), 1u);
-  EXPECT_TRUE (global_modulators_->get_plugins (false).empty ());
-  EXPECT_TRUE (instantiation_finished_called_);
-}
-
 // Channel-bearing tracks own a rack, so a modulator dropped on one lands in
 // that track's rack
 TEST_F (PluginImporterTest, ImportModulatorPluginToChannelTrackRack)
@@ -354,6 +332,27 @@ TEST_F (PluginImporterTest, ImportModulatorPluginToChannelTrackRack)
 
   EXPECT_EQ (instrument_track->modulators ()->get_plugins (false).size (), 1u);
   EXPECT_TRUE (global_modulators_->get_plugins (false).empty ());
+  EXPECT_TRUE (instantiation_finished_called_);
+}
+
+// A modulator imported with a track target that owns no rack lands in the
+// project's global rack
+TEST_F (PluginImporterTest, ImportModulatorPluginToRacklessTrackFallsBackToGlobal)
+{
+  auto marker_track_ref =
+    track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
+  auto * marker_track =
+    marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ();
+  ASSERT_NE (marker_track, nullptr);
+  ASSERT_EQ (marker_track->modulators (), nullptr);
+  track_collection_->add_track (marker_track_ref);
+
+  auto descriptor = plugins::modulators::Modulator::make_descriptor (
+    plugins::modulators::MacroEngine::kDescriptorId);
+  plugin_importer_->importPluginToTrack (descriptor.get (), marker_track);
+  QCoreApplication::processEvents ();
+
+  EXPECT_EQ (global_modulators_->get_plugins (false).size (), 1u);
   EXPECT_TRUE (instantiation_finished_called_);
 }
 

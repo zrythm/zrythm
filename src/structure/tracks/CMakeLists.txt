@@ -28,7 +28,6 @@ target_sources(zrythm_structure_tracks_lib
     midi_bus_track.cpp
     midi_group_track.cpp
     midi_track.cpp
-    modulator_track.cpp
     piano_roll_track.cpp
     playback_cache_activity_aggregator.cpp
     playback_cache_activity_tracker.cpp
@@ -62,7 +61,6 @@ target_sources(zrythm_structure_tracks_lib
       midi_bus_track.h
       midi_group_track.h
       midi_track.h
-      modulator_track.h
       piano_roll_track.h
       playback_cache_activity_aggregator.h
       playback_cache_activity_tracker.h

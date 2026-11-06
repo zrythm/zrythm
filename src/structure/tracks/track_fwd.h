@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -22,7 +22,6 @@ class MidiBusTrack;
 class AudioBusTrack;
 class AudioTrack;
 class ChordTrack;
-class ModulatorTrack;
 
 using TrackVariant = std::variant<
   MarkerTrack,
@@ -35,8 +34,7 @@ using TrackVariant = std::variant<
   MidiBusTrack,
   AudioBusTrack,
   AudioTrack,
-  ChordTrack,
-  ModulatorTrack>;
+  ChordTrack>;
 using TrackPtrVariant = utils::to_pointer_variant<TrackVariant>;
 using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
 
@@ -48,8 +46,7 @@ concept FinalTrackSubclass =
   || std::is_same_v<TrackT, AudioGroupTrack>
   || std::is_same_v<TrackT, FolderTrack> || std::is_same_v<TrackT, MidiBusTrack>
   || std::is_same_v<TrackT, AudioBusTrack> || std::is_same_v<TrackT, AudioTrack>
-  || std::is_same_v<TrackT, ChordTrack>
-  || std::is_same_v<TrackT, ModulatorTrack>;
+  || std::is_same_v<TrackT, ChordTrack>;
 
 template <typename TrackT>
 concept FoldableTrack =
@@ -74,8 +71,7 @@ concept ProcessableTrack =
   || std::is_same_v<TrackT, ChordTrack>;
 
 template <typename TrackT>
-concept AutomatableTrack =
-  ProcessableTrack<TrackT> || std::is_same_v<TrackT, ModulatorTrack>;
+concept AutomatableTrack = ProcessableTrack<TrackT>;
 
 template <typename TrackT>
 concept PianoRollTrack =
