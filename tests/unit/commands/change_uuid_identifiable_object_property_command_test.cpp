@@ -38,11 +38,12 @@ protected:
 TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, CommandId)
 {
   ChangeUuidIdentifiableObjectPropertyCommand cmd (
-    *obj_, registry_, QStringLiteral ("intValue"), 100);
-  EXPECT_EQ (cmd.id (), ChangeUuidIdentifiableObjectPropertyCommand::CommandId);
-  // Must differ from the base class id (1762957285) so the two variants
-  // never merge with each other
-  EXPECT_NE (cmd.id (), 1762957285);
+    *obj_, registry_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
+  EXPECT_EQ (cmd.id (), ChangeUuidIdentifiableObjectPropertyCommand::kMergeId);
+  // Must differ from the base class id so the two variants never merge
+  // with each other
+  EXPECT_NE (cmd.id (), ChangeQObjectPropertyCommand::kMergeId);
 }
 
 TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, DirectCaseRedoUndo)
@@ -50,7 +51,8 @@ TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, DirectCaseRedoUndo)
   EXPECT_EQ (obj_->property ("intValue").toInt (), 42);
 
   ChangeUuidIdentifiableObjectPropertyCommand cmd (
-    *obj_, registry_, QStringLiteral ("intValue"), 100);
+    *obj_, registry_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
 
   cmd.redo ();
   EXPECT_EQ (obj_->property ("intValue").toInt (), 100);
@@ -69,7 +71,8 @@ TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, SubObjectCaseRedoUndo)
   EXPECT_EQ (child->intValue (), 42);
 
   ChangeUuidIdentifiableObjectPropertyCommand cmd (
-    *obj_, *child, registry_, QStringLiteral ("intValue"), 200);
+    *obj_, *child, registry_, QStringLiteral ("intValue"), 200,
+    Command::EngineRequirement::None);
 
   cmd.redo ();
   EXPECT_EQ (child->intValue (), 200);
@@ -84,9 +87,11 @@ TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, SubObjectCaseRedoUndo)
 TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, MergeWithSameType)
 {
   ChangeUuidIdentifiableObjectPropertyCommand cmd1 (
-    *obj_, registry_, QStringLiteral ("intValue"), 25);
+    *obj_, registry_, QStringLiteral ("intValue"), 25,
+    Command::EngineRequirement::None);
   ChangeUuidIdentifiableObjectPropertyCommand cmd2 (
-    *obj_, registry_, QStringLiteral ("intValue"), 75);
+    *obj_, registry_, QStringLiteral ("intValue"), 75,
+    Command::EngineRequirement::None);
 
   cmd1.redo ();
   EXPECT_EQ (obj_->property ("intValue").toInt (), 25);
@@ -100,10 +105,12 @@ TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, MergeWithSameType)
 TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, DoesNotMergeWithBaseType)
 {
   ChangeUuidIdentifiableObjectPropertyCommand uuid_cmd (
-    *obj_, registry_, QStringLiteral ("intValue"), 25);
-  ChangeQObjectPropertyCommand base_cmd (*obj_, QStringLiteral ("intValue"), 75);
+    *obj_, registry_, QStringLiteral ("intValue"), 25,
+    Command::EngineRequirement::None);
+  ChangeQObjectPropertyCommand base_cmd (
+    *obj_, QStringLiteral ("intValue"), 75, Command::EngineRequirement::None);
 
-  // Different command IDs (1762957286 vs 1762957285) — should not merge
+  // Different command ids — should not merge
   EXPECT_FALSE (uuid_cmd.mergeWith (&base_cmd));
 }
 
@@ -115,9 +122,11 @@ TEST_F (
   registry_.register_object (*obj2);
 
   ChangeUuidIdentifiableObjectPropertyCommand cmd1 (
-    *obj_, registry_, QStringLiteral ("intValue"), 25);
+    *obj_, registry_, QStringLiteral ("intValue"), 25,
+    Command::EngineRequirement::None);
   ChangeUuidIdentifiableObjectPropertyCommand cmd2 (
-    *obj2, registry_, QStringLiteral ("intValue"), 75);
+    *obj2, registry_, QStringLiteral ("intValue"), 75,
+    Command::EngineRequirement::None);
 
   EXPECT_FALSE (cmd1.mergeWith (&cmd2));
 }

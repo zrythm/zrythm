@@ -10,10 +10,12 @@ namespace zrythm::commands
 MoveArrangerObjectsCommand::MoveArrangerObjectsCommand (
   std::vector<structure::arrangement::ArrangerObjectUuidReference> objects,
   units::precise_tick_t                                            tick_delta,
+  EngineRequirement  engine_requirement,
   double             vertical_delta,
   VerticalChangeType vertical_change_type)
-    : QUndoCommand (QObject::tr ("Move Objects")), objects_ (std::move (objects)),
-      tick_delta_ (tick_delta), vertical_delta_ (vertical_delta),
+    : Command (QObject::tr ("Move Objects"), engine_requirement),
+      objects_ (std::move (objects)), tick_delta_ (tick_delta),
+      vertical_delta_ (vertical_delta),
       vertical_change_type_ (vertical_change_type)
 {
   // Store original positions for undo
@@ -55,13 +57,18 @@ MoveArrangerObjectsCommand::MoveArrangerObjectsCommand (
 bool
 MoveArrangerObjectsCommand::mergeWith (const QUndoCommand * other)
 {
-  if (other->id () != id ())
+  // Only merge with moves needing the same engine cooperation: a
+  // tempo-map-affecting move merged into a plain one would lose its
+  // engine pause
+  const auto * other_cmd =
+    dynamic_cast<const MoveArrangerObjectsCommand *> (other);
+  if (other_cmd == nullptr)
+    return false;
+  if (other_cmd->engine_requirement () != engine_requirement ())
     return false;
 
   // only merge if other command was made in quick succession of this
   // command's redo() and operates on the same objects
-  const auto * other_cmd =
-    dynamic_cast<const MoveArrangerObjectsCommand *> (other);
   const auto cur_time = std::chrono::steady_clock::now ();
   const auto duration = cur_time - last_redo_timestamp_;
   if (

@@ -6,9 +6,8 @@
 #include <optional>
 #include <utility>
 
+#include "commands/command.h"
 #include "structure/tracks/track.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -17,16 +16,17 @@ namespace zrythm::commands
  *
  * A nullopt color resets the track to its type-derived default color.
  */
-class ChangeTrackColorCommand : public QUndoCommand
+class ChangeTrackColorCommand : public Command
 {
 
 public:
   ChangeTrackColorCommand (
     structure::tracks::Track                      &track,
     std::optional<structure::tracks::Track::Color> color_after)
-      : QUndoCommand (
+      : Command (
           color_after ? QObject::tr ("Change Track Color")
-                      : QObject::tr ("Reset Track Color")),
+                      : QObject::tr ("Reset Track Color"),
+          EngineRequirement::None),
         track_ (track), color_after_ (std::move (color_after))
   {
   }

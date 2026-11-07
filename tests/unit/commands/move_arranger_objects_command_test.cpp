@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/move_arranger_objects_command.h"
@@ -67,7 +67,8 @@ protected:
 // Test initial state after construction
 TEST_F (MoveArrangerObjectsCommandTest, InitialState)
 {
-  MoveArrangerObjectsCommand command (test_objects_, units::ticks (100.0));
+  MoveArrangerObjectsCommand command (
+    test_objects_, units::ticks (100.0), Command::EngineRequirement::None);
 
   // Objects should still be at original positions
   for (size_t i = 0; i < test_objects_.size (); ++i)
@@ -85,7 +86,8 @@ TEST_F (MoveArrangerObjectsCommandTest, InitialState)
 TEST_F (MoveArrangerObjectsCommandTest, RedoMovesObjects)
 {
   const units::precise_tick_t tick_delta = units::ticks (100.0);
-  MoveArrangerObjectsCommand  command (test_objects_, tick_delta);
+  MoveArrangerObjectsCommand  command (
+    test_objects_, tick_delta, Command::EngineRequirement::None);
 
   command.redo ();
 
@@ -105,7 +107,8 @@ TEST_F (MoveArrangerObjectsCommandTest, RedoMovesObjects)
 TEST_F (MoveArrangerObjectsCommandTest, UndoRestoresPositions)
 {
   const units::precise_tick_t tick_delta = units::ticks (100.0);
-  MoveArrangerObjectsCommand  command (test_objects_, tick_delta);
+  MoveArrangerObjectsCommand  command (
+    test_objects_, tick_delta, Command::EngineRequirement::None);
 
   // First move objects
   command.redo ();
@@ -129,7 +132,8 @@ TEST_F (MoveArrangerObjectsCommandTest, UndoRestoresPositions)
 TEST_F (MoveArrangerObjectsCommandTest, MultipleUndoRedoCycles)
 {
   const units::precise_tick_t tick_delta = units::ticks (100.0);
-  MoveArrangerObjectsCommand  command (test_objects_, tick_delta);
+  MoveArrangerObjectsCommand  command (
+    test_objects_, tick_delta, Command::EngineRequirement::None);
 
   // First cycle
   command.redo ();
@@ -181,7 +185,8 @@ TEST_F (MoveArrangerObjectsCommandTest, MultipleUndoRedoCycles)
 // Test zero tick delta (no-op)
 TEST_F (MoveArrangerObjectsCommandTest, ZeroTickDelta)
 {
-  MoveArrangerObjectsCommand command (test_objects_, units::ticks (0.0));
+  MoveArrangerObjectsCommand command (
+    test_objects_, units::ticks (0.0), Command::EngineRequirement::None);
 
   command.redo ();
 
@@ -215,7 +220,8 @@ TEST_F (MoveArrangerObjectsCommandTest, VerticalMovementMidiNotes)
   const int                   vertical_delta = 5;
 
   // Create a command with vertical movement
-  MoveArrangerObjectsCommand command (test_objects_, tick_delta, vertical_delta);
+  MoveArrangerObjectsCommand command (
+    test_objects_, tick_delta, Command::EngineRequirement::None, vertical_delta);
 
   // Store original pitch for MIDI note
   int original_pitch = 0;
@@ -297,8 +303,8 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityChangesMidiNotes)
 
   // Create a command with velocity change (no horizontal movement)
   MoveArrangerObjectsCommand command (
-    test_objects_, units::ticks (0.0), velocity_delta,
-    MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
+    test_objects_, units::ticks (0.0), Command::EngineRequirement::None,
+    velocity_delta, MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
 
   command.redo ();
 
@@ -343,7 +349,7 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityClampingAtBoundaries)
 
   // Try to increase velocity beyond 127
   MoveArrangerObjectsCommand command (
-    test_objects_, units::ticks (0.0), 50.0,
+    test_objects_, units::ticks (0.0), Command::EngineRequirement::None, 50.0,
     MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
 
   command.redo ();
@@ -393,7 +399,7 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityClampsPerNoteAcrossNotes)
   };
 
   MoveArrangerObjectsCommand command (
-    notes, units::ticks (0.0), 40.0,
+    notes, units::ticks (0.0), Command::EngineRequirement::None, 40.0,
     MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
   command.redo ();
 
@@ -430,7 +436,8 @@ TEST_F (MoveArrangerObjectsCommandTest, NegativeTickDelta)
     }
 
   const double               tick_delta = -50.0;
-  MoveArrangerObjectsCommand command (test_objects_, units::ticks (tick_delta));
+  MoveArrangerObjectsCommand command (
+    test_objects_, units::ticks (tick_delta), Command::EngineRequirement::None);
 
   command.redo ();
 
@@ -460,7 +467,8 @@ TEST_F (MoveArrangerObjectsCommandTest, NegativeTickDelta)
 // Test command text
 TEST_F (MoveArrangerObjectsCommandTest, CommandText)
 {
-  MoveArrangerObjectsCommand command (test_objects_, units::ticks (100.0));
+  MoveArrangerObjectsCommand command (
+    test_objects_, units::ticks (100.0), Command::EngineRequirement::None);
 
   // The command should have the text "Move Objects" for display in undo stack
   EXPECT_EQ (command.text (), QString ("Move Objects"));
@@ -470,7 +478,8 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandText)
 TEST_F (MoveArrangerObjectsCommandTest, EmptyObjectsVector)
 {
   std::vector<structure::arrangement::ArrangerObjectUuidReference> empty_objects;
-  MoveArrangerObjectsCommand command (empty_objects, units::ticks (100.0));
+  MoveArrangerObjectsCommand command (
+    empty_objects, units::ticks (100.0), Command::EngineRequirement::None);
 
   // Should not crash with empty objects vector
   command.redo ();
@@ -483,8 +492,10 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingSameObjects)
   const units::precise_tick_t tick_delta1 = units::ticks (100.0);
   const units::precise_tick_t tick_delta2 = units::ticks (50.0);
 
-  MoveArrangerObjectsCommand command1 (test_objects_, tick_delta1);
-  MoveArrangerObjectsCommand command2 (test_objects_, tick_delta2);
+  MoveArrangerObjectsCommand command1 (
+    test_objects_, tick_delta1, Command::EngineRequirement::None);
+  MoveArrangerObjectsCommand command2 (
+    test_objects_, tick_delta2, Command::EngineRequirement::None);
 
   // Execute first command
   command1.redo ();
@@ -522,8 +533,10 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingDifferentObjects)
   auto different_marker = diff_builder.build_in_registry ();
   different_objects.push_back (different_marker);
 
-  MoveArrangerObjectsCommand command1 (test_objects_, tick_delta);
-  MoveArrangerObjectsCommand command2 (different_objects, tick_delta);
+  MoveArrangerObjectsCommand command1 (
+    test_objects_, tick_delta, Command::EngineRequirement::None);
+  MoveArrangerObjectsCommand command2 (
+    different_objects, tick_delta, Command::EngineRequirement::None);
 
   // Execute first command
   command1.redo ();
@@ -533,12 +546,28 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingDifferentObjects)
   EXPECT_FALSE (can_merge);
 }
 
+// A tempo-map-affecting move must not merge into a plain one: the merged
+// command would lose its engine pause
+TEST_F (MoveArrangerObjectsCommandTest, MergeRefusesDifferingEngineRequirements)
+{
+  const units::precise_tick_t tick_delta = units::ticks (100.0);
+
+  MoveArrangerObjectsCommand command1 (
+    test_objects_, tick_delta, Command::EngineRequirement::None);
+  MoveArrangerObjectsCommand command2 (
+    test_objects_, tick_delta, Command::EngineRequirement::PauseProcessing);
+
+  command1.redo ();
+  EXPECT_FALSE (command1.mergeWith (&command2));
+}
+
 // Test command merging with different command ID (should not merge)
 TEST_F (MoveArrangerObjectsCommandTest, CommandMergingDifferentCommandType)
 {
   const units::precise_tick_t tick_delta = units::ticks (100.0);
 
-  MoveArrangerObjectsCommand command1 (test_objects_, tick_delta);
+  MoveArrangerObjectsCommand command1 (
+    test_objects_, tick_delta, Command::EngineRequirement::None);
 
   // Create a different type of command
   class DifferentCommand : public QUndoCommand

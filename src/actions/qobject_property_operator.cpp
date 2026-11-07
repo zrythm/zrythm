@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/qobject_property_operator.h"
@@ -10,7 +10,8 @@ void
 QObjectPropertyOperator::setValue (QString propertyName, QVariant value)
 {
   auto cmd = std::make_unique<commands::ChangeQObjectPropertyCommand> (
-    *current_object_, propertyName, value);
+    *current_object_, propertyName, value,
+    commands::Command::EngineRequirement::None);
   undo_stack_->push (cmd.release ());
 }
 
@@ -19,9 +20,9 @@ QObjectPropertyOperator::setValueAffectingTempoMap (
   QString  propertyName,
   QVariant value)
 {
-  auto cmd =
-    std::make_unique<commands::ChangeTempoMapAffectingQObjectPropertyCommand> (
-      *current_object_, propertyName, value);
+  auto cmd = std::make_unique<commands::ChangeQObjectPropertyCommand> (
+    *current_object_, propertyName, value,
+    commands::Command::EngineRequirement::PauseProcessing);
   undo_stack_->push (cmd.release ());
 }
 }

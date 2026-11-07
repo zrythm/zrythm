@@ -6,20 +6,8 @@
 
 #include "utils/format_qt.h"
 
-#include "commands/add_arranger_object_command.h"
-#include "commands/add_plugin_command.h"
-#include "commands/add_track_command.h"
-#include "commands/change_qobject_property_command.h"
-#include "commands/delete_tracks_command.h"
-#include "commands/move_arranger_objects_command.h"
-#include "commands/move_plugins_command.h"
-#include "commands/port_connection_commands.h"
-#include "commands/remove_arranger_object_command.h"
-#include "commands/remove_plugins_command.h"
-#include "commands/route_track_command.h"
+#include "commands/command.h"
 #include "undo/undo_stack.h"
-
-#include <QAction>
 
 namespace zrythm::undo
 {
@@ -40,6 +28,32 @@ public:
 private:
   bool &executing_;
 };
+
+// Strongest engine requirement the command or any of its macro children
+// declares. Macro wrapper commands created by QUndoStack are plain
+// QUndoCommands and contribute nothing themselves.
+commands::Command::EngineRequirement
+strongest_engine_requirement (const QUndoCommand &cmd)
+{
+  using commands::Command;
+
+  auto result = Command::EngineRequirement::None;
+  if (const auto * z_cmd = dynamic_cast<const Command *> (&cmd))
+    {
+      result = z_cmd->engine_requirement ();
+    }
+
+  for (const auto i : std::views::iota (0, cmd.childCount ()))
+    {
+      const auto child_requirement =
+        strongest_engine_requirement (*cmd.child (i));
+      if (child_requirement > result)
+        {
+          result = child_requirement;
+        }
+    }
+  return result;
+}
 } // namespace
 
 UndoStack::UndoStack (
@@ -64,85 +78,23 @@ UndoStack::UndoStack (
   });
 }
 
-bool
-UndoStack::command_or_children_require_graph_recalculation (
-  const QUndoCommand &cmd) const
-{
-  static constexpr std::array<int, 8> command_ids_with_graph_pause = {
-    commands::AddEmptyTrackCommand::CommandId,
-    commands::AddPortConnectionCommand::CommandId,
-    commands::DeleteTracksCommand::CommandId,
-    commands::AddPluginCommand::CommandId,
-    commands::MovePluginsCommand::CommandId,
-    commands::RemovePluginsCommand::CommandId,
-    commands::RemovePortConnectionCommand::CommandId,
-    commands::RouteTrackCommand::CommandId,
-  };
-
-  // return if command itself requires graph pause
-  if (
-    cmd.id () >= 0
-    && std::ranges::contains (command_ids_with_graph_pause, cmd.id ()))
-    {
-      return true;
-    }
-
-  // return if any of its children (recursively) requires pause
-  return std::ranges::any_of (
-    std::views::iota (0, cmd.childCount ())
-      | std::views::transform ([&cmd] (const auto i) { return cmd.child (i); }),
-    [this] (const auto * child) {
-      return command_or_children_require_graph_recalculation (*child);
-    });
-}
-
-bool
-UndoStack::command_or_children_require_engine_pause (
-  const QUndoCommand &cmd) const
-{
-  static constexpr std::array<int, 4> command_ids_with_graph_pause = {
-    commands::AddArrangerObjectCommand<
-      structure::arrangement::TempoObject>::CommandId,
-    commands::RemoveArrangerObjectCommand<
-      structure::arrangement::TempoObject>::CommandId,
-    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId,
-    commands::ChangeTempoMapAffectingQObjectPropertyCommand::CommandId,
-  };
-
-  // return if command itself requires graph pause
-  if (
-    cmd.id () >= 0
-    && std::ranges::contains (command_ids_with_graph_pause, cmd.id ()))
-    {
-      return true;
-    }
-
-  // return if any of its children (recursively) requires pause
-  return std::ranges::any_of (
-    std::views::iota (0, cmd.childCount ())
-      | std::views::transform ([&cmd] (const auto i) { return cmd.child (i); }),
-    [this] (const auto * child) {
-      return command_or_children_require_engine_pause (*child);
-    });
-}
-
 void
 UndoStack::execute_with_engine_pause_if_needed (
   const QUndoCommand           &cmd,
   const std::function<void ()> &action)
 {
-  const auto recalc_graph =
-    command_or_children_require_graph_recalculation (cmd);
-  const auto pause_engine =
-    command_or_children_require_engine_pause (cmd) || recalc_graph;
+  using commands::Command;
+  const auto requirement = strongest_engine_requirement (cmd);
 
-  if (pause_engine)
+  if (requirement == Command::EngineRequirement::None)
     {
-      callback_with_paused_engine_requester_ (action, recalc_graph);
+      action ();
     }
   else
     {
-      action ();
+      const auto recalculate_graph =
+        requirement == Command::EngineRequirement::RecalculateGraph;
+      callback_with_paused_engine_requester_ (action, recalculate_graph);
     }
 }
 
@@ -183,6 +135,12 @@ UndoStack::push (QUndoCommand * cmd)
       return;
     }
   z_debug ("Performing action '{}'", cmd->text ());
+  if (dynamic_cast<const commands::Command *> (cmd) == nullptr)
+    {
+      z_warning (
+        "Command '{}' does not derive from commands::Command; it will run without engine cooperation",
+        cmd->text ());
+    }
   // Realize any pending (lazy) macros so this command lands inside them (done
   // before the engine pause so macro realization doesn't depend on the pause
   // requester invoking the action synchronously)

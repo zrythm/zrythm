@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 qt_add_library(zrythm_commands_lib STATIC)
@@ -36,6 +36,7 @@ target_sources(zrythm_commands_lib
       change_timebase_override_command.h
       change_uuid_identifiable_object_property_command.h
       chord_pad_commands.h
+      command.h
       delete_lane_command.h
       delete_tracks_command.h
       edit_chord_object_command.h

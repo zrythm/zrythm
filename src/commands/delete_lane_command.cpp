@@ -10,8 +10,8 @@ namespace zrythm::commands
 DeleteLaneCommand::DeleteLaneCommand (
   structure::tracks::TrackLaneList         &list,
   structure::tracks::TrackLaneUuidReference lane_ref)
-    : QUndoCommand (QObject::tr ("Delete Lane")), list_ (list),
-      lane_ref_ (std::move (lane_ref))
+    : Command (QObject::tr ("Delete Lane"), EngineRequirement::None),
+      list_ (list), lane_ref_ (std::move (lane_ref))
 {
   if (list_.size () <= 1)
     {

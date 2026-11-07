@@ -18,10 +18,11 @@ RemovePluginsCommand::RemovePluginsCommand (
   std::vector<PluginRemoveInfo>               plugin_infos,
   structure::project::PortConnectionsManager &connections_manager,
   utils::IObjectRegistry                     &registry)
-    : QUndoCommand (
+    : Command (
         plugin_infos.size () == 1
           ? QObject::tr ("Remove Plugin")
-          : QObject::tr ("Remove %n Plugin(s)", "", plugin_infos.size ())),
+          : QObject::tr ("Remove %n Plugin(s)", "", plugin_infos.size ()),
+        EngineRequirement::RecalculateGraph),
       plugin_infos_ (std::move (plugin_infos)),
       connections_manager_ (connections_manager), registry_ (registry)
 {

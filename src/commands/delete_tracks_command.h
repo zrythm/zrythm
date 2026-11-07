@@ -7,25 +7,21 @@
 #include <unordered_set>
 #include <vector>
 
+#include "commands/command.h"
 #include "structure/tracks/track_collection.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
 
-class DeleteTracksCommand : public QUndoCommand
+class DeleteTracksCommand : public Command
 {
 public:
-  static constexpr auto CommandId = 1776134295;
-
   DeleteTracksCommand (
     structure::tracks::TrackCollection                &collection,
     std::vector<structure::tracks::TrackUuidReference> track_refs);
 
   void undo () override;
   void redo () override;
-  int  id () const override { return CommandId; }
 
 private:
   struct TrackInfo

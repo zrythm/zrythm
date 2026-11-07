@@ -12,17 +12,12 @@ AddPortConnectionCommand::AddPortConnectionCommand (
   const dsp::PortUuid                         src,
   const dsp::PortUuid                         dest,
   dsp::Port                                  &destination_port)
-    : QUndoCommand (QObject::tr ("Connect Ports")), manager_ (manager),
-      src_ (src), dest_ (dest), destination_port_ (destination_port),
+    : Command (QObject::tr ("Connect Ports"), EngineRequirement::RecalculateGraph),
+      manager_ (manager), src_ (src), dest_ (dest),
+      destination_port_ (destination_port),
       attachment_follows_connections_ (
         destination_port.attachment_follows_connections ())
 {
-}
-
-int
-AddPortConnectionCommand::id () const
-{
-  return CommandId;
 }
 
 void
@@ -46,17 +41,14 @@ RemovePortConnectionCommand::RemovePortConnectionCommand (
   const dsp::PortUuid                         src,
   const dsp::PortUuid                         dest,
   dsp::Port                                  &destination_port)
-    : QUndoCommand (QObject::tr ("Disconnect Ports")), manager_ (manager),
-      src_ (src), dest_ (dest), destination_port_ (destination_port),
+    : Command (
+        QObject::tr ("Disconnect Ports"),
+        EngineRequirement::RecalculateGraph),
+      manager_ (manager), src_ (src), dest_ (dest),
+      destination_port_ (destination_port),
       attachment_follows_connections_ (
         destination_port.attachment_follows_connections ())
 {
-}
-
-int
-RemovePortConnectionCommand::id () const
-{
-  return CommandId;
 }
 
 void
@@ -96,20 +88,14 @@ UpdatePortConnectionCommand::UpdatePortConnectionCommand (
   float                                       multiplier,
   bool                                        enabled,
   bool                                        merges)
-    : QUndoCommand (QObject::tr ("Update Port Connection")), manager_ (manager),
-      src_ (src), dest_ (dest), multiplier_ (multiplier), enabled_ (enabled),
-      merges_ (merges)
+    : Command (QObject::tr ("Update Port Connection"), EngineRequirement::None),
+      manager_ (manager), src_ (src), dest_ (dest), multiplier_ (multiplier),
+      enabled_ (enabled), merges_ (merges)
 {
   const auto * conn = manager.get_connection (src, dest);
   z_return_if_fail (conn != nullptr);
   before_multiplier_ = conn->multiplier_;
   before_enabled_ = conn->enabled_;
-}
-
-int
-UpdatePortConnectionCommand::id () const
-{
-  return CommandId;
 }
 
 bool

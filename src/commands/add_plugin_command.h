@@ -1,32 +1,28 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include <utility>
 
+#include "commands/command.h"
 #include "plugins/plugin_group.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
 
-class AddPluginCommand : public QUndoCommand
+class AddPluginCommand : public Command
 {
 public:
-  static constexpr auto CommandId = 1763165707;
-
   AddPluginCommand (
     plugins::PluginGroup        &plugin_group,
     plugins::PluginUuidReference plugin_ref,
     std::optional<int>           index = std::nullopt)
-      : QUndoCommand (QObject::tr ("Add Plugin")), plugin_group_ (plugin_group),
-        plugin_ref_ (std::move (plugin_ref)), index_ (index)
+      : Command (QObject::tr ("Add Plugin"), EngineRequirement::RecalculateGraph),
+        plugin_group_ (plugin_group), plugin_ref_ (std::move (plugin_ref)),
+        index_ (index)
   {
   }
-
-  int id () const override { return CommandId; }
 
   void undo () override { plugin_group_.remove_plugin (plugin_ref_.id ()); }
 

@@ -26,7 +26,7 @@ SetAudioClipTransformsCommand::SetAudioClipTransformsCommand (
   structure::arrangement::ArrangerObjectUuidReference       clip,
   std::vector<structure::arrangement::AudioFunction::Entry> after_entries,
   const QString                                            &text)
-    : QUndoCommand (text), clip_ (std::move (clip)),
+    : Command (text, EngineRequirement::None), clip_ (std::move (clip)),
       before_entries_ (
         audio_clip_of (clip_).transform_entries ()
         | std::ranges::to<std::vector> ()),

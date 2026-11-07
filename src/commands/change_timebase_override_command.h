@@ -5,9 +5,8 @@
 
 #include <optional>
 
+#include "commands/command.h"
 #include "dsp/timebase.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -24,14 +23,14 @@ namespace zrythm::commands
  * reference-counted UUID system — deleting a track keeps it alive in the
  * registry until the delete command itself is destroyed).
  */
-class ChangeTimebaseOverrideCommand : public QUndoCommand
+class ChangeTimebaseOverrideCommand : public Command
 {
 public:
   ChangeTimebaseOverrideCommand (
     dsp::TimebaseProvider       &provider,
     std::optional<dsp::Timebase> timebase)
-      : QUndoCommand (QObject::tr ("Change Timebase")), provider_ (provider),
-        new_override_ (timebase)
+      : Command (QObject::tr ("Change Timebase"), EngineRequirement::None),
+        provider_ (provider), new_override_ (timebase)
   {
   }
 

@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include <utility>
+
+#include "commands/command.h"
 
 #include <QObject>
 #include <QUndoCommand>
@@ -22,30 +24,47 @@ namespace zrythm::commands
  * the data by value instead — otherwise undo will dereference a dangling
  * reference (use-after-free).
  */
-class ChangeQObjectPropertyCommand : public QUndoCommand
+class ChangeQObjectPropertyCommand : public Command
 {
 public:
+  /**
+   * QUndoCommand id for merge participation: Qt only calls mergeWith()
+   * between commands sharing a non-negative id.
+   */
+  static constexpr int kMergeId = 1762957285;
+
+  /**
+   * @param engine_requirement Engine cooperation this change needs: pass
+   * PauseProcessing when the property affects the tempo map, None
+   * otherwise.
+   */
   ChangeQObjectPropertyCommand (
-    QObject &object,
-    QString  property_name,
-    QVariant value)
-      : object_ (object), property_name_ (property_name),
+    QObject          &object,
+    QString           property_name,
+    QVariant          value,
+    EngineRequirement engine_requirement)
+      : Command (QObject::tr ("Change %1").arg (property_name), engine_requirement),
+        object_ (object), property_name_ (property_name),
         original_value_ (object.property (property_name.toLatin1 ().data ())),
         value_ (std::move (value))
   {
-    setText (QObject::tr ("Change %1").arg (property_name_));
   }
 
-  int  id () const override { return 1762957285; }
+  int  id () const override { return kMergeId; }
   bool mergeWith (const QUndoCommand * other) override
   {
-    if (other->id () != id ())
+    // Only merge with changes needing the same engine cooperation: a
+    // tempo-map-affecting change merged into a plain one would lose its
+    // engine pause
+    const auto * other_cmd =
+      dynamic_cast<const ChangeQObjectPropertyCommand *> (other);
+    if (other_cmd == nullptr)
+      return false;
+    if (other_cmd->engine_requirement () != engine_requirement ())
       return false;
 
     // only merge if other command was made in quick succession of this
     // command's redo() and operates on the same objects
-    const auto * other_cmd =
-      dynamic_cast<const ChangeQObjectPropertyCommand *> (other);
     const auto cur_time = std::chrono::steady_clock::now ();
     const auto duration = cur_time - last_redo_timestamp_;
     if (
@@ -83,16 +102,6 @@ private:
   QVariant                                           original_value_;
   QVariant                                           value_;
   std::chrono::time_point<std::chrono::steady_clock> last_redo_timestamp_;
-};
-
-class ChangeTempoMapAffectingQObjectPropertyCommand
-    : public ChangeQObjectPropertyCommand
-{
-public:
-  static constexpr int CommandId = 1762957664;
-  using ChangeQObjectPropertyCommand::ChangeQObjectPropertyCommand;
-
-  int id () const override { return CommandId; }
 };
 
 } // namespace zrythm::commands

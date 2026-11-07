@@ -1661,8 +1661,8 @@ TEST_F (
   EXPECT_DOUBLE_EQ (midi_clip_obj->length ()->ticks (), 100.0);
 }
 
-// Test moveByTicks with TempoObject - should create
-// MoveTempoMapAffectingArrangerObjectsCommand
+// Test moveByTicks with TempoObject - the pushed move must require an
+// engine pause
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTempoObject)
 {
   // Clear selection and only select tempo object
@@ -1677,11 +1677,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTempoObject)
   // Check that command was pushed to undo stack
   EXPECT_EQ (undo_stack_->index (), 1);
 
-  // Verify the command type is MoveTempoMapAffectingArrangerObjectsCommand
-  const auto * cmd = undo_stack_->command (0);
+  // Verify the command requires an engine pause (tempo map is affected)
+  const auto * z_cmd =
+    dynamic_cast<const commands::Command *> (undo_stack_->command (0));
+  ASSERT_NE (z_cmd, nullptr);
   EXPECT_EQ (
-    cmd->id (),
-    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
+    z_cmd->engine_requirement (),
+    commands::Command::EngineRequirement::PauseProcessing);
 
   // Verify tempo object was moved
   if (auto * tempo_obj = tempo_ref.get ())
@@ -1709,11 +1711,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTimeSignatureObjectValid
   // Check that command was pushed to undo stack
   EXPECT_EQ (undo_stack_->index (), 1);
 
-  // Verify the command type is MoveTempoMapAffectingArrangerObjectsCommand
-  const auto * cmd = undo_stack_->command (0);
+  // Verify the command requires an engine pause (tempo map is affected)
+  const auto * z_cmd =
+    dynamic_cast<const commands::Command *> (undo_stack_->command (0));
+  ASSERT_NE (z_cmd, nullptr);
   EXPECT_EQ (
-    cmd->id (),
-    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
+    z_cmd->engine_requirement (),
+    commands::Command::EngineRequirement::PauseProcessing);
 
   // Verify time signature object was moved
   if (auto * ts_obj = time_signature_ref.get ())
@@ -1766,12 +1770,14 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksMixedWithTempoObjects)
   // Check that command was pushed to undo stack
   EXPECT_EQ (undo_stack_->index (), 1);
 
-  // Verify the command type is MoveTempoMapAffectingArrangerObjectsCommand
-  // (because tempo object is in selection)
-  const auto * cmd = undo_stack_->command (0);
+  // Verify the command requires an engine pause (a tempo object is in the
+  // selection)
+  const auto * z_cmd =
+    dynamic_cast<const commands::Command *> (undo_stack_->command (0));
+  ASSERT_NE (z_cmd, nullptr);
   EXPECT_EQ (
-    cmd->id (),
-    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
+    z_cmd->engine_requirement (),
+    commands::Command::EngineRequirement::PauseProcessing);
 
   // Verify both objects were moved
   if (auto * marker_obj = marker_ref.get ())
@@ -1808,12 +1814,14 @@ TEST_F (
   // Check that command was pushed to undo stack
   EXPECT_EQ (undo_stack_->index (), 1);
 
-  // Verify the command type is MoveTempoMapAffectingArrangerObjectsCommand
-  // (because time signature object is in selection)
-  const auto * cmd = undo_stack_->command (0);
+  // Verify the command requires an engine pause (a time signature object is
+  // in the selection)
+  const auto * z_cmd =
+    dynamic_cast<const commands::Command *> (undo_stack_->command (0));
+  ASSERT_NE (z_cmd, nullptr);
   EXPECT_EQ (
-    cmd->id (),
-    commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
+    z_cmd->engine_requirement (),
+    commands::Command::EngineRequirement::PauseProcessing);
 
   // Verify both objects were moved
   if (auto * marker_obj = marker_ref.get ())

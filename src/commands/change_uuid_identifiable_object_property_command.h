@@ -33,7 +33,11 @@ class ChangeUuidIdentifiableObjectPropertyCommand
     : public ChangeQObjectPropertyCommand
 {
 public:
-  static constexpr int CommandId = 1783530767;
+  /**
+   * QUndoCommand id for merge participation: Qt only calls mergeWith()
+   * between commands sharing a non-negative id.
+   */
+  static constexpr int kMergeId = 1783530767;
 
   /**
    * @brief Direct case: the UUID-identifiable object IS the target.
@@ -43,16 +47,19 @@ public:
    * @param registry The object registry that owns @p uuid_object.
    * @param property_name The Q_PROPERTY name to change.
    * @param value The new value.
+   * @param engine_requirement Engine cooperation the change needs.
    */
   ChangeUuidIdentifiableObjectPropertyCommand (
     utils::UuidIdentifiableBase &uuid_object,
     utils::IObjectRegistry      &registry,
     QString                      property_name,
-    QVariant                     value)
+    QVariant                     value,
+    EngineRequirement            engine_requirement)
       : ChangeQObjectPropertyCommand (
           uuid_object,
           std::move (property_name),
-          std::move (value)),
+          std::move (value),
+          engine_requirement),
         uuid_ref_ (uuid_object.raw_uuid (), registry)
   {
   }
@@ -69,19 +76,21 @@ public:
    * @param registry The object registry that owns @p uuid_lifecycle_object.
    * @param property_name The Q_PROPERTY name to change.
    * @param value The new value.
+   * @param engine_requirement Engine cooperation the change needs.
    */
   ChangeUuidIdentifiableObjectPropertyCommand (
     utils::UuidIdentifiableBase &uuid_lifecycle_object,
     QObject                     &target,
     utils::IObjectRegistry      &registry,
     QString                      property_name,
-    QVariant                     value)
-      : ChangeQObjectPropertyCommand (target, property_name, value),
+    QVariant                     value,
+    EngineRequirement            engine_requirement)
+      : ChangeQObjectPropertyCommand (target, property_name, value, engine_requirement),
         uuid_ref_ (uuid_lifecycle_object.raw_uuid (), registry)
   {
   }
 
-  int id () const override { return CommandId; }
+  int id () const override { return kMergeId; }
 
 private:
   utils::UuidReference uuid_ref_;

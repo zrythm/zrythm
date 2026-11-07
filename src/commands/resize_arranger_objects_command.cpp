@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/resize_arranger_objects_command.h"
@@ -14,7 +14,7 @@ ResizeArrangerObjectsCommand::ResizeArrangerObjectsCommand (
   ResizeType                                                       type,
   ResizeDirection                                                  direction,
   double                                                           delta)
-    : QUndoCommand (QObject::tr ("Resize Objects")),
+    : Command (QObject::tr ("Resize Objects"), EngineRequirement::None),
       objects_ (std::move (objects)), type_ (type), direction_ (direction),
       delta_ (delta)
 {
@@ -200,8 +200,8 @@ ResizeArrangerObjectsCommand::redo ()
                         const double new_position =
                           original_state.position.in (units::ticks) + delta_;
                         const double new_length = std::max (
-                          original_state.length.in (
-                            units::ticks) -content_delta_val,
+                          original_state.length.in (units::ticks)
+                            - content_delta_val,
                           1.0);
                         obj->position ()->setTicks (new_position);
                         obj->length ()->setTicks (new_length);
@@ -249,8 +249,8 @@ ResizeArrangerObjectsCommand::redo ()
                         const double new_position =
                           original_state.position.in (units::ticks) + delta_;
                         const double new_length = std::max (
-                          original_state.length.in (
-                            units::ticks) -content_delta_val,
+                          original_state.length.in (units::ticks)
+                            - content_delta_val,
                           1.0);
                         obj->position ()->setTicks (new_position);
                         obj->length ()->setTicks (new_length);

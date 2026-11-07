@@ -10,10 +10,11 @@ MovePluginsCommand::MovePluginsCommand (
   std::vector<PluginMoveInfo> plugin_infos,
   PluginLocation              target_location,
   std::optional<int>          target_start_index)
-    : QUndoCommand (
+    : Command (
         plugin_infos.size () == 1
           ? QObject::tr ("Move Plugin")
-          : QObject::tr ("Move %n Plugin(s)", "", plugin_infos.size ())),
+          : QObject::tr ("Move %n Plugin(s)", "", plugin_infos.size ()),
+        EngineRequirement::RecalculateGraph),
       plugin_infos_ (std::move (plugin_infos)),
       target_location_ (target_location), target_start_index_ (target_start_index)
 {

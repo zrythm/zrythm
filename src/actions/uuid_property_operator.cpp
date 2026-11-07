@@ -47,9 +47,10 @@ UuidPropertyOperator::setValueOnSubObject (
       return;
     }
 
-  auto cmd =
-    std::make_unique<commands::ChangeUuidIdentifiableObjectPropertyCommand> (
-      *uuid_obj, *target, *registry_, propertyName, value);
+  auto cmd = std::make_unique<
+    commands::ChangeUuidIdentifiableObjectPropertyCommand> (
+    *uuid_obj, *target, *registry_, propertyName, value,
+    commands::Command::EngineRequirement::None);
   undo_stack_->push (cmd.release ());
 }
 

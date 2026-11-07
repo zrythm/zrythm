@@ -3,10 +3,9 @@
 
 #pragma once
 
+#include "commands/command.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_collection.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -14,21 +13,17 @@ namespace zrythm::commands
  * @brief Command that sets (or replaces) a track's folder parent without
  * changing its position.
  */
-class SetFolderParentCommand : public QUndoCommand
+class SetFolderParentCommand : public Command
 {
 public:
-  static constexpr auto CommandId = 1789181890;
-
   SetFolderParentCommand (
     structure::tracks::TrackCollection &collection,
     structure::tracks::Track::Uuid      child_id,
     structure::tracks::Track::Uuid      parent_id)
-      : QUndoCommand (QObject::tr ("Set Folder Parent")),
+      : Command (QObject::tr ("Set Folder Parent"), EngineRequirement::None),
         collection_ (collection), child_id_ (child_id), parent_id_ (parent_id)
   {
   }
-
-  int id () const override { return CommandId; }
 
   void undo () override
   {

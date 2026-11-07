@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/change_qobject_property_command.h"
@@ -27,14 +27,16 @@ protected:
 TEST_F (ChangeQObjectPropertyCommandTest, InitialState)
 {
   ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100);
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
   EXPECT_EQ (test_obj_->intValue (), 42);
 }
 
 TEST_F (ChangeQObjectPropertyCommandTest, RedoOperation)
 {
   ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100);
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
 
   // Initial state
   EXPECT_EQ (test_obj_->intValue (), 42);
@@ -51,7 +53,8 @@ TEST_F (ChangeQObjectPropertyCommandTest, RedoOperation)
 TEST_F (ChangeQObjectPropertyCommandTest, UndoOperation)
 {
   ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100);
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
 
   // First execute redo to set the value
   cmd.redo ();
@@ -65,7 +68,8 @@ TEST_F (ChangeQObjectPropertyCommandTest, UndoOperation)
 TEST_F (ChangeQObjectPropertyCommandTest, UndoRedoCycle)
 {
   ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100);
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
 
   // Initial state
   EXPECT_EQ (test_obj_->intValue (), 42);
@@ -90,7 +94,8 @@ TEST_F (ChangeQObjectPropertyCommandTest, UndoRedoCycle)
 TEST_F (ChangeQObjectPropertyCommandTest, StringProperty)
 {
   ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("stringValue"), QStringLiteral ("changed"));
+    *test_obj_, QStringLiteral ("stringValue"), QStringLiteral ("changed"),
+    Command::EngineRequirement::None);
 
   // Initial state
   EXPECT_EQ (test_obj_->stringValue (), QStringLiteral ("initial"));
@@ -107,7 +112,8 @@ TEST_F (ChangeQObjectPropertyCommandTest, StringProperty)
 TEST_F (ChangeQObjectPropertyCommandTest, DoubleProperty)
 {
   ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("doubleValue"), 2.71);
+    *test_obj_, QStringLiteral ("doubleValue"), 2.71,
+    Command::EngineRequirement::None);
 
   // Initial state
   EXPECT_DOUBLE_EQ (test_obj_->doubleValue (), 3.14);
@@ -123,7 +129,9 @@ TEST_F (ChangeQObjectPropertyCommandTest, DoubleProperty)
 
 TEST_F (ChangeQObjectPropertyCommandTest, SameValueNoChange)
 {
-  ChangeQObjectPropertyCommand cmd (*test_obj_, QStringLiteral ("intValue"), 42);
+  ChangeQObjectPropertyCommand cmd (
+    *test_obj_, QStringLiteral ("intValue"), 42,
+    Command::EngineRequirement::None);
 
   // Initial state
   EXPECT_EQ (test_obj_->intValue (), 42);
@@ -140,14 +148,16 @@ TEST_F (ChangeQObjectPropertyCommandTest, SameValueNoChange)
 TEST_F (ChangeQObjectPropertyCommandTest, CommandId)
 {
   ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100);
-  EXPECT_EQ (cmd.id (), 1762957285);
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
+  EXPECT_EQ (cmd.id (), ChangeQObjectPropertyCommand::kMergeId);
 }
 
 TEST_F (ChangeQObjectPropertyCommandTest, CommandText)
 {
   ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100);
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
   QString expected_text =
     QObject::tr ("Change %1").arg (QStringLiteral ("intValue"));
   EXPECT_EQ (cmd.text (), expected_text);
@@ -156,9 +166,11 @@ TEST_F (ChangeQObjectPropertyCommandTest, CommandText)
 TEST_F (ChangeQObjectPropertyCommandTest, MergeWithSameType)
 {
   ChangeQObjectPropertyCommand cmd1 (
-    *test_obj_, QStringLiteral ("intValue"), 25);
+    *test_obj_, QStringLiteral ("intValue"), 25,
+    Command::EngineRequirement::None);
   ChangeQObjectPropertyCommand cmd2 (
-    *test_obj_, QStringLiteral ("intValue"), 75);
+    *test_obj_, QStringLiteral ("intValue"), 75,
+    Command::EngineRequirement::None);
 
   // First command
   cmd1.redo ();
@@ -175,7 +187,8 @@ TEST_F (ChangeQObjectPropertyCommandTest, MergeWithSameType)
 TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentType)
 {
   ChangeQObjectPropertyCommand cmd1 (
-    *test_obj_, QStringLiteral ("intValue"), 25);
+    *test_obj_, QStringLiteral ("intValue"), 25,
+    Command::EngineRequirement::None);
 
   // Create a mock command with different ID
   class MockCommand : public QUndoCommand
@@ -192,9 +205,11 @@ TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentObject)
 {
   auto                         test_obj2 = std::make_unique<MockQObject> ();
   ChangeQObjectPropertyCommand cmd1 (
-    *test_obj_, QStringLiteral ("intValue"), 25);
+    *test_obj_, QStringLiteral ("intValue"), 25,
+    Command::EngineRequirement::None);
   ChangeQObjectPropertyCommand cmd2 (
-    *test_obj2, QStringLiteral ("intValue"), 75);
+    *test_obj2, QStringLiteral ("intValue"), 75,
+    Command::EngineRequirement::None);
 
   // Should not merge with different object
   EXPECT_FALSE (cmd1.mergeWith (&cmd2));
@@ -203,29 +218,54 @@ TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentObject)
 TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentProperty)
 {
   ChangeQObjectPropertyCommand cmd1 (
-    *test_obj_, QStringLiteral ("intValue"), 25);
+    *test_obj_, QStringLiteral ("intValue"), 25,
+    Command::EngineRequirement::None);
   ChangeQObjectPropertyCommand cmd2 (
-    *test_obj_, QStringLiteral ("stringValue"), QStringLiteral ("test"));
+    *test_obj_, QStringLiteral ("stringValue"), QStringLiteral ("test"),
+    Command::EngineRequirement::None);
 
   // Should not merge with different property
   EXPECT_FALSE (cmd1.mergeWith (&cmd2));
 }
 
-TEST_F (ChangeQObjectPropertyCommandTest, ChangeTempoMapAffectingCommandId)
+TEST_F (ChangeQObjectPropertyCommandTest, EngineRequirementPassedToConstructor)
 {
-  ChangeTempoMapAffectingQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100);
-  EXPECT_EQ (cmd.id (), 1762957664);
+  ChangeQObjectPropertyCommand plain_cmd (
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::None);
+  EXPECT_EQ (plain_cmd.engine_requirement (), Command::EngineRequirement::None);
+
+  ChangeQObjectPropertyCommand tempo_cmd (
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::PauseProcessing);
+  EXPECT_EQ (
+    tempo_cmd.engine_requirement (),
+    Command::EngineRequirement::PauseProcessing);
+}
+
+// A tempo-map-affecting change must not merge into a plain one: the merged
+// command would lose its engine pause
+TEST_F (ChangeQObjectPropertyCommandTest, MergeRefusesDifferingEngineRequirements)
+{
+  ChangeQObjectPropertyCommand cmd1 (
+    *test_obj_, QStringLiteral ("intValue"), 25,
+    Command::EngineRequirement::None);
+  cmd1.redo ();
+  ChangeQObjectPropertyCommand cmd2 (
+    *test_obj_, QStringLiteral ("intValue"), 75,
+    Command::EngineRequirement::PauseProcessing);
+  EXPECT_FALSE (cmd1.mergeWith (&cmd2));
 }
 
 TEST_F (
   ChangeQObjectPropertyCommandTest,
   ChangeTempoMapAffectingBasicFunctionality)
 {
-  ChangeTempoMapAffectingQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100);
+  ChangeQObjectPropertyCommand cmd (
+    *test_obj_, QStringLiteral ("intValue"), 100,
+    Command::EngineRequirement::PauseProcessing);
 
-  // Should work like the base class
+  // Should work like the plain variant
   cmd.redo ();
   EXPECT_EQ (test_obj_->intValue (), 100);
 

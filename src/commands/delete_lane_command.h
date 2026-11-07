@@ -5,9 +5,8 @@
 
 #include <optional>
 
+#include "commands/command.h"
 #include "structure/tracks/track_lane_list.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -23,7 +22,7 @@ namespace zrythm::commands
  * which reconstructs the original order regardless of the order the
  * commands of one batch were constructed in.
  */
-class DeleteLaneCommand : public QUndoCommand
+class DeleteLaneCommand : public Command
 {
 public:
   /**

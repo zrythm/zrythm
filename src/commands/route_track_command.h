@@ -1,35 +1,30 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include <utility>
 
+#include "commands/command.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_routing.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
 /**
  * @brief Command that routes (or re-routes) a track to an optional target.
  */
-class RouteTrackCommand : public QUndoCommand
+class RouteTrackCommand : public Command
 {
 public:
-  static constexpr auto CommandId = 6451638;
-
   RouteTrackCommand (
     structure::tracks::TrackRouting              &router,
     structure::tracks::Track::Uuid                source_id,
     std::optional<structure::tracks::Track::Uuid> target_id)
-      : QUndoCommand (QObject::tr ("Route Track")), router_ (router),
-        source_id_ (source_id), target_id_ (target_id)
+      : Command (QObject::tr ("Route Track"), EngineRequirement::RecalculateGraph),
+        router_ (router), source_id_ (source_id), target_id_ (target_id)
   {
   }
-
-  int id () const override { return CommandId; }
 
   void undo () override
   {

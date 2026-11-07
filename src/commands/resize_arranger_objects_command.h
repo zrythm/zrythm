@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,9 +8,8 @@
 #include <ranges>
 #include <vector>
 
+#include "commands/command.h"
 #include "structure/arrangement/arranger_object_all.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -33,9 +32,13 @@ enum class ResizeDirection : int
 };
 Q_ENUM_NS (ResizeDirection)
 
-class ResizeArrangerObjectsCommand : public QUndoCommand
+class ResizeArrangerObjectsCommand : public Command
 {
-  static constexpr int ID = 1762503480;
+  /**
+   * QUndoCommand id for merge participation: Qt only calls mergeWith()
+   * between commands sharing a non-negative id.
+   */
+  static constexpr int kMergeId = 1762503480;
 
 public:
   /// Structure to hold original state of an arranger object for undo
@@ -60,7 +63,7 @@ public:
     ResizeDirection                                                  direction,
     double                                                           delta);
 
-  int id () const override { return ID; }
+  int id () const override { return kMergeId; }
 
   bool mergeWith (const QUndoCommand * other) override
   {

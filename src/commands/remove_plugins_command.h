@@ -6,14 +6,13 @@
 #include <utility>
 #include <vector>
 
+#include "commands/command.h"
 #include "dsp/port_fwd.h"
 #include "plugins/plugin_group.h"
 #include "structure/project/port_connections_manager.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "utils/iobject_registry.h"
 #include "utils/qt.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -27,11 +26,9 @@ namespace zrythm::commands
  * are identified by UUID and resolved through the project registry when the
  * command runs, so the command holds no port pointers.
  */
-class RemovePluginsCommand : public QUndoCommand
+class RemovePluginsCommand : public Command
 {
 public:
-  static constexpr int CommandId = 1775263310;
-
   /** Per-plugin info for the removal. */
   struct PluginRemoveInfo
   {
@@ -60,8 +57,6 @@ public:
 
   void undo () override;
   void redo () override;
-
-  int id () const override { return CommandId; }
 
 private:
   void remove_plugin_automation (

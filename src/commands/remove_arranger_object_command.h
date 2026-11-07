@@ -5,37 +5,30 @@
 
 #include <optional>
 #include <stdexcept>
-#include <type_traits>
 #include <utility>
 
 #include "commands/arranger_object_owner_ref.h"
+#include "commands/command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/tracks/lane_restoration.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
 
 template <structure::arrangement::FinalArrangerObjectSubclass ObjectT>
-class RemoveArrangerObjectCommand : public QUndoCommand
+class RemoveArrangerObjectCommand : public Command
 {
 public:
   /**
-   * @brief QUndoCommand id for this removal.
-   *
-   * Tempo/time-signature object specializations evaluate to a distinct id so
-   * the undo stack can recognize them and pause the audio engine before
-   * running the command — the tempo map's RT-side data must not change while
-   * the audio thread is processing. All other object types have no id (-1),
-   * which is QUndoCommand's default for "no special handling".
+   * @brief Tempo/time-signature objects change the tempo map, so the
+   * engine must pause processing while the command runs — the tempo map's
+   * RT-side data must not change while the audio thread is processing.
    */
-  static constexpr int CommandId =
-    (std::is_same_v<ObjectT, structure::arrangement::TempoObject>
-     || std::is_same_v<ObjectT, structure::arrangement::TimeSignatureObject>)
-      ? 1781964242
-      : -1;
+  static constexpr EngineRequirement kEngineRequirement =
+    structure::arrangement::affects_tempo_map<ObjectT>
+      ? EngineRequirement::PauseProcessing
+      : EngineRequirement::None;
 
   /**
    * @param object_owner handle to the owner; must resolve to an
@@ -47,7 +40,7 @@ public:
   RemoveArrangerObjectCommand (
     ArrangerObjectOwnerRef                              object_owner,
     structure::arrangement::ArrangerObjectUuidReference object_ref)
-      : QUndoCommand (QObject::tr ("Remove Object")),
+      : Command (QObject::tr ("Remove Object"), kEngineRequirement),
         object_owner_ (std::move (object_owner)),
         object_ref_ (std::move (object_ref))
   {
@@ -87,8 +80,6 @@ public:
     // keeps a single trailing empty lane in the list the object left
     structure::tracks::trim_trailing_empty_lanes_if_lane (owner);
   }
-
-  int id () const override { return CommandId; }
 
 private:
   ArrangerObjectOwnerRef                              object_owner_;

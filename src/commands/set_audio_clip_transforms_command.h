@@ -5,10 +5,9 @@
 
 #include <vector>
 
+#include "commands/command.h"
 #include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/audio_function.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -20,11 +19,9 @@ namespace zrythm::commands
  * Entries are pure clip state (no pool or file interaction); undo and redo
  * only swap the remembered lists.
  */
-class SetAudioClipTransformsCommand : public QUndoCommand
+class SetAudioClipTransformsCommand : public Command
 {
 public:
-  static constexpr int CommandId = 1512873643;
-
   /**
    * @param clip The audio clip whose entries are replaced.
    * @param after_entries The entry list applied on every redo.
@@ -37,7 +34,6 @@ public:
     std::vector<structure::arrangement::AudioFunction::Entry> after_entries,
     const QString                                            &text);
 
-  int  id () const override { return CommandId; }
   void undo () override;
   void redo () override;
 

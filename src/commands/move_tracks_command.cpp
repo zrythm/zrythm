@@ -32,9 +32,9 @@ MoveTracksCommand::MoveTracksCommand (
   std::vector<structure::tracks::TrackUuidReference> track_refs,
   int                                                target_position,
   std::optional<structure::tracks::Track::Uuid>      target_folder)
-    : QUndoCommand (QObject::tr ("Move Tracks")), collection_ (collection),
-      track_refs_ (std::move (track_refs)), target_position_ (target_position),
-      target_folder_ (target_folder),
+    : Command (QObject::tr ("Move Tracks"), EngineRequirement::None),
+      collection_ (collection), track_refs_ (std::move (track_refs)),
+      target_position_ (target_position), target_folder_ (target_folder),
       moved_uuids_ (
         this->track_refs_
         | std::views::transform ([] (const auto &ref) { return ref.id (); })
@@ -211,12 +211,6 @@ MoveTracksCommand::redo ()
     }
 
   collection_.notify_tracks_moved (moved_uuids_);
-}
-
-int
-MoveTracksCommand::id () const
-{
-  return 1774496026;
 }
 
 bool

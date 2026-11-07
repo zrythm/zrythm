@@ -3,27 +3,34 @@
 
 #pragma once
 
+#include "commands/command.h"
 #include "dsp/parameter.h"
-
-#include <QUndoCommand>
+#include "utils/logger.h"
 
 namespace zrythm::commands
 {
-class ChangeParameterValueCommand : public QUndoCommand
+class ChangeParameterValueCommand : public Command
 {
 
 public:
+  /**
+   * QUndoCommand id for merge participation: Qt only calls mergeWith()
+   * between commands sharing a non-negative id.
+   */
+  static constexpr int kMergeId = 89453187;
+
   ChangeParameterValueCommand (
     dsp::ProcessorParameter &param,
     utils::IObjectRegistry  &registry,
     float                    value)
-      : QUndoCommand (
-          QObject::tr ("Change '%1' value to %2").arg (param.label ()).arg (value)),
+      : Command (
+          QObject::tr ("Change '%1' value to %2").arg (param.label ()).arg (value),
+          EngineRequirement::None),
         param_ref_ (param.get_uuid (), registry), value_after_ (value)
   {
   }
 
-  int  id () const override { return 89453187; }
+  int  id () const override { return kMergeId; }
   bool mergeWith (const QUndoCommand * other) override
   {
     if (other->id () != id ())

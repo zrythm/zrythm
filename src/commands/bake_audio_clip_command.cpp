@@ -29,7 +29,7 @@ BakeAudioClipCommand::BakeAudioClipCommand (
   structure::arrangement::ArrangerObjectUuidReference clip,
   dsp::FileAudioSourceUuidReference                   after_source,
   const QString                                      &text)
-    : QUndoCommand (text), clip_ (std::move (clip)),
+    : Command (text, EngineRequirement::None), clip_ (std::move (clip)),
       before_source_ (source_ref_of (clip_)),
       after_source_ (std::move (after_source))
 {

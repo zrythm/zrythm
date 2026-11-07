@@ -4,6 +4,7 @@
 #pragma once
 
 #include "commands/chord_pad_commands.h"
+#include "commands/command.h"
 #include "structure/arrangement/chord_object.h"
 
 #include <QPointer>
@@ -19,21 +20,27 @@ namespace zrythm::commands
  * ChordObject via QPointer, so undo/redo remain safe even if the model rebuilds
  * or resets during the operation.
  */
-class EditChordObjectCommand : public QUndoCommand
+class EditChordObjectCommand : public Command
 {
 public:
+  /**
+   * QUndoCommand id for merge participation: Qt only calls mergeWith()
+   * between commands sharing a non-negative id.
+   */
+  static constexpr int kMergeId = 1762954987;
+
   EditChordObjectCommand (
     structure::arrangement::ChordObject * chord_object,
     const dsp::ChordDescriptor           &new_descriptor)
-      : object_ (chord_object),
+      : Command (QObject::tr ("Edit chord"), EngineRequirement::None),
+        object_ (chord_object),
         before_ (
           ChordPadState::from_descriptor (*chord_object->chordDescriptor ())),
         after_ (ChordPadState::from_descriptor (new_descriptor))
   {
-    setText (QObject::tr ("Edit chord"));
   }
 
-  int id () const override { return 1762954987; }
+  int id () const override { return kMergeId; }
 
   bool mergeWith (const QUndoCommand * other) override
   {

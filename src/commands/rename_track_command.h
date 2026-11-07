@@ -1,23 +1,22 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include <utility>
 
+#include "commands/command.h"
 #include "structure/tracks/track.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
-class RenameTrackCommand : public QUndoCommand
+class RenameTrackCommand : public Command
 {
 
 public:
   RenameTrackCommand (structure::tracks::Track &track, QString name)
-      : QUndoCommand (QObject::tr ("Rename Track")), track_ (track),
-        name_after_ (std::move (name))
+      : Command (QObject::tr ("Rename Track"), EngineRequirement::None),
+        track_ (track), name_after_ (std::move (name))
   {
   }
 

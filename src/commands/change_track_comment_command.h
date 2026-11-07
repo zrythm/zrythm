@@ -5,19 +5,18 @@
 
 #include <utility>
 
+#include "commands/command.h"
 #include "structure/tracks/track.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
-class ChangeTrackCommentCommand : public QUndoCommand
+class ChangeTrackCommentCommand : public Command
 {
 
 public:
   ChangeTrackCommentCommand (structure::tracks::Track &track, QString comment)
-      : QUndoCommand (QObject::tr ("Change Track Comment")), track_ (track),
-        comment_after_ (std::move (comment))
+      : Command (QObject::tr ("Change Track Comment"), EngineRequirement::None),
+        track_ (track), comment_after_ (std::move (comment))
   {
   }
 

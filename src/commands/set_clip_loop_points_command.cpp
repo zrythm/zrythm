@@ -30,7 +30,8 @@ SetClipLoopPointsCommand::SetClipLoopPointsCommand (
   dsp::ContentTick                                        new_clip_start,
   dsp::ContentTick                                        new_loop_start,
   dsp::ContentTick                                        new_loop_end)
-    : clip_ (std::move (clip))
+    : Command (QObject::tr ("Change Clip Loop Points"), EngineRequirement::None),
+      clip_ (std::move (clip))
 {
   before_ = snapshotOf (*clip_.get ());
   after_.clip_start = new_clip_start;
@@ -40,8 +41,6 @@ SetClipLoopPointsCommand::SetClipLoopPointsCommand (
   // derivation here so after_ is a faithful post-redo snapshot.
   after_.track_bounds = is_default_range (
     *clip_.get (), new_clip_start, new_loop_start, new_loop_end);
-
-  setText (QObject::tr ("Change Clip Loop Points"));
 }
 
 void

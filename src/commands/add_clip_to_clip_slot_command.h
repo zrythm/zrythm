@@ -6,21 +6,20 @@
 #include <optional>
 #include <utility>
 
+#include "commands/command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/scenes/clip_slot.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
 
-class AddClipToClipSlotCommand : public QUndoCommand
+class AddClipToClipSlotCommand : public Command
 {
 public:
   AddClipToClipSlotCommand (
     structure::scenes::ClipSlotUuidReference            slot_ref,
     structure::arrangement::ArrangerObjectUuidReference object_ref)
-      : QUndoCommand (QObject::tr ("Add Clip")),
+      : Command (QObject::tr ("Add Clip"), EngineRequirement::None),
         slot_ref_ (std::move (slot_ref)), object_ref_ (std::move (object_ref))
   {
   }

@@ -134,13 +134,14 @@ TEST_F (AddPluginCommandTest, CommandText)
   EXPECT_EQ (command.text (), QString ("Add Plugin"));
 }
 
-// Test command ID
-TEST_F (AddPluginCommandTest, CommandId)
+// Adding a plugin changes the routing, so the command requires a graph
+// recalculation
+TEST_F (AddPluginCommandTest, EngineRequirement)
 {
   AddPluginCommand command (*plugin_group_, test_plugin_ref_);
 
-  // The command should have the correct ID
-  EXPECT_EQ (command.id (), AddPluginCommand::CommandId);
+  EXPECT_EQ (
+    command.engine_requirement (), Command::EngineRequirement::RecalculateGraph);
 }
 
 // Test adding multiple plugins to same group

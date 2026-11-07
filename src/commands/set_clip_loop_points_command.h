@@ -3,11 +3,10 @@
 
 #pragma once
 
+#include "commands/command.h"
 #include "dsp/tick_types.h"
 #include "structure/arrangement/clip.h"
 #include "utils/typed_uuid_reference.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -26,7 +25,7 @@ namespace zrythm::commands
  * The clip is held by a reference-counted @ref TypedUuidReference, so it stays
  * alive while the command is on the undo stack.
  */
-class SetClipLoopPointsCommand : public QUndoCommand
+class SetClipLoopPointsCommand : public Command
 {
 public:
   /// Snapshot of the three loop positions plus the track-bounds flag. Used to

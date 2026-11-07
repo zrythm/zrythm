@@ -6,9 +6,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "commands/command.h"
 #include "structure/tracks/track_collection.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -22,7 +21,7 @@ namespace zrythm::commands
  * when @p target_folder is specified, moved tracks become children of that
  * folder; when nullopt, external folder parents are cleared.
  */
-class MoveTracksCommand : public QUndoCommand
+class MoveTracksCommand : public Command
 {
 public:
   /**
@@ -46,7 +45,6 @@ public:
 
   void undo () override;
   void redo () override;
-  int  id () const override;
 
 private:
   /**

@@ -221,8 +221,8 @@ TEST_F (MoveTracksCommandTest, CommandText)
   EXPECT_EQ (command.text (), QString ("Move Tracks"));
 }
 
-// Test command ID
-TEST_F (MoveTracksCommandTest, CommandId)
+// Moving tracks within the tracklist does not change routing
+TEST_F (MoveTracksCommandTest, EngineRequirement)
 {
   auto track1 = create_audio_bus_track ();
   collection_->add_track (track1);
@@ -230,7 +230,7 @@ TEST_F (MoveTracksCommandTest, CommandId)
   std::vector<structure::tracks::TrackUuidReference> tracks{ track1 };
   MoveTracksCommand command (*collection_, tracks, 0);
 
-  EXPECT_EQ (command.id (), 1774496026);
+  EXPECT_EQ (command.engine_requirement (), Command::EngineRequirement::None);
 }
 
 // Test move to same position (should be no-op in terms of order)

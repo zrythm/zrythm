@@ -75,7 +75,7 @@ TransformArrangerObjectsCommand::TransformArrangerObjectsCommand (
   std::vector<structure::arrangement::ArrangerObjectUuidReference> objects,
   std::vector<TransformableObjectState>                            after_states,
   const QString                                                   &text)
-    : QUndoCommand (text), objects_ (std::move (objects)),
+    : Command (text, EngineRequirement::None), objects_ (std::move (objects)),
       after_states_ (std::move (after_states))
 {
   assert (objects_.size () == after_states_.size ());

@@ -188,27 +188,22 @@ ArrangerObjectSelectionOperator::moveByTicks (
       return false;
     }
 
-  // Create and push command
-  auto command = [&selected_objects, tick_delta] ()
-    -> std::unique_ptr<commands::MoveArrangerObjectsCommand> {
-    if (std::ranges::any_of (selected_objects, [] (auto &&object_ref) {
-          return object_ref.template get_object_as<
-                   structure::arrangement::TempoObject> ()
-                   != nullptr
-                 || object_ref.template get_object_as<
-                      structure::arrangement::TimeSignatureObject> ()
-                      != nullptr;
-        }))
-      {
-        return std::make_unique<
-          commands::MoveTempoMapAffectingArrangerObjectsCommand> (
-          std::move (selected_objects), units::ticks (tick_delta));
-      }
-
-    return std::make_unique<commands::MoveArrangerObjectsCommand> (
-      std::move (selected_objects), units::ticks (tick_delta));
-  }();
-  undo_stack_.push (command.release ());
+  // Create and push command: moving a tempo/time-signature object changes
+  // the tempo map, so the engine must pause while the move runs
+  const auto affects_tempo_map =
+    std::ranges::any_of (selected_objects, [] (auto &&object_ref) {
+      return object_ref.template get_object_as<
+               structure::arrangement::TempoObject> ()
+               != nullptr
+             || object_ref.template get_object_as<
+                  structure::arrangement::TimeSignatureObject> ()
+                  != nullptr;
+    });
+  undo_stack_.push (new commands::MoveArrangerObjectsCommand (
+    std::move (selected_objects), units::ticks (tick_delta),
+    affects_tempo_map
+      ? commands::Command::EngineRequirement::PauseProcessing
+      : commands::Command::EngineRequirement::None));
 
   return true;
 }
@@ -260,6 +255,7 @@ ArrangerObjectSelectionOperator::changeVelocities (
   // Create and push command
   auto * command = new commands::MoveArrangerObjectsCommand (
     std::move (selected_objects), units::ticks (0),
+    commands::Command::EngineRequirement::None,
     static_cast<double> (velocity_delta),
     commands::MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
   undo_stack_.push (command);
@@ -346,7 +342,7 @@ ArrangerObjectSelectionOperator::rampVelocities (
         continue;
       undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
         *note, object_factory_.registry (), QStringLiteral ("velocity"),
-        new_velocity));
+        new_velocity, commands::Command::EngineRequirement::None));
     }
 
   return true;
@@ -2522,7 +2518,8 @@ ArrangerObjectSelectionOperator::toggleMute (
     {
       undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
         *target.owner_obj, *target.mute_obj, object_factory_.registry (),
-        QStringLiteral ("muted"), new_muted));
+        QStringLiteral ("muted"), new_muted,
+        commands::Command::EngineRequirement::None));
     }
 
   return true;
@@ -2682,7 +2679,8 @@ ArrangerObjectSelectionOperator::setStretchAlgorithm (
     {
       undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
         *clip, object_factory_.registry (), QStringLiteral ("stretchAlgorithm"),
-        QVariant::fromValue (algorithm)));
+        QVariant::fromValue (algorithm),
+        commands::Command::EngineRequirement::None));
     }
 
   return true;
@@ -2805,7 +2803,8 @@ ArrangerObjectSelectionOperator::process_vertical_move (
 
   // Create and push command
   auto * command = new commands::MoveArrangerObjectsCommand (
-    std::move (selected_objects), units::ticks (0), delta);
+    std::move (selected_objects), units::ticks (0),
+    commands::Command::EngineRequirement::None, delta);
   undo_stack_.push (command);
 
   return true;

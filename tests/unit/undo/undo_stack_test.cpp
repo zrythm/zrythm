@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "commands/command.h"
 #include "undo/undo_stack.h"
 
 #include "helpers/scoped_qcoreapplication.h"
@@ -19,17 +20,20 @@ protected:
     // objects
     app_ = std::make_unique<test_helpers::ScopedQCoreApplication> ();
 
-    undo_stack_ = std::make_unique<UndoStack> ([] (const auto &callback, bool) {
-      callback ();
-    });
+    undo_stack_ = std::make_unique<UndoStack> (
+      [this] (const auto &callback, bool recalculate_graph) {
+        ++pause_request_count_;
+        last_requested_graph_recalculation_ = recalculate_graph;
+        callback ();
+      });
   }
 
   // Command that toggles a flag so undo/redo effects are observable
-  class ToggleCommand : public QUndoCommand
+  class ToggleCommand : public commands::Command
   {
   public:
     explicit ToggleCommand (bool &flag, const QString &text)
-        : QUndoCommand (text), flag_ (flag)
+        : Command (text, EngineRequirement::None), flag_ (flag)
     {
     }
 
@@ -40,8 +44,25 @@ protected:
     bool &flag_;
   };
 
+  // Command whose only behavior is its engine requirement
+  class RequirementCommand : public commands::Command
+  {
+  public:
+    explicit RequirementCommand (EngineRequirement requirement)
+        : Command (QStringLiteral ("Requirement"), requirement)
+    {
+    }
+
+    void redo () override { }
+    void undo () override { }
+  };
+
   std::unique_ptr<test_helpers::ScopedQCoreApplication> app_;
   std::unique_ptr<UndoStack>                            undo_stack_;
+
+  // Engine cooperation requested by the stack so far
+  int  pause_request_count_ = 0;
+  bool last_requested_graph_recalculation_ = false;
 };
 
 TEST_F (UndoStackTest, EmptyMacroIsDiscarded)
@@ -321,11 +342,12 @@ TEST_F (UndoStackTest, UndoRedoOnEmptyStackIsIgnored)
 // list.
 TEST_F (UndoStackTest, PushFromInsideRedoIsRefused)
 {
-  class EchoingCommand : public QUndoCommand
+  class EchoingCommand : public commands::Command
   {
   public:
     EchoingCommand (UndoStack &stack, bool &echo_flag)
-        : stack_ (stack), echo_flag_ (echo_flag)
+        : Command (QString (), EngineRequirement::None), stack_ (stack),
+          echo_flag_ (echo_flag)
     {
     }
 
@@ -350,10 +372,13 @@ TEST_F (UndoStackTest, PushFromInsideRedoIsRefused)
 
 TEST_F (UndoStackTest, UndoFromInsideRedoIsRefused)
 {
-  class UndoingCommand : public QUndoCommand
+  class UndoingCommand : public commands::Command
   {
   public:
-    explicit UndoingCommand (UndoStack &stack) : stack_ (stack) { }
+    explicit UndoingCommand (UndoStack &stack)
+        : Command (QString (), EngineRequirement::None), stack_ (stack)
+    {
+    }
 
     void redo () override { stack_.undo (); }
     void undo () override { }
@@ -376,6 +401,83 @@ TEST_F (UndoStackTest, UndoFromInsideRedoIsRefused)
   undo_stack_->undo ();
   EXPECT_FALSE (flag);
   EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+TEST_F (UndoStackTest, NoneRequirementRunsCommandWithoutEngineCooperation)
+{
+  undo_stack_->push (
+    new RequirementCommand (commands::Command::EngineRequirement::None));
+  EXPECT_EQ (pause_request_count_, 0);
+}
+
+TEST_F (UndoStackTest, PauseProcessingCommandRequestsPauseWithoutGraphRecalc)
+{
+  using commands::Command;
+
+  undo_stack_->push (
+    new RequirementCommand (Command::EngineRequirement::PauseProcessing));
+  EXPECT_EQ (pause_request_count_, 1);
+  EXPECT_FALSE (last_requested_graph_recalculation_);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (pause_request_count_, 2);
+  EXPECT_FALSE (last_requested_graph_recalculation_);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (pause_request_count_, 3);
+  EXPECT_FALSE (last_requested_graph_recalculation_);
+}
+
+TEST_F (UndoStackTest, RecalculateGraphCommandRequestsPauseWithGraphRecalc)
+{
+  using commands::Command;
+
+  undo_stack_->push (
+    new RequirementCommand (Command::EngineRequirement::RecalculateGraph));
+  EXPECT_EQ (pause_request_count_, 1);
+  EXPECT_TRUE (last_requested_graph_recalculation_);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (pause_request_count_, 2);
+  EXPECT_TRUE (last_requested_graph_recalculation_);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (pause_request_count_, 3);
+  EXPECT_TRUE (last_requested_graph_recalculation_);
+}
+
+// A macro runs with the strongest requirement any of its children declares
+TEST_F (UndoStackTest, MacroAggregatesStrongestChildRequirement)
+{
+  using commands::Command;
+
+  // Pause-only children: undo/redo of the macro requests a pause without
+  // graph recalculation
+  undo_stack_->beginMacro (QStringLiteral ("Pause Macro"));
+  undo_stack_->push (new RequirementCommand (Command::EngineRequirement::None));
+  undo_stack_->push (
+    new RequirementCommand (Command::EngineRequirement::PauseProcessing));
+  undo_stack_->endMacro ();
+  // only the PauseProcessing push cooperated with the engine
+  EXPECT_EQ (pause_request_count_, 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (pause_request_count_, 2);
+  EXPECT_FALSE (last_requested_graph_recalculation_);
+
+  // One graph-recalculating child upgrades the whole macro to a graph
+  // recalculation
+  undo_stack_->beginMacro (QStringLiteral ("Graph Macro"));
+  undo_stack_->push (
+    new RequirementCommand (Command::EngineRequirement::PauseProcessing));
+  undo_stack_->push (
+    new RequirementCommand (Command::EngineRequirement::RecalculateGraph));
+  undo_stack_->endMacro ();
+  EXPECT_EQ (pause_request_count_, 4);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (pause_request_count_, 5);
+  EXPECT_TRUE (last_requested_graph_recalculation_);
 }
 
 } // namespace zrythm::undo

@@ -5,11 +5,10 @@
 
 #include <vector>
 
+#include "commands/command.h"
 #include "dsp/curve.h"
 #include "dsp/tick_types.h"
 #include "structure/arrangement/arranger_object.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -44,7 +43,7 @@ struct TransformableObjectState
  * undo() restores the captured states. Both directions write absolute
  * values, so repeated undo/redo cycles are idempotent.
  */
-class TransformArrangerObjectsCommand : public QUndoCommand
+class TransformArrangerObjectsCommand : public Command
 {
 public:
   /**

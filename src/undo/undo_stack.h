@@ -118,25 +118,9 @@ private:
   friend void           from_json (const nlohmann::json &j, UndoStack &u);
 
   /**
-   * @brief Returns whether any of the command's nested children requires
-   * recalculating the processing graph.
-   *
-   * This implies the engine should be paused as well.
-   */
-  bool command_or_children_require_graph_recalculation (
-    const QUndoCommand &cmd) const;
-
-  /**
-   * @brief Returns whether any of the command's nested children requires
-   * pausing the engine (but not the graph).
-   */
-  bool command_or_children_require_engine_pause (const QUndoCommand &cmd) const;
-
-  /**
-   * @brief Executes the given action on the given command with optionally
-   * recalculating the graph and pausing the engine if the command requires it.
-   *
-   * This is just a helper to avoid repeating ourselves in push/undo/redo.
+   * @brief Executes the given action on the given command with the engine
+   * cooperation the command (or any of its macro children) declares via
+   * commands::Command::engine_requirement().
    */
   void execute_with_engine_pause_if_needed (
     const QUndoCommand           &cmd,

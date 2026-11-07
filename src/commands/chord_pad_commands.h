@@ -3,10 +3,9 @@
 
 #pragma once
 
+#include "commands/command.h"
 #include "dsp/chord_descriptor.h"
 #include "structure/project/chord_pad_bank.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -46,15 +45,15 @@ struct ChordPadState
   bool operator== (const ChordPadState &other) const = default;
 };
 
-class EditChordPadCommand : public QUndoCommand
+class EditChordPadCommand : public Command
 {
 public:
   EditChordPadCommand (
     structure::project::ChordPadBank &bank,
     int                               index,
     ChordPadState                     after)
-      : QUndoCommand (QObject::tr ("Edit Chord Pad")), bank_ (bank),
-        index_ (index),
+      : Command (QObject::tr ("Edit Chord Pad"), EngineRequirement::None),
+        bank_ (bank), index_ (index),
         before_ (ChordPadState::from_descriptor (*bank.chordAt (index))),
         after_ (std::move (after))
   {
@@ -70,12 +69,12 @@ private:
   ChordPadState                     after_;
 };
 
-class AddChordPadCommand : public QUndoCommand
+class AddChordPadCommand : public Command
 {
 public:
   AddChordPadCommand (structure::project::ChordPadBank &bank, ChordPadState state)
-      : QUndoCommand (QObject::tr ("Add Chord Pad")), bank_ (bank),
-        state_ (std::move (state))
+      : Command (QObject::tr ("Add Chord Pad"), EngineRequirement::None),
+        bank_ (bank), state_ (std::move (state))
   {
   }
 
@@ -87,12 +86,12 @@ private:
   ChordPadState                     state_;
 };
 
-class RemoveChordPadCommand : public QUndoCommand
+class RemoveChordPadCommand : public Command
 {
 public:
   RemoveChordPadCommand (structure::project::ChordPadBank &bank, int index)
-      : QUndoCommand (QObject::tr ("Remove Chord Pad")), bank_ (bank),
-        index_ (index),
+      : Command (QObject::tr ("Remove Chord Pad"), EngineRequirement::None),
+        bank_ (bank), index_ (index),
         state_ (ChordPadState::from_descriptor (*bank.chordAt (index)))
   {
   }
@@ -106,12 +105,12 @@ private:
   ChordPadState                     state_;
 };
 
-class MoveChordPadCommand : public QUndoCommand
+class MoveChordPadCommand : public Command
 {
 public:
   MoveChordPadCommand (structure::project::ChordPadBank &bank, int from, int to)
-      : QUndoCommand (QObject::tr ("Move Chord Pad")), bank_ (bank),
-        from_ (from), to_ (to)
+      : Command (QObject::tr ("Move Chord Pad"), EngineRequirement::None),
+        bank_ (bank), from_ (from), to_ (to)
   {
   }
 
@@ -124,14 +123,15 @@ private:
   int                               to_;
 };
 
-class ReplaceAllChordPadsCommand : public QUndoCommand
+class ReplaceAllChordPadsCommand : public Command
 {
 public:
   ReplaceAllChordPadsCommand (
     structure::project::ChordPadBank &bank,
     std::vector<ChordPadState>        after,
     const QString                    &text = QObject::tr ("Replace Chord Pads"))
-      : QUndoCommand (text), bank_ (bank), after_ (std::move (after))
+      : Command (text, EngineRequirement::None), bank_ (bank),
+        after_ (std::move (after))
   {
     const auto count = bank.rowCount ();
     before_.reserve (count);

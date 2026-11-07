@@ -7,10 +7,9 @@
 #include <optional>
 #include <utility>
 
+#include "commands/command.h"
 #include "structure/arrangement/arranger_object.h"
 #include "utils/uuid_reference.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -24,7 +23,7 @@ namespace zrythm::commands
  *
  * @pre The owner carries an ArrangerObjectColor.
  */
-class ChangeArrangerObjectColorCommand : public QUndoCommand
+class ChangeArrangerObjectColorCommand : public Command
 {
 
 public:
@@ -32,9 +31,10 @@ public:
     structure::arrangement::ArrangerObject &owner,
     utils::IObjectRegistry                 &registry,
     std::optional<QColor>                   color_after)
-      : QUndoCommand (
+      : Command (
           color_after ? QObject::tr ("Change Object Color")
-                      : QObject::tr ("Reset Object Color")),
+                      : QObject::tr ("Reset Object Color"),
+          EngineRequirement::None),
         owner_ (owner), color_after_ (std::move (color_after)),
         uuid_ref_ (owner.raw_uuid (), registry)
   {

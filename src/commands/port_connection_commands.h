@@ -5,10 +5,9 @@
 
 #include <chrono>
 
+#include "commands/command.h"
 #include "dsp/port.h"
 #include "structure/project/port_connections_manager.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -16,18 +15,15 @@ namespace zrythm::commands
 /**
  * @brief Command that adds a user connection between two ports.
  */
-class AddPortConnectionCommand : public QUndoCommand
+class AddPortConnectionCommand : public Command
 {
 public:
-  static constexpr auto CommandId = 6451639;
-
   AddPortConnectionCommand (
     structure::project::PortConnectionsManager &manager,
     const dsp::PortUuid                         src,
     const dsp::PortUuid                         dest,
     dsp::Port                                  &destination_port);
 
-  int  id () const override;
   void undo () override;
   void redo () override;
 
@@ -44,18 +40,15 @@ private:
  * @brief Command that removes a connection between two ports, restoring the
  * full connection state on undo.
  */
-class RemovePortConnectionCommand : public QUndoCommand
+class RemovePortConnectionCommand : public Command
 {
 public:
-  static constexpr auto CommandId = 6451640;
-
   RemovePortConnectionCommand (
     structure::project::PortConnectionsManager &manager,
     const dsp::PortUuid                         src,
     const dsp::PortUuid                         dest,
     dsp::Port                                  &destination_port);
 
-  int  id () const override;
   void undo () override;
   void redo () override;
 
@@ -80,10 +73,14 @@ private:
  * The state before the change is captured on construction; undo restores
  * it. The connection's locked flag is passed through unchanged.
  */
-class UpdatePortConnectionCommand : public QUndoCommand
+class UpdatePortConnectionCommand : public Command
 {
 public:
-  static constexpr auto CommandId = 6451641;
+  /**
+   * QUndoCommand id for merge participation: Qt only calls mergeWith()
+   * between commands sharing a non-negative id.
+   */
+  static constexpr auto kMergeId = 6451641;
 
   /**
    * @param merges Whether consecutive commands on the same connection
@@ -98,7 +95,7 @@ public:
     bool                                        enabled,
     bool                                        merges);
 
-  int  id () const override;
+  int  id () const override { return kMergeId; }
   bool mergeWith (const QUndoCommand * other) override;
   void undo () override;
   void redo () override;

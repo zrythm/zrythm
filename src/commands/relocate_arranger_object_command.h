@@ -8,17 +8,16 @@
 #include <utility>
 
 #include "commands/arranger_object_owner_ref.h"
+#include "commands/command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/tracks/lane_restoration.h"
 #include "structure/tracks/track_lane_list.h"
 
-#include <QUndoCommand>
-
 namespace zrythm::commands
 {
 template <structure::arrangement::FinalArrangerObjectSubclass ObjectT>
-class RelocateArrangerObjectCommand : public QUndoCommand
+class RelocateArrangerObjectCommand : public Command
 {
 public:
   /**
@@ -35,7 +34,7 @@ public:
     structure::arrangement::ArrangerObjectUuidReference clip_ref,
     ArrangerObjectOwnerRef                              source_owner,
     ArrangerObjectOwnerRef                              target_owner)
-      : QUndoCommand (QObject::tr ("Relocate Object")),
+      : Command (QObject::tr ("Relocate Object"), EngineRequirement::None),
         obj_ref_ (std::move (clip_ref)), target_owner_ (std::move (target_owner)),
         source_owner_ (std::move (source_owner))
   {

@@ -12,10 +12,11 @@ namespace zrythm::commands
 DeleteTracksCommand::DeleteTracksCommand (
   structure::tracks::TrackCollection                &collection,
   std::vector<structure::tracks::TrackUuidReference> track_refs)
-    : QUndoCommand (
+    : Command (
         track_refs.size () == 1
           ? QObject::tr ("Delete Track")
-          : QObject::tr ("Delete Tracks")),
+          : QObject::tr ("Delete Tracks"),
+        EngineRequirement::RecalculateGraph),
       collection_ (collection)
 {
   tracks_ =

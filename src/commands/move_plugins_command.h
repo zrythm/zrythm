@@ -5,10 +5,9 @@
 
 #include <utility>
 
+#include "commands/command.h"
 #include "plugins/plugin_group.h"
 #include "structure/tracks/automation_tracklist.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -19,11 +18,9 @@ namespace zrythm::commands
  * Supports moving multiple plugins at once (e.g., when multiple plugins are
  * selected and dragged together).
  */
-class MovePluginsCommand : public QUndoCommand
+class MovePluginsCommand : public Command
 {
 public:
-  static constexpr int CommandId = 1763227783;
-
   using PluginLocation =
     std::pair<plugins::PluginGroup *, structure::tracks::AutomationTracklist *>;
 
@@ -53,8 +50,6 @@ public:
 
   void undo () override;
   void redo () override;
-
-  int id () const override { return CommandId; }
 
 private:
   void move_plugin_automation (

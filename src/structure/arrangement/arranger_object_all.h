@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -44,6 +44,15 @@ is_arranger_object_copyable (const ObjT &obj)
 {
   return is_arranger_object_deletable (obj);
 }
+
+/**
+ * Whether adding, removing or moving objects of this type changes the
+ * tempo map, so the audio engine must pause processing while the change
+ * is applied or reverted.
+ */
+template <typename ObjT>
+constexpr bool affects_tempo_map =
+  std::is_same_v<ObjT, TempoObject> || std::is_same_v<ObjT, TimeSignatureObject>;
 
 // Currently unused
 #if 0

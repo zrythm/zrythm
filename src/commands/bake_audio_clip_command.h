@@ -5,11 +5,10 @@
 
 #include <vector>
 
+#include "commands/command.h"
 #include "dsp/file_audio_source.h"
 #include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/audio_function.h"
-
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -23,11 +22,9 @@ namespace zrythm::commands
  * while the command is alive, so their blocks are protected from garbage
  * collection.
  */
-class BakeAudioClipCommand : public QUndoCommand
+class BakeAudioClipCommand : public Command
 {
 public:
-  static constexpr int CommandId = 1684239751;
-
   /**
    * @param clip The audio clip whose entries were baked.
    * @param after_source The source the bake produced.
@@ -41,7 +38,6 @@ public:
     dsp::FileAudioSourceUuidReference                   after_source,
     const QString                                      &text);
 
-  int  id () const override { return CommandId; }
   void undo () override;
   void redo () override;
 

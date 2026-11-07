@@ -44,7 +44,7 @@ copy/paste operations.
 | `zrythm::dsp`    | Low-level DSP types & processor graphs        | `ProcessorParameter` |
 | `zrythm::model`  | Data objects (`Track`, `Clip`, `Plugin`)      | `Track::setName()`  |
 | `zrythm::model::Factories` | Object creation & initialization        | `TrackFactory::create()` |
-| `zrythm::commands` | Concrete `QUndoCommand` subclasses          | `RenameTrackCmd`, `AddTrackCmd` |
+| `zrythm::commands` | Concrete `commands::Command` subclasses     | `RenameTrackCmd`, `AddTrackCmd` |
 | `zrythm::undo`   | Undo-stack container, save/load, hooks        | `UndoStack` QML type|
 | `zrythm::actions` | Controllers that produce commands for undoable operations | `TrackOperator::rename()`, `ProjectActions.addMidiTrack()` |
 | `zrythm::controllers` | Controllers for non-undoable operations (navigation, save/load) | `TransportController::moveForward()` |
@@ -115,9 +115,10 @@ sequenceDiagram
 - Set up default state and internal connections
 
 ### Commands (`zrythm::commands`)
+- Derive from `zrythm::commands::Command`, not `QUndoCommand` directly
 - Perform single, reversible operations on models
-- Derive from `QUndoCommand`
 - Implement `redo()` (apply change) and `undo()` (revert change)
+- Declare at construction what the audio engine must do around their execution (see [Engine Cooperation](#10-engine-cooperation))
 - Dumb and focused - know how to apply/revert changes but not why
 - Reference deletable objects through registry handles (see
   [Owner Handles](#9-owner-handles-in-commands)), never raw pointers
@@ -220,7 +221,9 @@ Button {
 
 In both cases, commands that target arranger-object owners hold an
 owner handle instead of a raw owner pointer (see
-[Owner Handles](#9-owner-handles-in-commands)).
+[Owner Handles](#9-owner-handles-in-commands)), and every command
+constructor states its engine requirement explicitly (see
+[Engine Cooperation](#10-engine-cooperation)).
 
 ---
 
@@ -305,3 +308,54 @@ with a non-empty undo stack serializes owners that the project no
 longer references — they are re-serialized as inert orphans until the
 stack is cleared. The fix belongs to an undo-stack lifecycle policy on
 save, not to the handles themselves.
+
+---
+
+## 10. Engine Cooperation
+
+The audio engine must sometimes pause processing (or rebuild the
+processing graph) while a command runs, because the model data the
+audio thread reads must not change underneath it. Each command declares
+this need itself; the undo stack aggregates the declarations and
+cooperates with the engine around `push()`, `undo()` and `redo()`.
+
+- `commands::Command` (base class of every command) carries an
+  `EngineRequirement` chosen at construction — there is deliberately no
+  default, so every command states one of:
+  - `None` — the engine keeps processing while the command runs.
+  - `PauseProcessing` — the change touches data the audio thread reads
+    (e.g. the tempo map) and must not race with it.
+  - `RecalculateGraph` — routing changed (tracks, plugins, port
+    connections): the engine pauses and rebuilds the processing graph.
+  The values are ordered: `RecalculateGraph` implies `PauseProcessing`.
+- Commands whose requirement varies per instance (e.g. property changes
+  that may or may not affect the tempo map) take the requirement as a
+  constructor parameter; the operator pushing the command knows which
+  value applies. Commands with a fixed requirement bake it into their
+  constructor.
+- The undo stack takes the strongest requirement found on a command and
+  any of its macro children, and maps it to the engine's
+  pause/rebuild callback.
+- Commands that participate in `QUndoCommand` merging keep a non-negative
+  merge id (`kMergeId`); Qt only calls `mergeWith()` between commands
+  sharing an id. Commands with differing engine requirements refuse to
+  merge, so a pause-requiring edit can never disappear into a plain one.
+
+```mermaid
+sequenceDiagram
+    participant Q as QML UI
+    participant O as Operator
+    participant S as UndoStack
+    participant E as AudioEngine
+    participant C as Command
+
+    Q->>O: addTrack()
+    O->>C: new AddEmptyTrackCommand(..., RecalculateGraph)
+    O->>S: push(C)
+    S->>C: engine_requirement()
+    C-->>S: RecalculateGraph
+    S->>E: run with paused processing + graph rebuild
+    E->>S: paused
+    S->>C: redo()
+    E->>S: resumed
+```

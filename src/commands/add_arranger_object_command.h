@@ -5,38 +5,31 @@
 
 #include <optional>
 #include <stdexcept>
-#include <type_traits>
 #include <utility>
 
 #include "commands/arranger_object_owner_ref.h"
+#include "commands/command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/tracks/lane_restoration.h"
 #include "structure/tracks/track_lane_list.h"
 
-#include <QUndoCommand>
-
 namespace zrythm::commands
 {
 
 template <structure::arrangement::FinalArrangerObjectSubclass ObjectT>
-class AddArrangerObjectCommand : public QUndoCommand
+class AddArrangerObjectCommand : public Command
 {
 public:
   /**
-   * @brief QUndoCommand id for this addition.
-   *
-   * Tempo/time-signature object specializations evaluate to a distinct id so
-   * the undo stack can recognize them and pause the audio engine before
-   * running the command — the tempo map's RT-side data must not change while
-   * the audio thread is processing. All other object types have no id (-1),
-   * which is QUndoCommand's default for "no special handling".
+   * @brief Tempo/time-signature objects change the tempo map, so the
+   * engine must pause processing while the command runs — the tempo map's
+   * RT-side data must not change while the audio thread is processing.
    */
-  static constexpr int CommandId =
-    (std::is_same_v<ObjectT, structure::arrangement::TempoObject>
-     || std::is_same_v<ObjectT, structure::arrangement::TimeSignatureObject>)
-      ? 1762954668
-      : -1;
+  static constexpr EngineRequirement kEngineRequirement =
+    structure::arrangement::affects_tempo_map<ObjectT>
+      ? EngineRequirement::PauseProcessing
+      : EngineRequirement::None;
 
   /**
    * @param object_owner handle to the owner; must resolve to an
@@ -48,7 +41,7 @@ public:
   AddArrangerObjectCommand (
     ArrangerObjectOwnerRef                              object_owner,
     structure::arrangement::ArrangerObjectUuidReference object_ref)
-      : QUndoCommand (QObject::tr ("Add Object")),
+      : Command (QObject::tr ("Add Object"), kEngineRequirement),
         object_owner_ (std::move (object_owner)),
         object_ref_ (std::move (object_ref))
   {
@@ -89,8 +82,6 @@ public:
     // helper puts it back before adding
     reattach_and_add<ObjectT> (object_owner_, object_ref_, lane_restoration_);
   }
-
-  int id () const override { return CommandId; }
 
 private:
   ArrangerObjectOwnerRef                              object_owner_;
