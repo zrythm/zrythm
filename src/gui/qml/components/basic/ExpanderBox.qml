@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick.Layouts
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.impl
 import ZrythmStyle
 
 Control {
@@ -28,20 +29,69 @@ Control {
 
       Layout.fillHeight: root.vertical
       Layout.fillWidth: !root.vertical
+      checkable: true
+      checked: root.expanded
       hoverEnabled: true
+      // Constant neutral ink: expansion state is carried by the chevron's
+      // rotation, not by icon color changes.
+      icon.color: expandButton.palette.buttonText
       icon.height: iconSize
       icon.width: iconSize
       text: root.title
 
-      background: ButtonBackgroundRect {
+      // Neutral in both states: a disclosure header is not a selection, so
+      // the accent stays reserved for the chevron's state and real selections.
+      background: Rectangle {
         bottomLeftRadius: root.expanded ? 0 : root.radius
         bottomRightRadius: root.expanded ? 0 : root.radius
-        control: expandButton
+        color:
+          expandButton.hovered || expandButton.visualFocus || expandButton.down
+          ? ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown (
+              expandButton.palette.button, expandButton.hovered,
+              expandButton.visualFocus, expandButton.down)
+          : expandButton.palette.button
         topLeftRadius: root.radius
         topRightRadius: root.radius
+
+        Behavior on color {
+          animation: ZrythmTheme.propertyAnimation
+        }
       }
 
-      onClicked: root.expanded = !root.expanded
+      contentItem: RowLayout {
+        spacing: 8
+
+        IconLabel {
+          Layout.alignment: Qt.AlignVCenter
+          display: IconLabel.IconOnly
+          icon: expandButton.icon
+          visible: expandButton.icon.source.toString() !== ""
+        }
+
+        Label {
+          Layout.alignment: Qt.AlignVCenter
+          Layout.fillWidth: true
+          elide: Text.ElideRight
+          font: expandButton.font
+          text: expandButton.text
+        }
+
+        ColorImage {
+          Layout.alignment: Qt.AlignVCenter
+          Layout.preferredHeight: 14
+          Layout.preferredWidth: 14
+          color: expandButton.palette.buttonText
+          rotation: root.expanded ? 90 : 0
+          source: "qrc:/qt/qml/Zrythm/icons/lucide/chevron-right.svg"
+          sourceSize: Qt.size(14, 14)
+
+          Behavior on rotation {
+            animation: ZrythmTheme.propertyAnimation
+          }
+        }
+      }
+
+      onToggled: root.expanded = checked
     }
 
     Frame {
