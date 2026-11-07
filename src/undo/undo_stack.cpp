@@ -8,6 +8,8 @@
 
 #include "commands/command.h"
 #include "undo/undo_stack.h"
+#include "utils/logger.h"
+#include "utils/serialization.h"
 
 namespace zrythm::undo
 {

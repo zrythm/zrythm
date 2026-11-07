@@ -5,6 +5,8 @@
 
 #include "gui/qquick/chord_suggestion_provider.h"
 
+#include <QVariantMap>
+
 namespace zrythm::gui::qquick
 {
 

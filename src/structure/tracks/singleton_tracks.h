@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::tracks
 {

@@ -4,6 +4,7 @@
 #include "structure/project/modular_view_state.h"
 #include "utils/logger.h"
 #include "utils/registry_utils.h"
+#include "utils/serialization.h"
 #include "utils/utf8_string.h"
 
 #include <QUuid>
