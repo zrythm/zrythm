@@ -106,8 +106,11 @@ ItemDelegate {
       spacing: 8
     }
 
+    // Content-sized: an uncapped empty row here absorbs the layout's leftover
+    // space in arbitrary amounts, shifting the suffix per row.
     RowLayout {
       Layout.alignment: Qt.AlignVCenter
+      Layout.maximumWidth: implicitWidth
 
       Repeater {
         model: root.suffixActions
