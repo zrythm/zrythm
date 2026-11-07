@@ -14,6 +14,7 @@ Item {
   required property AppSettings appSettings
   required property PlaybackCacheActivityAggregator cacheActivityAggregator
   required property ChordPresetManager chordPresetManager
+  required property ControlRoom controlRoom
   required property DeviceManager deviceManager
   readonly property DockingController dockingController: workspace.dockingController
   required property Palette dockPalette
@@ -179,7 +180,12 @@ Item {
 
       MonitorSection {
         anchors.fill: parent
+        audioEngine: root.project.engine
+        controlRoom: root.controlRoom
+        deviceManager: root.deviceManager
+        portObservationManager: root.project.portObservationManager
         trackCollection: root.project.tracklist.collection
+        trackCollectionOperator: root.session.trackCollectionOperator
       }
     }
 

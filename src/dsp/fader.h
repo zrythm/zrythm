@@ -28,6 +28,7 @@ class Fader : public dsp::ProcessorBase
   Q_PROPERTY (
     zrythm::dsp::ProcessorParameter * swapPhaseToggle READ swapPhaseToggle
       CONSTANT)
+  Q_PROPERTY (zrythm::dsp::AudioPort * stereoOutPort READ stereoOutPort CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -274,6 +275,11 @@ public:
         throw std::runtime_error ("Not an audio fader");
       }
     return *get_all_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
+  }
+  /** The stereo output port for audio faders, or nullptr for MIDI faders. */
+  dsp::AudioPort * stereoOutPort () const
+  {
+    return is_audio () ? &get_stereo_out_port () : nullptr;
   }
   dsp::MidiPort &get_midi_in_port () const
   {

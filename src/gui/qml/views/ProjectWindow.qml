@@ -482,6 +482,7 @@ ApplicationWindow {
       appSettings: root.appSettings
       cacheActivityAggregator: cacheActivityAggregator
       chordPresetManager: root.chordPresetManager
+      controlRoom: root.controlRoom
       deviceManager: root.deviceManager
       dockPalette: root.palette
       importFileDialog: importFileDialog
