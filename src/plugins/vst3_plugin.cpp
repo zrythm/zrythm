@@ -1159,25 +1159,27 @@ Vst3Plugin::show_editor ()
         },
     });
 
-  ViewRect size{};
-  bool     initial_size_ok = false;
+  // A view may report no size until it is attached: some plugins create
+  // their editor and report its real size only during attached() (via
+  // IPlugFrame::resizeView) or afterwards. Attach at a fallback view size
+  // and adopt the reported size after attachment.
+  static constexpr int fallback_view_width = 800;
+  static constexpr int fallback_view_height = 600;
+  ViewRect             size{};
+  bool                 have_initial_size = false;
   {
     const ScopedGlContextRelease gl_release;
-    initial_size_ok =
+    have_initial_size =
       view->getSize (&size) == kResultOk && size.getWidth () > 0
       && size.getHeight () > 0;
   }
-  if (!initial_size_ok)
+  if (!have_initial_size)
     {
-      z_warning ("VST3: plugin editor reported an invalid initial view size");
-      {
-        const ScopedGlContextRelease gl_release;
-        view->setFrame (nullptr);
-      }
-      pimpl_->plug_frame_.reset ();
-      pimpl_->editor_window_.reset ();
-      set_native_ui_unavailable (true);
-      return;
+      z_debug (
+        "VST3: plugin '{}' reported no editor size before attachment; "
+        "starting at the fallback view size {}x{}",
+        get_node_name (), fallback_view_width, fallback_view_height);
+      size = ViewRect{ 0, 0, fallback_view_width, fallback_view_height };
     }
 
   {
@@ -1230,6 +1232,22 @@ Vst3Plugin::show_editor ()
         view->onSize (&size);
       }
   }
+  if (!have_initial_size)
+    {
+      if (size.getWidth () > 0 && size.getHeight () > 0)
+        {
+          const auto [w, h] = plugin_view_size_to_host_window_size (
+            size.getWidth (), size.getHeight (), scale_factor);
+          pimpl_->editor_window_->setSize (w, h);
+        }
+      else
+        {
+          z_warning (
+            "VST3: plugin '{}' reported no editor size after attachment; "
+            "keeping the fallback view size",
+            get_node_name ());
+        }
+    }
 
   pimpl_->editor_window_->setVisible (true);
   pimpl_->editor_window_->completeNativeEmbedding ();
