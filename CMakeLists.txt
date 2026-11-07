@@ -1149,6 +1149,11 @@ add_subdirectory(doc)
 # CPack / Packaging
 #==============================================================================
 
+# Identity used to sign the app bundle at install time. '-' signs ad-hoc;
+# distributable builds pass a Developer ID identity at configure time.
+set(APPLE_APP_CODESIGN_IDENTITY
+  "-" CACHE STRING "macOS codesign identity ('-' for ad-hoc signing)")
+
 if(WIN32)
   install(CODE "
     execute_process(
