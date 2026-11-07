@@ -27,6 +27,7 @@
 #include "utils/utf8_string.h"
 #include "utils/version.h"
 
+#include <QFile>
 #include <QFileInfo>
 #include <QFileOpenEvent>
 #include <QFontDatabase>
@@ -43,6 +44,8 @@
 #include <QTimer>
 #include <QTranslator>
 
+#include <juce_audio_formats/juce_audio_formats.h>
+
 // FIXME: temporarily disabled - engine-process not currently used
 // #include "engine-process/ipc_message.h"
 #include "gui/backend/juce_event_loop_bridge.h"
@@ -53,6 +56,44 @@
 using namespace zrythm;
 using namespace zrythm::gui;
 using namespace Qt::StringLiterals;
+
+namespace
+{
+
+/// Loads a metronome click sample embedded as a Qt resource.
+juce::AudioSampleBuffer
+load_metronome_sample (const QString &resource_path)
+{
+  QFile file (resource_path);
+  if (!file.open (QFile::ReadOnly))
+    {
+      throw std::runtime_error (
+        fmt::format ("Failed to open file at {}", file.fileName ()));
+    }
+
+  const QByteArray                         wav_bytes = file.readAll ();
+  std::unique_ptr<juce::AudioFormatReader> reader;
+  {
+    auto stream = std::make_unique<juce::MemoryInputStream> (
+      wav_bytes.constData (), static_cast<size_t> (wav_bytes.size ()), false);
+    juce::WavAudioFormat wav_format;
+    reader.reset (wav_format.createReaderFor (stream.release (), true));
+  }
+  if (reader == nullptr)
+    {
+      throw std::runtime_error (
+        fmt::format ("Not a valid WAV: {}", resource_path));
+    }
+
+  const int num_channels = static_cast<int> (reader->numChannels);
+  const int num_samples = static_cast<int> (reader->lengthInSamples);
+
+  juce::AudioSampleBuffer buffer (num_channels, num_samples);
+  reader->read (&buffer, 0, num_samples, 0, true, num_channels > 1);
+  return buffer;
+}
+
+} // namespace
 
 class ZrythmApplication::Impl
 {
@@ -174,6 +215,8 @@ ZrythmApplication::initialize ()
   // AudioBuffers when --help/--version calls std::exit()
   impl_
     ->control_room_ = utils::make_qobject_unique<engine::session::ControlRoom> (
+    load_metronome_sample (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s),
+    load_metronome_sample (u":/qt/qml/Zrythm/wav/square_normal.wav"_s),
     [this] () -> engine::session::ControlRoom::RealtimeTracks {
       if (!impl_->project_manager_)
         {

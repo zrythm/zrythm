@@ -22,7 +22,10 @@ class ControlRoomTest
 protected:
   void SetUp () override
   {
+    // The metronome samples are empty: the tests below only exercise the
+    // monitor fader, which does not process the metronome.
     control_room_ = std::make_unique<ControlRoom> (
+      juce::AudioSampleBuffer (), juce::AudioSampleBuffer (),
       [] () -> ControlRoom::RealtimeTracks { return {}; });
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (48000.0));

@@ -41,9 +41,17 @@ public:
   using RealtimeTracks = std::span<structure::tracks::Track * const>;
   using RealtimeTracksProvider = std::function<RealtimeTracks ()>;
 
+  /**
+   * @param metronome_emphasis_sample Bar-click sample played by the metronome.
+   * @param metronome_normal_sample Beat-click sample played by the metronome.
+   * @param rt_tracks_provider Returns the tracks to scan for Listen state
+   *   during each processing cycle.
+   */
   ControlRoom (
-    RealtimeTracksProvider rt_tracks_provider,
-    QObject *              parent = nullptr);
+    juce::AudioSampleBuffer metronome_emphasis_sample,
+    juce::AudioSampleBuffer metronome_normal_sample,
+    RealtimeTracksProvider  rt_tracks_provider,
+    QObject *               parent = nullptr);
 
   // ========================================================================
   // QML Interface

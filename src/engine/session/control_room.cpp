@@ -1,19 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/format_qt.h"
-
 #include "dsp/fader.h"
 #include "dsp/metronome.h"
 #include "engine/session/control_room.h"
 #include "structure/tracks/track_all.h"
 #include "utils/float_ranges.h"
-
-#include <QFile>
-
-#include <juce_audio_formats/juce_audio_formats.h>
-
-using namespace Qt::StringLiterals;
 
 namespace zrythm::engine::session
 {
@@ -27,8 +19,10 @@ parameter_amplitude (const dsp::ProcessorParameter &parameter)
 } // namespace
 
 ControlRoom::ControlRoom (
-  RealtimeTracksProvider rt_tracks_provider,
-  QObject *              parent)
+  juce::AudioSampleBuffer metronome_emphasis_sample,
+  juce::AudioSampleBuffer metronome_normal_sample,
+  RealtimeTracksProvider  rt_tracks_provider,
+  QObject *               parent)
     : QObject (parent),
       monitor_fader_ (
         utils::make_qobject_unique<dsp::Fader> (
@@ -41,37 +35,9 @@ ControlRoom::ControlRoom (
       rt_tracks_provider_ (std::move (rt_tracks_provider))
 {
   // Create metronome in constructor body after registries are initialized
-  const auto load_metronome_sample = [] (QFile f) {
-    if (!f.open (QFile::ReadOnly | QFile::Text))
-      {
-        throw std::runtime_error (
-          fmt::format ("Failed to open file at {}", f.fileName ()));
-      }
-    const QByteArray                         wavBytes = f.readAll ();
-    std::unique_ptr<juce::AudioFormatReader> reader;
-    {
-      auto stream = std::make_unique<juce::MemoryInputStream> (
-        wavBytes.constData (), static_cast<size_t> (wavBytes.size ()), false);
-      juce::WavAudioFormat wavFormat;
-      reader.reset (wavFormat.createReaderFor (stream.release (), false));
-    }
-    if (!reader)
-      throw std::runtime_error ("Not a valid WAV");
-
-    const int numChannels = static_cast<int> (reader->numChannels);
-    const int numSamples = static_cast<int> (reader->lengthInSamples);
-
-    juce::AudioBuffer<float> buffer;
-    buffer.setSize (numChannels, numSamples);
-
-    reader->read (&buffer, 0, numSamples, 0, true, numChannels > 1);
-    return buffer;
-  };
   metronome_ = utils::make_qobject_unique<dsp::Metronome> (
-    registry_,
-    load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s)),
-    load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_normal.wav"_s)),
-    true, 1.0f, this);
+    registry_, std::move (metronome_emphasis_sample),
+    std::move (metronome_normal_sample), true, 1.0f, this);
 
   /* init listen/mute/dim faders */
   mute_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
