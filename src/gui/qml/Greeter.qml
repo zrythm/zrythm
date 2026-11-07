@@ -458,6 +458,11 @@ ApplicationWindow {
         Dialog {
           id: clearRecentProjectsDialog
 
+          // An explicit width keeps the wrapped label's implicit width out
+          // of the dialog's own implicit-width binding, which would
+          // otherwise loop (wrapped text reports its current width as
+          // implicit width).
+          width: 380
           contentItem: ColumnLayout {
             Label {
               Layout.fillWidth: true
