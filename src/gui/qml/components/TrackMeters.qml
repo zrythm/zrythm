@@ -53,7 +53,6 @@ Item {
           id: audioLMeter
 
           Layout.fillHeight: true
-          Layout.preferredWidth: width
           algorithm: root._isMasterTrack ? MeterProcessor.K : MeterProcessor.DigitalPeak
           audioEngine: root.audioEngine
           channel: 0
@@ -65,7 +64,6 @@ Item {
           id: audioRMeter
 
           Layout.fillHeight: true
-          Layout.preferredWidth: width
           algorithm: root._isMasterTrack ? MeterProcessor.K : MeterProcessor.DigitalPeak
           audioEngine: root.audioEngine
           channel: 1
