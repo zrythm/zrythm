@@ -288,6 +288,38 @@ TEST (SerializationTest, NullPointerSerialization)
     auto deserialized = json.get<std::unique_ptr<SimpleObject>> (););
 }
 
+TEST (SerializationTest, RawPointerSerializesPointee)
+{
+  int            value = 42;
+  int *          ptr = &value;
+  nlohmann::json json = ptr;
+
+  EXPECT_EQ (json.get<int> (), 42);
+
+  int *          null_ptr = nullptr;
+  nlohmann::json null_json = null_ptr;
+  EXPECT_TRUE (null_json.is_null ());
+}
+
+TEST (SerializationTest, CharPointerSerializesAsString)
+{
+  const char *   name = "Audio";
+  nlohmann::json json = name;
+  EXPECT_TRUE (json.is_string ());
+  EXPECT_EQ (json.get<std::string> (), "Audio");
+
+  // the same must hold when the pointer is a value inside an object
+  nlohmann::json object = {
+    { "type", name }
+  };
+  EXPECT_EQ (object.at ("type").get<std::string> (), "Audio");
+
+  char           buffer[] = "Midi";
+  char *         mutable_name = buffer;
+  nlohmann::json mutable_json = mutable_name;
+  EXPECT_EQ (mutable_json.get<std::string> (), "Midi");
+}
+
 // StrongTypedef test
 struct Meters
     : type_safe::strong_typedef<Meters, float>,

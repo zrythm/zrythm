@@ -3,9 +3,11 @@
 
 #pragma once
 
+#include <concepts>
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <variant>
 
 #include "utils/exceptions.h"
@@ -206,8 +208,16 @@ variant_from_json_with_builder (
 
 namespace nlohmann
 {
-/// pointer specialization
-template <typename T> struct adl_serializer<T *>
+/**
+ * @brief Pointer specialization: serializes the pointee, or null for a null
+ * pointer.
+ *
+ * Char pointers are excluded: they are C strings and serialize as strings
+ * through the default serializer.
+ */
+template <typename T>
+  requires (!std::same_as<std::remove_cv_t<T>, char>)
+struct adl_serializer<T *>
 {
   static void to_json (json &j, const T * ptr)
   {
