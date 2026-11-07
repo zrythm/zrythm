@@ -2,7 +2,7 @@
   "cmake.useCMakePresets": "always",
   "cmake.configureOnOpen": false,
   "cmake.clearOutputBeforeBuild": false,
-  "cmake.configureArgs": ["-DCMAKE_LINKER_TYPE=MOLD", "-DZRYTHM_DEBUG_QML=ON"],
+  "cmake.configureArgs": ["-DZRYTHM_DEBUG_QML=ON"],
   "clangd.arguments": [
     "--compile-commands-dir=${workspaceFolder}/conanbuild/Debug",
     "--clang-tidy",

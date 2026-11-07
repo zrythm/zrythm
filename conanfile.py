@@ -27,8 +27,9 @@ class Zrythm(ConanFile):
             "realtime",
             "memory",
         ],
+        "use_mold": [True, False],
     }
-    default_options = {"sanitizer": "none"}
+    default_options = {"sanitizer": "none", "use_mold": False}
 
     def set_version(self):
         self.version = load(self, "VERSION.txt").lstrip("v").rstrip()
@@ -267,6 +268,10 @@ class Zrythm(ConanFile):
                 cache_vars["ZRYTHM_EXTRA_OPTIMIZATIONS"] = "ON"
             if bt == "Release":
                 cache_vars["ZRYTHM_UNITY_BUILD"] = "ON"
+            # mold links ELF binaries only; other platforms keep the
+            # default linker
+            if self.options.use_mold and self.settings.os in ["Linux", "FreeBSD"]:
+                cache_vars["CMAKE_LINKER_TYPE"] = "MOLD"
 
             # Consumed by the "Qt" (qt-cpp) VS Code extension to locate the Conan-built Qt
             # for design tools (Qt Creator integration, qmlls language server, etc.).
@@ -344,3 +349,8 @@ class Zrythm(ConanFile):
                 "profile setting so that dependencies are instrumented too "
                 "(e.g. -pr:h clang_tsan); the 'sanitizer' option alone only "
                 "instruments Zrythm itself")
+
+        if self.options.use_mold and self.settings.os not in ["Linux", "FreeBSD"]:
+            raise ConanInvalidConfiguration(
+                "use_mold=True is only supported on Linux and FreeBSD; mold "
+                "cannot link Mach-O (macOS) or PE (Windows) binaries")

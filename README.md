@@ -141,6 +141,11 @@ All dependencies are fetched and built automatically: most (including Qt) by [Co
    conan install . -pr:h clang_debug -pr:b clang_debug -o sanitizer="address_undefined" --build=missing
    ```
 
+   To link Zrythm's own targets with the [mold](https://github.com/rui314/mold) linker (Linux and FreeBSD only), pass `-o use_mold=True`. This requires `mold` on `PATH` and speeds up linking during development:
+   ```
+   conan install . -pr:h gcc_debug -pr:b gcc_debug -o use_mold=True --build=missing
+   ```
+
 > [!NOTE]
 > Building against system libraries instead of Conan is untested. The complete inventory of dependencies (Conan, CPM and vendored) is [data/dependencies.toml](data/dependencies.toml); the build declarations live in [conanfile.py](conanfile.py) and [package-lock.cmake](package-lock.cmake).
 
