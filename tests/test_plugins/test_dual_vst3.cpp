@@ -32,14 +32,6 @@ static const FUID
 static const FUID
   TestDualGainControllerUID (0x6C8B2D3A, 0x9F507E41, 0xB3D4C5E6, 0x8A9FAE1B);
 
-// Module-level state shared by the processor and the controller (both
-// live in the same shared library), exposed through the controller
-// state chunk so hosts can verify controller-side behavior
-static std::atomic<int>    dual_controller_sync_count{ 0 };
-static std::atomic<double> dual_last_synced_level{ 1.0 };
-static std::atomic<int>    dual_host_edit_wrap_count{ 0 };
-static std::atomic<int>    dual_level_input_count{ 0 };
-
 /** Processor side of the dual-component fixture. */
 class TestDualGain : public AudioEffect
 {
@@ -139,10 +131,6 @@ public:
             if (queue->getParameterId () == kLevelParamId)
               {
                 level_.store (value);
-                // Counted and exposed through the controller state so
-                // hosts can verify that applied plugin reports are not
-                // echoed back as host-initiated changes
-                dual_level_input_count.fetch_add (1);
               }
             else if (queue->getParameterId () == kAutoReportParamId)
               {
@@ -237,8 +225,8 @@ public:
       {
         // Counted and exposed through the state chunk so hosts can
         // verify that processor-reported values reach the controller
-        dual_controller_sync_count.fetch_add (1);
-        dual_last_synced_level.store (value);
+        sync_count_.fetch_add (1);
+        last_synced_level_.store (value);
       }
     return res;
   }
@@ -280,10 +268,9 @@ public:
     auto *               level_param = parameters.getParameter (kLevelParamId);
     const nlohmann::json j{
       { "level",                     level_param != nullptr ? level_param->getNormalized () : 1.0 },
-      { "controllerSyncCount",       dual_controller_sync_count.load ()                           },
-      { "controllerLastSyncedLevel", dual_last_synced_level.load ()                               },
-      { "hostEditWrapCount",         dual_host_edit_wrap_count.load ()                            },
-      { "levelInputCount",           dual_level_input_count.load ()                               },
+      { "controllerSyncCount",       sync_count_.load ()                                          },
+      { "controllerLastSyncedLevel", last_synced_level_.load ()                                   },
+      { "hostEditWrapCount",         host_edit_wrap_count_.load ()                                },
     };
     const auto json_text = j.dump ();
     IBStreamer streamer (state, kLittleEndian);
@@ -296,7 +283,7 @@ public:
   tresult PLUGIN_API beginEditFromHost (ParamID id) SMTG_OVERRIDE
   {
     if (id == kLevelParamId)
-      dual_host_edit_wrap_count.fetch_add (1);
+      host_edit_wrap_count_.fetch_add (1);
     return kResultOk;
   }
 
@@ -311,6 +298,13 @@ public:
   {
     return static_cast<IEditController *> (new TestDualGainController ());
   }
+
+private:
+  // Per-instance counters exposed through the state chunk, so each
+  // freshly created controller starts from zero
+  std::atomic<int>    sync_count_{ 0 };
+  std::atomic<double> last_synced_level_{ 1.0 };
+  std::atomic<int>    host_edit_wrap_count_{ 0 };
 };
 
 } // namespace zrythm_test_plugins
