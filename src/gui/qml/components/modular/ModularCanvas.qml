@@ -13,9 +13,11 @@ FocusScope {
 
   readonly property real defaultZoom: 1.0
   property var edgeModel: null
-  // Height of the compact editor body of native modulator nodes; must match
-  // the layout metrics in modular_project_model.cpp.
-  readonly property int editorBodyHeight: 56
+  // Source and destination port IDs of the connection whose modulation
+  // knob is hovered; empty strings mean nothing is highlighted. Matching
+  // edges render highlighted.
+  property string highlightedSourcePort: ""
+  property string highlightedDestinationPort: ""
   readonly property int headerHeight: 40
   property int layoutRevision: 0
   property bool autoFitOnModelChange: true
@@ -209,12 +211,18 @@ FocusScope {
     ++layoutRevision;
   }
 
+  // Tracks the modulation knob hovered in a node so the matching edge can
+  // render highlighted.
+  function setConnectionHighlight(sourcePortId: string, destinationPortId: string, hovered: bool): void {
+    highlightedSourcePort = hovered ? sourcePortId : "";
+    highlightedDestinationPort = hovered ? destinationPortId : "";
+  }
+
   function nodeHeight(node: var): real {
     const inputs = JSON.parse(node.inputsJson);
     const outputs = JSON.parse(node.outputsJson);
     const parameters = JSON.parse(node.parametersJson);
-    const editorBody = node.modulatorDescriptorId !== undefined
-      && node.modulatorDescriptorId !== "" ? editorBodyHeight : 0;
+    const editorBody = node.editorBodyHeight ?? 0;
     return headerHeight + Math.max(inputs.length + parameters.length, outputs.length) * portHeight + 8 + editorBody;
   }
 
@@ -572,6 +580,9 @@ FocusScope {
 
         automaticCable: automatic
         cableColor: root.signalColor(signalKind)
+        highlighted: root.highlightedSourcePort !== ""
+          && root.highlightedSourcePort === cable.sourcePort
+          && root.highlightedDestinationPort === cable.destinationPort
         connectionId: edgeId
         deletable: !readOnly
         destinationX: destinationPoint.x
@@ -627,7 +638,6 @@ FocusScope {
       delegate: ModularNode {
         canvasZoom: root.zoom
         cardWidth: root.nodeWidth
-        editorBodyHeight: root.editorBodyHeight
         headerHeight: root.headerHeight
         modularModel: root.modularModel
         parameterOperator: root.parameterOperator
@@ -649,6 +659,7 @@ FocusScope {
         onNodeMenuRequested: nodeId => root.nodeMenuRequested(nodeId)
         onParameterEditActiveChanged: active => root.parameterEditActiveChanged(active)
         onParameterMultiplierEdited: (sourcePortId, destinationPortId, value) => root.parameterMultiplierEdited(sourcePortId, destinationPortId, value)
+        onModulationSourceHovered: (sourcePortId, destinationPortId, hovered) => root.setConnectionHighlight(sourcePortId, destinationPortId, hovered)
         onPortClicked: (nodeId, port) => root.portClicked(nodeId, port)
         onPortConnectionCancelled: root.cancelPendingConnection()
         onPortConnectionFinished: worldPoint => root.portConnectionFinished(worldPoint)
@@ -664,7 +675,6 @@ FocusScope {
     anchors.bottomMargin: 16
     anchors.right: parent.right
     anchors.rightMargin: 16
-    editorBodyHeight: root.editorBodyHeight
     headerHeight: root.headerHeight
     height: 130
     nodeModel: root.nodeModel

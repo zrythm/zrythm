@@ -47,6 +47,7 @@ TestCase {
         nodeModel: ListModel {
           ListElement {
             accentKind: "cv"
+            editorBodyHeight: 0
             hasModulatableParameters: false
             inputsJson: "[]"
             modulatorDescriptorId: ""
@@ -62,6 +63,7 @@ TestCase {
 
           ListElement {
             accentKind: "neutral"
+            editorBodyHeight: 0
             hasModulatableParameters: true
             inputsJson: "[]"
             modulatorDescriptorId: ""
@@ -190,12 +192,13 @@ TestCase {
   function test_modulatorNodeHasEditorBody(): void {
     const plainHeight = window.canvas.nodeHeight(window.canvas.nodeModel.get(0));
     const macroNode = {
+      "editorBodyHeight": 56,
       "inputsJson": "[{\"id\":\"cv-in\",\"label\":\"CV in\",\"kind\":\"cv\"}]",
       "modulatorDescriptorId": "zrythm.modulators.macro",
       "outputsJson": "[{\"id\":\"cv-out\",\"label\":\"CV out\",\"kind\":\"cv\"}]",
       "parametersJson": "[]"
     };
     const macroHeight = window.canvas.nodeHeight(macroNode);
-    compare(macroHeight, plainHeight + window.canvas.editorBodyHeight);
+    compare(macroHeight, plainHeight + 56);
   }
 }

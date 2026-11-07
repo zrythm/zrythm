@@ -233,7 +233,7 @@ Modulator::on_configuration_changed (
 
 void
 Modulator::prepare_plugin_for_processing (
-  units::sample_rate_t,
+  units::sample_rate_t sample_rate,
   units::sample_u32_t)
 {
   if (impl_ == nullptr || impl_->engine_ == nullptr)
@@ -241,6 +241,7 @@ Modulator::prepare_plugin_for_processing (
 
   assert (layout_matches (*this, impl_->layout_));
   ModulatorRuntimeContext context;
+  context.sample_rate_ = sample_rate;
   for (const auto &spec : impl_->layout_.parameters_)
     {
       const auto found = std::ranges::find_if (

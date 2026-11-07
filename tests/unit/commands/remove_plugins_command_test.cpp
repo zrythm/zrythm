@@ -5,6 +5,7 @@
 #include "dsp/parameter.h"
 #include "plugins/faust/faust_plugin.h"
 #include "plugins/plugin_group.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
@@ -46,7 +47,8 @@ protected:
     return grp.element_at_idx (idx).value<plugins::Plugin *> ()->get_uuid ();
   }
 
-  utils::ObjectRegistry registry_;
+  utils::ObjectRegistry                      registry_;
+  structure::project::PortConnectionsManager connections_manager_;
 
   std::unique_ptr<plugins::PluginGroup> group_;
 
@@ -70,10 +72,9 @@ TEST_F (RemovePluginsCommandTest, RemoveSinglePlugin)
   RemovePluginsCommand cmd (
     {
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr }
-  });
+                                             .plugin_ref = ref, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   EXPECT_EQ (group_->rowCount (), 0);
@@ -95,10 +96,9 @@ TEST_F (RemovePluginsCommandTest, RemoveMultiplePlugins)
       RemovePluginsCommand::PluginRemoveInfo{
                                              .plugin_ref = ref0, .source_group = group_.get (), .source_atl = nullptr },
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref2,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr                                                    }
-  });
+                                             .plugin_ref = ref2, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   ASSERT_EQ (group_->rowCount (), 1);
@@ -121,10 +121,9 @@ TEST_F (RemovePluginsCommandTest, RemoveAllPlugins)
       RemovePluginsCommand::PluginRemoveInfo{
                                              .plugin_ref = ref0, .source_group = group_.get (), .source_atl = nullptr },
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref1,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr                                                    }
-  });
+                                             .plugin_ref = ref1, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   EXPECT_EQ (group_->rowCount (), 0);
@@ -147,10 +146,9 @@ TEST_F (RemovePluginsCommandTest, RemoveNonContiguousPlugins)
       RemovePluginsCommand::PluginRemoveInfo{
                                              .plugin_ref = ref0, .source_group = group_.get (), .source_atl = nullptr },
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref2,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr                                                    }
-  });
+                                             .plugin_ref = ref2, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   ASSERT_EQ (group_->rowCount (), 2);
@@ -175,10 +173,9 @@ TEST_F (RemovePluginsCommandTest, UndoSingleRemove)
   RemovePluginsCommand cmd (
     {
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref0,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr }
-  });
+                                             .plugin_ref = ref0, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   ASSERT_EQ (group_->rowCount (), 1);
@@ -200,10 +197,9 @@ TEST_F (RemovePluginsCommandTest, MultipleUndoRedoCycles)
       RemovePluginsCommand::PluginRemoveInfo{
                                              .plugin_ref = ref0, .source_group = group_.get (), .source_atl = nullptr },
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref1,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr                                                    }
-  });
+                                             .plugin_ref = ref1, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   for (const auto _ : std::views::iota (0, 3))
     {
@@ -226,10 +222,9 @@ TEST_F (RemovePluginsCommandTest, CommandTextSinglePlugin)
   RemovePluginsCommand cmd (
     {
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr }
-  });
+                                             .plugin_ref = ref, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   EXPECT_EQ (cmd.text (), QString ("Remove Plugin"));
 }
@@ -244,10 +239,9 @@ TEST_F (RemovePluginsCommandTest, CommandTextMultiplePlugins)
       RemovePluginsCommand::PluginRemoveInfo{
                                              .plugin_ref = ref0, .source_group = group_.get (), .source_atl = nullptr },
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref1,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr                                                    }
-  });
+                                             .plugin_ref = ref1, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   EXPECT_EQ (cmd.text (), QString ("Remove 2 Plugin(s)"));
 }
@@ -264,10 +258,9 @@ TEST_F (RemovePluginsCommandTest, NullAutomationTracklist)
       RemovePluginsCommand::PluginRemoveInfo{
                                              .plugin_ref = ref0, .source_group = group_.get (), .source_atl = nullptr },
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref1,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr                                                    }
-  });
+                                             .plugin_ref = ref1, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   EXPECT_EQ (group_->rowCount (), 0);
@@ -302,7 +295,8 @@ TEST_F (RemovePluginsCommandTest, RemovePluginWithAutomationTrack)
                                              .plugin_ref = ref,
                                              .source_group = group_.get (),
                                              .source_atl = atl_.get () }
-  });
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   EXPECT_EQ (group_->rowCount (), 0);
@@ -347,7 +341,8 @@ TEST_F (RemovePluginsCommandTest, RemovePluginWithMultipleAutomationTracks)
                                              .plugin_ref = ref,
                                              .source_group = group_.get (),
                                              .source_atl = atl_.get () }
-  });
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   EXPECT_EQ (group_->rowCount (), 0);
@@ -390,7 +385,8 @@ TEST_F (
                                              .plugin_ref = ref,
                                              .source_group = group_.get (),
                                              .source_atl = atl_.get () }
-  });
+  },
+    connections_manager_, registry_);
 
   for (const auto _ : std::views::iota (0, 3))
     {
@@ -421,10 +417,9 @@ TEST_F (RemovePluginsCommandTest, RedoClosesPluginWindow)
   RemovePluginsCommand cmd (
     {
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr }
-  });
+                                             .plugin_ref = ref, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   EXPECT_FALSE (plugin->uiVisible ());
@@ -438,10 +433,9 @@ TEST_F (RemovePluginsCommandTest, RedoAfterReopenClosesPluginWindow)
   RemovePluginsCommand cmd (
     {
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr }
-  });
+                                             .plugin_ref = ref, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   EXPECT_FALSE (plugin->uiVisible ());
@@ -465,10 +459,9 @@ TEST_F (RemovePluginsCommandTest, RedoSkipsAlreadyClosedWindows)
   RemovePluginsCommand cmd (
     {
       RemovePluginsCommand::PluginRemoveInfo{
-                                             .plugin_ref = ref,
-                                             .source_group = group_.get (),
-                                             .source_atl = nullptr }
-  });
+                                             .plugin_ref = ref, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
 
   cmd.redo ();
   EXPECT_FALSE (plugin->uiVisible ());

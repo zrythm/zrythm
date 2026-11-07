@@ -350,6 +350,15 @@ Project::drop_port_connections_with_missing_ports ()
     }
 }
 
+void
+Project::restore_modulation_input_attachment_rules ()
+{
+  project_registry_.for_each_matching<dsp::ProcessorParameter> (
+    [] (dsp::ProcessorParameter &param) {
+      param.restore_modulation_input_attachment_rule ();
+    });
+}
+
 structure::tracks::FinalTrackDependencies
 Project::get_final_track_dependencies ()
 {
@@ -613,5 +622,8 @@ from_json (const nlohmann::json &j, Project &project)
 
   // drop connections referencing nonexistent ports
   project.drop_port_connections_with_missing_ports ();
+
+  // restore unserialized attachment rules of parameter modulation inputs
+  project.restore_modulation_input_attachment_rules ();
 }
 }

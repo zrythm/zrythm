@@ -22,6 +22,9 @@ Item {
   required property bool interactive
   property bool pending: false
   property bool selected: false
+  // Set when the connection's modulation knob is hovered in a node; the
+  // cable renders in the accent color like a selected cable.
+  property bool highlighted: false
   required property real sourceX
   required property real sourceY
   required property real worldHeight
@@ -52,9 +55,9 @@ Item {
       fillColor: "transparent"
       startX: root.sourceX
       startY: root.sourceY
-      strokeColor: root.pending || root.selected ? ZrythmTheme.primaryColor : (root.automaticCable ? ZrythmTheme.placeholderTextColor : root.cableColor)
+      strokeColor: root.pending || root.selected || root.highlighted ? ZrythmTheme.primaryColor : (root.automaticCable ? ZrythmTheme.placeholderTextColor : root.cableColor)
       strokeStyle: root.automaticCable ? ShapePath.DashLine : ShapePath.SolidLine
-      strokeWidth: root.selected ? 2.8 : (root.automaticCable ? 1.4 : 2.2)
+      strokeWidth: root.selected || root.highlighted ? 2.8 : (root.automaticCable ? 1.4 : 2.2)
 
       PathCubic {
         control1X: root.sourceX + root.curveOffset

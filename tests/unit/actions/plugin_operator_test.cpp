@@ -4,11 +4,14 @@
 #include "actions/plugin_operator.h"
 #include "controllers/clipboard.h"
 #include "plugins/faust/faust_plugin.h"
+#include "plugins/modulators/engines/macro_engine.h"
+#include "plugins/modulators/modulator.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
 #include "plugins/plugin_group.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/project/project_registry.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/track.h"
@@ -43,7 +46,7 @@ protected:
 
     undo_stack_ = create_mock_undo_stack ();
     plugin_operator_ = std::make_unique<PluginOperator> (
-      *undo_stack_, registry_, clipboard_,
+      *undo_stack_, registry_, connections_manager_, clipboard_,
       [] () { return QString ("test-project-id"); });
 
     // Create source and target plugin groups
@@ -163,8 +166,9 @@ protected:
     [] () { return QString (); }, [] (const QString &) { }
   };
 
-  std::unique_ptr<undo::UndoStack> undo_stack_;
-  std::unique_ptr<PluginOperator>  plugin_operator_;
+  std::unique_ptr<undo::UndoStack>           undo_stack_;
+  std::unique_ptr<PluginOperator>            plugin_operator_;
+  structure::project::PortConnectionsManager connections_manager_;
 
   std::unique_ptr<plugins::PluginGroup> source_group_;
   std::unique_ptr<plugins::PluginGroup> target_group_;
@@ -452,6 +456,49 @@ TEST_F (PluginOperatorTest, RedoRemovePlugin)
   undo_stack_->redo ();
 
   EXPECT_EQ (source_group_->rowCount (), 0);
+}
+
+// Removing a plugin removes the port connections that reference its ports;
+// undo restores them.
+TEST_F (PluginOperatorTest, RemovePluginsRemovesPortConnections)
+{
+  // Macro modulators carry real CV ports without needing an external plugin
+  const auto make_macro = [this] (plugins::PluginGroup &group) {
+    auto descriptor = plugins::modulators::Modulator::make_descriptor (
+      plugins::modulators::MacroEngine::kDescriptorId);
+    auto config =
+      plugins::PluginConfiguration::create_new_for_descriptor (*descriptor);
+    auto ref = plugin_factory_->create_plugin_from_setting (
+      *config,
+      plugins::PluginFactory::InstantiationFinishOptions{
+        .handler_ = [] (plugins::PluginUuidReference, bool, const QString &) {
+        } });
+    group.append_plugin (ref);
+    return ref.get_object_as<plugins::modulators::Modulator> ();
+  };
+
+  auto * source_plugin = make_macro (*source_group_);
+  auto * target_plugin = make_macro (*source_group_);
+  ASSERT_NE (source_plugin, nullptr);
+  ASSERT_NE (target_plugin, nullptr);
+  ASSERT_FALSE (source_plugin->get_all_output_ports ().empty ());
+  ASSERT_FALSE (target_plugin->get_all_input_ports ().empty ());
+  auto *     src_port = source_plugin->get_all_output_ports ().front ().get ();
+  auto *     dest_port = target_plugin->get_all_input_ports ().front ().get ();
+  const auto src_id = src_port->get_uuid ();
+  const auto dest_id = dest_port->get_uuid ();
+
+  connections_manager_.add_default_connection (src_id, dest_id, false);
+  ASSERT_NE (connections_manager_.get_connection (src_id, dest_id), nullptr);
+
+  plugin_operator_->removePlugins (
+    { source_plugin }, source_group_.get (), nullptr);
+  EXPECT_EQ (connections_manager_.get_connection (src_id, dest_id), nullptr)
+    << "Removing a plugin must not leave connections to its ports behind";
+
+  undo_stack_->undo ();
+  EXPECT_NE (connections_manager_.get_connection (src_id, dest_id), nullptr)
+    << "Undo must restore the removed connection";
 }
 
 // --- Empty/null handling ---

@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
 #include "dsp/audio_input_selection.h"
 #include "dsp/audio_port.h"
+#include "dsp/cv_port.h"
 #include "dsp/graph.h"
 #include "plugins/modulators/engines/macro_engine.h"
 #include "plugins/modulators/modulator.h"
@@ -235,6 +238,38 @@ TEST_F (ProjectGraphBuilderTest, TrackRackModulatorPluginIsPartOfGraph)
   EXPECT_NE (graph.get_nodes ().find_node_for_processable (*macro), nullptr);
   EXPECT_TRUE (graph.is_valid ())
     << "A track-rack modulator plugin should not break the graph";
+}
+
+// The track processor feeds a rack member's audio and MIDI inputs only;
+// CV inputs are reserved for user modulation connections.
+TEST_F (ProjectGraphBuilderTest, TrackProcessorDoesNotFeedRackMemberCvInputs)
+{
+  auto project = create_project ();
+  project->add_default_tracks ();
+  auto * track = add_audio_track (*project);
+  auto * macro = add_track_macro (*project, *track);
+  ASSERT_NE (macro, nullptr);
+  auto * cv_in =
+    qobject_cast<dsp::CVPort *> (macro->get_all_input_ports ().front ().get ());
+  ASSERT_NE (cv_in, nullptr);
+
+  dsp::graph::Graph   graph;
+  ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
+  builder.build_graph (graph);
+  graph.finalize_nodes ();
+
+  const auto * cv_node = graph.get_nodes ().find_node_for_processable (*cv_in);
+  ASSERT_NE (cv_node, nullptr);
+  const auto * track_processor_node =
+    graph.get_nodes ().find_node_for_processable (*track->get_track_processor ());
+  ASSERT_NE (track_processor_node, nullptr);
+  EXPECT_FALSE (
+    std::ranges::any_of (
+      cv_node->depends (),
+      [track_processor_node] (const auto &parent) {
+        return &parent.get () == track_processor_node;
+      }))
+    << "The track processor must not feed a rack member's CV input";
 }
 
 TEST_F (ProjectGraphBuilderTest, AudioBusTrackWithNoRouteTargetGraphIsValid)

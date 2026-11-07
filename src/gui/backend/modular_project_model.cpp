@@ -16,7 +16,6 @@
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
 #include "gui/backend/modular_project_model.h"
-#include "plugins/modulators/engines/macro_engine.h"
 #include "plugins/modulators/modulator.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_group.h"
@@ -32,6 +31,7 @@
 #include "utils/views.h"
 
 #include <QAbstractItemModel>
+#include <QHash>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QPointF>
@@ -322,12 +322,15 @@ has_modulatable_parameters (const dsp::ProcessorBase &processor)
 
 /**
  * @brief Node-map entries of a native modulator: its descriptor ID, which
- * selects the node's compact editor.
+ * selects the node's compact editor, and the editor body's height.
  *
  * Non-modulator processors get an empty entry so that every node carries the
- * same key. Editors resolve their parameters live through nodeParameter()
+ * same keys. Editors resolve their parameters live through nodeParameter()
  * instead of pointers stored in the projection.
  */
+int
+editor_body_height_for_descriptor (const QString &descriptor_id);
+
 QVariantMap
 modulator_node_extras (const dsp::ProcessorBase &processor)
 {
@@ -350,7 +353,8 @@ modulator_node_extras (const dsp::ProcessorBase &processor)
         }
     }
   return QVariantMap{
-    { "modulatorDescriptorId", descriptor_id },
+    { "modulatorDescriptorId", descriptor_id                                     },
+    { "editorBodyHeight",      editor_body_height_for_descriptor (descriptor_id) },
   };
 }
 
@@ -359,7 +363,8 @@ connected_parameter_slots (
   const dsp::ProcessorBase                          &processor,
   bool                                               prefix_with_processor,
   const ConnectedDestinationPorts                   &connected_destinations,
-  const structure::project::PortConnectionsManager * manager)
+  const structure::project::PortConnectionsManager * manager,
+  const utils::IObjectRegistry                      &registry)
 {
   QVariantList slots;
   for (const auto &param_ref : processor.get_parameters ())
@@ -374,6 +379,11 @@ connected_parameter_slots (
       const auto id = uuid_string (*mod_port);
       if (!connected_destinations.contains (id))
         continue;
+      // A detached modulation input makes all of its connections dormant:
+      // the graph skips them, so no cable exists and no knob may be
+      // projected for them either.
+      if (mod_port->detached ())
+        continue;
       const auto label =
         parameter_slot_label (processor, *param, prefix_with_processor);
       QVariantList connections;
@@ -383,6 +393,21 @@ connected_parameter_slots (
           manager->get_sources (&sources, mod_port->get_uuid ());
           for (const auto * conn : sources)
             {
+              // Connections whose source port no longer exists render no
+              // knob: there is nothing left to scale or reconnect.
+              const auto * source_port = qobject_cast<const dsp::Port *> (
+                registry.find_by_raw_uuid (type_safe::get (conn->src_id_)));
+              if (source_port == nullptr)
+                {
+                  z_warning (
+                    "Skipping modulation connection into '{}': its source port no longer exists",
+                    label.toStdString ());
+                  continue;
+                }
+              // Dormant connections render no knob for the same reason as
+              // above: the view must match the graph.
+              if (source_port->detached ())
+                continue;
               connections.append (
                 QVariantMap{
                   { "sourcePortId",
@@ -393,6 +418,10 @@ connected_parameter_slots (
               });
             }
         }
+      // A slot with no live connections shows nothing: an unmodulated
+      // parameter draws no row.
+      if (connections.isEmpty ())
+        continue;
       slots.append (
         QVariantMap{
           { "id",          id                           },
@@ -416,6 +445,32 @@ constexpr int kLayoutRowGap = 48;
 constexpr int kLayoutMarginX = 90;
 constexpr int kLayoutMarginY = 80;
 
+/**
+ * @brief Height of the compact editor body of a native modulator node.
+ *
+ * Native modulator descriptor IDs start with "zrythm.modulators." followed
+ * by an engine key; engines whose key is absent from the table have no
+ * editor body (their parameters, if any, are edited elsewhere).
+ */
+int
+editor_body_height_for_descriptor (const QString &descriptor_id)
+{
+  static const QHash<QString, int> heights{
+    { QStringLiteral ("macro"),             kLayoutEditorBodyHeight },
+    { QStringLiteral ("lfo"),               kLayoutEditorBodyHeight },
+    { QStringLiteral ("envelope_follower"), kLayoutEditorBodyHeight },
+    { QStringLiteral ("adsr"),              kLayoutEditorBodyHeight },
+    { QStringLiteral ("math"),              kLayoutEditorBodyHeight },
+  };
+  static const QString prefix = [] {
+    constexpr std::string_view id{ "zrythm.modulators." };
+    return QString::fromUtf8 (id.data (), static_cast<qsizetype> (id.size ()));
+  }();
+  if (!descriptor_id.startsWith (prefix))
+    return 0;
+  return heights.value (descriptor_id.mid (prefix.size ()), 0);
+}
+
 int
 layout_node_height (const QVariantMap &node)
 {
@@ -428,11 +483,11 @@ layout_node_height (const QVariantMap &node)
     + static_cast<int> (count_slots (node.value ("parametersJson")));
   const int output_slots =
     static_cast<int> (count_slots (node.value ("outputsJson")));
-  const bool has_modulator_editor =
-    !node.value ("modulatorDescriptorId").toString ().isEmpty ();
+  const int editor_body_height = editor_body_height_for_descriptor (
+    node.value ("modulatorDescriptorId").toString ());
   return kLayoutHeaderHeight
          + (std::max) (input_slots, output_slots) * kLayoutPortHeight + 8
-         + (has_modulator_editor ? kLayoutEditorBodyHeight : 0);
+         + editor_body_height;
 }
 
 /**
@@ -913,16 +968,47 @@ ModularProjectModel::scopeRack () const
   return project_.modulators ();
 }
 
-QString
-ModularProjectModel::macroDescriptorId () const
+QVariantMap
+ModularProjectModel::connectionSourceInfo (const QString &port_id) const
 {
-  return QString::fromUtf8 (plugins::modulators::MacroEngine::kDescriptorId);
+  for (const auto &[processable, endpoint] : impl_->endpoints)
+    {
+      if (endpoint.port_id != port_id)
+        continue;
+      const auto * port = dynamic_cast<const dsp::Port *> (processable);
+      if (port == nullptr)
+        continue;
+      QString node_title;
+      for (const auto &node_var : nodes_)
+        {
+          const auto node = node_var.toMap ();
+          if (node.value ("nodeId").toString () == endpoint.node_id)
+            {
+              node_title = node.value ("nodeTitle").toString ();
+              break;
+            }
+        }
+      return QVariantMap{
+        { "nodeTitle", node_title                       },
+        { "portLabel", port->get_label ().to_qstring () },
+      };
+    }
+  return {};
 }
 
 QString
-ModularProjectModel::macroValueParameterId () const
+ModularProjectModel::modulatorDescriptorId (const QString &engine_key) const
 {
-  return QString::fromUtf8 (plugins::modulators::MacroEngine::kParameterId);
+  return QString::fromUtf8 ("zrythm.modulators.") + engine_key;
+}
+
+QString
+ModularProjectModel::modulatorParameterId (
+  const QString &engine_key,
+  const QString &parameter_name) const
+{
+  return QString::fromUtf8 ("/zrythm/modulators/") + engine_key
+         + QString::fromUtf8 ("/") + parameter_name;
 }
 
 void
@@ -1111,8 +1197,9 @@ ModularProjectModel::rebuild_projection ()
         { "parametersJson",           ports_json (parameters) },
         { "hasModulatableParameters", has_parameters          },
         // Present on every node so the QML ListModel role always exists;
-        // modulator nodes override it through the extras
+        // modulator nodes override them through the extras
         { "modulatorDescriptorId",    QString ()              },
+        { "editorBodyHeight",         0                       },
       };
       for (auto it = extras.begin (); it != extras.end (); ++it)
         {
@@ -1138,7 +1225,7 @@ ModularProjectModel::rebuild_projection ()
           QObject::tr ("Global"), inputs, outputs,
           connected_parameter_slots (
             *global_plugin, false, connected_destination_ports,
-            project_.port_connections_manager_.get ()),
+            project_.port_connections_manager_.get (), project_.get_registry ()),
           has_modulatable_parameters (*global_plugin),
           kind_from_port_list (outputs, QStringLiteral ("cv")),
           modulator_node_extras (*global_plugin));
@@ -1166,7 +1253,8 @@ ModularProjectModel::rebuild_projection ()
             {
               auto processor_slots = connected_parameter_slots (
                 *processor, true, connected_destination_ports,
-                project_.port_connections_manager_.get ());
+                project_.port_connections_manager_.get (),
+                project_.get_registry ());
               parameters.append (processor_slots);
               has_parameters =
                 has_parameters || has_modulatable_parameters (*processor);
@@ -1228,7 +1316,8 @@ ModularProjectModel::rebuild_projection ()
             QObject::tr ("Hardware"), inputs, outputs,
             connected_parameter_slots (
               *audio_input, false, connected_destination_ports,
-              project_.port_connections_manager_.get ()),
+              project_.port_connections_manager_.get (),
+              project_.get_registry ()),
             has_modulatable_parameters (*audio_input),
             kind_from_port_list (outputs, QStringLiteral ("audio")));
           register_processor (node_id, *audio_input);
@@ -1246,7 +1335,8 @@ ModularProjectModel::rebuild_projection ()
             QObject::tr ("Hardware"), inputs, outputs,
             connected_parameter_slots (
               *midi_input, false, connected_destination_ports,
-              project_.port_connections_manager_.get ()),
+              project_.port_connections_manager_.get (),
+              project_.get_registry ()),
             has_modulatable_parameters (*midi_input),
             kind_from_port_list (outputs, QStringLiteral ("midi")));
           register_processor (node_id, *midi_input);
@@ -1262,7 +1352,7 @@ ModularProjectModel::rebuild_projection ()
           QObject::tr ("Hardware"), inputs, outputs,
           connected_parameter_slots (
             monitor_fader, false, connected_destination_ports,
-            project_.port_connections_manager_.get ()),
+            project_.port_connections_manager_.get (), project_.get_registry ()),
           has_modulatable_parameters (monitor_fader),
           kind_from_port_list (outputs, QStringLiteral ("neutral")));
         register_processor (node_id, monitor_fader);
@@ -1287,7 +1377,8 @@ ModularProjectModel::rebuild_projection ()
             outputs,
             connected_parameter_slots (
               *processor, false, connected_destination_ports,
-              project_.port_connections_manager_.get ()),
+              project_.port_connections_manager_.get (),
+              project_.get_registry ()),
             has_modulatable_parameters (*processor),
             kind_from_port_list (outputs, QStringLiteral ("neutral")),
             modulator_node_extras (*processor));
@@ -1301,6 +1392,23 @@ ModularProjectModel::rebuild_projection ()
       structure::project::ProjectGraphBuilder builder (
         project_, project_.metronome (), project_.monitor_fader ());
       builder.build_graph (graph);
+
+      // Projected ports that are attached to processing must have a node
+      // in the fresh graph; a missing node silently drops the port's cables
+      // from the view.
+      for (const auto &[processable, endpoint] : impl_->endpoints)
+        {
+          const auto * port = dynamic_cast<const dsp::Port *> (processable);
+          if (port == nullptr || port->detached ())
+            continue;
+          if (
+            graph.get_nodes ().find_node_for_processable (*processable)
+            != nullptr)
+            continue;
+          z_warning (
+            "Projected port '{}' of node '{}' has no node in the processing graph",
+            port->get_label ().view (), endpoint.node_id.toStdString ());
+        }
 
       // Edges bridge over graph nodes without a real-port endpoint: the
       // channel's passthrough stages are not projected at all, and

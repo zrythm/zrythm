@@ -476,6 +476,20 @@ public:
     return modulation_input_uuid_;
   }
 
+  /**
+   * @brief Re-applies the modulation input port's attachment rule.
+   *
+   * The rule is a category of the port set at creation and not persisted
+   * state; call this on deserialized parameters to restore it.
+   */
+  void restore_modulation_input_attachment_rule ()
+  {
+    auto * mod_port = modulation_input_uuid_.get_object_as<dsp::CVPort> ();
+    if (mod_port == nullptr)
+      return;
+    mod_port->set_attachment_follows_connections (true);
+  }
+
   void set_description (utils::Utf8String descr)
   {
     description_ = std::move (descr);

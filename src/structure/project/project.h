@@ -242,6 +242,19 @@ public:
    */
   void drop_port_connections_with_missing_ports () [[clang::blocking]];
 
+  /**
+   * @brief Re-applies the attachment rule of parameter modulation input
+   * ports.
+   *
+   * Port::attachment_follows_connections() is not serialized state: it is
+   * an invariant of parameter modulation inputs, set when the parameter
+   * creates the port. Ports restored from the project registry come back
+   * with the default value, so the rule is re-applied here after loading.
+   *
+   * Main thread only.
+   */
+  void restore_modulation_input_attachment_rules () [[clang::blocking]];
+
 private:
   static constexpr auto kTempoMapKey = "tempoMap"sv;
   static constexpr auto kRegistryKey = "registry"sv;

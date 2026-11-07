@@ -72,8 +72,10 @@ process_track_connections (
     }
 
   /* connect the track's modulator rack, if it has one: the track processor
-   * feeds each member's inputs, so rack members receive the track's input
-   * signals */
+   * feeds each member's audio and MIDI inputs, so rack members receive the
+   * track's input signals. CV inputs are left for user modulation
+   * connections; feeding them from the track processor would create edges
+   * that port processing filters out anyway. */
   if (auto * rack = tr->modulators ())
     {
       for (const auto &pl_ref : rack->get_plugins ())
@@ -82,6 +84,8 @@ process_track_connections (
           dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
           for (const auto &pl_port_ref : pl->get_attached_input_ports ())
             {
+              if (pl_port_ref.get ()->type () == dsp::PortType::CV)
+                continue;
               auto port_node = graph.get_nodes ().find_node_for_processable (
                 *pl_port_ref.get ());
               assert (port_node != nullptr);
@@ -455,10 +459,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         // this connection) revive when the ports are re-attached
         if (src_port_base->detached () || dest_port_base->detached ())
           {
-            z_debug (
-              "Skipping connection {} -> {}: endpoint port is detached",
-              src_port_base->get_full_designation (),
-              dest_port_base->get_full_designation ());
+            warn_once_skipped (
+              *conn,
+              fmt::format (
+                "endpoint port '{}' is detached (the connection is dormant)",
+                src_port_base->detached ()
+                  ? src_port_base->get_full_designation ().view ()
+                  : dest_port_base->get_full_designation ().view ()));
             continue;
           }
         auto src_port_var =

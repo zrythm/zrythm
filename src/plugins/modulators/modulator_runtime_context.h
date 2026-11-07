@@ -22,6 +22,12 @@ namespace zrythm::plugins::modulators
 class ModulatorRuntimeContext final
 {
 public:
+  /** Sample rate the modulator is prepared for. */
+  [[nodiscard]] units::sample_rate_t sample_rate () const noexcept
+  {
+    return sample_rate_;
+  }
+
   [[nodiscard]] dsp::ProcessorParameter *
   parameter (size_t index) const noexcept
   {
@@ -51,6 +57,7 @@ public:
 private:
   friend class Modulator;
 
+  units::sample_rate_t                   sample_rate_{};
   std::vector<dsp::ProcessorParameter *> parameters_;
   std::vector<dsp::CVPort *>             cv_inputs_;
   std::vector<dsp::CVPort *>             cv_outputs_;

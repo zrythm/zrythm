@@ -13,7 +13,6 @@ TestCase {
   ModularMinimap {
     id: minimap
 
-    editorBodyHeight: 56
     headerHeight: 40
     height: 100
     nodeModel: ListModel {

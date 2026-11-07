@@ -18,8 +18,8 @@ Control {
   required property real cardWidth
   property bool connectionPending: false
   // Height of the compact editor body below the ports of native modulator
-  // nodes; set by the canvas to keep the shared height formula in sync.
-  property int editorBodyHeight: 0
+  // nodes; populated from the node projection's editorBodyHeight role.
+  required property int editorBodyHeight
   required property int headerHeight
   required property bool hasModulatableParameters
   required property string inputsJson
@@ -92,6 +92,7 @@ Control {
   signal nodeMenuRequested(string nodeId)
   signal parameterEditActiveChanged(bool active)
   signal parameterMultiplierEdited(string sourcePortId, string destinationPortId, real value)
+  signal modulationSourceHovered(string sourcePortId, string destinationPortId, bool hovered)
   signal portClicked(string nodeId, var port)
   signal portConnectionCancelled
   signal portConnectionFinished(point worldPoint)
@@ -184,9 +185,20 @@ Control {
     }
   }
 
-  // Stable IDs of the native Macro modulator, shared with its engine.
-  readonly property string macroDescriptorId: root.modularModel?.macroDescriptorId() ?? ""
-  readonly property string macroValueParameterId: root.modularModel?.macroValueParameterId() ?? ""
+  // Descriptor IDs of the native modulators with a compact editor body,
+  // shared with their engines through the project model.
+  readonly property string macroDescriptorId: root.modularModel?.modulatorDescriptorId("macro") ?? ""
+  readonly property string lfoDescriptorId: root.modularModel?.modulatorDescriptorId("lfo") ?? ""
+  readonly property string envelopeFollowerDescriptorId: root.modularModel?.modulatorDescriptorId("envelope_follower") ?? ""
+  readonly property string adsrDescriptorId: root.modularModel?.modulatorDescriptorId("adsr") ?? ""
+  readonly property string mathDescriptorId: root.modularModel?.modulatorDescriptorId("math") ?? ""
+
+  // Resolves a native modulator parameter through the model's stable IDs.
+  function resolveModulatorParameter(engineKey: string, parameterName: string): var {
+    return root.modularModel?.nodeParameter(
+      root.nodeId,
+      root.modularModel.modulatorParameterId(engineKey, parameterName)) ?? null;
+  }
 
   Accessible.name: nodeTitle
   Accessible.role: Accessible.Grouping
@@ -392,11 +404,18 @@ Control {
 
         readonly property var slotConnections: portButton.modelData.connections !== undefined ? portButton.modelData.connections : []
 
+        // Number of knobs currently hovered: while any knob is hovered,
+        // only its tooltip shows, not the slot button's.
+        property int hoveredKnobCount: 0
+
         anchors.right: portButton.modelData.flow === "input" ? portButton.right : undefined
         anchors.rightMargin: 10
         anchors.verticalCenter: parent.verticalCenter
         spacing: 6
         visible: portButton.modelData.kind === "parameter" && parameterKnobs.slotConnections.length > 0
+
+        onSlotConnectionsChanged: hoveredKnobCount = 0
+        onVisibleChanged: if (!visible) hoveredKnobCount = 0
 
         Repeater {
           id: knobs
@@ -425,6 +444,25 @@ Control {
 
               onDraggingChanged: root.parameterEditActiveChanged(dragging)
               onValueModified: newValue => root.parameterMultiplierEdited(connectionDelegate.modelData.sourcePortId, portButton.modelData.id, newValue)
+
+              HoverHandler {
+                id: modulationHoverHandler
+
+                onHoveredChanged: {
+                  parameterKnobs.hoveredKnobCount += hovered ? 1 : -1;
+                  root.modulationSourceHovered(connectionDelegate.modelData.sourcePortId, portButton.modelData.id, hovered);
+                }
+              }
+              ToolTip {
+                readonly property var sourceInfo: root.modularModel !== null
+                  ? root.modularModel.connectionSourceInfo(connectionDelegate.modelData.sourcePortId)
+                  : null
+
+                text: sourceInfo !== null && sourceInfo.nodeTitle !== undefined
+                  ? qsTr("Scales modulation from %1 · %2").arg(sourceInfo.nodeTitle).arg(sourceInfo.portLabel) + "\n" + Math.round(amountKnob.value * 100) + "%"
+                  : ""
+                visible: text !== "" && modulationHoverHandler.hovered
+              }
             }
 
             Label {
@@ -442,24 +480,98 @@ Control {
 
       ToolTip {
         text: root.portToolTip(portButton.modelData)
+        visible: portButton.hovered && parameterKnobs.hoveredKnobCount === 0
       }
     }
   }
 
-  // Compact editor body of a native modulator node, selected by the node's
-  // modulator descriptor ID. Unknown modulators render no editor body.
-  MacroModulatorEditor {
+  // Compact editor body of a native modulator node. The loader instantiates
+  // only the editor matching the node's modulator descriptor ID; modulators
+  // without a compact editor (MIDI to CV) and unknown modulators load
+  // nothing.
+  Loader {
+    id: modulatorEditorLoader
+
     height: root.editorBodyHeight
-    parameter: root.hasModulatorEditor
-      && root.modulatorDescriptorId === root.macroDescriptorId
-      ? root.modularModel.nodeParameter(root.nodeId, root.macroValueParameterId)
-      : null
-    parameterOperator: root.parameterOperator
-    visible: root.hasModulatorEditor
-      && root.modulatorDescriptorId === root.macroDescriptorId
+    visible: item !== null
     width: root.cardWidth
     y: root.editorBodyTop
+    sourceComponent: {
+      if (!root.hasModulatorEditor || root.editorBodyHeight <= 0)
+        return null;
+      if (root.modulatorDescriptorId === root.macroDescriptorId)
+        return macroEditorComponent;
+      if (root.modulatorDescriptorId === root.lfoDescriptorId)
+        return lfoEditorComponent;
+      if (root.modulatorDescriptorId === root.envelopeFollowerDescriptorId)
+        return envelopeFollowerEditorComponent;
+      if (root.modulatorDescriptorId === root.adsrDescriptorId)
+        return adsrEditorComponent;
+      if (root.modulatorDescriptorId === root.mathDescriptorId)
+        return mathEditorComponent;
+      return null;
+    }
 
-    onEditActiveChanged: active => root.parameterEditActiveChanged(active)
+    Connections {
+      function onEditActiveChanged(active: bool): void {
+        root.parameterEditActiveChanged(active);
+      }
+
+      target: modulatorEditorLoader.item
+    }
+  }
+
+  Component {
+    id: macroEditorComponent
+
+    MacroModulatorEditor {
+      parameter: root.resolveModulatorParameter("macro", "value")
+      parameterOperator: root.parameterOperator
+    }
+  }
+
+  Component {
+    id: lfoEditorComponent
+
+    LfoModulatorEditor {
+      divisionParameter: root.resolveModulatorParameter("lfo", "division")
+      parameterOperator: root.parameterOperator
+      rateParameter: root.resolveModulatorParameter("lfo", "rate")
+      syncParameter: root.resolveModulatorParameter("lfo", "sync")
+      waveformParameter: root.resolveModulatorParameter("lfo", "waveform")
+    }
+  }
+
+  Component {
+    id: envelopeFollowerEditorComponent
+
+    EnvelopeFollowerModulatorEditor {
+      attackParameter: root.resolveModulatorParameter(
+        "envelope_follower", "attack")
+      parameterOperator: root.parameterOperator
+      releaseParameter: root.resolveModulatorParameter(
+        "envelope_follower", "release")
+    }
+  }
+
+  Component {
+    id: adsrEditorComponent
+
+    AdsrModulatorEditor {
+      attackParameter: root.resolveModulatorParameter("adsr", "attack")
+      decayParameter: root.resolveModulatorParameter("adsr", "decay")
+      parameterOperator: root.parameterOperator
+      releaseParameter: root.resolveModulatorParameter("adsr", "release")
+      sustainParameter: root.resolveModulatorParameter("adsr", "sustain")
+    }
+  }
+
+  Component {
+    id: mathEditorComponent
+
+    MathModulatorEditor {
+      operationParameter: root.resolveModulatorParameter("math", "operation")
+      parameterOperator: root.parameterOperator
+    }
   }
 }

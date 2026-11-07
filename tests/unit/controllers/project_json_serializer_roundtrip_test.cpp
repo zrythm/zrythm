@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/port.h"
 #include "plugins/faust/faust_plugin.h"
 #include "project_json_serializer_test.h"
+#include "structure/tracks/channel.h"
 #include "utils/registry_utils.h"
 
 namespace zrythm::controllers
@@ -876,5 +878,44 @@ TEST_F (ProjectSerializationTest, RoundTrip_Idempotent)
   // j2 and j3 should have identical object counts
   EXPECT_EQ (count_objects (j2), count_objects (j3))
     << "Object count not stable after second round-trip";
+}
+
+// The attachment rule of parameter modulation inputs is not serialized
+// state: it must come back with the port on load. Without it, a connection
+// made in a loaded project never attaches its modulation input and stays
+// dormant (the modulation knob renders, its cable never does); the
+// connect-attaches behavior itself is pinned by the modular model tests.
+TEST_F (ProjectSerializationTest, RoundTrip_ModulationInputAttachmentRestored)
+{
+  auto original_project = create_minimal_project ();
+  original_project->add_default_tracks ();
+  create_ui_state_and_undo_stack (*original_project);
+
+  nlohmann::json j = ProjectJsonSerializer::serialize (
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
+
+  auto loaded_project = create_minimal_project ();
+  create_ui_state_and_undo_stack (*loaded_project);
+  EXPECT_NO_THROW ({
+    ProjectJsonSerializer::deserialize (
+      j, *loaded_project, *ui_state, *undo_stack);
+  });
+
+  auto * loaded_master =
+    loaded_project->tracklist ()->singletonTracks ()->masterTrack ();
+  ASSERT_NE (loaded_master->channel (), nullptr);
+  auto * loaded_fader = loaded_master->channel ()->fader ();
+  ASSERT_NE (loaded_fader, nullptr);
+  ASSERT_FALSE (loaded_fader->get_parameters ().empty ());
+  auto * loaded_mod_port =
+    loaded_fader->get_parameters ()
+      .front ()
+      .get ()
+      ->get_modulation_input_port_ref ()
+      .get ();
+  ASSERT_NE (loaded_mod_port, nullptr);
+
+  EXPECT_TRUE (loaded_mod_port->attachment_follows_connections ())
+    << "Loaded modulation inputs must follow their connections again";
 }
 }

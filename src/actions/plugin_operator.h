@@ -7,6 +7,7 @@
 
 #include "controllers/clipboard.h"
 #include "plugins/plugin_all.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/project/project_registry.h"
 #include "structure/tracks/track_all.h"
 #include "undo/undo_stack.h"
@@ -26,12 +27,14 @@ class PluginOperator : public QObject
 
 public:
   explicit PluginOperator (
-    undo::UndoStack                     &undo_stack,
-    structure::project::ProjectRegistry &project_registry,
-    controllers::Clipboard              &clipboard,
-    std::function<QString ()>            project_id_provider,
-    QObject *                            parent = nullptr)
+    undo::UndoStack                            &undo_stack,
+    structure::project::ProjectRegistry        &project_registry,
+    structure::project::PortConnectionsManager &port_connections_manager,
+    controllers::Clipboard                     &clipboard,
+    std::function<QString ()>                   project_id_provider,
+    QObject *                                   parent = nullptr)
       : QObject (parent), project_registry_ (project_registry),
+        port_connections_manager_ (port_connections_manager),
         undo_stack_ (undo_stack), clipboard_ (clipboard),
         project_id_provider_ (std::move (project_id_provider))
   {
@@ -186,10 +189,11 @@ private:
   /** Logs @p reason and emits operationRefused(). */
   void refuse_operation (const QString &reason);
 
-  structure::project::ProjectRegistry &project_registry_;
-  undo::UndoStack                     &undo_stack_;
-  controllers::Clipboard              &clipboard_;
-  std::function<QString ()>            project_id_provider_;
+  structure::project::ProjectRegistry        &project_registry_;
+  structure::project::PortConnectionsManager &port_connections_manager_;
+  undo::UndoStack                            &undo_stack_;
+  controllers::Clipboard                     &clipboard_;
+  std::function<QString ()>                   project_id_provider_;
 };
 
 } // namespace zrythm::actions

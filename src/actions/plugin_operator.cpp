@@ -69,16 +69,17 @@ PluginOperator::removePlugins (
   auto atl = track ? track->automationTracklist () : nullptr;
 
   auto cmd = std::make_unique<commands::RemovePluginsCommand> (
-    plugins | std::views::filter ([] (auto * p) { return p != nullptr; })
-    | std::views::transform ([this, group, atl] (auto * plugin) {
-        return commands::RemovePluginsCommand::PluginRemoveInfo{
-          .plugin_ref = plugins::PluginUuidReference (
-            plugin->get_uuid (), project_registry_),
-          .source_group = group,
-          .source_atl = atl
-        };
-      })
-    | std::ranges::to<std::vector> ());
+    plugins | std::views::filter ([] (auto * p) {
+      return p != nullptr;
+    }) | std::views::transform ([this, group, atl] (auto * plugin) {
+      return commands::RemovePluginsCommand::PluginRemoveInfo{
+        .plugin_ref =
+          plugins::PluginUuidReference (plugin->get_uuid (), project_registry_),
+        .source_group = group,
+        .source_atl = atl
+      };
+    }) | std::ranges::to<std::vector> (),
+    port_connections_manager_, project_registry_);
 
   undo_stack_.push (cmd.release ());
 }

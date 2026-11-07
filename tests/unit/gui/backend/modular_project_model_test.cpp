@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <map>
 
+#include "actions/port_connection_operator.h"
 #include "dsp/port.h"
 #include "gui/backend/modular_project_model.h"
 #include "plugins/modulators/engines/macro_engine.h"
@@ -16,6 +17,7 @@
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/tracklist.h"
+#include "undo/undo_stack.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -1035,6 +1037,75 @@ TEST_F (ModularProjectModelTest, CvConnectionToParameterIsEditableEdge)
     node_it->toMap ().value ("inputsJson").toByteArray ());
   ASSERT_TRUE (inputs.isArray ());
   EXPECT_FALSE (inputs.array ().contains (QJsonValue (dest_uuid)));
+}
+
+// Connecting through PortConnectionOperator (the path the canvas uses)
+// attaches the destination modulation input, so a track-rack CV connection
+// to a fader parameter projects as an editable edge; undo removes the edge
+// and re-detaches the input.
+TEST_F (ModularProjectModelTest, ConnectPortsOperatorRoundTripProducesEdge)
+{
+  auto project = create_minimal_project ();
+  project->add_default_tracks ();
+  structure::project::ProjectUiState ui_state (*project, *app_settings_);
+  ModularProjectModel                model (*project, ui_state);
+
+  structure::tracks::Track * channel_track = nullptr;
+  for (const auto &ref : project->tracklist ()->collection ()->tracks ())
+    {
+      auto * track = ref.get ();
+      if (track->channel () != nullptr && track->modulators () != nullptr)
+        {
+          channel_track = track;
+          break;
+        }
+    }
+  ASSERT_NE (channel_track, nullptr);
+  model.showTrack (channel_track->uuidString ());
+
+  auto * macro = add_macro_to_group (*channel_track->modulators (), *project);
+  ASSERT_NE (macro, nullptr);
+  auto * cv_out = macro_cv_out (*macro);
+  ASSERT_NE (cv_out, nullptr);
+
+  auto * fader = channel_track->channel ()->fader ();
+  ASSERT_NE (fader, nullptr);
+  ASSERT_FALSE (fader->get_parameters ().empty ());
+  auto * mod_port =
+    fader->get_parameters ()
+      .front ()
+      .get ()
+      ->get_modulation_input_port_ref ()
+      .get ();
+  ASSERT_NE (mod_port, nullptr);
+  ASSERT_TRUE (mod_port->detached ());
+
+  undo::UndoStack undo_stack (
+    [&project] (const std::function<void ()> &action, bool recalculate_graph) {
+      project->engine ()->execute_function_with_paused_processing_synchronously (
+        action, recalculate_graph);
+    });
+  actions::PortConnectionOperator connection_operator (undo_stack, *project);
+
+  const auto error =
+    connection_operator.connectPorts (uuid_of (*cv_out), uuid_of (*mod_port));
+  ASSERT_TRUE (error.isEmpty ()) << error.toStdString ();
+  EXPECT_FALSE (mod_port->detached ());
+  QTRY_VERIFY (
+    !find_edge_by_ports (model, uuid_of (*cv_out), uuid_of (*mod_port))
+       .isEmpty ());
+
+  const auto edge =
+    find_edge_by_ports (model, uuid_of (*cv_out), uuid_of (*mod_port));
+  EXPECT_FALSE (edge.value ("readOnly").toBool ());
+  EXPECT_EQ (edge.value ("signalKind").toString (), u8"parameter");
+
+  undo_stack.undo ();
+  EXPECT_EQ (
+    project->port_connections_manager_->get_connection (
+      cv_out->get_uuid (), mod_port->get_uuid ()),
+    nullptr);
+  EXPECT_TRUE (mod_port->detached ());
 }
 
 // Connected parameter slots expose their connections (source port and

@@ -9,7 +9,6 @@ import ZrythmStyle
 Item {
   id: root
 
-  required property int editorBodyHeight
   required property int headerHeight
   required property var nodeModel
   required property int nodeWidth
@@ -76,8 +75,7 @@ Item {
     const inputs = JSON.parse(node.inputsJson);
     const outputs = JSON.parse(node.outputsJson);
     const parameters = JSON.parse(node.parametersJson);
-    const editorBody = node.modulatorDescriptorId !== undefined
-      && node.modulatorDescriptorId !== "" ? editorBodyHeight : 0;
+    const editorBody = node.editorBodyHeight ?? 0;
     return headerHeight + Math.max(inputs.length + parameters.length, outputs.length) * portHeight + 8 + editorBody;
   }
 

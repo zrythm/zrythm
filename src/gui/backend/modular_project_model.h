@@ -116,15 +116,36 @@ public:
   Q_INVOKABLE QObject * scopeRack () const;
 
   /**
-   * @brief Stable IDs of the native Macro modulator and its value
-   * parameter.
+   * @brief Descriptor ID of a native modulator engine.
    *
-   * The Modular view uses these to match nodes against the inline Macro
-   * editor and to resolve its parameter, so the IDs exist in QML only
-   * through these accessors.
+   * @param engine_key Engine key embedded in the descriptor ID (e.g.
+   * "macro").
+   * @return "zrythm.modulators.<engine_key>".
    */
-  Q_INVOKABLE QString macroDescriptorId () const;
-  Q_INVOKABLE QString macroValueParameterId () const;
+  Q_INVOKABLE QString modulatorDescriptorId (const QString &engine_key) const;
+
+  /**
+   * @brief Stable parameter ID of a native modulator engine's parameter.
+   *
+   * @param engine_key Engine key embedded in the descriptor ID (e.g.
+   * "macro").
+   * @param parameter_name Parameter name inside the engine's ID namespace
+   * (e.g. "value").
+   * @return "/zrythm/modulators/<engine_key>/<parameter_name>".
+   */
+  Q_INVOKABLE QString modulatorParameterId (
+    const QString &engine_key,
+    const QString &parameter_name) const;
+
+  /**
+   * @brief Node title and port label of the node owning @p port_id.
+   *
+   * @param port_id The source port ID carried by a projected parameter
+   * connection.
+   * @return A map with "nodeTitle" and "portLabel", or an empty map when
+   * the port is not part of the current projection.
+   */
+  Q_INVOKABLE QVariantMap connectionSourceInfo (const QString &port_id) const;
 
 Q_SIGNALS:
   void nodesChanged ();

@@ -1,18 +1,29 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+#include <ranges>
+
 #include "commands/remove_plugins_command.h"
+#include "dsp/parameter.h"
+#include "dsp/port.h"
+#include "plugins/plugin.h"
+#include "utils/logger.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::commands
 {
 
 RemovePluginsCommand::RemovePluginsCommand (
-  std::vector<PluginRemoveInfo> plugin_infos)
+  std::vector<PluginRemoveInfo>               plugin_infos,
+  structure::project::PortConnectionsManager &connections_manager,
+  utils::IObjectRegistry                     &registry)
     : QUndoCommand (
         plugin_infos.size () == 1
           ? QObject::tr ("Remove Plugin")
           : QObject::tr ("Remove %n Plugin(s)", "", plugin_infos.size ())),
-      plugin_infos_ (std::move (plugin_infos))
+      plugin_infos_ (std::move (plugin_infos)),
+      connections_manager_ (connections_manager), registry_ (registry)
 {
   for (const auto &info : plugin_infos_)
     {
@@ -24,6 +35,69 @@ RemovePluginsCommand::RemovePluginsCommand (
             "Source group does not include the plugin");
         }
     }
+
+  snapshot_plugin_connections ();
+}
+
+void
+RemovePluginsCommand::snapshot_plugin_connections ()
+{
+  const auto snapshot_port_connections = [this] (const dsp::PortUuid &port_id) {
+    structure::project::PortConnectionsManager::ConnectionsVector connections;
+    connections_manager_.get_sources (&connections, port_id);
+    connections_manager_.get_dests (&connections, port_id);
+    for (const auto * conn : connections)
+      {
+        const auto already_snapshotted = std::ranges::any_of (
+          removed_connections_, [conn] (const RemovedConnection &removed) {
+            return removed.src == conn->src_id_ && removed.dest == conn->dest_id_;
+          });
+        if (already_snapshotted)
+          continue;
+        removed_connections_.push_back (
+          RemovedConnection{
+            .src = conn->src_id_,
+            .dest = conn->dest_id_,
+            .multiplier = conn->multiplier_,
+            .locked = conn->locked_,
+            .enabled = conn->enabled_,
+            .bipolar = conn->bipolar_,
+          });
+      }
+  };
+
+  for (const auto &info : plugin_infos_)
+    {
+      auto * plugin = info.plugin_ref.get ();
+      if (plugin == nullptr)
+        continue;
+
+      for (const auto &port_ref : plugin->get_all_input_ports ())
+        {
+          if (port_ref.get () != nullptr)
+            snapshot_port_connections (port_ref.get ()->get_uuid ());
+        }
+      for (const auto &port_ref : plugin->get_all_output_ports ())
+        {
+          if (port_ref.get () != nullptr)
+            snapshot_port_connections (port_ref.get ()->get_uuid ());
+        }
+      for (const auto &param_ref : plugin->get_parameters ())
+        {
+          const auto * param = param_ref.get ();
+          if (param == nullptr)
+            continue;
+          auto * mod_port = param->get_modulation_input_port_ref ().get ();
+          if (mod_port != nullptr)
+            snapshot_port_connections (mod_port->get_uuid ());
+        }
+    }
+}
+
+dsp::Port *
+RemovePluginsCommand::find_port (const dsp::PortUuid &uuid) const
+{
+  return utils::try_get_typed<dsp::Port> (registry_, uuid);
 }
 
 void
@@ -58,6 +132,26 @@ RemovePluginsCommand::redo ()
       info.source_group->remove_plugin (info.plugin_ref.id ());
     }
 
+  // Remove the connections that reference the removed plugins' ports
+  for (const auto &removed : removed_connections_)
+    {
+      connections_manager_.remove_connection (removed.src, removed.dest);
+    }
+
+  // Destination ports that lost their last source return to the detached
+  // state of unconnected modulation inputs
+  for (const auto &removed : removed_connections_)
+    {
+      auto * destination = find_port (removed.dest);
+      if (
+        destination == nullptr || destination->detached ()
+        || !destination->attachment_follows_connections ()
+        || connections_manager_.get_num_sources (removed.dest) > 0)
+        continue;
+      destination->set_detached (true);
+      detached_destinations_.push_back (removed.dest);
+    }
+
   // Remove automation tracks for each plugin
   for (const auto &info : plugin_infos_)
     {
@@ -81,6 +175,28 @@ RemovePluginsCommand::undo ()
       removed.tracks.clear ();
     }
   removed_automation_.clear ();
+
+  // Restore the removed connections
+  for (const auto &removed : removed_connections_)
+    {
+      connections_manager_.add_connection (
+        removed.src, removed.dest, removed.multiplier, removed.locked,
+        removed.enabled);
+      if (
+        auto * conn =
+          connections_manager_.get_connection (removed.src, removed.dest))
+        {
+          conn->bipolar_ = removed.bipolar;
+        }
+    }
+
+  // Re-attach the destinations detached during redo
+  for (const auto &dest_uuid : detached_destinations_)
+    {
+      if (auto * destination = find_port (dest_uuid))
+        destination->set_detached (false);
+    }
+  detached_destinations_.clear ();
 
   // Sort by index ascending so reinsertions don't shift later positions
   auto sorted_infos = plugin_infos_;

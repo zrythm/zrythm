@@ -171,6 +171,7 @@ ProjectSession::ProjectSession (
         utils::make_qobject_unique<actions::PluginOperator> (
           *undo_stack_,
           project_->projectRegistry (),
+          *project_->port_connections_manager_,
           clipboard_,
           [this] () -> QString {
             return project_->project_id ().toString (QUuid::WithoutBraces);

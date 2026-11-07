@@ -79,7 +79,12 @@ target_sources(zrythm_plugins_lib
     lv2_plugin_format.cpp
     lv2_urid_map.cpp
     lv2_world.cpp
+    modulators/engines/adsr_engine.cpp
+    modulators/engines/envelope_follower_engine.cpp
+    modulators/engines/lfo_engine.cpp
     modulators/engines/macro_engine.cpp
+    modulators/engines/math_engine.cpp
+    modulators/engines/midi_to_cv_engine.cpp
     modulators/modulator.cpp
     modulators/modulator_registry.cpp
     out_of_process_scanner.cpp
@@ -118,7 +123,13 @@ target_sources(zrythm_plugins_lib
       lv2_plugin_format.h
       lv2_urid_map.h
       lv2_world.h
+      modulators/engines/adsr_engine.h
+      modulators/engines/envelope_follower_engine.h
+      modulators/engines/lfo_engine.h
       modulators/engines/macro_engine.h
+      modulators/engines/math_engine.h
+      modulators/engines/midi_note_tracker.h
+      modulators/engines/midi_to_cv_engine.h
       modulators/modulator.h
       modulators/modulator_engine.h
       modulators/modulator_registry.h
