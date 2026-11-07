@@ -17,6 +17,15 @@ using namespace Qt::StringLiterals;
 
 namespace zrythm::engine::session
 {
+namespace
+{
+float
+parameter_amplitude (const dsp::ProcessorParameter &parameter)
+{
+  return parameter.range ().convertFrom0To1 (parameter.baseValue ());
+}
+} // namespace
+
 ControlRoom::ControlRoom (
   RealtimeTracksProvider rt_tracks_provider,
   QObject *              parent)
@@ -87,13 +96,13 @@ ControlRoom::ControlRoom (
     utils::Utf8String (u8"Dim"), this);
 
   monitor_fader_->set_mute_gain_callback ([this] () {
-    return mute_volume_->baseValue ();
+    return parameter_amplitude (*mute_volume_);
   });
   monitor_fader_->set_preprocess_audio_callback (
     [this] (
       std::pair<std::span<float>, std::span<float>> stereo_bufs,
       const dsp::graph::ProcessBlockInfo           &time_nfo) {
-      const float dim_amp = dim_volume_->baseValue ();
+      const float dim_amp = parameter_amplitude (*dim_volume_);
 
       /* if have listened tracks */
       const auto rt_tracks = rt_tracks_provider_ ();
@@ -119,7 +128,7 @@ ControlRoom::ControlRoom (
           /* add listened signal */
           /* TODO add "listen" buffer on fader struct and add listened
            * tracks to it during processing instead of looping here */
-          const float listen_amp = listen_volume_->baseValue ();
+          const float listen_amp = parameter_amplitude (*listen_volume_);
           for (const auto * t : rt_tracks)
             {
               if (t->channel ())

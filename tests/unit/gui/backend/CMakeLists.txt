@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_gui_backend_unit_tests
+  control_room_test.cpp
   device_manager_test.cpp
   editor_arranger_objects_model_test.cpp
   juce_event_loop_bridge_test.cpp
