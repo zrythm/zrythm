@@ -7,11 +7,13 @@
 
 #include "actions/track_collection_operator.h"
 #include "commands/add_track_command.h"
+#include "commands/change_parameter_value_command.h"
 #include "commands/delete_lane_command.h"
 #include "commands/delete_tracks_command.h"
 #include "commands/move_tracks_command.h"
 #include "commands/route_track_command.h"
 #include "commands/set_folder_parent_command.h"
+#include "dsp/fader.h"
 #include "plugins/plugin_all.h"
 #include "plugins/plugin_instantiation_wait.h"
 #include "utils/logger.h"
@@ -20,6 +22,54 @@
 
 namespace zrythm::actions
 {
+namespace
+{
+template <typename ParameterGetter>
+void
+clear_track_parameter_on_all_tracks (
+  structure::tracks::TrackCollection &collection,
+  undo::UndoStack                    &undo_stack,
+  ParameterGetter                     get_parameter,
+  const QString                      &macro_text)
+{
+  const auto track_has_parameter_enabled =
+    [&get_parameter] (const structure::tracks::TrackUuidReference &track_ref) {
+      auto * track = track_ref.get ();
+      auto * channel = track->channel ();
+      if (channel == nullptr)
+        {
+          return false;
+        }
+      auto * fader = channel->fader ();
+      if (fader == nullptr)
+        {
+          return false;
+        }
+      const auto &parameter = std::invoke (get_parameter, *fader);
+      return parameter.range ().isToggled (parameter.baseValue ());
+    };
+
+  if (!std::ranges::any_of (collection.tracks (), track_has_parameter_enabled))
+    {
+      return;
+    }
+
+  undo::UndoStack::ScopedMacro macro (undo_stack, macro_text);
+  for (const auto &track_ref : collection.tracks ())
+    {
+      if (!track_has_parameter_enabled (track_ref))
+        {
+          continue;
+        }
+      auto &parameter =
+        std::invoke (get_parameter, *track_ref.get ()->channel ()->fader ());
+      undo_stack.push (
+        std::make_unique<commands::ChangeParameterValueCommand> (
+          parameter, collection.get_registry (), 0.f)
+          .release ());
+    }
+}
+} // namespace
 
 TrackCollectionOperator::TrackCollectionOperator (
   undo::UndoStack                     &undo_stack,
@@ -89,6 +139,39 @@ TrackCollectionOperator::moveTracks (
   auto cmd = std::make_unique<commands::MoveTracksCommand> (
     *collection_, std::move (track_refs), targetPosition, target_folder_uuid);
   undo_stack_->push (cmd.release ());
+}
+
+void
+TrackCollectionOperator::unsoloAllTracks ()
+{
+  if ((collection_ == nullptr) || (undo_stack_ == nullptr))
+    return;
+
+  clear_track_parameter_on_all_tracks (
+    *collection_, *undo_stack_, &dsp::Fader::get_solo_param,
+    QObject::tr ("Unsolo All Tracks"));
+}
+
+void
+TrackCollectionOperator::unmuteAllTracks ()
+{
+  if ((collection_ == nullptr) || (undo_stack_ == nullptr))
+    return;
+
+  clear_track_parameter_on_all_tracks (
+    *collection_, *undo_stack_, &dsp::Fader::get_mute_param,
+    QObject::tr ("Unmute All Tracks"));
+}
+
+void
+TrackCollectionOperator::unlistenAllTracks ()
+{
+  if ((collection_ == nullptr) || (undo_stack_ == nullptr))
+    return;
+
+  clear_track_parameter_on_all_tracks (
+    *collection_, *undo_stack_, &dsp::Fader::get_listen_param,
+    QObject::tr ("Unlisten All Tracks"));
 }
 
 void

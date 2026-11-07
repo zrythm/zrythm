@@ -118,6 +118,15 @@ public:
     moveTracks (tracks, targetPosition, nullptr);
   }
 
+  /** Turns solo off on every soloed track, as one undo step. */
+  Q_INVOKABLE void unsoloAllTracks ();
+
+  /** Turns mute off on every muted track, as one undo step. */
+  Q_INVOKABLE void unmuteAllTracks ();
+
+  /** Turns listen off on every listened track, as one undo step. */
+  Q_INVOKABLE void unlistenAllTracks ();
+
   /**
    * @brief Deletes the given tracks (and their descendants if foldable).
    *

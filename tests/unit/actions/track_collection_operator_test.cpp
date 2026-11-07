@@ -409,6 +409,139 @@ TEST_F (TrackCollectionOperatorTest, CommandTextInUndoStack)
   EXPECT_EQ (undo_stack_->text (0), QString ("Move Tracks"));
 }
 
+TEST_F (TrackCollectionOperatorTest, UnsoloAllTracksClearsSoloInOneUndoStep)
+{
+  auto folder = create_folder_track ();
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto muted_track = create_audio_bus_track ();
+  auto listened_track = create_audio_bus_track ();
+
+  track_collection_->add_track (folder);
+  track_collection_->add_track (track1);
+  track_collection_->add_track (track2);
+  track_collection_->add_track (muted_track);
+  track_collection_->add_track (listened_track);
+
+  track1.get ()->channel ()->fader ()->get_solo_param ().setBaseValue (1.0f);
+  track2.get ()->channel ()->fader ()->get_solo_param ().setBaseValue (1.0f);
+  muted_track.get ()->channel ()->fader ()->get_mute_param ().setBaseValue (
+    1.0f);
+  listened_track.get ()->channel ()->fader ()->get_listen_param ().setBaseValue (
+    1.0f);
+
+  track_collection_operator_->unsoloAllTracks ();
+
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 0);
+  EXPECT_EQ (track_collection_->numMutedTracks (), 1);
+  EXPECT_EQ (track_collection_->numListenedTracks (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 2);
+  EXPECT_EQ (track_collection_->numMutedTracks (), 1);
+  EXPECT_EQ (track_collection_->numListenedTracks (), 1);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 0);
+  EXPECT_EQ (track_collection_->numMutedTracks (), 1);
+  EXPECT_EQ (track_collection_->numListenedTracks (), 1);
+}
+
+TEST_F (TrackCollectionOperatorTest, UnmuteAllTracksClearsMuteInOneUndoStep)
+{
+  auto folder = create_folder_track ();
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto soloed_track = create_audio_bus_track ();
+  auto listened_track = create_audio_bus_track ();
+
+  track_collection_->add_track (folder);
+  track_collection_->add_track (track1);
+  track_collection_->add_track (track2);
+  track_collection_->add_track (soloed_track);
+  track_collection_->add_track (listened_track);
+
+  track1.get ()->channel ()->fader ()->get_mute_param ().setBaseValue (1.0f);
+  track2.get ()->channel ()->fader ()->get_mute_param ().setBaseValue (1.0f);
+  soloed_track.get ()->channel ()->fader ()->get_solo_param ().setBaseValue (
+    1.0f);
+  listened_track.get ()->channel ()->fader ()->get_listen_param ().setBaseValue (
+    1.0f);
+
+  track_collection_operator_->unmuteAllTracks ();
+
+  EXPECT_EQ (track_collection_->numMutedTracks (), 0);
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 1);
+  EXPECT_EQ (track_collection_->numListenedTracks (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_collection_->numMutedTracks (), 2);
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 1);
+  EXPECT_EQ (track_collection_->numListenedTracks (), 1);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (track_collection_->numMutedTracks (), 0);
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 1);
+  EXPECT_EQ (track_collection_->numListenedTracks (), 1);
+}
+
+TEST_F (TrackCollectionOperatorTest, UnlistenAllTracksClearsListenInOneUndoStep)
+{
+  auto folder = create_folder_track ();
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto soloed_track = create_audio_bus_track ();
+  auto muted_track = create_audio_bus_track ();
+
+  track_collection_->add_track (folder);
+  track_collection_->add_track (track1);
+  track_collection_->add_track (track2);
+  track_collection_->add_track (soloed_track);
+  track_collection_->add_track (muted_track);
+
+  track1.get ()->channel ()->fader ()->get_listen_param ().setBaseValue (1.0f);
+  track2.get ()->channel ()->fader ()->get_listen_param ().setBaseValue (1.0f);
+  soloed_track.get ()->channel ()->fader ()->get_solo_param ().setBaseValue (
+    1.0f);
+  muted_track.get ()->channel ()->fader ()->get_mute_param ().setBaseValue (
+    1.0f);
+
+  track_collection_operator_->unlistenAllTracks ();
+
+  EXPECT_EQ (track_collection_->numListenedTracks (), 0);
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 1);
+  EXPECT_EQ (track_collection_->numMutedTracks (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_collection_->numListenedTracks (), 2);
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 1);
+  EXPECT_EQ (track_collection_->numMutedTracks (), 1);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (track_collection_->numListenedTracks (), 0);
+  EXPECT_EQ (track_collection_->numSoloedTracks (), 1);
+  EXPECT_EQ (track_collection_->numMutedTracks (), 1);
+}
+
+TEST_F (TrackCollectionOperatorTest, ResetOperationsWithoutEnabledTracksDoNothing)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+
+  track_collection_->add_track (track1);
+  track_collection_->add_track (track2);
+
+  track_collection_operator_->unsoloAllTracks ();
+  track_collection_operator_->unmuteAllTracks ();
+  track_collection_operator_->unlistenAllTracks ();
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_FALSE (undo_stack_->canUndo ());
+}
+
 TEST_F (TrackCollectionOperatorTest, UndoMultipleTracksMove)
 {
   auto track1 = create_audio_bus_track ();
