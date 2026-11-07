@@ -233,6 +233,11 @@ private:
  * the size to something different, the host window is resized to match
  * once the resize settles (debounced).
  *
+ * Sizes are only forwarded while the plugin view is user-resizable
+ * (CLAP clap_plugin_gui.can_resize, VST3 IPlugView::canResize, LV2
+ * ui:fixedSize/ui:noUserResize): a fixed-size view keeps the size the
+ * plugin reported, and embed area changes are not sent to it.
+ *
  * Sizes passed to the hooks are physical pixels (CLAP clap_gui and VST3
  * ViewRect sizes are physical on Windows/GNU/Linux and logical on macOS;
  * the conversions are no-ops on macOS).

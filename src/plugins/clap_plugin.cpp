@@ -2303,9 +2303,10 @@ ClapPlugin::logLog (clap_log_severity severity, const char * message)
     case CLAP_LOG_WARNING:
       z_rt_warning ("{}", message);
       break;
-    // ERROR, FATAL and HOST_MISBEHAVING stay synchronous: z_error's
-    // backtrace is only meaningful on the plugin's calling thread, and a
-    // fatal report means the process is going down
+    // FATAL and HOST_MISBEHAVING are logged synchronously at error level:
+    // the backtrace is only meaningful on the plugin's calling thread, and
+    // both conditions fail fast (the plugin is going down, or the host
+    // broke the contract)
     case CLAP_LOG_FATAL:
       z_error ("[fatal CLAP error] {}", message);
       break;
@@ -2315,9 +2316,12 @@ ClapPlugin::logLog (clap_log_severity severity, const char * message)
     case CLAP_LOG_PLUGIN_MISBEHAVING:
       z_rt_warning ("[CLAP plugin misbehaving] {}", message);
       break;
+    // A plugin-reported error is the plugin's own condition, not a host
+    // bug, so it is non-fatal to the host process
     case CLAP_LOG_ERROR:
     default:
-      z_error ("{}", message);
+      z_rt_warning ("[CLAP error] {}", message);
+      break;
     }
 }
 

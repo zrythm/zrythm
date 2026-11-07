@@ -77,11 +77,18 @@ public:
     return state_->content_scale_factor;
   }
 
-  /** Sets the scale factor and emits contentScaleFactorChanged. */
+  /** Emits contentScaleFactorChanged for tests. */
   void set_content_scale_factor_for_test (float factor)
   {
     state_->content_scale_factor = factor;
     Q_EMIT contentScaleFactorChanged (factor);
+  }
+
+  /** Emits embedSizeChanged() for tests that drive
+   * PluginViewResizeCoordinator directly. */
+  void emit_embed_size_changed_for_test (int width, int height)
+  {
+    Q_EMIT embedSizeChanged (width, height);
   }
 
   /** Dummy native window ID returned by getEmbedWindowId(). */

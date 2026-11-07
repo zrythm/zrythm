@@ -45,6 +45,11 @@ PluginViewResizeCoordinator::PluginViewResizeCoordinator (
       // for the plugin
       if (logical_width <= 0 || logical_height <= 0)
         return;
+      // Host-to-plugin size application is only defined for resizable
+      // views (CLAP clap_plugin_gui.set_size, VST3 IPlugView::onSize, LV2
+      // ui_resize); a fixed-size view keeps the size the plugin gave it
+      if (!hooks_.can_resize ())
+        return;
       const auto scale = window_.contentScaleFactor ();
       // Plugin view sizes are physical pixels (the conversions are no-ops
       // on macOS, where sizes are logical)
