@@ -688,7 +688,7 @@ build:mac-arm:
 # the Inno Setup error log path.
 .build-windows-template:
   stage: build
-  timeout: 3h # release build takes >2h
+  timeout: 4h # release build takes >3h
   variables:
     CPACK_SYSTEM_NAME: "win64"
     RUN_BENCHMARKS: "0"
