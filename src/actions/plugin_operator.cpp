@@ -51,7 +51,7 @@ PluginOperator::movePlugins (
       ? std::optional<int> (target_start_index)
       : std::nullopt);
 
-  undo_stack_.push (cmd.release ());
+  undo_stack_.push (std::move (cmd));
 }
 
 void
@@ -81,7 +81,7 @@ PluginOperator::removePlugins (
     }) | std::ranges::to<std::vector> (),
     port_connections_manager_, project_registry_);
 
-  undo_stack_.push (cmd.release ());
+  undo_stack_.push (std::move (cmd));
 }
 
 bool
@@ -255,8 +255,7 @@ PluginOperator::attach_paste (
           *target_group, target,
           (index >= 0)
             ? std::optional<int> (index + static_cast<int> (i))
-            : std::nullopt)
-          .release ());
+            : std::nullopt));
       new_ids.push_back (
         type_safe::get (target.id ()).toString (QUuid::WithoutBraces));
     }

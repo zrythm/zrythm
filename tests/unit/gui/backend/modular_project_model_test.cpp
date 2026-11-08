@@ -1080,11 +1080,10 @@ TEST_F (ModularProjectModelTest, ConnectPortsOperatorRoundTripProducesEdge)
   ASSERT_NE (mod_port, nullptr);
   ASSERT_TRUE (mod_port->detached ());
 
-  undo::UndoStack undo_stack (
-    [&project] (const std::function<void ()> &action, bool recalculate_graph) {
-      project->engine ()->execute_function_with_paused_processing_synchronously (
-        action, recalculate_graph);
-    });
+  undo::UndoStack undo_stack ([&project] (auto action, bool recalculate_graph) {
+    project->engine ()->execute_function_with_paused_processing_synchronously (
+      std::move (action), recalculate_graph);
+  });
   actions::PortConnectionOperator connection_operator (undo_stack, *project);
 
   const auto error =

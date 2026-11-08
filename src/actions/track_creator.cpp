@@ -30,16 +30,18 @@ TrackCreator::addEmptyTrackFromType (
 
   undo::UndoStack::ScopedMacro macro (undo_stack_, QObject::tr ("Add Track"));
   undo_stack_.push (
-    new commands::AddEmptyTrackCommand (track_collection_, track_ref));
+    std::make_unique<commands::AddEmptyTrackCommand> (
+      track_collection_, track_ref));
 
   // if audio output route to master
   {
     auto * track = track_ref.get ();
     if (track->output_signal_type () == dsp::PortType::Audio)
       {
-        undo_stack_.push (new commands::RouteTrackCommand (
-          track_routing_, track_ref.id (),
-          singleton_tracks_.masterTrack ()->get_uuid ()));
+        undo_stack_.push (
+          std::make_unique<commands::RouteTrackCommand> (
+            track_routing_, track_ref.id (),
+            singleton_tracks_.masterTrack ()->get_uuid ()));
       }
   }
 

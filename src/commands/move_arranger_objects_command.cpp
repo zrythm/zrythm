@@ -55,13 +55,13 @@ MoveArrangerObjectsCommand::MoveArrangerObjectsCommand (
 }
 
 bool
-MoveArrangerObjectsCommand::mergeWith (const QUndoCommand * other)
+MoveArrangerObjectsCommand::merge_with (const Command &other)
 {
   // Only merge with moves needing the same engine cooperation: a
   // tempo-map-affecting move merged into a plain one would lose its
   // engine pause
   const auto * other_cmd =
-    dynamic_cast<const MoveArrangerObjectsCommand *> (other);
+    dynamic_cast<const MoveArrangerObjectsCommand *> (&other);
   if (other_cmd == nullptr)
     return false;
   if (other_cmd->engine_requirement () != engine_requirement ())

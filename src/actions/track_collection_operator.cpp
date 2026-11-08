@@ -65,8 +65,7 @@ clear_track_parameter_on_all_tracks (
         std::invoke (get_parameter, *track_ref.get ()->channel ()->fader ());
       undo_stack.push (
         std::make_unique<commands::ChangeParameterValueCommand> (
-          parameter, collection.get_registry (), 0.f)
-          .release ());
+          parameter, collection.get_registry (), 0.f));
     }
 }
 } // namespace
@@ -138,7 +137,7 @@ TrackCollectionOperator::moveTracks (
 
   auto cmd = std::make_unique<commands::MoveTracksCommand> (
     *collection_, std::move (track_refs), targetPosition, target_folder_uuid);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 void
@@ -206,7 +205,7 @@ TrackCollectionOperator::deleteTracks (
 
   auto cmd = std::make_unique<commands::DeleteTracksCommand> (
     *collection_, std::move (expanded_refs));
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 void
@@ -225,9 +224,11 @@ TrackCollectionOperator::deleteLane (structure::tracks::TrackLane * lane)
   try
     {
       auto &registry = collection_->get_registry ();
-      undo_stack_->push (new commands::DeleteLaneCommand (
-        *list,
-        structure::tracks::TrackLaneUuidReference (lane->get_uuid (), registry)));
+      undo_stack_->push (
+        std::make_unique<commands::DeleteLaneCommand> (
+          *list,
+          structure::tracks::TrackLaneUuidReference (
+            lane->get_uuid (), registry)));
     }
   catch (const std::exception &e)
     {
@@ -319,8 +320,7 @@ TrackCollectionOperator::cutTracks (
     *undo_stack_, QObject::tr ("Cut %1 Tracks").arg (root_refs.size ()));
   undo_stack_->push (
     std::make_unique<commands::DeleteTracksCommand> (
-      *collection_, std::move (root_refs))
-      .release ());
+      *collection_, std::move (root_refs)));
   return true;
 }
 
@@ -793,8 +793,7 @@ TrackCollectionOperator::attach_paste (
               .to_qstring ());
           undo_stack_->push (
             std::make_unique<commands::AddEmptyTrackCommand> (
-              *collection_, root_ref)
-              .release ());
+              *collection_, root_ref));
           new_ids.push_back (
             type_safe::get (root_ref.id ()).toString (QUuid::WithoutBraces));
         }
@@ -822,8 +821,7 @@ TrackCollectionOperator::attach_paste (
         {
           undo_stack_->push (
             std::make_unique<commands::MoveTracksCommand> (
-              *collection_, root_refs, target_position, target_folder)
-              .release ());
+              *collection_, root_refs, target_position, target_folder));
         }
 
       // Restore in-set folder nesting. The payload lists the tracks in
@@ -835,8 +833,7 @@ TrackCollectionOperator::attach_paste (
           undo_stack_->push (
             std::make_unique<commands::SetFolderParentCommand> (
               *collection_, structure::tracks::Track::Uuid (child_id),
-              structure::tracks::Track::Uuid (parent_id))
-              .release ());
+              structure::tracks::Track::Uuid (parent_id)));
         }
 
       // Restore output routing: in-set targets were remapped with the
@@ -916,8 +913,7 @@ TrackCollectionOperator::attach_paste (
                     undo_stack_->push (
                       std::make_unique<commands::RouteTrackCommand> (
                         *track_routing_,
-                        structure::tracks::Track::Uuid (source_id), target_id)
-                        .release ());
+                        structure::tracks::Track::Uuid (source_id), target_id));
                   }
               }
           }

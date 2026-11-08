@@ -145,14 +145,6 @@ TEST_F (ChangeQObjectPropertyCommandTest, SameValueNoChange)
   EXPECT_EQ (test_obj_->intValue (), 42);
 }
 
-TEST_F (ChangeQObjectPropertyCommandTest, CommandId)
-{
-  ChangeQObjectPropertyCommand cmd (
-    *test_obj_, QStringLiteral ("intValue"), 100,
-    Command::EngineRequirement::None);
-  EXPECT_EQ (cmd.id (), ChangeQObjectPropertyCommand::kMergeId);
-}
-
 TEST_F (ChangeQObjectPropertyCommandTest, CommandText)
 {
   ChangeQObjectPropertyCommand cmd (
@@ -177,7 +169,7 @@ TEST_F (ChangeQObjectPropertyCommandTest, MergeWithSameType)
   EXPECT_EQ (test_obj_->intValue (), 25);
 
   // Should merge with second command (within time limit)
-  EXPECT_TRUE (cmd1.mergeWith (&cmd2));
+  EXPECT_TRUE (cmd1.merge_with (cmd2));
 
   // Redo should use merged value
   cmd1.redo ();
@@ -190,15 +182,19 @@ TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentType)
     *test_obj_, QStringLiteral ("intValue"), 25,
     Command::EngineRequirement::None);
 
-  // Create a mock command with different ID
-  class MockCommand : public QUndoCommand
+  // Create a mock command of a different type
+  class MockCommand : public commands::Command
   {
   public:
-    int id () const override { return 12345; }
+    MockCommand () : Command (QStringLiteral ("Mock"), EngineRequirement::None)
+    {
+    }
+    void undo () override { }
+    void redo () override { }
   } mockCmd;
 
   // Should not merge with different command type
-  EXPECT_FALSE (cmd1.mergeWith (&mockCmd));
+  EXPECT_FALSE (cmd1.merge_with (mockCmd));
 }
 
 TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentObject)
@@ -212,7 +208,7 @@ TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentObject)
     Command::EngineRequirement::None);
 
   // Should not merge with different object
-  EXPECT_FALSE (cmd1.mergeWith (&cmd2));
+  EXPECT_FALSE (cmd1.merge_with (cmd2));
 }
 
 TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentProperty)
@@ -225,7 +221,7 @@ TEST_F (ChangeQObjectPropertyCommandTest, MergeWithDifferentProperty)
     Command::EngineRequirement::None);
 
   // Should not merge with different property
-  EXPECT_FALSE (cmd1.mergeWith (&cmd2));
+  EXPECT_FALSE (cmd1.merge_with (cmd2));
 }
 
 TEST_F (ChangeQObjectPropertyCommandTest, EngineRequirementPassedToConstructor)
@@ -254,7 +250,7 @@ TEST_F (ChangeQObjectPropertyCommandTest, MergeRefusesDifferingEngineRequirement
   ChangeQObjectPropertyCommand cmd2 (
     *test_obj_, QStringLiteral ("intValue"), 75,
     Command::EngineRequirement::PauseProcessing);
-  EXPECT_FALSE (cmd1.mergeWith (&cmd2));
+  EXPECT_FALSE (cmd1.merge_with (cmd2));
 }
 
 TEST_F (

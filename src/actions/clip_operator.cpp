@@ -82,8 +82,9 @@ ClipOperator::endClipLoopPointsDrag ()
   utils::TypedUuidReference<structure::arrangement::Clip> ref{
     clip_->get_uuid (), registry_
   };
-  undo_stack_.push (new commands::SetClipLoopPointsCommand (
-    std::move (ref), after.clip_start, after.loop_start, after.loop_end));
+  undo_stack_.push (
+    std::make_unique<commands::SetClipLoopPointsCommand> (
+      std::move (ref), after.clip_start, after.loop_start, after.loop_end));
 }
 
 void

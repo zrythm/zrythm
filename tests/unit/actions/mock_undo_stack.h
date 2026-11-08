@@ -10,7 +10,7 @@ namespace zrythm::actions
 static inline std::unique_ptr<undo::UndoStack>
 create_mock_undo_stack ()
 {
-  return std::make_unique<undo::UndoStack> ([] (const auto &callback, bool) {
+  return std::make_unique<undo::UndoStack> ([] (auto callback, bool) {
     callback ();
   });
 }

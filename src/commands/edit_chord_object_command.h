@@ -8,7 +8,6 @@
 #include "structure/arrangement/chord_object.h"
 
 #include <QPointer>
-#include <QUndoCommand>
 
 namespace zrythm::commands
 {
@@ -23,12 +22,6 @@ namespace zrythm::commands
 class EditChordObjectCommand : public Command
 {
 public:
-  /**
-   * QUndoCommand id for merge participation: Qt only calls mergeWith()
-   * between commands sharing a non-negative id.
-   */
-  static constexpr int kMergeId = 1762954987;
-
   EditChordObjectCommand (
     structure::arrangement::ChordObject * chord_object,
     const dsp::ChordDescriptor           &new_descriptor)
@@ -40,13 +33,11 @@ public:
   {
   }
 
-  int id () const override { return kMergeId; }
-
-  bool mergeWith (const QUndoCommand * other) override
+  bool merge_with (const Command &other) override
   {
-    if (other->id () != id ())
+    const auto * o = dynamic_cast<const EditChordObjectCommand *> (&other);
+    if (o == nullptr)
       return false;
-    const auto * o = static_cast<const EditChordObjectCommand *> (other);
     if (object_ == nullptr || o->object_ == nullptr)
       return false;
     if (object_.data () != o->object_.data ())

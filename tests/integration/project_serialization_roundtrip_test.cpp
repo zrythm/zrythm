@@ -235,9 +235,9 @@ protected:
         *original_bundle->project, *app_settings_);
     original_bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
       [proj = original_bundle->project.get ()] (
-        const std::function<void ()> &action, bool recalculate_graph) {
+        auto action, bool recalculate_graph) {
         proj->engine ()->execute_function_with_paused_processing_synchronously (
-          action, recalculate_graph);
+          std::move (action), recalculate_graph);
       },
       nullptr);
 
@@ -421,9 +421,9 @@ protected:
         *loaded_bundle->project, *app_settings_);
     loaded_bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
       [proj = loaded_bundle->project.get ()] (
-        const std::function<void ()> &action, bool recalculate_graph) {
+        auto action, bool recalculate_graph) {
         proj->engine ()->execute_function_with_paused_processing_synchronously (
-          action, recalculate_graph);
+          std::move (action), recalculate_graph);
       },
       nullptr);
 
@@ -755,10 +755,9 @@ TEST_F (
   bundle->ui_state = utils::make_qobject_unique<
     structure::project::ProjectUiState> (*bundle->project, *app_settings_);
   bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
-    [proj = bundle->project.get ()] (
-      const std::function<void ()> &action, bool recalculate_graph) {
+    [proj = bundle->project.get ()] (auto action, bool recalculate_graph) {
       proj->engine ()->execute_function_with_paused_processing_synchronously (
-        action, recalculate_graph);
+        std::move (action), recalculate_graph);
     },
     nullptr);
 
@@ -894,10 +893,9 @@ TEST_F (
     utils::make_qobject_unique<structure::project::ProjectUiState> (
       *reload_bundle->project, *app_settings_);
   reload_bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
-    [proj = reload_bundle->project.get ()] (
-      const std::function<void ()> &action, bool recalculate_graph) {
+    [proj = reload_bundle->project.get ()] (auto action, bool recalculate_graph) {
       proj->engine ()->execute_function_with_paused_processing_synchronously (
-        action, recalculate_graph);
+        std::move (action), recalculate_graph);
     },
     nullptr);
 
@@ -999,10 +997,9 @@ TEST_P (ProjectPluginUiRestoreTest, LoadWithVisibleUiRestoresEditorDeferred)
   bundle->ui_state = utils::make_qobject_unique<
     structure::project::ProjectUiState> (*bundle->project, *app_settings_);
   bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
-    [proj = bundle->project.get ()] (
-      const std::function<void ()> &action, bool recalculate_graph) {
+    [proj = bundle->project.get ()] (auto action, bool recalculate_graph) {
       proj->engine ()->execute_function_with_paused_processing_synchronously (
-        action, recalculate_graph);
+        std::move (action), recalculate_graph);
     },
     nullptr);
 
@@ -1054,10 +1051,9 @@ TEST_P (ProjectPluginUiRestoreTest, LoadWithVisibleUiRestoresEditorDeferred)
     utils::make_qobject_unique<structure::project::ProjectUiState> (
       *loaded_bundle->project, *app_settings_);
   loaded_bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
-    [proj = loaded_bundle->project.get ()] (
-      const std::function<void ()> &action, bool recalculate_graph) {
+    [proj = loaded_bundle->project.get ()] (auto action, bool recalculate_graph) {
       proj->engine ()->execute_function_with_paused_processing_synchronously (
-        action, recalculate_graph);
+        std::move (action), recalculate_graph);
     },
     nullptr);
 

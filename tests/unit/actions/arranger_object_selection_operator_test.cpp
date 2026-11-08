@@ -177,11 +177,10 @@ protected:
     // Create undo stack with a recording callback so tests can assert whether
     // an engine pause was requested for a pushed command.
     engine_pause_requested_ = false;
-    undo_stack_ = std::make_unique<undo::UndoStack> (
-      [this] (const std::function<void ()> &action, bool) {
-        engine_pause_requested_ = true;
-        action ();
-      });
+    undo_stack_ = std::make_unique<undo::UndoStack> ([this] (auto action, bool) {
+      engine_pause_requested_ = true;
+      action ();
+    });
 
     // Create selection model and set up with test objects
     selection_model_ = std::make_unique<QItemSelectionModel> (&list_model_);
@@ -505,9 +504,7 @@ protected:
                 [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
             sample_rate_provider,
             bpm_provider),
-          undo_stack ([] (const std::function<void ()> &action, bool) {
-            action ();
-          })
+          undo_stack ([] (auto action, bool) { action (); })
     {
       const structure::tracks::FinalTrackDependencies track_deps{
         tempo_map_wrapper,
@@ -1145,15 +1142,14 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsTempoAndTimeSignature)
 TEST_F (ArrangerObjectSelectionOperatorTest, RemoveTempoObjectRequestsEnginePause)
 {
   bool            engine_pause_requested = false;
-  undo::UndoStack stack (
-    [&engine_pause_requested] (const std::function<void ()> &action, bool) {
-      engine_pause_requested = true;
-      action ();
-    });
+  undo::UndoStack stack ([&engine_pause_requested] (auto action, bool) {
+    engine_pause_requested = true;
+    action ();
+  });
 
   stack.push (
-    new commands::RemoveArrangerObjectCommand<
-      structure::arrangement::TempoObject> (*mock_owner_, tempo_ref));
+    std::make_unique<commands::RemoveArrangerObjectCommand<
+      structure::arrangement::TempoObject>> (*mock_owner_, tempo_ref));
 
   EXPECT_TRUE (engine_pause_requested)
     << "Removing a tempo object must request an engine pause";
@@ -1165,15 +1161,14 @@ TEST_F (
   RemoveNonTempoObjectDoesNotRequestEnginePause)
 {
   bool            engine_pause_requested = false;
-  undo::UndoStack stack (
-    [&engine_pause_requested] (const std::function<void ()> &action, bool) {
-      engine_pause_requested = true;
-      action ();
-    });
+  undo::UndoStack stack ([&engine_pause_requested] (auto action, bool) {
+    engine_pause_requested = true;
+    action ();
+  });
 
   stack.push (
-    new commands::RemoveArrangerObjectCommand<structure::arrangement::Marker> (
-      *mock_owner_, marker_ref));
+    std::make_unique<commands::RemoveArrangerObjectCommand<
+      structure::arrangement::Marker>> (*mock_owner_, marker_ref));
 
   EXPECT_FALSE (engine_pause_requested);
 }

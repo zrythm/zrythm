@@ -15,7 +15,7 @@ void
 TrackOperator::rename (const QString &newName)
 {
   auto cmd = std::make_unique<commands::RenameTrackCommand> (*track_, newName);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 void
@@ -34,7 +34,7 @@ TrackOperator::setColor (const QColor &color)
 
   auto cmd = std::make_unique<commands::ChangeTrackColorCommand> (
     *track_, structure::tracks::Track::Color (color));
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 void
@@ -47,7 +47,7 @@ TrackOperator::unsetColor ()
 
   auto cmd =
     std::make_unique<commands::ChangeTrackColorCommand> (*track_, std::nullopt);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 void
@@ -55,7 +55,7 @@ TrackOperator::setComment (const QString &comment)
 {
   auto cmd =
     std::make_unique<commands::ChangeTrackCommentCommand> (*track_, comment);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 void
@@ -73,7 +73,7 @@ TrackOperator::setOutputTrack (structure::tracks::Track * destination)
 
   auto cmd = std::make_unique<commands::RouteTrackCommand> (
     *track_routing_, track_->get_uuid (), dest_id);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 void
@@ -84,6 +84,6 @@ TrackOperator::setTimebase (dsp::Timebase timebase)
 
   auto cmd = std::make_unique<commands::ChangeTimebaseOverrideCommand> (
     *track_->timebaseProvider (), timebase);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 }

@@ -8,6 +8,7 @@ target_sources(zrythm_commands_lib
     arranger_object_owner_ref.cpp
     bake_audio_clip_command.cpp
     chord_pad_commands.cpp
+    command.cpp
     delete_lane_command.cpp
     delete_tracks_command.cpp
     move_arranger_objects_command.cpp

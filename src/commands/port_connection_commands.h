@@ -77,15 +77,9 @@ class UpdatePortConnectionCommand : public Command
 {
 public:
   /**
-   * QUndoCommand id for merge participation: Qt only calls mergeWith()
-   * between commands sharing a non-negative id.
-   */
-  static constexpr auto kMergeId = 6451641;
-
-  /**
-   * @param merges Whether consecutive commands on the same connection
-   * merge into a single undo step (used for drag gestures). Commands merge
-   * only within one second of the previous redo.
+   * @brief Whether consecutive commands on the same connection merge into a
+   * single undo step (used for drag gestures). Commands merge only within
+   * one second of the previous redo.
    */
   UpdatePortConnectionCommand (
     structure::project::PortConnectionsManager &manager,
@@ -95,8 +89,7 @@ public:
     bool                                        enabled,
     bool                                        merges);
 
-  int  id () const override { return kMergeId; }
-  bool mergeWith (const QUndoCommand * other) override;
+  bool merge_with (const Command &other) override;
   void undo () override;
   void redo () override;
 

@@ -238,10 +238,11 @@ protected:
   {
     auto * track = project_->tracklist ()->get_track (track_id);
     ASSERT_NE (track, nullptr);
-    undo_stack_->push (new commands::AddArrangerObjectCommand<ClipT> (
-      commands::make_owner_ref (
-        *track->lanes ()->getFirstLane (), project_->projectRegistry ()),
-      clip_ref));
+    undo_stack_->push (
+      std::make_unique<commands::AddArrangerObjectCommand<ClipT>> (
+        commands::make_owner_ref (
+          *track->lanes ()->getFirstLane (), project_->projectRegistry ()),
+        clip_ref));
   }
 
   void create_materializer ()

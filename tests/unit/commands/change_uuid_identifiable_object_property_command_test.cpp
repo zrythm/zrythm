@@ -35,17 +35,6 @@ protected:
   MockUuidObject *      obj_ = nullptr;
 };
 
-TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, CommandId)
-{
-  ChangeUuidIdentifiableObjectPropertyCommand cmd (
-    *obj_, registry_, QStringLiteral ("intValue"), 100,
-    Command::EngineRequirement::None);
-  EXPECT_EQ (cmd.id (), ChangeUuidIdentifiableObjectPropertyCommand::kMergeId);
-  // Must differ from the base class id so the two variants never merge
-  // with each other
-  EXPECT_NE (cmd.id (), ChangeQObjectPropertyCommand::kMergeId);
-}
-
 TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, DirectCaseRedoUndo)
 {
   EXPECT_EQ (obj_->property ("intValue").toInt (), 42);
@@ -96,7 +85,7 @@ TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, MergeWithSameType)
   cmd1.redo ();
   EXPECT_EQ (obj_->property ("intValue").toInt (), 25);
 
-  EXPECT_TRUE (cmd1.mergeWith (&cmd2));
+  EXPECT_TRUE (cmd1.merge_with (cmd2));
 
   cmd1.redo ();
   EXPECT_EQ (obj_->property ("intValue").toInt (), 75);
@@ -110,8 +99,10 @@ TEST_F (ChangeUuidIdentifiableObjectPropertyCommandTest, DoesNotMergeWithBaseTyp
   ChangeQObjectPropertyCommand base_cmd (
     *obj_, QStringLiteral ("intValue"), 75, Command::EngineRequirement::None);
 
-  // Different command ids — should not merge
-  EXPECT_FALSE (uuid_cmd.mergeWith (&base_cmd));
+  // The two variants never merge in either direction: merging one into
+  // the other would lose the UUID variant's refcount safety
+  EXPECT_FALSE (uuid_cmd.merge_with (base_cmd));
+  EXPECT_FALSE (base_cmd.merge_with (uuid_cmd));
 }
 
 TEST_F (
@@ -128,7 +119,7 @@ TEST_F (
     *obj2, registry_, QStringLiteral ("intValue"), 75,
     Command::EngineRequirement::None);
 
-  EXPECT_FALSE (cmd1.mergeWith (&cmd2));
+  EXPECT_FALSE (cmd1.merge_with (cmd2));
 }
 
 } // namespace zrythm::commands

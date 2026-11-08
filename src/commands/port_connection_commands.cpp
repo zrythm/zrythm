@@ -99,10 +99,10 @@ UpdatePortConnectionCommand::UpdatePortConnectionCommand (
 }
 
 bool
-UpdatePortConnectionCommand::mergeWith (const QUndoCommand * other)
+UpdatePortConnectionCommand::merge_with (const Command &other)
 {
   const auto * update =
-    dynamic_cast<const UpdatePortConnectionCommand *> (other);
+    dynamic_cast<const UpdatePortConnectionCommand *> (&other);
   if (update == nullptr || !merges_ || !update->merges_)
     return false;
   if (

@@ -389,7 +389,8 @@ FileImporter::rename_track_to_file_basename (
   const auto unique_name =
     track_collection_.get_unique_name_for_track (track.get_uuid (), base_name);
   undo_stack_.push (
-    new commands::RenameTrackCommand (track, unique_name.to_qstring ()));
+    std::make_unique<commands::RenameTrackCommand> (
+      track, unique_name.to_qstring ()));
 }
 
 FileImporter::FileType

@@ -23,12 +23,6 @@ public:
   };
 
   /**
-   * QUndoCommand id for merge participation: Qt only calls mergeWith()
-   * between commands sharing a non-negative id.
-   */
-  static constexpr int kMergeId = 894553188;
-
-  /**
    * @param engine_requirement Engine cooperation this move needs: pass
    * PauseProcessing when the selection contains tempo-map-affecting
    * objects, None otherwise.
@@ -40,9 +34,7 @@ public:
     double             vertical_delta = 0.0,
     VerticalChangeType vertical_change_type = VerticalChangeType::Pitch);
 
-  int id () const override { return kMergeId; }
-
-  bool mergeWith (const QUndoCommand * other) override;
+  bool merge_with (const Command &other) override;
 
   void undo () override;
   void redo () override;

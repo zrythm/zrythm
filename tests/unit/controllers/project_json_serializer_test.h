@@ -235,9 +235,9 @@ protected:
       project, *app_settings);
 
     undo_stack = utils::make_qobject_unique<undo::UndoStack> (
-      [&project] (const std::function<void ()> &action, bool recalculate_graph) {
+      [&project] (auto action, bool recalculate_graph) {
         project.engine ()->execute_function_with_paused_processing_synchronously (
-          action, recalculate_graph);
+          std::move (action), recalculate_graph);
       },
       nullptr);
   }

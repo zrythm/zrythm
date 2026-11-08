@@ -124,7 +124,7 @@ TEST_F (EditChordObjectCommandTest, MergeWithSameObject)
   EditChordObjectCommand cmd2 (chord_obj_, target2);
 
   // Should merge: cmd1 takes cmd2's "after" state.
-  EXPECT_TRUE (cmd1.mergeWith (&cmd2));
+  EXPECT_TRUE (cmd1.merge_with (cmd2));
 
   // Undo the merged command: should restore the ORIGINAL (C Major).
   cmd1.undo ();
@@ -148,7 +148,7 @@ TEST_F (EditChordObjectCommandTest, DoesNotMergeDifferentObjects)
   EditChordObjectCommand cmd1 (chord_obj_, target1);
   EditChordObjectCommand cmd2 (chord_obj2, target2);
 
-  EXPECT_FALSE (cmd1.mergeWith (&cmd2));
+  EXPECT_FALSE (cmd1.merge_with (cmd2));
 }
 
 } // namespace zrythm::commands

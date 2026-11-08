@@ -37,8 +37,7 @@ ProcessorParameterOperator::setValue (
     }
   undo_stack_->push (
     std::make_unique<commands::ChangeParameterValueCommand> (
-      *param, *registry_, value)
-      .release ());
+      *param, *registry_, value));
 }
 
 } // namespace zrythm::actions

@@ -13,12 +13,6 @@ class ChangeParameterValueCommand : public Command
 {
 
 public:
-  /**
-   * QUndoCommand id for merge participation: Qt only calls mergeWith()
-   * between commands sharing a non-negative id.
-   */
-  static constexpr int kMergeId = 89453187;
-
   ChangeParameterValueCommand (
     dsp::ProcessorParameter &param,
     utils::IObjectRegistry  &registry,
@@ -30,14 +24,10 @@ public:
   {
   }
 
-  int  id () const override { return kMergeId; }
-  bool mergeWith (const QUndoCommand * other) override
+  bool merge_with (const Command &other) override
   {
-    if (other->id () != id ())
-      return false;
-
     const auto * other_cmd =
-      dynamic_cast<const ChangeParameterValueCommand *> (other);
+      dynamic_cast<const ChangeParameterValueCommand *> (&other);
     if (other_cmd == nullptr)
       return false;
 

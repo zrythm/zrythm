@@ -51,7 +51,7 @@ UuidPropertyOperator::setValueOnSubObject (
     commands::ChangeUuidIdentifiableObjectPropertyCommand> (
     *uuid_obj, *target, *registry_, propertyName, value,
     commands::Command::EngineRequirement::None);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 } // namespace zrythm::actions

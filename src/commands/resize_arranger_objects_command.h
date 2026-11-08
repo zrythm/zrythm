@@ -34,12 +34,6 @@ Q_ENUM_NS (ResizeDirection)
 
 class ResizeArrangerObjectsCommand : public Command
 {
-  /**
-   * QUndoCommand id for merge participation: Qt only calls mergeWith()
-   * between commands sharing a non-negative id.
-   */
-  static constexpr int kMergeId = 1762503480;
-
 public:
   /// Structure to hold original state of an arranger object for undo
   struct OriginalState
@@ -63,17 +57,14 @@ public:
     ResizeDirection                                                  direction,
     double                                                           delta);
 
-  int id () const override { return kMergeId; }
-
-  bool mergeWith (const QUndoCommand * other) override
+  bool merge_with (const Command &other) override
   {
-    if (other->id () != id ())
-      return false;
-
     // Only merge if other command was made in quick succession of this
     // command's redo() and operates on the same objects
     const auto * other_cmd =
-      dynamic_cast<const ResizeArrangerObjectsCommand *> (other);
+      dynamic_cast<const ResizeArrangerObjectsCommand *> (&other);
+    if (other_cmd == nullptr)
+      return false;
     const auto cur_time = std::chrono::steady_clock::now ();
     const auto duration = cur_time - last_redo_timestamp_;
     if (

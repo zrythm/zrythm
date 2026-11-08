@@ -3,12 +3,12 @@
 
 #pragma once
 
+#include <typeinfo>
 #include <utility>
 
 #include "commands/command.h"
 
 #include <QObject>
-#include <QUndoCommand>
 #include <QVariant>
 
 namespace zrythm::commands
@@ -28,12 +28,6 @@ class ChangeQObjectPropertyCommand : public Command
 {
 public:
   /**
-   * QUndoCommand id for merge participation: Qt only calls mergeWith()
-   * between commands sharing a non-negative id.
-   */
-  static constexpr int kMergeId = 1762957285;
-
-  /**
    * @param engine_requirement Engine cooperation this change needs: pass
    * PauseProcessing when the property affects the tempo map, None
    * otherwise.
@@ -50,16 +44,20 @@ public:
   {
   }
 
-  int  id () const override { return kMergeId; }
-  bool mergeWith (const QUndoCommand * other) override
+  bool merge_with (const Command &other) override
   {
+    // Only the exact same class merges: subclasses of this command (e.g.
+    // the UUID-referencing variant) carry their own merge rules, and
+    // merging one into this raw-reference variant would lose their extra
+    // safety
+    if (typeid (*this) != typeid (other))
+      return false;
+    const auto * other_cmd =
+      static_cast<const ChangeQObjectPropertyCommand *> (&other);
+
     // Only merge with changes needing the same engine cooperation: a
     // tempo-map-affecting change merged into a plain one would lose its
     // engine pause
-    const auto * other_cmd =
-      dynamic_cast<const ChangeQObjectPropertyCommand *> (other);
-    if (other_cmd == nullptr)
-      return false;
     if (other_cmd->engine_requirement () != engine_requirement ())
       return false;
 

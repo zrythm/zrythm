@@ -322,12 +322,15 @@ public:
    * @brief Executes the given function after pausing processing and then
    * resumes processing.
    *
+   * The function is dropped, with a warning, when an offline render owns
+   * processing: it must not run until the render finishes.
+   *
    * @param recalculate_graph Whether to also recreate the processing graph
    * before resuming processing.
    */
   void execute_function_with_paused_processing_synchronously (
-    const std::function<void ()> &func,
-    bool                          recalculate_graph);
+    std::move_only_function<void ()> func,
+    bool                             recalculate_graph);
 
 private:
   /**

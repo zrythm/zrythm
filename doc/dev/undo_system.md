@@ -115,7 +115,7 @@ sequenceDiagram
 - Set up default state and internal connections
 
 ### Commands (`zrythm::commands`)
-- Derive from `zrythm::commands::Command`, not `QUndoCommand` directly
+- Derive from `zrythm::commands::Command`
 - Perform single, reversible operations on models
 - Implement `redo()` (apply change) and `undo()` (revert change)
 - Declare at construction what the audio engine must do around their execution (see [Engine Cooperation](#10-engine-cooperation))
@@ -336,10 +336,12 @@ cooperates with the engine around `push()`, `undo()` and `redo()`.
 - The undo stack takes the strongest requirement found on a command and
   any of its macro children, and maps it to the engine's
   pause/rebuild callback.
-- Commands that participate in `QUndoCommand` merging keep a non-negative
-  merge id (`kMergeId`); Qt only calls `mergeWith()` between commands
-  sharing an id. Commands with differing engine requirements refuse to
-  merge, so a pause-requiring edit can never disappear into a plain one.
+- Commands that merge consecutive edits override `merge_with()`: the
+  undo stack offers each newly pushed command to the most recently
+  executed one, and the implementation decides by type (and whatever else
+  must match, such as the target object or a short time window) whether to
+  absorb it. Commands with differing engine requirements refuse to merge,
+  so a pause-requiring edit can never disappear into a plain one.
 
 ```mermaid
 sequenceDiagram

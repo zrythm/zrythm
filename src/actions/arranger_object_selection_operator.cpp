@@ -199,11 +199,12 @@ ArrangerObjectSelectionOperator::moveByTicks (
                   structure::arrangement::TimeSignatureObject> ()
                   != nullptr;
     });
-  undo_stack_.push (new commands::MoveArrangerObjectsCommand (
-    std::move (selected_objects), units::ticks (tick_delta),
-    affects_tempo_map
-      ? commands::Command::EngineRequirement::PauseProcessing
-      : commands::Command::EngineRequirement::None));
+  undo_stack_.push (
+    std::make_unique<commands::MoveArrangerObjectsCommand> (
+      std::move (selected_objects), units::ticks (tick_delta),
+      affects_tempo_map
+        ? commands::Command::EngineRequirement::PauseProcessing
+        : commands::Command::EngineRequirement::None));
 
   return true;
 }
@@ -253,12 +254,12 @@ ArrangerObjectSelectionOperator::changeVelocities (
     }
 
   // Create and push command
-  auto * command = new commands::MoveArrangerObjectsCommand (
+  auto command = std::make_unique<commands::MoveArrangerObjectsCommand> (
     std::move (selected_objects), units::ticks (0),
     commands::Command::EngineRequirement::None,
     static_cast<double> (velocity_delta),
     commands::MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
-  undo_stack_.push (command);
+  undo_stack_.push (std::move (command));
 
   return true;
 }
@@ -340,9 +341,10 @@ ArrangerObjectSelectionOperator::rampVelocities (
         structure::arrangement::timeline_ticks (*note).asDouble ());
       if (new_velocity == note->velocity ())
         continue;
-      undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
-        *note, object_factory_.registry (), QStringLiteral ("velocity"),
-        new_velocity, commands::Command::EngineRequirement::None));
+      undo_stack_.push (
+        std::make_unique<commands::ChangeUuidIdentifiableObjectPropertyCommand> (
+          *note, object_factory_.registry (), QStringLiteral ("velocity"),
+          new_velocity, commands::Command::EngineRequirement::None));
     }
 
   return true;
@@ -445,7 +447,7 @@ ArrangerObjectSelectionOperator::applyMidiFunction (
 
   // Construct all commands before pushing any: a failing clone refuses the
   // whole operation instead of leaving a half-applied macro
-  std::vector<std::unique_ptr<QUndoCommand>> add_commands;
+  std::vector<std::unique_ptr<commands::Command>> add_commands;
   for (const auto &added : result->added_notes_)
     {
       auto clone = clone_and_attach (
@@ -472,12 +474,13 @@ ArrangerObjectSelectionOperator::applyMidiFunction (
   undo::UndoStack::ScopedMacro macro (undo_stack_, text);
   if (!changed_objects.empty ())
     {
-      undo_stack_.push (new commands::TransformArrangerObjectsCommand (
-        std::move (changed_objects), std::move (changed_states), text));
+      undo_stack_.push (
+        std::make_unique<commands::TransformArrangerObjectsCommand> (
+          std::move (changed_objects), std::move (changed_states), text));
     }
   for (auto &command : add_commands)
     {
-      undo_stack_.push (command.release ());
+      undo_stack_.push (std::move (command));
     }
 
   return true;
@@ -560,8 +563,9 @@ ArrangerObjectSelectionOperator::applyAutomationFunction (
     QObject::tr ("Apply %1")
       .arg (AutomationFunction::label (*kind, true).to_qstring ());
 
-  undo_stack_.push (new commands::TransformArrangerObjectsCommand (
-    std::move (changed_objects), std::move (changed_states), text));
+  undo_stack_.push (
+    std::make_unique<commands::TransformArrangerObjectsCommand> (
+      std::move (changed_objects), std::move (changed_states), text));
 
   return true;
 }
@@ -667,10 +671,11 @@ ArrangerObjectSelectionOperator::applyAudioFunction (
     QObject::tr ("Apply %1")
       .arg (AudioFunction::label (entry, true).to_qstring ());
 
-  undo_stack_.push (new commands::SetAudioClipTransformsCommand (
-    structure::arrangement::ArrangerObjectUuidReference (
-      audio_clip->get_uuid (), project_registry_),
-    std::move (after_entries), text));
+  undo_stack_.push (
+    std::make_unique<commands::SetAudioClipTransformsCommand> (
+      structure::arrangement::ArrangerObjectUuidReference (
+        audio_clip->get_uuid (), project_registry_),
+      std::move (after_entries), text));
 
   return true;
 }
@@ -694,10 +699,11 @@ ArrangerObjectSelectionOperator::push_transform_entries (
   std::vector<structure::arrangement::AudioFunction::Entry> entries,
   const QString                                            &text)
 {
-  undo_stack_.push (new commands::SetAudioClipTransformsCommand (
-    structure::arrangement::ArrangerObjectUuidReference (
-      audio_clip.get_uuid (), project_registry_),
-    std::move (entries), text));
+  undo_stack_.push (
+    std::make_unique<commands::SetAudioClipTransformsCommand> (
+      structure::arrangement::ArrangerObjectUuidReference (
+        audio_clip.get_uuid (), project_registry_),
+      std::move (entries), text));
 }
 
 bool
@@ -836,10 +842,11 @@ ArrangerObjectSelectionOperator::bakeAudioClip (
       return false;
     }
 
-  undo_stack_.push (new commands::BakeAudioClipCommand (
-    structure::arrangement::ArrangerObjectUuidReference (
-      audio_clip->get_uuid (), project_registry_),
-    baked_ref, QObject::tr ("Bake Transform Entries")));
+  undo_stack_.push (
+    std::make_unique<commands::BakeAudioClipCommand> (
+      structure::arrangement::ArrangerObjectUuidReference (
+        audio_clip->get_uuid (), project_registry_),
+      baked_ref, QObject::tr ("Bake Transform Entries")));
 
   return true;
 }
@@ -901,7 +908,7 @@ ArrangerObjectSelectionOperator::all_objects_copyable (
   });
 }
 
-std::expected<std::vector<std::unique_ptr<QUndoCommand>>, QString>
+std::expected<std::vector<std::unique_ptr<commands::Command>>, QString>
 ArrangerObjectSelectionOperator::remove_commands_for (
   const SelectedObjectsVector &objects,
   OwnerResolver               &resolver)
@@ -938,15 +945,15 @@ ArrangerObjectSelectionOperator::remove_commands_for (
   // refuses the whole batch
   try
     {
-      std::vector<std::unique_ptr<QUndoCommand>> remove_commands;
+      std::vector<std::unique_ptr<commands::Command>> remove_commands;
       remove_commands.reserve (targets.size ());
       for (auto &target : targets)
         {
           std::visit (
             [&] (auto * obj) {
               using ObjectT = utils::base_type<decltype (obj)>;
-              remove_commands.emplace_back (
-                new commands::RemoveArrangerObjectCommand<ObjectT> (
+              remove_commands.push_back (
+                std::make_unique<commands::RemoveArrangerObjectCommand<ObjectT>> (
                   commands::to_owner_ref (target.owner_var, project_registry_),
                   target.obj_ref));
             },
@@ -1007,10 +1014,11 @@ ArrangerObjectSelectionOperator::trim_trailing_empty_lanes (
           try
             {
               auto * last_lane = lane_list->at (lane_list->size () - 1);
-              undo_stack_.push (new commands::DeleteLaneCommand (
-                *lane_list,
-                structure::tracks::TrackLaneUuidReference (
-                  last_lane->get_uuid (), project_registry_)));
+              undo_stack_.push (
+                std::make_unique<commands::DeleteLaneCommand> (
+                  *lane_list,
+                  structure::tracks::TrackLaneUuidReference (
+                    last_lane->get_uuid (), project_registry_)));
             }
           catch (const std::exception &e)
             {
@@ -1041,7 +1049,7 @@ ArrangerObjectSelectionOperator::delete_objects (
 
   for (auto &command : *remove_commands)
     {
-      undo_stack_.push (command.release ());
+      undo_stack_.push (std::move (command));
     }
 
   trim_trailing_empty_lanes (objects, resolver);
@@ -1151,7 +1159,7 @@ ArrangerObjectSelectionOperator::deleteObject (
               if (trims_tail)
                 macro.emplace (undo_stack_, QObject::tr ("Delete Object"));
               undo_stack_.push (
-                new commands::RemoveArrangerObjectCommand<ObjectT> (
+                std::make_unique<commands::RemoveArrangerObjectCommand<ObjectT>> (
                   std::move (owner_ref), *it));
               if (trims_tail)
                 {
@@ -1346,7 +1354,7 @@ ArrangerObjectSelectionOperator::cut_objects (
   // failure (owner validation) leaves the stack untouched
   try
     {
-      std::vector<std::unique_ptr<QUndoCommand>> cut_commands;
+      std::vector<std::unique_ptr<commands::Command>> cut_commands;
       cut_commands.reserve (targets.size () * 2);
       for (const auto &target : targets)
         {
@@ -1388,9 +1396,9 @@ ArrangerObjectSelectionOperator::cut_objects (
                          - (obj->position ()->asTick () + obj->length ()->asTick ()))
                           .asDouble ();
                     }
-                  cut_commands.emplace_back (
-                    new commands::ResizeArrangerObjectsCommand (
-                      { target.obj_ref }, commands::ResizeType::Bounds,
+                  cut_commands.push_back (
+                    std::make_unique<commands::ResizeArrangerObjectsCommand> (
+                      std::vector{ target.obj_ref }, commands::ResizeType::Bounds,
                       commands::ResizeDirection::FromEnd, resize_delta));
 
                   new_obj_ref_opt = std::move (new_obj_ref);
@@ -1422,8 +1430,8 @@ ArrangerObjectSelectionOperator::cut_objects (
                 return;
 
               // Add the right half to the same owner.
-              cut_commands.emplace_back (
-                new commands::AddArrangerObjectCommand<ObjectT> (
+              cut_commands.push_back (
+                std::make_unique<commands::AddArrangerObjectCommand<ObjectT>> (
                   commands::to_owner_ref (target.owner_var, project_registry_),
                   *new_obj_ref_opt));
             },
@@ -1434,7 +1442,7 @@ ArrangerObjectSelectionOperator::cut_objects (
         undo_stack_, QObject::tr ("Cut %1 Objects").arg (targets.size ()));
       for (auto &command : cut_commands)
         {
-          undo_stack_.push (command.release ());
+          undo_stack_.push (std::move (command));
         }
 
       return true;
@@ -1503,7 +1511,7 @@ ArrangerObjectSelectionOperator::cloneObjects (
     undo_stack_, QObject::tr ("Copy %1 Objects").arg (selected_objects.size ()));
   for (auto &clone : clones)
     {
-      undo_stack_.push (clone.command.release ());
+      undo_stack_.push (std::move (clone.command));
     }
 
   return true;
@@ -1540,10 +1548,8 @@ ArrangerObjectSelectionOperator::clone_and_attach (
         [&] (auto * obj) -> CloneAndAttachResult {
           using ObjectT = utils::base_type<decltype (obj)>;
           return CloneAndAttachResult{
-            std::unique_ptr<
-              QUndoCommand> (new commands::AddArrangerObjectCommand<ObjectT> (
-              commands::to_owner_ref (owner_var, project_registry_),
-              new_obj_ref)),
+            std::make_unique<commands::AddArrangerObjectCommand<ObjectT>> (
+              commands::to_owner_ref (owner_var, project_registry_), new_obj_ref),
             type_safe::get (new_obj_ref.id ())
           };
         },
@@ -1753,7 +1759,7 @@ ArrangerObjectSelectionOperator::cutObjects (
     undo_stack_, QObject::tr ("Cut %1 Objects").arg (copyable.size ()));
   for (auto &command : *remove_commands)
     {
-      undo_stack_.push (command.release ());
+      undo_stack_.push (std::move (command));
     }
   trim_trailing_empty_lanes (copyable, resolver);
   return true;
@@ -1894,7 +1900,7 @@ ArrangerObjectSelectionOperator::duplicateObjects (
     QObject::tr ("Duplicate %1 Objects").arg (selected_objects.size ()));
   for (auto &clone : clones)
     {
-      undo_stack_.push (clone.command.release ());
+      undo_stack_.push (std::move (clone.command));
       new_ids.push_back (clone.new_id.toString (QUuid::WithoutBraces));
     }
 
@@ -2158,7 +2164,7 @@ ArrangerObjectSelectionOperator::attach_paste_targets (
 
   // Construct all commands before the macro opens: a construction
   // failure (owner validation) leaves the stack untouched
-  std::vector<std::unique_ptr<QUndoCommand>> add_commands;
+  std::vector<std::unique_ptr<commands::Command>> add_commands;
   try
     {
       add_commands.reserve (targets.size ());
@@ -2167,8 +2173,8 @@ ArrangerObjectSelectionOperator::attach_paste_targets (
           std::visit (
             [&] (auto * obj) {
               using ObjectT = utils::base_type<decltype (obj)>;
-              add_commands.emplace_back (
-                new commands::AddArrangerObjectCommand<ObjectT> (
+              add_commands.push_back (
+                std::make_unique<commands::AddArrangerObjectCommand<ObjectT>> (
                   commands::to_owner_ref (target.owner_var, project_registry_),
                   target.root_ref));
             },
@@ -2197,7 +2203,7 @@ ArrangerObjectSelectionOperator::attach_paste_targets (
     undo_stack_, QObject::tr ("Paste %1 Objects").arg (targets.size ()));
   for (auto &command : add_commands)
     {
-      undo_stack_.push (command.release ());
+      undo_stack_.push (std::move (command));
     }
   for (const auto &target : targets)
     {
@@ -2516,10 +2522,11 @@ ArrangerObjectSelectionOperator::toggleMute (
       : QObject::tr ("Unmute %1 Objects").arg (targets.size ()));
   for (const auto &target : targets)
     {
-      undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
-        *target.owner_obj, *target.mute_obj, object_factory_.registry (),
-        QStringLiteral ("muted"), new_muted,
-        commands::Command::EngineRequirement::None));
+      undo_stack_.push (
+        std::make_unique<commands::ChangeUuidIdentifiableObjectPropertyCommand> (
+          *target.owner_obj, *target.mute_obj, object_factory_.registry (),
+          QStringLiteral ("muted"), new_muted,
+          commands::Command::EngineRequirement::None));
     }
 
   return true;
@@ -2579,8 +2586,9 @@ ArrangerObjectSelectionOperator::setColor (
     QObject::tr ("Set Color of %1 Objects").arg (colorable.size ()));
   for (auto * obj : colorable)
     {
-      undo_stack_.push (new commands::ChangeArrangerObjectColorCommand (
-        *obj, object_factory_.registry (), color));
+      undo_stack_.push (
+        std::make_unique<commands::ChangeArrangerObjectColorCommand> (
+          *obj, object_factory_.registry (), color));
     }
 
   return true;
@@ -2614,8 +2622,9 @@ ArrangerObjectSelectionOperator::unsetColor (
     QObject::tr ("Reset Color of %1 Objects").arg (colorable.size ()));
   for (auto * obj : colorable)
     {
-      undo_stack_.push (new commands::ChangeArrangerObjectColorCommand (
-        *obj, object_factory_.registry (), std::nullopt));
+      undo_stack_.push (
+        std::make_unique<commands::ChangeArrangerObjectColorCommand> (
+          *obj, object_factory_.registry (), std::nullopt));
     }
 
   return true;
@@ -2677,10 +2686,11 @@ ArrangerObjectSelectionOperator::setStretchAlgorithm (
       .arg (targets.size ()));
   for (auto * clip : targets)
     {
-      undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
-        *clip, object_factory_.registry (), QStringLiteral ("stretchAlgorithm"),
-        QVariant::fromValue (algorithm),
-        commands::Command::EngineRequirement::None));
+      undo_stack_.push (
+        std::make_unique<commands::ChangeUuidIdentifiableObjectPropertyCommand> (
+          *clip, object_factory_.registry (),
+          QStringLiteral ("stretchAlgorithm"), QVariant::fromValue (algorithm),
+          commands::Command::EngineRequirement::None));
     }
 
   return true;
@@ -2709,8 +2719,9 @@ ArrangerObjectSelectionOperator::setTimebaseOverride (
           using ObjectT = utils::base_type<decltype (obj)>;
           if constexpr (structure::arrangement::ClipObject<ObjectT>)
             {
-              undo_stack_.push (new commands::ChangeTimebaseOverrideCommand (
-                *obj->timebaseProvider (), timebase));
+              undo_stack_.push (
+                std::make_unique<commands::ChangeTimebaseOverrideCommand> (
+                  *obj->timebaseProvider (), timebase));
             }
         },
         obj_var);
@@ -2740,8 +2751,9 @@ ArrangerObjectSelectionOperator::clearTimebaseOverride (
           using ObjectT = utils::base_type<decltype (obj)>;
           if constexpr (structure::arrangement::ClipObject<ObjectT>)
             {
-              undo_stack_.push (new commands::ChangeTimebaseOverrideCommand (
-                *obj->timebaseProvider (), std::nullopt));
+              undo_stack_.push (
+                std::make_unique<commands::ChangeTimebaseOverrideCommand> (
+                  *obj->timebaseProvider (), std::nullopt));
             }
         },
         obj_var);
@@ -2802,10 +2814,10 @@ ArrangerObjectSelectionOperator::process_vertical_move (
     }
 
   // Create and push command
-  auto * command = new commands::MoveArrangerObjectsCommand (
+  auto command = std::make_unique<commands::MoveArrangerObjectsCommand> (
     std::move (selected_objects), units::ticks (0),
     commands::Command::EngineRequirement::None, delta);
-  undo_stack_.push (command);
+  undo_stack_.push (std::move (command));
 
   return true;
 }
@@ -2839,9 +2851,9 @@ ArrangerObjectSelectionOperator::resizeObjects (
     }
 
   // Create and push command
-  auto * command = new commands::ResizeArrangerObjectsCommand (
+  auto command = std::make_unique<commands::ResizeArrangerObjectsCommand> (
     std::move (selected_objects), type, direction, delta);
-  undo_stack_.push (command);
+  undo_stack_.push (std::move (command));
 
   return true;
 }

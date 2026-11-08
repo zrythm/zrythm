@@ -475,18 +475,6 @@ TEST_F (ResizeArrangerObjectsCommandTest, FadeNonNegativeConstraint)
     }
 }
 
-// Test command ID
-TEST_F (ResizeArrangerObjectsCommandTest, CommandId)
-{
-  std::vector<structure::arrangement::ArrangerObjectUuidReference> objects = {
-    marker_ref
-  };
-  ResizeArrangerObjectsCommand command (
-    objects, ResizeType::Bounds, ResizeDirection::FromEnd, 100.0);
-
-  EXPECT_EQ (command.id (), 1762503480);
-}
-
 // Test command merging with same objects and type
 TEST_F (ResizeArrangerObjectsCommandTest, CommandMergingSameObjects)
 {
@@ -503,7 +491,7 @@ TEST_F (ResizeArrangerObjectsCommandTest, CommandMergingSameObjects)
   command1.redo ();
 
   // Should be able to merge
-  bool can_merge = command1.mergeWith (&command2);
+  bool can_merge = command1.merge_with (command2);
   EXPECT_TRUE (can_merge);
 
   // After merge, delta should be accumulated
@@ -535,7 +523,7 @@ TEST_F (ResizeArrangerObjectsCommandTest, CommandMergingDifferentObjects)
   command1.redo ();
 
   // Should not be able to merge (different objects)
-  bool can_merge = command1.mergeWith (&command2);
+  bool can_merge = command1.merge_with (command2);
   EXPECT_FALSE (can_merge);
 }
 
@@ -555,7 +543,7 @@ TEST_F (ResizeArrangerObjectsCommandTest, CommandMergingDifferentType)
   command1.redo ();
 
   // Should not be able to merge (different type)
-  bool can_merge = command1.mergeWith (&command2);
+  bool can_merge = command1.merge_with (command2);
   EXPECT_FALSE (can_merge);
 }
 
@@ -575,7 +563,7 @@ TEST_F (ResizeArrangerObjectsCommandTest, CommandMergingDifferentDirection)
   command1.redo ();
 
   // Should not be able to merge (different direction)
-  bool can_merge = command1.mergeWith (&command2);
+  bool can_merge = command1.merge_with (command2);
   EXPECT_FALSE (can_merge);
 }
 

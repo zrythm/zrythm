@@ -103,8 +103,9 @@ PortConnectionOperator::connectPorts (
   if (destination_was_detached)
     dest_port->set_detached (true);
 
-  undo_stack_.push (new commands::AddPortConnectionCommand (
-    manager, src_id, dest_id, *dest_port));
+  undo_stack_.push (
+    std::make_unique<commands::AddPortConnectionCommand> (
+      manager, src_id, dest_id, *dest_port));
   return {};
 }
 
@@ -130,8 +131,9 @@ PortConnectionOperator::disconnectPorts (
   if (dest_port == nullptr)
     return tr ("The port no longer exists.");
 
-  undo_stack_.push (new commands::RemovePortConnectionCommand (
-    manager, src_id, dest_id, *dest_port));
+  undo_stack_.push (
+    std::make_unique<commands::RemovePortConnectionCommand> (
+      manager, src_id, dest_id, *dest_port));
   return {};
 }
 
@@ -172,8 +174,9 @@ PortConnectionOperator::setConnectionMultiplier (
   if (value == conn->multiplier_)
     return {};
 
-  undo_stack_.push (new commands::UpdatePortConnectionCommand (
-    manager, src_id, dest_id, value, conn->enabled_, /*merges=*/true));
+  undo_stack_.push (
+    std::make_unique<commands::UpdatePortConnectionCommand> (
+      manager, src_id, dest_id, value, conn->enabled_, /*merges=*/true));
   return {};
 }
 
@@ -199,8 +202,9 @@ PortConnectionOperator::setConnectionEnabled (
   if (conn->enabled_ == enabled)
     return {};
 
-  undo_stack_.push (new commands::UpdatePortConnectionCommand (
-    manager, src_id, dest_id, conn->multiplier_, enabled, /*merges=*/false));
+  undo_stack_.push (
+    std::make_unique<commands::UpdatePortConnectionCommand> (
+      manager, src_id, dest_id, conn->multiplier_, enabled, /*merges=*/false));
   return {};
 }
 

@@ -152,7 +152,7 @@ TEST_F (ChangeParameterValueCommandTest, MergeWithSameType)
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.25f);
 
   // Should merge with second command (within time limit)
-  EXPECT_TRUE (cmd1.mergeWith (&cmd2));
+  EXPECT_TRUE (cmd1.merge_with (cmd2));
 
   // Redo should use merged value
   cmd1.redo ();
@@ -163,32 +163,19 @@ TEST_F (ChangeParameterValueCommandTest, MergeWithDifferentType)
 {
   ChangeParameterValueCommand cmd1 (*param_, registry_, 0.25f);
 
-  // Create a mock command with different ID
-  class MockCommand : public QUndoCommand
+  // Create a mock command of a different type
+  class MockCommand : public commands::Command
   {
   public:
-    int id () const override { return 12345; }
+    MockCommand () : Command (QStringLiteral ("Mock"), EngineRequirement::None)
+    {
+    }
+    void undo () override { }
+    void redo () override { }
   } mockCmd;
 
   // Should not merge with different command type
-  EXPECT_FALSE (cmd1.mergeWith (&mockCmd));
-}
-
-TEST_F (ChangeParameterValueCommandTest, MergeWithTimeLimit)
-{
-  ChangeParameterValueCommand cmd1 (*param_, registry_, 0.25f);
-  ChangeParameterValueCommand cmd2 (*param_, registry_, 0.75f);
-
-  // Execute first command
-  cmd1.redo ();
-  EXPECT_FLOAT_EQ (param_->baseValue (), 0.25f);
-
-  // Wait more than 1 second (simulate time passing)
-  // The mergeWith method uses steady_clock::now(), so we can't directly test
-  // timing Instead, we'll test that the method exists and has the expected
-  // signature
-  EXPECT_EQ (cmd1.id (), 89453187);
-  EXPECT_EQ (cmd2.id (), 89453187);
+  EXPECT_FALSE (cmd1.merge_with (mockCmd));
 }
 
 TEST_F (ChangeParameterValueCommandTest, ValueGreaterThanOne)

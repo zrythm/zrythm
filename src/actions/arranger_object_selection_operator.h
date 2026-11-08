@@ -566,7 +566,9 @@ private:
    *
    * @return The commands to push, or a user-facing refusal reason.
    */
-  [[nodiscard]] std::expected<std::vector<std::unique_ptr<QUndoCommand>>, QString>
+  [[nodiscard]] std::expected<
+    std::vector<std::unique_ptr<commands::Command>>,
+    QString>
   remove_commands_for (
     const SelectedObjectsVector &objects,
     OwnerResolver               &resolver);
@@ -697,8 +699,8 @@ private:
    */
   struct CloneAndAttachResult
   {
-    std::unique_ptr<QUndoCommand> command;
-    QUuid                         new_id;
+    std::unique_ptr<commands::Command> command;
+    QUuid                              new_id;
   };
 
   /**

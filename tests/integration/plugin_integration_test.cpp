@@ -172,10 +172,9 @@ protected:
     project->add_default_tracks ();
 
     auto undo_stack = utils::make_qobject_unique<undo::UndoStack> (
-      [proj = project.get ()] (
-        const std::function<void ()> &action, bool recalculate_graph) {
+      [proj = project.get ()] (auto action, bool recalculate_graph) {
         proj->engine ()->execute_function_with_paused_processing_synchronously (
-          action, recalculate_graph);
+          std::move (action), recalculate_graph);
       },
       nullptr);
 
@@ -297,10 +296,9 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
   project2->add_default_tracks ();
 
   auto undo_stack2 = utils::make_qobject_unique<undo::UndoStack> (
-    [proj = project2.get ()] (
-      const std::function<void ()> &action, bool recalculate_graph) {
+    [proj = project2.get ()] (auto action, bool recalculate_graph) {
       proj->engine ()->execute_function_with_paused_processing_synchronously (
-        action, recalculate_graph);
+        std::move (action), recalculate_graph);
     },
     nullptr);
 

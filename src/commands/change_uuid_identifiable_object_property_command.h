@@ -25,20 +25,14 @@ namespace zrythm::commands
  * prevents the registry from deleting the object (and transitively, any
  * sub-objects it owns).
  *
- * Uses a distinct command id from @ref ChangeQObjectPropertyCommand so the two
- * variants never merge with each other — merging a UUID-safe command into a
- * raw command would lose the refcount safety.
+ * Never merges with the plain @ref ChangeQObjectPropertyCommand: the base
+ * only merges commands of its exact class, so the refcount safety of this
+ * variant is never lost to a merge.
  */
 class ChangeUuidIdentifiableObjectPropertyCommand
     : public ChangeQObjectPropertyCommand
 {
 public:
-  /**
-   * QUndoCommand id for merge participation: Qt only calls mergeWith()
-   * between commands sharing a non-negative id.
-   */
-  static constexpr int kMergeId = 1783530767;
-
   /**
    * @brief Direct case: the UUID-identifiable object IS the target.
    *
@@ -89,8 +83,6 @@ public:
         uuid_ref_ (uuid_lifecycle_object.raw_uuid (), registry)
   {
   }
-
-  int id () const override { return kMergeId; }
 
 private:
   utils::UuidReference uuid_ref_;

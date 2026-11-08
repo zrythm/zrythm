@@ -501,7 +501,7 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingSameObjects)
   command1.redo ();
 
   // Should be able to merge with second command
-  bool can_merge = command1.mergeWith (&command2);
+  bool can_merge = command1.merge_with (command2);
   EXPECT_TRUE (can_merge);
 
   // After merging, the command1 now has the total delta (delta1 + delta2)
@@ -542,7 +542,7 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingDifferentObjects)
   command1.redo ();
 
   // Should not be able to merge with command operating on different objects
-  bool can_merge = command1.mergeWith (&command2);
+  bool can_merge = command1.merge_with (command2);
   EXPECT_FALSE (can_merge);
 }
 
@@ -558,7 +558,7 @@ TEST_F (MoveArrangerObjectsCommandTest, MergeRefusesDifferingEngineRequirements)
     test_objects_, tick_delta, Command::EngineRequirement::PauseProcessing);
 
   command1.redo ();
-  EXPECT_FALSE (command1.mergeWith (&command2));
+  EXPECT_FALSE (command1.merge_with (command2));
 }
 
 // Test command merging with different command ID (should not merge)
@@ -570,10 +570,13 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingDifferentCommandType)
     test_objects_, tick_delta, Command::EngineRequirement::None);
 
   // Create a different type of command
-  class DifferentCommand : public QUndoCommand
+  class DifferentCommand : public Command
   {
   public:
-    int  id () const override { return 99999999; }
+    DifferentCommand ()
+        : Command (QStringLiteral ("Different"), EngineRequirement::None)
+    {
+    }
     void undo () override { }
     void redo () override { }
   };
@@ -581,7 +584,7 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingDifferentCommandType)
   DifferentCommand different_command;
 
   // Should not be able to merge with different command type
-  bool can_merge = command1.mergeWith (&different_command);
+  bool can_merge = command1.merge_with (different_command);
   EXPECT_FALSE (can_merge);
 }
 

@@ -3,12 +3,15 @@
 
 #pragma once
 
+#include <functional>
+#include <memory>
 #include <string_view>
+#include <vector>
 
-#include "utils/qt.h"
+#include "commands/command.h"
 
-#include <QUndoCommand>
-#include <QUndoStack>
+#include <QObject>
+#include <QStringList>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include "nlohmann/json_fwd.hpp"
@@ -17,6 +20,13 @@ namespace zrythm::undo
 {
 using namespace std::string_view_literals;
 
+/**
+ * @brief Project undo history.
+ *
+ * Owns the executed commands, tracks the current position for undo/redo,
+ * groups commands into macros, and cooperates with the audio engine
+ * according to each command's declared engine requirement.
+ */
 class UndoStack : public QObject
 {
   Q_OBJECT
@@ -31,38 +41,48 @@ public:
   /**
    * @brief A function for requesting a callback with the engine paused.
    *
-   * @see AudioEngine.run_function_with_paused_processing().
+   * Implementations invoke @p callback synchronously, before returning.
+   * When the pause cannot be honored (e.g. an offline render owns
+   * processing), they drop the callback instead.
+   *
+   * @see AudioEngine.execute_function_with_paused_processing_synchronously().
    */
   using CallbackWithPausedEngineRequester =
-    std::function<void (const std::function<void ()> &, bool)>;
+    std::function<void (std::move_only_function<void ()>, bool)>;
 
   explicit UndoStack (
     CallbackWithPausedEngineRequester callback_with_paused_engine_requester,
     QObject *                         parent = nullptr);
 
-  // all users of the undo stack should use these wrappers instead of
-  // QUndoStack's push/undo/redo. all other functionality should handed off to
-  // the underlying QUndoStack
-  void             push (QUndoCommand * cmd);
+  /**
+   * @brief Executes @p cmd and adds it to the history.
+   *
+   * Takes ownership of @p cmd: the command is destroyed when the history
+   * is done with it, including when the push is refused.
+   */
+  void             push (std::unique_ptr<commands::Command> cmd);
   Q_INVOKABLE void undo ();
   Q_INVOKABLE void redo ();
 
-  bool canUndo () const { return stack_->canUndo (); }
-  bool canRedo () const { return stack_->canRedo (); }
+  bool canUndo () const { return open_macro_count_ == 0 && index_ > 0; }
+  bool canRedo () const { return open_macro_count_ == 0 && index_ < count (); }
 
-  void              set_undo_limit (int limit) { stack_->setUndoLimit (limit); }
-  [[nodiscard]] int undo_limit () const { return stack_->undoLimit (); }
+  /**
+   * @brief Sets the maximum number of commands kept in the history.
+   *
+   * Changing the limit never deletes existing entries: raising it applies
+   * immediately, and lowering it trims the oldest entries only as new
+   * commands arrive. 0 (the default) means no limit.
+   */
+  void              set_undo_limit (int limit);
+  [[nodiscard]] int undo_limit () const { return undo_limit_; }
 
-  const QUndoCommand * command (int index) const
-  {
-    return stack_->command (index);
-  }
+  const commands::Command * command (int index) const;
 
-  // Macro creation is lazy: beginMacro() only records the macro text, and the
-  // macro is realized on the underlying QUndoStack when the first command is
+  // Macro creation is lazy: beginMacro() only records the macro text, and
+  // the macro is realized on the history when the first command is
   // pushed. endMacro() without any intervening push() discards the macro, so
-  // empty macros never pollute the undo stack (QUndoStack itself has no API
-  // to remove an empty macro once begun).
+  // empty macros never pollute the undo history.
   Q_INVOKABLE void beginMacro (const QString &text);
   Q_INVOKABLE void endMacro ();
 
@@ -98,11 +118,11 @@ public:
   QStringList undoActions ();
   QStringList redoActions ();
 
-  int  index () const { return stack_->index (); }
+  int  index () const { return index_; }
   void setIndex (int idx);
 
-  auto count () const { return stack_->count (); }
-  auto text (int idx) const { return stack_->text (idx); }
+  int     count () const { return static_cast<int> (commands_.size ()); }
+  QString text (int idx) const;
 
 Q_SIGNALS:
   void undoActionsChanged ();
@@ -118,20 +138,70 @@ private:
   friend void           from_json (const nlohmann::json &j, UndoStack &u);
 
   /**
-   * @brief Executes the given action on the given command with the engine
-   * cooperation the command (or any of its macro children) declares via
+   * @brief Runs @p action with the engine cooperation @p requirement asks
+   * for.
+   *
+   * Actions needing no cooperation run directly; every other action is
+   * handed to the pause requester, which either runs it or drops it.
+   */
+  void dispatch_with_engine_cooperation (
+    commands::Command::EngineRequirement requirement,
+    std::move_only_function<void ()>     action);
+
+  /**
+   * @brief Runs @p action with the engine cooperation the command (or any
+   * of its macro children) declares via
    * commands::Command::engine_requirement().
    */
   void execute_with_engine_pause_if_needed (
-    const QUndoCommand           &cmd,
-    const std::function<void ()> &action);
+    const commands::Command         &cmd,
+    std::move_only_function<void ()> action);
+
+  /**
+   * @brief Adds an open macro with the given text to the history.
+   *
+   * A root macro discards the redo history above the current index; a
+   * nested macro becomes a child of the currently open macro. The history
+   * index advances when the root macro is ended, not here.
+   */
+  void begin_macro_core (const QString &text);
+
+  /** @brief Closes the innermost open realized macro. */
+  void end_macro_core ();
+
+  /**
+   * @brief Executes @p cmd and merges or appends it (the core of push()).
+   *
+   * Takes over @p cmd: runs its redo(), then offers it to the most
+   * recently executed command for merging — the innermost open macro's
+   * last child while a macro is open, the command below the history index
+   * otherwise. On a successful merge @p cmd is destroyed; otherwise it is
+   * appended to the history.
+   */
+  void push_core (std::unique_ptr<commands::Command> cmd);
+
+  /** @brief Deletes the oldest history entries beyond the undo limit. */
+  void check_undo_limit ();
+
+  /** @brief Emits all history change signals. */
+  void emit_changed ();
 
 private:
-  utils::QObjectUniquePtr<QUndoStack> stack_;
+  /** @brief Done commands; entries above index_ are redoable. */
+  std::vector<std::unique_ptr<commands::Command>> commands_;
+
+  /** @brief Number of done commands; commands_[index_] is next to redo. */
+  int index_ = 0;
+
+  /** @brief Maximum history size; 0 means unlimited. */
+  int undo_limit_ = 0;
+
+  /** @brief Open realized macros, outermost first (non-owning). */
+  std::vector<commands::MacroCommand *> macro_stack_;
 
   /**
    * Texts of macros begun via beginMacro() but not yet realized on the
-   * underlying stack (see beginMacro()). Realized in order on the next
+   * history (see beginMacro()). Realized in order on the next
    * push(); pending entries nest inside any already-realized macro.
    */
   std::vector<QString> pending_macros_;
@@ -143,14 +213,12 @@ private:
   CallbackWithPausedEngineRequester callback_with_paused_engine_requester_;
 
   /**
-   * @brief True while the underlying QUndoStack is executing a push, undo
-   * or redo.
+   * @brief True while the history is executing a push, undo or redo.
    *
-   * QUndoStack is not re-entrant: a nested push from inside another
-   * command's undo()/redo() (e.g. a UI control reacting to a value it
-   * restores by pushing an echo edit) corrupts the command list. Pushes,
-   * undos and redos arriving while this is set are refused with an error
-   * log instead.
+   * A nested push from inside another command's undo()/redo() (e.g. a UI
+   * control reacting to a value it restores by pushing an echo edit)
+   * corrupts the command list. Pushes, undos and redos arriving while this
+   * is set are refused with an error log instead.
    */
   bool executing_ = false;
 };

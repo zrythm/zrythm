@@ -27,7 +27,8 @@ ChordPadBankOperator::editPad (
     hasBass ? std::optional (bassNote) : std::nullopt
   };
   undo_stack_->push (
-    new commands::EditChordPadCommand (*bank_, index, std::move (after)));
+    std::make_unique<commands::EditChordPadCommand> (
+      *bank_, index, std::move (after)));
 }
 
 void
@@ -46,7 +47,7 @@ ChordPadBankOperator::addPad (
     hasBass ? std::optional (bassNote) : std::nullopt
   };
   undo_stack_->push (
-    new commands::AddChordPadCommand (*bank_, std::move (state)));
+    std::make_unique<commands::AddChordPadCommand> (*bank_, std::move (state)));
 }
 
 void
@@ -54,7 +55,8 @@ ChordPadBankOperator::removePad (int index)
 {
   assert (bank_ != nullptr);
   assert (undo_stack_ != nullptr);
-  undo_stack_->push (new commands::RemoveChordPadCommand (*bank_, index));
+  undo_stack_->push (
+    std::make_unique<commands::RemoveChordPadCommand> (*bank_, index));
 }
 
 void
@@ -62,7 +64,8 @@ ChordPadBankOperator::movePad (int from, int to)
 {
   assert (bank_ != nullptr);
   assert (undo_stack_ != nullptr);
-  undo_stack_->push (new commands::MoveChordPadCommand (*bank_, from, to));
+  undo_stack_->push (
+    std::make_unique<commands::MoveChordPadCommand> (*bank_, from, to));
 }
 
 void
@@ -86,8 +89,9 @@ ChordPadBankOperator::transposePads (bool up)
       after.push_back (std::move (state));
     }
 
-  undo_stack_->push (new commands::ReplaceAllChordPadsCommand (
-    *bank_, std::move (after), QObject::tr ("Transpose Chord Pads")));
+  undo_stack_->push (
+    std::make_unique<commands::ReplaceAllChordPadsCommand> (
+      *bank_, std::move (after), QObject::tr ("Transpose Chord Pads")));
 }
 
 void
@@ -108,8 +112,9 @@ ChordPadBankOperator::applyPresetFromScale (
           std::nullopt });
     }
 
-  undo_stack_->push (new commands::ReplaceAllChordPadsCommand (
-    *bank_, std::move (after), QObject::tr ("Apply Scale Preset")));
+  undo_stack_->push (
+    std::make_unique<commands::ReplaceAllChordPadsCommand> (
+      *bank_, std::move (after), QObject::tr ("Apply Scale Preset")));
 }
 
 void
@@ -127,8 +132,9 @@ ChordPadBankOperator::applyPreset (ChordPreset * preset)
       after.push_back (commands::ChordPadState::from_descriptor (*descr));
     }
 
-  undo_stack_->push (new commands::ReplaceAllChordPadsCommand (
-    *bank_, std::move (after), QObject::tr ("Apply Chord Preset")));
+  undo_stack_->push (
+    std::make_unique<commands::ReplaceAllChordPadsCommand> (
+      *bank_, std::move (after), QObject::tr ("Apply Chord Preset")));
 }
 
 }

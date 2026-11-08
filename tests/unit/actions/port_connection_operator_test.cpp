@@ -447,7 +447,7 @@ TEST_F (PortConnectionOperatorTest, MultiplierUpdatesAfterMergeWindowDoNotMerge)
   commands::UpdatePortConnectionCommand next_update (
     manager, bus1_.out->get_uuid (), bus2_.in->get_uuid (), 0.6f, true, true);
 
-  EXPECT_FALSE (outside_window.mergeWith (&next_update));
+  EXPECT_FALSE (outside_window.merge_with (next_update));
 }
 
 // Strength is rejected for locked connections, missing connections, MIDI

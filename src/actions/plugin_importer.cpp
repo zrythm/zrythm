@@ -183,8 +183,7 @@ PluginImporter::import (
               {
                 undo_stack_.push (
                   std::make_unique<commands::AddPluginCommand> (
-                    *plugin_group, inner_plugin_ref, index)
-                    .release ());
+                    *plugin_group, inner_plugin_ref, index));
               }
           }
 

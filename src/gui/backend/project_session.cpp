@@ -34,10 +34,10 @@ ProjectSession::ProjectSession (
           structure::project::ProjectUiState> (*project_, app_settings_)),
       undo_stack_ (
         utils::make_qobject_unique<undo::UndoStack> (
-          [this] (const auto &action, bool recalculate_graph) {
+          [this] (auto action, bool recalculate_graph) {
             project_->engine ()
               ->execute_function_with_paused_processing_synchronously (
-                action, recalculate_graph);
+                std::move (action), recalculate_graph);
           },
           this)),
       quantize_opts_editor_ (

@@ -284,9 +284,10 @@ private:
   {
     try
       {
-        undo_stack_.push (new commands::AddArrangerObjectCommand<ObjectT> (
-          commands::make_owner_ref (owner, arranger_object_factory_.registry ()),
-          obj_ref));
+        undo_stack_.push (
+          std::make_unique<commands::AddArrangerObjectCommand<ObjectT>> (
+            commands::make_owner_ref (owner, arranger_object_factory_.registry ()),
+            obj_ref));
         return true;
       }
     catch (const std::exception &e)

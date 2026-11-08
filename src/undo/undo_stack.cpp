@@ -16,7 +16,7 @@ namespace zrythm::undo
 namespace
 {
 // Marks the stack as executing for the lifetime of the guard, covering the
-// synchronous part of the QUndoStack call
+// synchronous execution of a push, undo or redo
 class ScopedExecution
 {
 public:
@@ -30,74 +30,41 @@ public:
 private:
   bool &executing_;
 };
-
-// Strongest engine requirement the command or any of its macro children
-// declares. Macro wrapper commands created by QUndoStack are plain
-// QUndoCommands and contribute nothing themselves.
-commands::Command::EngineRequirement
-strongest_engine_requirement (const QUndoCommand &cmd)
-{
-  using commands::Command;
-
-  auto result = Command::EngineRequirement::None;
-  if (const auto * z_cmd = dynamic_cast<const Command *> (&cmd))
-    {
-      result = z_cmd->engine_requirement ();
-    }
-
-  for (const auto i : std::views::iota (0, cmd.childCount ()))
-    {
-      const auto child_requirement =
-        strongest_engine_requirement (*cmd.child (i));
-      if (child_requirement > result)
-        {
-          result = child_requirement;
-        }
-    }
-  return result;
-}
 } // namespace
 
 UndoStack::UndoStack (
   CallbackWithPausedEngineRequester callback_with_paused_engine_requester,
   QObject *                         parent)
-    : QObject (parent), stack_ (utils::make_qobject_unique<QUndoStack> (this)),
+    : QObject (parent),
       callback_with_paused_engine_requester_ (
         std::move (callback_with_paused_engine_requester))
 {
-  connect (stack_.get (), &QUndoStack::indexChanged, this, [this] () {
-    Q_EMIT undoActionsChanged ();
-    Q_EMIT redoActionsChanged ();
-    Q_EMIT indexChanged ();
-    Q_EMIT canUndoChanged ();
-    Q_EMIT canRedoChanged ();
-  });
-  connect (stack_.get (), &QUndoStack::cleanChanged, this, [this] () {
-    Q_EMIT undoActionsChanged ();
-    Q_EMIT redoActionsChanged ();
-    Q_EMIT canUndoChanged ();
-    Q_EMIT canRedoChanged ();
-  });
 }
 
 void
-UndoStack::execute_with_engine_pause_if_needed (
-  const QUndoCommand           &cmd,
-  const std::function<void ()> &action)
+UndoStack::dispatch_with_engine_cooperation (
+  commands::Command::EngineRequirement requirement,
+  std::move_only_function<void ()>     action)
 {
-  using commands::Command;
-  const auto requirement = strongest_engine_requirement (cmd);
-
-  if (requirement == Command::EngineRequirement::None)
+  if (requirement == commands::Command::EngineRequirement::None)
     {
       action ();
     }
   else
     {
-      const auto recalculate_graph =
-        requirement == Command::EngineRequirement::RecalculateGraph;
-      callback_with_paused_engine_requester_ (action, recalculate_graph);
+      callback_with_paused_engine_requester_ (
+        std::move (action),
+        requirement == commands::Command::EngineRequirement::RecalculateGraph);
     }
+}
+
+void
+UndoStack::execute_with_engine_pause_if_needed (
+  const commands::Command         &cmd,
+  std::move_only_function<void ()> action)
+{
+  dispatch_with_engine_cooperation (
+    cmd.engine_requirement (), std::move (action));
 }
 
 void
@@ -105,6 +72,8 @@ UndoStack::beginMacro (const QString &text)
 {
   ++open_macro_count_;
   pending_macros_.emplace_back (text);
+  // opening a macro disables undo/redo while it is open
+  emit_changed ();
 }
 
 void
@@ -120,40 +89,152 @@ UndoStack::endMacro ()
     {
       // Macro never received a command - discard it
       pending_macros_.pop_back ();
+      emit_changed ();
       return;
     }
-  stack_->endMacro ();
+  end_macro_core ();
 }
 
 void
-UndoStack::push (QUndoCommand * cmd)
+UndoStack::begin_macro_core (const QString &text)
+{
+  auto macro = std::make_unique<commands::MacroCommand> (text);
+  commands::MacroCommand * macro_ptr = macro.get ();
+  if (macro_stack_.empty ())
+    {
+      // opening a root macro discards the redo history
+      commands_.resize (index_);
+      commands_.push_back (std::move (macro));
+    }
+  else
+    {
+      macro_stack_.back ()->add_child (std::move (macro));
+    }
+  macro_stack_.push_back (macro_ptr);
+}
+
+void
+UndoStack::end_macro_core ()
+{
+  macro_stack_.pop_back ();
+  if (macro_stack_.empty ())
+    {
+      // closing the root macro completes it as one history entry
+      check_undo_limit ();
+      ++index_;
+      emit_changed ();
+    }
+}
+
+void
+UndoStack::push (std::unique_ptr<commands::Command> cmd)
 {
   if (executing_)
     {
       z_critical (
         "Refusing nested push of '{}' while the undo stack is executing another command: undo/redo must not trigger new edits",
         cmd->text ());
-      delete cmd;
       return;
     }
-  z_debug ("Performing action '{}'", cmd->text ());
-  if (dynamic_cast<const commands::Command *> (cmd) == nullptr)
+  const auto cmd_text = cmd->text ();
+  z_debug ("Performing action '{}'", cmd_text);
+  // Read the requirement before the command moves into the callback
+  const auto requirement = cmd->engine_requirement ();
+  bool       invoked = false;
+  // The callback owns the command: a pause requester that drops it without
+  // invoking it destroys the command instead of leaking it. Pending macros
+  // are realized inside the callback, so a dropped callback also leaves the
+  // history untouched.
+  auto action = [this, &invoked, owned_cmd = std::move (cmd)] () mutable {
+    invoked = true;
+    ScopedExecution executing (executing_);
+    for (const auto &macro_text : pending_macros_)
+      {
+        begin_macro_core (macro_text);
+      }
+    pending_macros_.clear ();
+    push_core (std::move (owned_cmd));
+  };
+  dispatch_with_engine_cooperation (requirement, std::move (action));
+  if (!invoked)
     {
       z_warning (
-        "Command '{}' does not derive from commands::Command; it will run without engine cooperation",
-        cmd->text ());
+        "The engine refused to run with processing paused; edit '{}' was discarded",
+        cmd_text);
     }
-  // Realize any pending (lazy) macros so this command lands inside them (done
-  // before the engine pause so macro realization doesn't depend on the pause
-  // requester invoking the action synchronously)
-  for (const auto &macro_text : pending_macros_)
+}
+
+void
+UndoStack::push_core (std::unique_ptr<commands::Command> cmd)
+{
+  cmd->redo ();
+
+  const bool inside_macro = !macro_stack_.empty ();
+
+  commands::Command * merge_candidate = nullptr;
+  if (inside_macro)
     {
-      stack_->beginMacro (macro_text);
+      merge_candidate = macro_stack_.back ()->last_child ();
     }
-  pending_macros_.clear ();
-  execute_with_engine_pause_if_needed (*cmd, [this, cmd] () {
+  else
+    {
+      if (index_ > 0)
+        {
+          merge_candidate = commands_[index_ - 1].get ();
+        }
+      // pushing discards the redo history above the current index
+      commands_.resize (index_);
+    }
+
+  // on a successful merge the command is destroyed at the end of this scope
+  const auto merged =
+    merge_candidate != nullptr && merge_candidate->merge_with (*cmd);
+  if (!merged)
+    {
+      if (inside_macro)
+        {
+          macro_stack_.back ()->add_child (std::move (cmd));
+        }
+      else
+        {
+          commands_.push_back (std::move (cmd));
+          check_undo_limit ();
+          ++index_;
+        }
+    }
+  // while a macro is being composed, closing the root macro emits once for
+  // the whole macro
+  if (macro_stack_.empty ())
+    {
+      emit_changed ();
+    }
+}
+
+void
+UndoStack::undo ()
+{
+  if (open_macro_count_ > 0)
+    {
+      z_warning ("Ignoring undo() while a macro is open");
+      return;
+    }
+  if (index_ == 0)
+    {
+      z_warning ("Ignoring undo() with nothing to undo");
+      return;
+    }
+  if (executing_)
+    {
+      z_critical (
+        "Refusing nested undo() while the undo stack is executing another command: undo/redo must not trigger further undos");
+      return;
+    }
+  z_debug ("Undoing");
+  execute_with_engine_pause_if_needed (*commands_[index_ - 1], [this] () {
     ScopedExecution executing (executing_);
-    stack_->push (cmd);
+    commands_[index_ - 1]->undo ();
+    --index_;
+    emit_changed ();
   });
 }
 
@@ -165,16 +246,9 @@ UndoStack::redo ()
       z_warning ("Ignoring redo() while a macro is open");
       return;
     }
-  if (!stack_->canRedo ())
+  if (index_ >= count ())
     {
       z_warning ("Ignoring redo() with nothing to redo");
-      return;
-    }
-  z_debug ("Redoing");
-  const auto * cmd = stack_->command (stack_->index ());
-  if (cmd == nullptr)
-    {
-      z_warning ("Ignoring redo(): command not found");
       return;
     }
   if (executing_)
@@ -183,53 +257,78 @@ UndoStack::redo ()
         "Refusing nested redo() while the undo stack is executing another command: undo/redo must not trigger further undos");
       return;
     }
-  execute_with_engine_pause_if_needed (*cmd, [this] () {
+  z_debug ("Redoing");
+  execute_with_engine_pause_if_needed (*commands_[index_], [this] () {
     ScopedExecution executing (executing_);
-    stack_->redo ();
+    commands_[index_]->redo ();
+    ++index_;
+    emit_changed ();
   });
 }
 
 void
-UndoStack::undo ()
+UndoStack::set_undo_limit (int limit)
 {
-  if (open_macro_count_ > 0)
+  undo_limit_ = limit;
+  emit_changed ();
+}
+
+void
+UndoStack::check_undo_limit ()
+{
+  if (undo_limit_ <= 0 || !macro_stack_.empty ())
     {
-      z_warning ("Ignoring undo() while a macro is open");
       return;
     }
-  if (!stack_->canUndo ())
+  const auto command_count = static_cast<int> (commands_.size ());
+  if (undo_limit_ >= command_count)
     {
-      z_warning ("Ignoring undo() with nothing to undo");
       return;
     }
-  z_debug ("Undoing");
-  const auto * cmd = stack_->command (stack_->index () - 1);
-  if (cmd == nullptr)
+  const auto excess = command_count - undo_limit_;
+  commands_.erase (
+    commands_.begin (), std::ranges::next (commands_.begin (), excess));
+  index_ -= excess;
+}
+
+void
+UndoStack::emit_changed ()
+{
+  Q_EMIT undoActionsChanged ();
+  Q_EMIT redoActionsChanged ();
+  Q_EMIT indexChanged ();
+  Q_EMIT canUndoChanged ();
+  Q_EMIT canRedoChanged ();
+}
+
+const commands::Command *
+UndoStack::command (int index) const
+{
+  if (index < 0 || index >= count ())
     {
-      z_warning ("Ignoring undo(): command not found");
-      return;
+      return nullptr;
     }
-  if (executing_)
+  return commands_[index].get ();
+}
+
+QString
+UndoStack::text (int idx) const
+{
+  if (idx < 0 || idx >= count ())
     {
-      z_critical (
-        "Refusing nested undo() while the undo stack is executing another command: undo/redo must not trigger further undos");
-      return;
+      return {};
     }
-  execute_with_engine_pause_if_needed (*cmd, [this] () {
-    ScopedExecution executing (executing_);
-    stack_->undo ();
-  });
+  return commands_[idx]->text ();
 }
 
 QStringList
 UndoStack::undoActions ()
 {
   QStringList actions;
-  const int   index = stack_->index ();
 
-  for (int i = 0; i < index; ++i)
+  for (int i = 0; i < index_; ++i)
     {
-      actions.prepend (stack_->text (i));
+      actions.prepend (commands_[i]->text ());
     }
 
   return actions;
@@ -239,12 +338,14 @@ QStringList
 UndoStack::redoActions ()
 {
   QStringList actions;
-  const int   count = stack_->count ();
-  const int   index = stack_->index ();
 
-  for (int i = index; i < count; ++i)
+  // the open root macro is the last entry; it is still being composed and
+  // is not redoable
+  const auto effective_count = macro_stack_.empty () ? count () : count () - 1;
+
+  for (int i = index_; i < effective_count; ++i)
     {
-      actions.append (stack_->text (i));
+      actions.append (commands_[i]->text ());
     }
 
   return actions;
@@ -253,17 +354,16 @@ UndoStack::redoActions ()
 void
 UndoStack::setIndex (int idx)
 {
-  if (idx < 0 || idx > stack_->count ())
+  if (idx < 0 || idx > count ())
     {
       z_warning (
-        "Clamping undo stack index {} to valid range 0..{}", idx,
-        stack_->count ());
-      idx = std::clamp (idx, 0, stack_->count ());
+        "Clamping undo stack index {} to valid range 0..{}", idx, count ());
+      idx = std::clamp (idx, 0, count ());
     }
   if (idx == index ())
     return;
 
-  const auto cur_idx = stack_->index ();
+  const auto cur_idx = index_;
   if (idx > cur_idx)
     {
       const auto num_actions_to_redo = idx - cur_idx;

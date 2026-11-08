@@ -12,7 +12,7 @@ QObjectPropertyOperator::setValue (QString propertyName, QVariant value)
   auto cmd = std::make_unique<commands::ChangeQObjectPropertyCommand> (
     *current_object_, propertyName, value,
     commands::Command::EngineRequirement::None);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 
 void
@@ -23,6 +23,6 @@ QObjectPropertyOperator::setValueAffectingTempoMap (
   auto cmd = std::make_unique<commands::ChangeQObjectPropertyCommand> (
     *current_object_, propertyName, value,
     commands::Command::EngineRequirement::PauseProcessing);
-  undo_stack_->push (cmd.release ());
+  undo_stack_->push (std::move (cmd));
 }
 }
