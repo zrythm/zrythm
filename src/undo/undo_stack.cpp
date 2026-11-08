@@ -44,7 +44,7 @@ UndoStack::UndoStack (
 void
 UndoStack::dispatch_with_engine_cooperation (
   commands::Command::EngineRequirement requirement,
-  std::move_only_function<void ()>     action)
+  utils::InplaceCallback               action)
 {
   if (requirement == commands::Command::EngineRequirement::None)
     {
@@ -60,8 +60,8 @@ UndoStack::dispatch_with_engine_cooperation (
 
 void
 UndoStack::execute_with_engine_pause_if_needed (
-  const commands::Command         &cmd,
-  std::move_only_function<void ()> action)
+  const commands::Command &cmd,
+  utils::InplaceCallback   action)
 {
   dispatch_with_engine_cooperation (
     cmd.engine_requirement (), std::move (action));

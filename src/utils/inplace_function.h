@@ -160,4 +160,10 @@ private:
     std::max_align_t) mutable std::array<std::byte, inline_capacity> storage_{};
 };
 
+/**
+ * @brief Move-only void () callback with storage that fits a
+ * `std::function<void ()>` on every supported standard library.
+ */
+using InplaceCallback = InplaceFunction<void (), 64>;
+
 } // namespace zrythm::utils

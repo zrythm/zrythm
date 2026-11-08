@@ -763,8 +763,8 @@ AudioEngine::OfflineRenderSession::finish () noexcept
 
 void
 AudioEngine::execute_function_with_paused_processing_synchronously (
-  std::move_only_function<void ()> func,
-  bool                             recalculate_graph)
+  utils::InplaceCallback func,
+  bool                   recalculate_graph)
 {
   if (offline_render_active_.load ())
     {

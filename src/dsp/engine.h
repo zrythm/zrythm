@@ -19,6 +19,7 @@
 #include "dsp/midi_port.h"
 #include "dsp/transport.h"
 #include "utils/concurrency.h"
+#include "utils/inplace_function.h"
 #include "utils/object_registry.h"
 
 namespace zrythm::dsp
@@ -329,8 +330,8 @@ public:
    * before resuming processing.
    */
   void execute_function_with_paused_processing_synchronously (
-    std::move_only_function<void ()> func,
-    bool                             recalculate_graph);
+    utils::InplaceCallback func,
+    bool                   recalculate_graph);
 
 private:
   /**

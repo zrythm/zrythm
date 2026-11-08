@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "commands/command.h"
+#include "utils/inplace_function.h"
 
 #include <QObject>
 #include <QStringList>
@@ -48,7 +49,7 @@ public:
    * @see AudioEngine.execute_function_with_paused_processing_synchronously().
    */
   using CallbackWithPausedEngineRequester =
-    std::function<void (std::move_only_function<void ()>, bool)>;
+    std::function<void (utils::InplaceCallback, bool)>;
 
   explicit UndoStack (
     CallbackWithPausedEngineRequester callback_with_paused_engine_requester,
@@ -146,7 +147,7 @@ private:
    */
   void dispatch_with_engine_cooperation (
     commands::Command::EngineRequirement requirement,
-    std::move_only_function<void ()>     action);
+    utils::InplaceCallback               action);
 
   /**
    * @brief Runs @p action with the engine cooperation the command (or any
@@ -154,8 +155,8 @@ private:
    * commands::Command::engine_requirement().
    */
   void execute_with_engine_pause_if_needed (
-    const commands::Command         &cmd,
-    std::move_only_function<void ()> action);
+    const commands::Command &cmd,
+    utils::InplaceCallback   action);
 
   /**
    * @brief Adds an open macro with the given text to the history.
