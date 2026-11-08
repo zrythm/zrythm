@@ -10,6 +10,7 @@
 #include "helpers/scoped_qcoreapplication.h"
 
 #include "unit/dsp/graph_helpers.h"
+#include "unit/plugins/modulators/modulator_helpers.h"
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
@@ -19,28 +20,11 @@ namespace zrythm::plugins::modulators
 namespace
 {
 
-constexpr auto kSampleRate = units::sample_rate (44100);
-constexpr auto kBlockLength = units::samples (256);
-
 std::unique_ptr<PluginConfiguration>
 macro_configuration ()
 {
   return PluginConfiguration::create_new_for_descriptor (
     *Modulator::make_descriptor (MacroEngine::kDescriptorId));
-}
-
-dsp::ProcessorParameter *
-find_parameter (dsp::ProcessorBase &processor, std::string_view unique_id)
-{
-  const auto found = std::ranges::find_if (
-    processor.get_parameters (), [unique_id] (const auto &param_ref) {
-      auto * param = param_ref.get ();
-      return param != nullptr
-             && param->get_unique_id ()
-                  == dsp::ProcessorParameter::UniqueId (
-                    utils::Utf8String::from_utf8_encoded_string (unique_id));
-    });
-  return found != processor.get_parameters ().end () ? found->get () : nullptr;
 }
 
 dsp::CVPort *
