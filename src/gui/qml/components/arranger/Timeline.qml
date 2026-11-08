@@ -37,35 +37,32 @@ Arranger {
       return null;
     }
 
-    // Move-only objects (no length): open the macro before creation so the
-    // creation and the post-creation drag-move fold into a single undo step;
-    // the arranger closes it on release
+    // Open the macro before creation so the creation, its snap adjustment
+    // and the post-creation drag fold into a single undo step; the arranger
+    // closes it on release
     const objectType = createdObjectTypeAt(coordinates);
     const isMoveOnlyObject = objectType === ArrangerObject.Marker || objectType === ArrangerObject.ScaleObject;
-    if (isMoveOnlyObject) {
-      root.undoStack.beginMacro(objectType === ArrangerObject.Marker ? qsTr("Create Marker") : qsTr("Create Scale Object"));
-    }
+    root.undoStack.beginMacro(isMoveOnlyObject
+      ? (objectType === ArrangerObject.Marker ? qsTr("Create Marker") : qsTr("Create Scale Object"))
+      : qsTr("Create Clip"));
 
     const obj = createObjectAt(coordinates);
     if (obj === null) {
-      if (isMoveOnlyObject) {
-        root.undoStack.endMacro();
-      }
+      root.undoStack.endMacro();
       return null;
     }
 
     root.selectObjectsByUuidStrings([obj.uuidString]);
+    root.creationMacroOpen = true;
 
     if (isMoveOnlyObject) {
-      root.creationMacroOpen = true;
       root.currentAction = Arranger.CreatingMoving;
       CursorManager.setClosedHandCursor();
-      return obj;
+    } else {
+      // Clips
+      root.currentAction = Arranger.CreatingResizingR;
+      CursorManager.setResizeEndCursor();
     }
-
-    // Clips
-    root.currentAction = Arranger.CreatingResizingR;
-    CursorManager.setResizeEndCursor();
     return obj;
   }
 

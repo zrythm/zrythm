@@ -1406,7 +1406,8 @@ Item {
                 moveSelectionsY(finalYDiff, dragStartObjectY);
                 if (hasHorizontalMove || action === Arranger.MovingCopy || action === Arranger.MovingLink)
                   root.undoStack.endMacro();
-              } else if (action === Arranger.CreatingMoving) {
+              } else if (action === Arranger.CreatingMoving
+                         || action === Arranger.CreatingResizingR) {
                 if (root.creationMacroOpen) {
                   root.creationMacroOpen = false;
                   root.undoStack.endMacro();
