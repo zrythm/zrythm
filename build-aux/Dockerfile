@@ -146,21 +146,21 @@ RUN curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runn
     apt-get install -y gitlab-runner && \
     gitlab-runner --version
 
-# Clang 22 (from apt.llvm.org) — used by clang-based builds, sanitizers,
+# Clang 23 (from apt.llvm.org) — used by clang-based builds, sanitizers,
 # clazy, clang-format, clang-tidy
 RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | \
       tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
-    echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-22 main" \
+    echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-23 main" \
       > /etc/apt/sources.list.d/llvm.list && \
     apt-get update && \
     apt-get install -y \
-      clang-22 clang-tools-22 clang-format-22 clang-tidy-22 \
-      libclang-rt-22-dev libclang-22-dev libc++-22-dev libc++abi-22-dev && \
-    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-22 100 && \
-    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-22 100 && \
-    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-22 100 && \
-    update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-22 100 && \
-    ln -sf /usr/share/clang/clang-tidy-diff-22.py /usr/share/clang/clang-tidy-diff.py && \
+      clang-23 clang-tools-23 clang-format-23 clang-tidy-23 \
+      libclang-rt-23-dev libclang-23-dev libc++-23-dev libc++abi-23-dev && \
+    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-23 100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-23 100 && \
+    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-23 100 && \
+    update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-23 100 && \
+    ln -sf /usr/share/clang/clang-tidy-diff-23.py /usr/share/clang/clang-tidy-diff.py && \
     clang --version
 
 # mold linker — used by configure-for-tools job (-DCMAKE_LINKER_TYPE=MOLD)
