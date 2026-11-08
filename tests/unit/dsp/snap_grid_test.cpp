@@ -19,7 +19,7 @@ protected:
   {
     tempo_map = std::make_unique<TempoMap> (SAMPLE_RATE);
     snap_grid = std::make_unique<SnapGrid> (
-      *tempo_map, dsp::notes::NoteLength ::Note_1_4, [] () { return 0.0; });
+      *tempo_map, dsp::notes::NoteLength::Note_1_4, [] () { return 0.0; });
   }
 
   std::unique_ptr<TempoMap> tempo_map;

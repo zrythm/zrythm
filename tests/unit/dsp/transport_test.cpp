@@ -285,7 +285,7 @@ TEST_F (TransportTest, PunchRangePositionCheck)
 
   // Test positions outside range
   EXPECT_FALSE (transport_->position_is_inside_punch_range (
-    units::samples (punch_in_samples.in (units::samples) -1)));
+    units::samples (punch_in_samples.in (units::samples) - 1)));
   EXPECT_FALSE (transport_->position_is_inside_punch_range (
     units::samples (punch_out_samples.in (units::samples) + 1)));
 }
@@ -369,7 +369,7 @@ TEST_F (TransportTest, MetronomeCountInConsumption)
   EXPECT_EQ (
     countin_transport->get_snapshot ().metronome_countin_frames_remaining ().in (
       units::samples),
-    countin_frames.in (units::samples) -consume_frames.in (units::samples));
+    countin_frames.in (units::samples) - consume_frames.in (units::samples));
 }
 
 // Test that re-requesting roll during count-in restarts the count-in
@@ -391,7 +391,7 @@ TEST_F (TransportTest, RollRequestDuringCountInRestartsCountIn)
   ASSERT_EQ (
     countin_transport->get_snapshot ().metronome_countin_frames_remaining ().in (
       units::samples),
-    countin_frames.in (units::samples) -consume_frames.in (units::samples));
+    countin_frames.in (units::samples) - consume_frames.in (units::samples));
 
   // Requesting roll again during the count-in must restart it
   countin_transport->requestRoll ();
@@ -454,7 +454,7 @@ TEST_F (TransportTest, RecordingPrerollConsumption)
   EXPECT_EQ (
     preroll_transport->get_snapshot ().recording_preroll_frames_remaining ().in (
       units::samples),
-    preroll_frames.in (units::samples) -consume_frames.in (units::samples));
+    preroll_frames.in (units::samples) - consume_frames.in (units::samples));
 }
 
 // Test serialization/deserialization
@@ -580,7 +580,7 @@ TEST_F (TransportTest, LoopEndCrossing)
   // Test ITransport loop point detection (via snapshot)
   auto       snapshot = transport_->get_snapshot ();
   const auto frames_to_loop_end = snapshot.is_loop_point_met_in_audio_thread (
-    units::samples (loop_end_samples.in (units::samples) -100),
+    units::samples (loop_end_samples.in (units::samples) - 100),
     units::samples (200));
 
   EXPECT_GT (frames_to_loop_end.in (units::samples), 0);
@@ -715,14 +715,14 @@ TEST_F (TransportTest, TransportSnapshotFrameConsumption)
   EXPECT_EQ (
     snapshot.metronome_countin_frames_remaining (),
     units::samples (
-      countin_frames.in (units::samples) -consume_amount.in (units::samples)));
+      countin_frames.in (units::samples) - consume_amount.in (units::samples)));
 
   // Test recording preroll consumption
   snapshot.consume_recording_preroll_samples (consume_amount);
   EXPECT_EQ (
     snapshot.recording_preroll_frames_remaining (),
     units::samples (
-      preroll_frames.in (units::samples) -consume_amount.in (units::samples)));
+      preroll_frames.in (units::samples) - consume_amount.in (units::samples)));
 }
 
 // Test TransportSnapshot edge cases
@@ -804,7 +804,7 @@ TEST_F (TransportTest, TransportSnapshotLargeValues)
   EXPECT_EQ (
     snapshot.recording_preroll_frames_remaining (),
     units::samples (
-      large_preroll.in (units::samples) -consume_frames.in (units::samples)));
+      large_preroll.in (units::samples) - consume_frames.in (units::samples)));
 }
 
 // Test TransportSnapshot from actual Transport

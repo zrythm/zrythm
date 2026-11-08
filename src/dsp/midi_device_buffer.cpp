@@ -58,7 +58,7 @@ MidiDeviceBuffer::drain (
 
       const auto clamped_offset = au::clamp (
         (msg_timestamp - *base_timestamp) * sample_rate, units::samples (0.0),
-        units::samples (static_cast<double> (nframes.in (units::samples) -1)));
+        units::samples (static_cast<double> (nframes.in (units::samples) - 1)));
       output.addEvent (
         msg,
         au::round_as<int> (units::samples, clamped_offset).in (units::samples));

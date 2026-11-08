@@ -607,8 +607,8 @@ ClipRenderer::serialize_to_buffer (
       buf_size =
         (constraint_end_sample - constraint_start_sample).in (units::samples);
       clip_buf_offset =
-        clip_start_sample.in (units::samples) -constraint_start_sample.in (
-          units::samples);
+        clip_start_sample.in (units::samples)
+        - constraint_start_sample.in (units::samples);
     }
   buffer.setSize (2, static_cast<int> (std::max (int64_t{ 0 }, buf_size)));
   buffer.clear ();
@@ -763,10 +763,9 @@ ClipRenderer::apply_clip_fades_pass (
   // fadeTimeUnit="seconds" option for fixed-duration micro-fades.
   const auto &tempo_map = clip.get_tempo_map ();
   const auto  clip_length_in_frames = static_cast<int> (
-    clip.get_end_position_samples (true)
-      .in (units::samples) -tempo_map
-      .tick_to_samples_rounded (clip.position ()->asTick ())
-      .in (units::samples));
+    clip.get_end_position_samples (true).in (units::samples)
+    - tempo_map.tick_to_samples_rounded (clip.position ()->asTick ())
+        .in (units::samples));
   const auto fade_in_pos_in_frames = static_cast<int> (
     tempo_map
       .tick_to_samples_rounded (

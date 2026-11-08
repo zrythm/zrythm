@@ -276,7 +276,7 @@ append_files_from_dir_ending_in (
       juce::File::findFiles))
     {
       files.push_back (
-        Utf8String ::from_juce_string (file.getFile ().getFullPathName ())
+        Utf8String::from_juce_string (file.getFile ().getFullPathName ())
           .to_path ());
     }
 }
