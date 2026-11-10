@@ -484,6 +484,13 @@ if(compiler_gnulike)
     target_compile_options(_zrythm_warning_flags
       INTERFACE
         -Wno-non-template-friend
+        # -Winterference-size warns that the value of
+        # std::hardware_destructive_interference_size can differ between
+        # compiler versions or tuning flags. All zrythm libraries are static
+        # and are compiled in one build with one flag set, so all translation
+        # units agree on the value, and the target-specific value is wanted
+        # (e.g. 128-byte cache lines on some ARM targets).
+        -Wno-interference-size
     )
   endif()
 endif()
