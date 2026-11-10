@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "commands/change_qobject_property_command.h"
-#include "utils/uuid_identifiable.h"
+#include "utils/uuid_identifiable_object.h"
 #include "utils/uuid_reference.h"
 
 namespace zrythm::commands
@@ -44,11 +44,11 @@ public:
    * @param engine_requirement Engine cooperation the change needs.
    */
   ChangeUuidIdentifiableObjectPropertyCommand (
-    utils::UuidIdentifiableBase &uuid_object,
-    utils::IObjectRegistry      &registry,
-    QString                      property_name,
-    QVariant                     value,
-    EngineRequirement            engine_requirement)
+    utils::UuidIdentifiableObject &uuid_object,
+    utils::IObjectRegistry        &registry,
+    QString                        property_name,
+    QVariant                       value,
+    EngineRequirement              engine_requirement)
       : ChangeQObjectPropertyCommand (
           uuid_object,
           std::move (property_name),
@@ -73,12 +73,12 @@ public:
    * @param engine_requirement Engine cooperation the change needs.
    */
   ChangeUuidIdentifiableObjectPropertyCommand (
-    utils::UuidIdentifiableBase &uuid_lifecycle_object,
-    QObject                     &target,
-    utils::IObjectRegistry      &registry,
-    QString                      property_name,
-    QVariant                     value,
-    EngineRequirement            engine_requirement)
+    utils::UuidIdentifiableObject &uuid_lifecycle_object,
+    QObject                       &target,
+    utils::IObjectRegistry        &registry,
+    QString                        property_name,
+    QVariant                       value,
+    EngineRequirement              engine_requirement)
       : ChangeQObjectPropertyCommand (target, property_name, value, engine_requirement),
         uuid_ref_ (uuid_lifecycle_object.raw_uuid (), registry)
   {

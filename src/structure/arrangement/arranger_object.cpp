@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/arranger_object.h"
@@ -25,7 +25,7 @@ ArrangerObject::ArrangerObject (
   const dsp::TempoMapWrapper &tempo_map_wrapper,
   ArrangerObjectFeatures      features,
   QObject *                   parent) noexcept
-    : utils::UuidIdentifiableObject<ArrangerObject> (parent), type_ (type),
+    : utils::UuidIdentifiableObject (parent), type_ (type),
       tempo_map_wrapper_ (tempo_map_wrapper),
       position_ (make_position (
         ENUM_BITSET_TEST (features, ArrangerObjectFeatures::ClipOwned),

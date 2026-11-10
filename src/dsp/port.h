@@ -35,7 +35,7 @@ namespace zrythm::dsp
  * as tracks, plugins, etc., and ports themselves are part of the processing
  * graph.
  */
-class Port : public utils::UuidIdentifiableObject<Port>, public dsp::graph::IProcessable
+class Port : public utils::UuidIdentifiableObject, public dsp::graph::IProcessable
 {
   Q_OBJECT
   QML_ELEMENT
@@ -45,6 +45,7 @@ class Port : public utils::UuidIdentifiableObject<Port>, public dsp::graph::IPro
 
   Q_DISABLE_COPY_MOVE (Port)
 public:
+  DEFINE_UUID_IDENTITY (PortUuid)
   using FullDesignationProvider =
     std::function<utils::Utf8String (const Port &port)>;
 
@@ -222,7 +223,7 @@ private:
 
   BOOST_DESCRIBE_CLASS (
     Port,
-    (utils::UuidIdentifiableObject<Port>),
+    (utils::UuidIdentifiableObject),
     (),
     (),
     (label_, sym_, port_group_, detached_))

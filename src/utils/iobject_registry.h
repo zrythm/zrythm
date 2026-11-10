@@ -5,7 +5,7 @@
 #include <functional>
 
 #include "utils/rt_thread_id.h"
-#include "utils/uuid_identifiable.h"
+#include "utils/uuid_identifiable_object.h"
 
 #include <QMetaObject>
 #include <QUuid>
@@ -24,7 +24,8 @@ namespace zrythm::utils
  *
  * Decouples lower layers (arrangement, tracks) from the concrete registry
  * implementation (ProjectRegistry). Operates on the non-template
- * UuidIdentifiableBase, so it has no knowledge of variants or specific types.
+ * UuidIdentifiableObject base, so it has no knowledge of variants or specific
+ * types.
  *
  * Reference counting: acquire_reference()/release_reference() manage
  * reference counts. When the count drops to zero, the registry may delete
@@ -36,7 +37,7 @@ class IObjectRegistry
 public:
   virtual ~IObjectRegistry () = default;
 
-  void register_object (UuidIdentifiableBase &obj)
+  void register_object (UuidIdentifiableObject &obj)
   {
     assert_main_thread ();
     register_object_impl (obj);
@@ -54,7 +55,7 @@ public:
     release_reference_impl (id);
   }
 
-  [[gnu::hot]] UuidIdentifiableBase * find_by_raw_uuid (const QUuid &id) const
+  [[gnu::hot]] UuidIdentifiableObject * find_by_raw_uuid (const QUuid &id) const
   {
     // Lookups are read-only and safe from the Qt render sync thread (which
     // runs while the main thread is blocked), so no thread assertion here.
@@ -79,20 +80,22 @@ public:
   template <typename T>
   void for_each_matching (std::function<void (T &)> visitor) const
   {
-    for_each_matching_impl (T::staticMetaObject, [&] (UuidIdentifiableBase &obj) {
-      auto * casted = qobject_cast<T *> (&obj);
-      assert (casted != nullptr);
-      visitor (*casted);
-    });
+    for_each_matching_impl (
+      T::staticMetaObject, [&] (UuidIdentifiableObject &obj) {
+        auto * casted = qobject_cast<T *> (&obj);
+        assert (casted != nullptr);
+        visitor (*casted);
+      });
   }
 
   template <typename T> [[nodiscard]] size_t count_matching () const
   {
     size_t count = 0;
-    for_each_matching_impl (T::staticMetaObject, [&] (UuidIdentifiableBase &obj) {
-      assert (qobject_cast<T *> (&obj) != nullptr);
-      ++count;
-    });
+    for_each_matching_impl (
+      T::staticMetaObject, [&] (UuidIdentifiableObject &obj) {
+        assert (qobject_cast<T *> (&obj) != nullptr);
+        ++count;
+      });
     return count;
   }
 
@@ -106,14 +109,14 @@ private:
   }
 
 protected:
-  virtual void register_object_impl (UuidIdentifiableBase &obj) = 0;
+  virtual void register_object_impl (UuidIdentifiableObject &obj) = 0;
   virtual void acquire_reference_impl (const QUuid &id) = 0;
   virtual void release_reference_impl (const QUuid &id) = 0;
-  [[gnu::hot]] virtual UuidIdentifiableBase *
+  [[gnu::hot]] virtual UuidIdentifiableObject *
                find_by_raw_uuid_impl (const QUuid &id) const = 0;
   virtual bool contains_impl (const QUuid &id) const = 0;
 
-  using ObjectVisitor = std::function<void (UuidIdentifiableBase &)>;
+  using ObjectVisitor = std::function<void (UuidIdentifiableObject &)>;
   virtual void
   for_each_matching_impl (const QMetaObject &meta_type, ObjectVisitor visitor)
     const = 0;

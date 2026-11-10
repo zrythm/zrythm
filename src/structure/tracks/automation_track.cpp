@@ -16,7 +16,7 @@ AutomationTrack::AutomationTrack (
   dsp::ProcessorParameterUuidReference param_id,
   dsp::TimebaseProvider *              timebase_provider,
   QObject *                            parent)
-    : utils::UuidIdentifiableObject<AutomationTrack> (parent),
+    : utils::UuidIdentifiableObject (parent),
       arrangement::ArrangerObjectOwner<
         arrangement::AutomationClip> (registry, *this),
       tempo_map_ (tempo_map), registry_ (registry),

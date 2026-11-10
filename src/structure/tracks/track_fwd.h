@@ -36,7 +36,7 @@ using TrackVariant = std::variant<
   AudioTrack,
   ChordTrack>;
 using TrackPtrVariant = utils::to_pointer_variant<TrackVariant>;
-using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
+DEFINE_UUID_TYPE (TrackUuid)
 
 template <typename TrackT>
 concept FinalTrackSubclass =

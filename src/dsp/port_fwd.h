@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -29,7 +29,7 @@ enum class PortType : std::uint8_t
   CV
 };
 
-using PortUuid = utils::UuidIdentifiableObject<Port>::Uuid;
+DEFINE_UUID_TYPE (PortUuid)
 
 class MidiPort;
 class AudioPort;

@@ -54,13 +54,13 @@ TEST (UuidIdentifiableObjectTest, BoostDescribeFormatter)
   // Test BaseTestObject formatting
   BaseTestObject baseObj;
   std::string    baseStr = fmt::format ("{}", baseObj);
-  EXPECT_THAT (baseStr, testing::StartsWith ("{ { { .uuid_="));
+  EXPECT_THAT (baseStr, testing::StartsWith ("{ { .uuid_="));
   EXPECT_THAT (baseStr, testing::EndsWith ("}"));
 
   // Test DerivedTestObject formatting
   DerivedTestObject derivedObj (TestUuid{ QUuid::createUuid () }, "TestObject");
   std::string       derivedStr = fmt::format ("{}", derivedObj);
-  EXPECT_THAT (derivedStr, testing::StartsWith ("{ { { { .uuid_="));
+  EXPECT_THAT (derivedStr, testing::StartsWith ("{ { { .uuid_="));
   EXPECT_THAT (derivedStr, testing::HasSubstr (".name_=TestObject"));
   EXPECT_THAT (derivedStr, testing::EndsWith ("}"));
 }

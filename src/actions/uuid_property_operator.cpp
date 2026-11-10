@@ -40,7 +40,7 @@ UuidPropertyOperator::setValueOnSubObject (
     }
 
   auto * uuid_obj =
-    qobject_cast<utils::UuidIdentifiableBase *> (uuidLifecycleObject);
+    qobject_cast<utils::UuidIdentifiableObject *> (uuidLifecycleObject);
   if (uuid_obj == nullptr)
     {
       z_warning ("uuidLifecycleObject is not a UuidIdentifiableObject");

@@ -11,7 +11,7 @@ namespace zrythm::dsp
 {
 Port::
   Port (utils::Utf8String label, PortType type, PortFlow flow, QObject * parent)
-    : utils::UuidIdentifiableObject<Port> (parent), type_ (type), flow_ (flow),
+    : utils::UuidIdentifiableObject (parent), type_ (type), flow_ (flow),
       label_ (std::move (label))
 {
 }

@@ -11,16 +11,19 @@
 namespace zrythm
 {
 
-class BaseTestObject : public utils::UuidIdentifiableObject<BaseTestObject>
+DEFINE_UUID_TYPE (TestUuid)
+
+class BaseTestObject : public utils::UuidIdentifiableObject
 {
   Q_OBJECT
 public:
+  DEFINE_UUID_IDENTITY (TestUuid)
   BaseTestObject (QObject * parent = nullptr)
-      : utils::UuidIdentifiableObject<BaseTestObject> (parent)
+      : utils::UuidIdentifiableObject (parent)
   {
   }
-  explicit BaseTestObject (Uuid id, QObject * parent = nullptr)
-      : utils::UuidIdentifiableObject<BaseTestObject> (id, parent)
+  explicit BaseTestObject (TestUuid id, QObject * parent = nullptr)
+      : utils::UuidIdentifiableObject (type_safe::get (id), parent)
   {
   }
   ~BaseTestObject () override = default;
@@ -38,7 +41,7 @@ public:
     from_json (json_value, static_cast<UuidIdentifiableObject &> (obj));
   }
 
-  BOOST_DESCRIBE_CLASS (BaseTestObject, (UuidIdentifiableObject), (), (), ())
+  BOOST_DESCRIBE_CLASS (BaseTestObject, (utils::UuidIdentifiableObject), (), (), ())
 };
 
 static_assert (utils::UuidIdentifiable<BaseTestObject>);
@@ -49,8 +52,6 @@ DEFINE_UUID_HASH_SPECIALIZATION (zrythm::BaseTestObject::Uuid);
 
 namespace zrythm
 {
-
-using TestUuid = BaseTestObject::Uuid;
 
 class DerivedTestObject : public BaseTestObject
 {

@@ -58,7 +58,7 @@ convert_mono_to_stereo (utils::audio::AudioBuffer &buf)
 } // namespace
 
 FileAudioSource::FileAudioSource (QObject * parent)
-    : utils::UuidIdentifiableObject<FileAudioSource> (parent)
+    : utils::UuidIdentifiableObject (parent)
 {
 }
 
@@ -66,7 +66,7 @@ FileAudioSource::FileAudioSource (
   const std::filesystem::path &full_path,
   units::sample_rate_t         project_sample_rate,
   QObject *                    parent)
-    : utils::UuidIdentifiableObject<FileAudioSource> (parent)
+    : utils::UuidIdentifiableObject (parent)
 {
   samplerate_ = project_sample_rate;
   assert (samplerate_ > units::sample_rate (0));
@@ -126,7 +126,7 @@ FileAudioSource::FileAudioSource (
   units::bpm_t                     source_bpm,
   const utils::Utf8String         &name,
   QObject *                        parent)
-    : utils::UuidIdentifiableObject<FileAudioSource> (parent)
+    : utils::UuidIdentifiableObject (parent)
 {
   if (buf.getNumSamples () == 0)
     {

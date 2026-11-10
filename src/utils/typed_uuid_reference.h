@@ -20,8 +20,9 @@ namespace zrythm::utils
  * (e.g., TypedUuidReference<MidiTrack>) — the only difference is which
  * qobject_cast is performed on lookup.
  *
- * T must satisfy the UuidIdentifiable concept (i.e., inherit from a
- * UuidIdentifiableObject<U> for some U, and be a QObject).
+ * T must satisfy the UuidIdentifiable concept (i.e., inherit from
+ * UuidIdentifiableObject, directly or through a typed base, and be a
+ * QObject).
  *
  * Use as_untyped() to access the underlying UuidReference when the typed
  * interface is not needed (e.g., for storage in heterogeneous containers).
@@ -67,7 +68,7 @@ public:
     return qobject_cast<DerivedT *> (get ());
   }
 
-  UuidIdentifiableBase * get_object_base () const { return ref_.get (); }
+  UuidIdentifiableObject * get_object_base () const { return ref_.get (); }
 
   T * get_or_throw () const
   {

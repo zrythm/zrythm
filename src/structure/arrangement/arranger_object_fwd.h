@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -91,7 +91,7 @@ static_assert (
     std::make_index_sequence<std::variant_size_v<ArrangerObjectVariant>>{}),
   "every arranger object type is a timeline or an editor object");
 
-using ArrangerObjectUuid = utils::UuidIdentifiableObject<ArrangerObject>::Uuid;
+DEFINE_UUID_TYPE (ArrangerObjectUuid)
 
 } // namespace zrythm::structure::arrangement
 

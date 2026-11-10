@@ -2034,7 +2034,7 @@ ArrangerObjectSelectionOperator::pasteObjectsOnTimeline (
   // Owners resolve through the project registry: an unregistered owner
   // would fail during command construction, after the paste's imports
   const auto owner_registered =
-    [this] (const utils::UuidIdentifiableBase * owner) {
+    [this] (const utils::UuidIdentifiableObject * owner) {
       return owner == nullptr || project_registry_.contains (owner->raw_uuid ());
     };
   if (

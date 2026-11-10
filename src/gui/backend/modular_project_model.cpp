@@ -52,7 +52,7 @@ constexpr auto               kProcessorPortId = "processor"sv;
 constexpr std::u8string_view kProcessorIdPrefix = u8"processor:";
 
 QString
-uuid_string (const utils::UuidIdentifiableBase &object)
+uuid_string (const utils::UuidIdentifiableObject &object)
 {
   return object.raw_uuid ().toString (QUuid::WithoutBraces);
 }

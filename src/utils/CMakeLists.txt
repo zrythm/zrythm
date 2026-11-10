@@ -38,7 +38,6 @@ target_sources(zrythm_utils_lib
     threads.cpp
     utf8_string.cpp
     uuid_reference.cpp
-    uuid_identifiable.cpp
     uuid_identifiable_object.cpp
     # vamp.cpp
     version.cpp

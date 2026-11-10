@@ -181,6 +181,8 @@ target_link_libraries(zrythm_dsp_lib
 qt_add_qml_module(zrythm_dsp_lib
   URI ZrythmDsp
   VERSION 1.0
+  IMPORTS
+    TARGET zrythm_utils_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmDsp
 )
 set_target_properties(zrythm_dsp_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

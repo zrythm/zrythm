@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -7,7 +7,6 @@
 #include "utils/qt.h"
 
 #include <QObject>
-#include <QtQml/QQmlListProperty>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
@@ -104,10 +103,10 @@ class TempoMapWrapper : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    QQmlListProperty<TempoEventWrapper> tempoEvents READ tempoEvents NOTIFY
+    QList<TempoEventWrapper *> tempoEvents READ tempoEvents NOTIFY
       tempoEventsChanged)
   Q_PROPERTY (
-    QQmlListProperty<TimeSignatureEventWrapper> timeSignatureEvents READ
+    QList<TimeSignatureEventWrapper *> timeSignatureEvents READ
       timeSignatureEvents NOTIFY timeSignatureEventsChanged)
   Q_PROPERTY (
     double sampleRate READ sampleRate WRITE setSampleRate NOTIFY
@@ -129,14 +128,14 @@ public:
     rebuildWrappers ();
   }
 
-  QQmlListProperty<TempoEventWrapper> tempoEvents ()
+  QList<TempoEventWrapper *> tempoEvents () const
   {
-    return { this, &tempoEventWrappers_ };
+    return tempoEventWrappers_;
   }
 
-  QQmlListProperty<TimeSignatureEventWrapper> timeSignatureEvents ()
+  QList<TimeSignatureEventWrapper *> timeSignatureEvents () const
   {
-    return { this, &timeSigEventWrappers_ };
+    return timeSigEventWrappers_;
   }
 
   /**

@@ -7,6 +7,8 @@
 
 #include "dsp/processor_base.h"
 
+#include <QtQmlIntegration/qqmlintegration.h>
+
 #include <boost/container/static_vector.hpp>
 
 namespace zrythm::dsp
@@ -14,6 +16,10 @@ namespace zrythm::dsp
 
 class AudioSampleProcessor : public dsp::ProcessorBase
 {
+  Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   AudioSampleProcessor (
     utils::IObjectRegistry &registry,

@@ -71,6 +71,12 @@ Item {
   signal notePressed(int note)
   signal noteReleased(int note)
 
+  component PianoKeyItem: Item {
+    required property int index
+    property bool isPressed: false
+    property int midiNote: root.endNote - index
+  }
+
   function noteName(note) {
     const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     const octave = Math.floor(note / 12) - 1;
@@ -83,7 +89,7 @@ Item {
   Connections {
     function onActiveNotesChanged() {
       for (let i = 0; i < repeater.count; ++i) {
-        const item = repeater.itemAt(i);
+        const item = repeater.itemAt(i) as PianoKeyItem;
         if (item)
           item.isPressed = root.noteActivityProvider.isNoteActive(item.midiNote);
       }
@@ -103,12 +109,8 @@ Item {
 
       model: root.endNote - root.startNote + 1
 
-      Item {
+      delegate: PianoKeyItem {
         id: keyItem
-
-        required property int index
-        property bool isPressed: false
-        property int midiNote: root.endNote - index
 
         Layout.fillWidth: true
         Layout.preferredHeight: root.keyHeight

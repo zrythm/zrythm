@@ -42,7 +42,7 @@ ProcessorBase::ProcessorBase (
   utils::IObjectRegistry &registry,
   utils::Utf8String       name,
   QObject *               parent)
-    : UuidIdentifiableObject<ProcessorBase> (parent), registry_ (registry),
+    : UuidIdentifiableObject (parent), registry_ (registry),
       name_ (std::move (name))
 {
 }

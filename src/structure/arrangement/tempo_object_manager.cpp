@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
@@ -12,7 +12,7 @@ namespace zrythm::structure::arrangement
 TempoObjectManager::TempoObjectManager (
   utils::IObjectRegistry &registry,
   QObject *               parent)
-    : utils::UuidIdentifiableObject<TempoObjectManager> (parent),
+    : utils::UuidIdentifiableObject (parent),
       ArrangerObjectOwner<TempoObject> (registry, *this),
       ArrangerObjectOwner<TimeSignatureObject> (registry, *this)
 {

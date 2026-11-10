@@ -44,7 +44,7 @@ ColumnLayout {
         return null;
       const ticks = root.session.project.transport.playhead.ticks;
       const so = root.chordTrack.scaleAtTimelineTicks(ticks);
-      return so ? so.scale : null;
+      return so ? (so as ScaleObject).scale : null;
     }
   }
 
@@ -450,9 +450,10 @@ ColumnLayout {
 
             onTriggered: {
               editDialogLoader.active = true;
-              editDialogLoader.item.editIndex = padWrapper.index;
-              editDialogLoader.item.applyFromDescriptor(padWrapper.chordDescriptor);
-              editDialogLoader.item.open();
+              const dialog = editDialogLoader.item as ChordSelectorDialog;
+              dialog.editIndex = padWrapper.index;
+              dialog.applyFromDescriptor(padWrapper.chordDescriptor);
+              dialog.open();
             }
           }
 
@@ -545,8 +546,6 @@ ColumnLayout {
 
     sourceComponent: ChordSelectorDialog {
       id: editDialog
-
-      property int editIndex: -1
 
       chordTrack: root.chordTrack
       playheadTicks: root.session.project.transport.playhead.ticks

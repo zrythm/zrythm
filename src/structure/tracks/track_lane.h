@@ -13,6 +13,8 @@ namespace zrythm::structure::tracks
 {
 class TrackLaneList;
 
+DEFINE_UUID_TYPE (TrackLaneUuid)
+
 /**
  * @brief A container of MIDI or Audio clips.
  *
@@ -23,7 +25,7 @@ class TrackLaneList;
  * AudioClip objects. In practice, only one list will be used.
  */
 class TrackLane
-    : public utils::UuidIdentifiableObject<TrackLane>,
+    : public utils::UuidIdentifiableObject,
       public arrangement::ArrangerObjectOwner<arrangement::MidiClip>,
       public arrangement::ArrangerObjectOwner<arrangement::AudioClip>
 {
@@ -49,6 +51,7 @@ class TrackLane
   static constexpr double DEFAULT_HEIGHT = 48;
 
 public:
+  DEFINE_UUID_IDENTITY (TrackLaneUuid)
   static constexpr auto default_format_str = QT_TR_NOOP_UTF8 ("Lane {}");
 
   struct TrackLaneDependencies
@@ -232,7 +235,7 @@ private:
 
   BOOST_DESCRIBE_CLASS (
     TrackLane,
-    (utils::UuidIdentifiableObject<TrackLane>),
+    (utils::UuidIdentifiableObject),
     (),
     (),
     (name_, height_, mute_, solo_, midi_ch_))

@@ -14,9 +14,12 @@
 #include "utils/views.h"
 
 #include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
 {
+
+DEFINE_UUID_TYPE (ProcessorBaseUuid)
 
 /**
  * @brief A base class for processors in the DSP graph.
@@ -29,12 +32,15 @@ namespace zrythm::dsp
  * ports (because input ports are clared after processing processors).
  */
 class ProcessorBase
-    : public utils::UuidIdentifiableObject<ProcessorBase>,
+    : public utils::UuidIdentifiableObject,
       public dsp::graph::IProcessable
 {
   Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
+  DEFINE_UUID_IDENTITY (ProcessorBaseUuid)
   /**
    * @brief Tracks parameter value changes across processing cycles.
    *
@@ -302,6 +308,8 @@ protected:
 
   virtual void custom_release_resources () { }
 
+public:
+  /** @brief The registry this processor and its ports live in. */
   auto registry () const -> utils::IObjectRegistry & { return registry_; }
 
 private:
@@ -362,7 +370,7 @@ private:
 
   BOOST_DESCRIBE_CLASS (
     ProcessorBase,
-    (utils::UuidIdentifiableObject<ProcessorBase>),
+    (utils::UuidIdentifiableObject),
     (),
     (),
     (name_))

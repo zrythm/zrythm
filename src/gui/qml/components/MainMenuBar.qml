@@ -201,7 +201,7 @@ MenuBar {
     }
 
     MenuItem {
-      action: ApplicationWindow.window?.fullScreenAction ?? null
+      action: (ApplicationWindow.window as ProjectWindow)?.fullScreenAction ?? null
     }
   }
 

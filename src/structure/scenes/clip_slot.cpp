@@ -13,7 +13,7 @@
 namespace zrythm::structure::scenes
 {
 ClipSlot::ClipSlot (utils::IObjectRegistry &registry, QObject * parent)
-    : utils::UuidIdentifiableObject<ClipSlot> (parent), registry_ (registry)
+    : utils::UuidIdentifiableObject (parent), registry_ (registry)
 {
 }
 

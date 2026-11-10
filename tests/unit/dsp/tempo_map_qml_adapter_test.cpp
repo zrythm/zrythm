@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map_qml_adapter.h"
@@ -40,14 +40,14 @@ TEST_F (TempoMapWrapperTest, InitialState)
 {
   // Verify initial tempo event
   auto tempo_events = wrapper_->tempoEvents ();
-  ASSERT_EQ (tempo_events.count (&tempo_events), 0);
+  ASSERT_EQ (tempo_events.size (), 0);
 
   auto first_tempo = wrapper_->tempoAtTick (0);
   EXPECT_DOUBLE_EQ (first_tempo, 120.0);
 
   // Verify initial time signature
   auto time_sig_events = wrapper_->timeSignatureEvents ();
-  ASSERT_EQ (time_sig_events.count (&time_sig_events), 0);
+  ASSERT_EQ (time_sig_events.size (), 0);
 
   auto first_sig_numerator = wrapper_->timeSignatureNumeratorAtTick (0);
   auto first_sig_denominator = wrapper_->timeSignatureDenominatorAtTick (0);
@@ -133,10 +133,10 @@ TEST_F (TempoMapWrapperTest, TempoEventManagement)
   // Verify wrapper count (only inserted events; base tempo is a separate
   // scalar property, not an entry in the list).
   auto tempo_events = wrapper_->tempoEvents ();
-  EXPECT_EQ (tempo_events.count (&tempo_events), 1);
+  EXPECT_EQ (tempo_events.size (), 1);
 
   // Verify new event properties
-  auto new_event = tempo_events.at (&tempo_events, 0);
+  auto new_event = tempo_events.at (0);
   EXPECT_EQ (new_event->tick (), 1920);
   EXPECT_DOUBLE_EQ (new_event->bpm (), 140.0);
   EXPECT_EQ (new_event->curve (), TempoEventWrapper::CurveType::Constant);
@@ -154,10 +154,10 @@ TEST_F (TempoMapWrapperTest, TimeSignatureManagement)
   // Verify wrapper count (only inserted events; base time signature is a
   // separate scalar property).
   auto time_sig_events = wrapper_->timeSignatureEvents ();
-  EXPECT_EQ (time_sig_events.count (&time_sig_events), 1);
+  EXPECT_EQ (time_sig_events.size (), 1);
 
   // Verify new event properties
-  auto new_sig = time_sig_events.at (&time_sig_events, 0);
+  auto new_sig = time_sig_events.at (0);
   EXPECT_EQ (new_sig->tick (), 1920);
   EXPECT_EQ (new_sig->numerator (), 3);
   EXPECT_EQ (new_sig->denominator (), 4);
@@ -191,17 +191,17 @@ TEST_F (TempoMapWrapperTest, ListPropertyAccess)
 
   // Verify tempo events (only inserted events; base tempo is separate).
   auto tempo_events = wrapper_->tempoEvents ();
-  ASSERT_EQ (tempo_events.count (&tempo_events), 2);
+  ASSERT_EQ (tempo_events.size (), 2);
 
   // Verify order (should be sorted by tick)
-  EXPECT_EQ (tempo_events.at (&tempo_events, 0)->tick (), 1920);
-  EXPECT_EQ (tempo_events.at (&tempo_events, 1)->tick (), 3840);
+  EXPECT_EQ (tempo_events.at (0)->tick (), 1920);
+  EXPECT_EQ (tempo_events.at (1)->tick (), 3840);
 
   // Verify time signature events
   auto time_sig_events = wrapper_->timeSignatureEvents ();
-  ASSERT_EQ (time_sig_events.count (&time_sig_events), 2);
-  EXPECT_EQ (time_sig_events.at (&time_sig_events, 0)->tick (), 1920);
-  EXPECT_EQ (time_sig_events.at (&time_sig_events, 1)->tick (), 3840);
+  ASSERT_EQ (time_sig_events.size (), 2);
+  EXPECT_EQ (time_sig_events.at (0)->tick (), 1920);
+  EXPECT_EQ (time_sig_events.at (1)->tick (), 3840);
 }
 
 // Test wrapper regeneration on underlying changes
@@ -218,10 +218,10 @@ TEST_F (TempoMapWrapperTest, UnderlyingChanges)
 
   // Verify updates (only inserted events; base values are separate scalars).
   auto tempo_events = wrapper_->tempoEvents ();
-  EXPECT_EQ (tempo_events.count (&tempo_events), 1);
+  EXPECT_EQ (tempo_events.size (), 1);
 
   auto time_sig_events = wrapper_->timeSignatureEvents ();
-  EXPECT_EQ (time_sig_events.count (&time_sig_events), 1);
+  EXPECT_EQ (time_sig_events.size (), 1);
 }
 
 // Test musical position conversion
@@ -314,7 +314,7 @@ TEST_F (TempoMapWrapperTest, ClearTempoEvents)
 
   // Verify events were added (only inserted events; base tempo is separate).
   auto tempo_events = wrapper_->tempoEvents ();
-  EXPECT_EQ (tempo_events.count (&tempo_events), 3);
+  EXPECT_EQ (tempo_events.size (), 3);
 
   // Clear tempo events
   wrapper_->clearTempoEvents ();
@@ -322,7 +322,7 @@ TEST_F (TempoMapWrapperTest, ClearTempoEvents)
 
   // Verify all tempo events are cleared
   tempo_events = wrapper_->tempoEvents ();
-  EXPECT_EQ (tempo_events.count (&tempo_events), 0);
+  EXPECT_EQ (tempo_events.size (), 0);
 
   // Verify tempo lookup returns base tempo
   EXPECT_DOUBLE_EQ (wrapper_->tempoAtTick (960), 120.0);
@@ -343,7 +343,7 @@ TEST_F (TempoMapWrapperTest, ClearTimeSignatureEvents)
   // Verify events were added (only inserted events; base time signature is
   // separate).
   auto time_sig_events = wrapper_->timeSignatureEvents ();
-  EXPECT_EQ (time_sig_events.count (&time_sig_events), 3);
+  EXPECT_EQ (time_sig_events.size (), 3);
 
   // Clear time signature events
   wrapper_->clearTimeSignatureEvents ();
@@ -351,7 +351,7 @@ TEST_F (TempoMapWrapperTest, ClearTimeSignatureEvents)
 
   // Verify all time signature events are cleared
   time_sig_events = wrapper_->timeSignatureEvents ();
-  EXPECT_EQ (time_sig_events.count (&time_sig_events), 0);
+  EXPECT_EQ (time_sig_events.size (), 0);
 
   // Verify time signature lookup returns base time signature
   EXPECT_EQ (wrapper_->timeSignatureNumeratorAtTick (1920), 4);
@@ -383,8 +383,8 @@ TEST_F (TempoMapWrapperTest, ClearBothEventTypes)
   // Verify both are cleared
   auto tempoEvents = wrapper_->tempoEvents ();
   auto timeSigEvents = wrapper_->timeSignatureEvents ();
-  EXPECT_EQ (tempoEvents.count (&tempoEvents), 0);
-  EXPECT_EQ (timeSigEvents.count (&timeSigEvents), 0);
+  EXPECT_EQ (tempoEvents.size (), 0);
+  EXPECT_EQ (timeSigEvents.size (), 0);
 
   // Verify musical position still works with defaults
   auto pos = wrapper_->getMusicalPosition (1920);
@@ -439,8 +439,8 @@ TEST_F (TempoMapWrapperTest, ClearAndAddNewEvents)
   // Verify wrapper counts (only inserted events; base values are separate).
   auto tempoEvents = wrapper_->tempoEvents ();
   auto timeSigEvents = wrapper_->timeSignatureEvents ();
-  EXPECT_EQ (tempoEvents.count (&tempoEvents), 1);
-  EXPECT_EQ (timeSigEvents.count (&timeSigEvents), 1);
+  EXPECT_EQ (tempoEvents.size (), 1);
+  EXPECT_EQ (timeSigEvents.size (), 1);
 }
 
 // Test musical position after clearing

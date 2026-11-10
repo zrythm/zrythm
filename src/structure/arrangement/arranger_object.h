@@ -32,7 +32,7 @@ class ArrangerObjectListModel;
  * It provides common functionality and properties shared by all these
  * objects.
  */
-class ArrangerObject : public utils::UuidIdentifiableObject<ArrangerObject>
+class ArrangerObject : public utils::UuidIdentifiableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -54,6 +54,7 @@ class ArrangerObject : public utils::UuidIdentifiableObject<ArrangerObject>
   QML_UNCREATABLE ("")
 
 public:
+  DEFINE_UUID_IDENTITY (ArrangerObjectUuid)
   /**
    * The type of the object.
    */
@@ -178,7 +179,7 @@ private:
 
   BOOST_DESCRIBE_CLASS (
     ArrangerObject,
-    (UuidIdentifiableObject<ArrangerObject>),
+    (UuidIdentifiableObject),
     (),
     (),
     (type_, length_, mute_, color_, name_))

@@ -131,9 +131,8 @@ ProcessorParameter::ProcessorParameter (
   ParameterRange          range,
   utils::Utf8String       label,
   QObject *               parent)
-    : utils::UuidIdentifiableObject<ProcessorParameter> (parent),
-      unique_id_ (std::move (unique_id)), range_ (std::move (range)),
-      label_ (std::move (label)),
+    : utils::UuidIdentifiableObject (parent), unique_id_ (std::move (unique_id)),
+      range_ (std::move (range)), label_ (std::move (label)),
       base_value_ (range_.convertTo0To1 (range_.deff_)),
       modulation_input_uuid_ (
         utils::create_object<

@@ -14,7 +14,7 @@ namespace zrythm::utils
 struct ObjectRegistry::Impl
 {
   boost::unordered::
-    unordered_flat_map<QUuid, QObjectUniquePtr<utils::UuidIdentifiableBase>>
+    unordered_flat_map<QUuid, QObjectUniquePtr<utils::UuidIdentifiableObject>>
                                                    objects_by_id_;
   boost::unordered::unordered_flat_map<QUuid, int> ref_counts_;
 };
@@ -30,7 +30,7 @@ ObjectRegistry::~ObjectRegistry ()
 }
 
 void
-ObjectRegistry::register_object_impl (utils::UuidIdentifiableBase &obj)
+ObjectRegistry::register_object_impl (utils::UuidIdentifiableObject &obj)
 {
   const auto id = obj.raw_uuid ();
   if (impl_->objects_by_id_.contains (id))
@@ -67,7 +67,7 @@ ObjectRegistry::release_reference_impl (const QUuid &id)
     delete_object_by_id (id);
 }
 
-utils::UuidIdentifiableBase *
+utils::UuidIdentifiableObject *
 ObjectRegistry::find_by_raw_uuid_impl (const QUuid &id) const
 {
   const auto it = impl_->objects_by_id_.find (id);
@@ -110,7 +110,7 @@ ObjectRegistry::ref_count (const QUuid &id) const
   return it != impl_->ref_counts_.end () ? it->second : 0;
 }
 
-utils::UuidIdentifiableBase *
+utils::UuidIdentifiableObject *
 ObjectRegistry::find_by_raw_uuid_or_throw (const QUuid &id) const
 {
   auto * obj = find_by_raw_uuid (id);

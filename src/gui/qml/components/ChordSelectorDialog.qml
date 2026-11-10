@@ -15,6 +15,13 @@ Dialog {
   readonly property ChordDescriptor _auditionDesc: ChordDescriptor {
   }
   property bool _editingPad: false
+
+  /** Pad index the dialog edits; -1 when creating a new chord. */
+  property int editIndex: -1
+  /** Chord row the dialog applies its accepted changes to. */
+  property int _batchRow: -1
+  /** Tick position assigned to a chord created by the dialog. */
+  property double _createTicks: 0
   readonly property MusicalScale _scaleHelper: MusicalScale {
   }
   readonly property var accentSuffixes: ["", "7", "j7", "\u266D9", "9", "\u266F9", "11", "\u266D5/\u266F11", "\u266F5/\u266D13", "6/13"]

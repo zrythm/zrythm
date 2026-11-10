@@ -16,20 +16,23 @@
 namespace zrythm::utils
 {
 
+DEFINE_UUID_TYPE (TestObjectUuid)
+
 /**
  * @brief Simple QObject test object with a name, for testing UuidReference
  * and TypedUuidReference.
  */
-class TestObject : public utils::UuidIdentifiableObject<TestObject>
+class TestObject : public utils::UuidIdentifiableObject
 {
   Q_OBJECT
 public:
+  DEFINE_UUID_IDENTITY (TestObjectUuid)
   TestObject (QObject * parent = nullptr)
-      : utils::UuidIdentifiableObject<TestObject> (parent)
+      : utils::UuidIdentifiableObject (parent)
   {
   }
-  TestObject (Uuid id, std::string name, QObject * parent = nullptr)
-      : utils::UuidIdentifiableObject<TestObject> (id, parent),
+  TestObject (TestObjectUuid id, std::string name, QObject * parent = nullptr)
+      : utils::UuidIdentifiableObject (type_safe::get (id), parent),
         name_ (std::move (name))
   {
   }
@@ -76,12 +79,12 @@ public:
   MOCK_METHOD (
     void,
     register_object_impl,
-    (utils::UuidIdentifiableBase &),
+    (utils::UuidIdentifiableObject &),
     (override));
   MOCK_METHOD (void, acquire_reference_impl, (const QUuid &), (override));
   MOCK_METHOD (void, release_reference_impl, (const QUuid &), (override));
   MOCK_METHOD (
-    utils::UuidIdentifiableBase *,
+    utils::UuidIdentifiableObject *,
     find_by_raw_uuid_impl,
     (const QUuid &),
     (const, override));
@@ -95,23 +98,28 @@ protected:
     (const, override));
 };
 
+DEFINE_UUID_TYPE (ContainerTestObjectUuid)
+
 /**
  * @brief Test object that holds a TypedUuidReference to another object.
  *
  * Used to test proper destruction order when the registry is destroyed
  * while objects contain references to other objects in the same registry.
  */
-class ContainerTestObject
-    : public utils::UuidIdentifiableObject<ContainerTestObject>
+class ContainerTestObject : public utils::UuidIdentifiableObject
 {
   Q_OBJECT
 public:
+  DEFINE_UUID_IDENTITY (ContainerTestObjectUuid)
   ContainerTestObject (QObject * parent = nullptr)
-      : utils::UuidIdentifiableObject<ContainerTestObject> (parent)
+      : utils::UuidIdentifiableObject (parent)
   {
   }
-  ContainerTestObject (Uuid id, std::string name, QObject * parent = nullptr)
-      : utils::UuidIdentifiableObject<ContainerTestObject> (id, parent),
+  ContainerTestObject (
+    ContainerTestObjectUuid id,
+    std::string             name,
+    QObject *               parent = nullptr)
+      : utils::UuidIdentifiableObject (type_safe::get (id), parent),
         name_ (std::move (name))
   {
   }
@@ -130,7 +138,7 @@ public:
 
   NLOHMANN_DEFINE_DERIVED_TYPE_INTRUSIVE (
     ContainerTestObject,
-    utils::UuidIdentifiableObject<ContainerTestObject>,
+    utils::UuidIdentifiableObject,
     name_)
 
 private:
@@ -139,7 +147,7 @@ private:
 
   BOOST_DESCRIBE_CLASS (
     ContainerTestObject,
-    (utils::UuidIdentifiableObject<ContainerTestObject>),
+    (utils::UuidIdentifiableObject),
     (),
     (),
     (name_))

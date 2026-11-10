@@ -36,7 +36,7 @@ TrackLane::on_object_added ()
 }
 
 TrackLane::TrackLane (TrackLaneDependencies dependencies, QObject * parent)
-    : utils::UuidIdentifiableObject<TrackLane> (parent),
+    : utils::UuidIdentifiableObject (parent),
       arrangement::ArrangerObjectOwner<
         arrangement::MidiClip> (dependencies.registry_, *this),
       arrangement::ArrangerObjectOwner<

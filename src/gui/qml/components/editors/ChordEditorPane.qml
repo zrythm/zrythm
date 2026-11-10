@@ -120,14 +120,16 @@ GridLayout {
 
       onNewChordRequested: {
         createDialogLoader.active = true;
-        createDialogLoader.item._createTicks = 0;
-        createDialogLoader.item.open();
+        const dialog = createDialogLoader.item as ChordSelectorDialog;
+        dialog._createTicks = 0;
+        dialog.open();
       }
       onRowEditRequested: function (row) {
         editDialogLoader.active = true;
-        editDialogLoader.item._batchRow = row;
-        editDialogLoader.item.applyFromDescriptor(paneChordRowModel.descriptorAtRow(row));
-        editDialogLoader.item.open();
+        const dialog = editDialogLoader.item as ChordSelectorDialog;
+        dialog._batchRow = row;
+        dialog.applyFromDescriptor(paneChordRowModel.descriptorAtRow(row));
+        dialog.open();
       }
     }
 
@@ -178,8 +180,9 @@ GridLayout {
 
     onChordCreationRequested: function (ticks) {
       createDialogLoader.active = true;
-      createDialogLoader.item._createTicks = ticks;
-      createDialogLoader.item.open();
+      const dialog = createDialogLoader.item as ChordSelectorDialog;
+      dialog._createTicks = ticks;
+      dialog.open();
     }
     onVerticalChordChangeRequested: function (targetDescriptor) {
       root.applyChordToObjects(targetDescriptor, root._selectedChordObjects());
@@ -194,8 +197,6 @@ GridLayout {
 
     sourceComponent: ChordSelectorDialog {
       id: createDialog
-
-      property double _createTicks: 0
 
       chordTrack: root.chordTrack
       playheadTicks: root.project.transport.playhead.ticks
@@ -217,7 +218,6 @@ GridLayout {
 
       readonly property ChordDescriptor _applyDesc: ChordDescriptor {
       }
-      property int _batchRow: -1
 
       chordTrack: root.chordTrack
       playheadTicks: root.project.transport.playhead.ticks

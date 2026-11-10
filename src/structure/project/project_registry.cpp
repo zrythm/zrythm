@@ -101,7 +101,7 @@ ProjectRegistry::set_deserialization_dependencies (
 }
 
 void
-ProjectRegistry::register_object_impl (utils::UuidIdentifiableBase &base)
+ProjectRegistry::register_object_impl (utils::UuidIdentifiableObject &base)
 {
   auto * qobj = static_cast<QObject *> (&base);
   assert (qobj != nullptr);
@@ -236,16 +236,18 @@ ProjectRegistry::release_reference_impl (const QUuid &id)
     delete_object_by_id (id);
 }
 
-utils::UuidIdentifiableBase *
+utils::UuidIdentifiableObject *
 ProjectRegistry::find_by_raw_uuid_impl (const QUuid &id) const
 {
   const auto cat_it = impl_->uuid_to_category_.find (id);
   if (cat_it == impl_->uuid_to_category_.end ())
     return nullptr;
 
-  auto extract_base = [] (const auto &variant) -> utils::UuidIdentifiableBase * {
+  auto extract_base =
+    [] (const auto &variant) -> utils::UuidIdentifiableObject * {
     return std::visit (
-      [] (auto * ptr) -> utils::UuidIdentifiableBase * { return ptr; }, variant);
+      [] (auto * ptr) -> utils::UuidIdentifiableObject * { return ptr; },
+      variant);
   };
 
   switch (cat_it->second)
@@ -321,7 +323,7 @@ ProjectRegistry::for_each_matching_impl (
   const QMetaObject &meta_type,
   ObjectVisitor      visitor) const
 {
-  auto visit_if_matching = [&] (utils::UuidIdentifiableBase &obj) {
+  auto visit_if_matching = [&] (utils::UuidIdentifiableObject &obj) {
     if (obj.metaObject ()->inherits (&meta_type))
       visitor (obj);
   };
@@ -797,7 +799,7 @@ create_and_register_all (
           std::visit (
             [&entry] (auto &&ptr) {
               from_json (
-                entry, static_cast<utils::UuidIdentifiableBase &> (*ptr));
+                entry, static_cast<utils::UuidIdentifiableObject &> (*ptr));
             },
             var);
           std::visit ([&] (auto * p) { registry.register_object (*p); }, var);
@@ -833,7 +835,7 @@ create_and_register_ptr_all (
   for (const auto &entry : entries)
     {
       auto obj = builder.template build<T> ();
-      from_json (entry, static_cast<utils::UuidIdentifiableBase &> (*obj));
+      from_json (entry, static_cast<utils::UuidIdentifiableObject &> (*obj));
       try
         {
           registry.register_object (*obj);

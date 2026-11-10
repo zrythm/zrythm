@@ -29,7 +29,7 @@ namespace zrythm::structure::tracks
 using SoloedTracksExistGetter = std::function<bool ()>;
 
 using TrackRecordingCallback = std::function<void (
-  const utils::UuidIdentifiableObject<Track>::Uuid &,
+  const TrackUuid &,
   units::sample_t,
   const dsp::ITransport &,
   const dsp::MidiEventBuffer *,
@@ -55,7 +55,7 @@ struct BaseTrackDependencies
  * Subclasses of `Track` represent specific types of tracks, such as
  * MIDI tracks, instrument tracks, and audio tracks.
  */
-class Track : public utils::UuidIdentifiableObject<Track>
+class Track : public utils::UuidIdentifiableObject
 {
   Q_OBJECT
   Q_PROPERTY (Type type READ type CONSTANT)
@@ -101,6 +101,7 @@ class Track : public utils::UuidIdentifiableObject<Track>
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
+  DEFINE_UUID_IDENTITY (TrackUuid)
   using PluginUuid = plugins::Plugin::Uuid;
   using PortType = dsp::PortType;
   using ArrangerObject = structure::arrangement::ArrangerObject;
@@ -767,7 +768,7 @@ protected:
 
   BOOST_DESCRIBE_CLASS (
     Track,
-    (utils::UuidIdentifiableObject<Track>),
+    (utils::UuidIdentifiableObject),
     (),
     (type_,
      name_,

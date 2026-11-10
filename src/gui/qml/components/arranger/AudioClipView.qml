@@ -3,12 +3,13 @@
 
 import QtQuick
 import Zrythm
+import ZrythmDsp
 import ZrythmStyle
 
 ClipBaseView {
   id: root
 
-  readonly property AudioClip audioClip: arrangerObject as AudioClip
+  readonly property AudioClip audioClip: root.arrangerObject as AudioClip
   property bool isLanePart: false
   required property TrackLane lane
   required property TempoMap tempoMap
@@ -33,13 +34,11 @@ ClipBaseView {
     property double tempoAtStart: 0
 
     function computeHasTempoChanges() {
-      const events = root.tempoMap.tempoEvents;
       const startTick = Math.round(badgeContainer.startTick);
       const endTick = Math.round(badgeContainer.endTick);
       let prevBpm = 0;
       let activeCurve = 0;
-      for (let i = 0; i < events.length; i++) {
-        const ev = events[i];
+      for (const ev of root.tempoMap.tempoEvents) {
         if (ev.tick <= startTick) {
           activeCurve = ev.curve;
           prevBpm = ev.bpm;
@@ -57,7 +56,7 @@ ClipBaseView {
     }
 
     function updateState() {
-      if (!root.clipObject.timebaseProvider || root.clipObject.timebaseProvider.effectiveTimebase !== 0 || root.clipObject.sourceBpm <= 0) {
+      if (!root.clipObject.timebaseProvider || root.clipObject.timebaseProvider.effectiveTimebase !== 0 || root.audioClip.sourceBpm <= 0) {
         badgeContainer.isStretching = false;
         badgeContainer.hasTempoChanges = false;
         return;
@@ -69,12 +68,12 @@ ClipBaseView {
       if (badgeContainer.hasTempoChanges) {
         badgeContainer.isStretching = true;
       } else {
-        badgeContainer.isStretching = Math.abs(root.clipObject.sourceBpm - badgeContainer.tempoAtStart) > 0.5;
+        badgeContainer.isStretching = Math.abs(root.audioClip.sourceBpm - badgeContainer.tempoAtStart) > 0.5;
       }
     }
 
     height: 14
-    visible: root.clipObject.timebaseProvider && root.clipObject.timebaseProvider.effectiveTimebase === 0 && root.clipObject.sourceBpm > 0 && root.headerDetailLevel < 2
+    visible: root.clipObject.timebaseProvider && root.clipObject.timebaseProvider.effectiveTimebase === 0 && root.audioClip.sourceBpm > 0 && root.headerDetailLevel < 2
     width: visible ? badgeText.implicitWidth + 4 : 0
 
     Component.onCompleted: badgeContainer.updateState()
@@ -131,7 +130,7 @@ ClipBaseView {
         if (root.headerDetailLevel > 0 || !badgeContainer.isStretching) {
           return "♪";
         }
-        const src = root.clipObject.sourceBpm.toFixed(0);
+        const src = root.audioClip.sourceBpm.toFixed(0);
         if (badgeContainer.hasTempoChanges) {
           return "♪ " + src + "→var";
         }

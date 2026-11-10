@@ -22,8 +22,10 @@
 
 namespace zrythm::structure::tracks
 {
+DEFINE_UUID_TYPE (AutomationTrackUuid)
+
 class AutomationTrack
-    : public utils::UuidIdentifiableObject<AutomationTrack>,
+    : public utils::UuidIdentifiableObject,
       public arrangement::ArrangerObjectOwner<arrangement::AutomationClip>
 {
   Q_OBJECT
@@ -46,6 +48,7 @@ class AutomationTrack
   QML_UNCREATABLE ("")
 
 public:
+  DEFINE_UUID_IDENTITY (AutomationTrackUuid)
   using AutomationClip = arrangement::AutomationClip;
   using AutomationPoint = arrangement::AutomationPoint;
 

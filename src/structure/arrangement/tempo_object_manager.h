@@ -12,11 +12,13 @@
 namespace zrythm::structure::arrangement
 {
 
+DEFINE_UUID_TYPE (TempoObjectManagerUuid)
+
 /**
  * @brief Manages tempo and time signature objects for a project.
  */
 class TempoObjectManager final
-    : public utils::UuidIdentifiableObject<TempoObjectManager>,
+    : public utils::UuidIdentifiableObject,
       public ArrangerObjectOwner<TempoObject>,
       public ArrangerObjectOwner<TimeSignatureObject>
 {
@@ -33,6 +35,7 @@ class TempoObjectManager final
   QML_UNCREATABLE ("")
 
 public:
+  DEFINE_UUID_IDENTITY (TempoObjectManagerUuid)
   TempoObjectManager (
     utils::IObjectRegistry &registry,
     QObject *               parent = nullptr);

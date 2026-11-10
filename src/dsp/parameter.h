@@ -249,6 +249,8 @@ public:
     ())
 };
 
+DEFINE_UUID_TYPE (ProcessorParameterUuid)
+
 /**
  * @brief Processor parameter that accepts automation and modulation sources and
  * integrates with QML and the DSP graph.
@@ -257,7 +259,7 @@ public:
  * DSP graph and is expected to be processed manually by its processor.
  */
 class ProcessorParameter
-    : public utils::UuidIdentifiableObject<ProcessorParameter>,
+    : public utils::UuidIdentifiableObject,
       public dsp::graph::IProcessable
 {
   Q_OBJECT
@@ -273,6 +275,7 @@ class ProcessorParameter
   QML_UNCREATABLE ("")
 
 public:
+  DEFINE_UUID_IDENTITY (ProcessorParameterUuid)
   struct UniqueId final
       : type_safe::strong_typedef<UniqueId, utils::Utf8String>,
         type_safe::strong_typedef_op::equality_comparison<UniqueId>,
@@ -620,7 +623,7 @@ private:
 
   BOOST_DESCRIBE_CLASS (
     ProcessorParameter,
-    (utils::UuidIdentifiableObject<ProcessorParameter>),
+    (utils::UuidIdentifiableObject),
     (),
     (),
     (unique_id_,

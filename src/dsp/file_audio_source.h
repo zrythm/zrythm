@@ -19,6 +19,8 @@
 namespace zrythm::dsp
 {
 
+DEFINE_UUID_TYPE (FileAudioSourceUuid)
+
 /**
  * Pooled audio media referenced by audio clips.
  *
@@ -30,12 +32,12 @@ namespace zrythm::dsp
  *
  * Sources are kept in the project's sample rate and stereo.
  */
-class FileAudioSource final
-    : public utils::UuidIdentifiableObject<FileAudioSource>
+class FileAudioSource final : public utils::UuidIdentifiableObject
 {
   Q_OBJECT
 
 public:
+  DEFINE_UUID_IDENTITY (FileAudioSourceUuid)
   using BitDepth = zrythm::utils::audio::BitDepth;
   using AudioFile = zrythm::utils::audio::AudioFile;
   using channels_t = uint_fast8_t;

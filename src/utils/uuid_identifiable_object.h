@@ -4,9 +4,10 @@
 #pragma once
 
 #include "utils/icloneable.h"
-#include "utils/uuid_identifiable.h"
 
+#include <QObject>
 #include <QUuid>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <boost/describe/class.hpp>
 #include <fmt/format.h>
@@ -16,77 +17,80 @@
 namespace zrythm::utils
 {
 /**
- * @brief CRTP base that adds a typed UUID strong-typedef to a class hierarchy.
+ * @brief QObject base for all UUID-identifiable objects.
  *
- * Each distinct "family" of objects (e.g., Track, ArrangerObject, Plugin)
- * should have ONE class that inherits from UuidIdentifiableObject<ThatClass>.
- * Derived types (e.g., MidiTrack from Track) inherit the UUID through the
- * base — they must NOT inherit from UuidIdentifiableObject again, since each
- * object has exactly one UUID identity.
- *
- * The `uuid_base_type` alias exposes the CRTP parameter so the UuidIdentifiable
- * concept can verify the inheritance chain structurally (no duck-typing).
- *
- * Inherits UuidIdentifiableBase (which is a QObject), so derived types do NOT
+ * Every object referenced by UUID in the project inherits from this, either
+ * directly (the family owner that holds the typed identity) or indirectly
+ * through a typed base like Track. The QObject base lets the registry use
+ * qobject_cast and QObject parent-child ownership, so derived types do not
  * need to inherit QObject separately.
  *
- * Example:
- *   class Track : public UuidIdentifiableObject<Track> { ... };
- *   class MidiTrack : public Track { ... };  // inherits Track's UUID
+ * The class is deliberately non-template: it can carry Q_OBJECT and be
+ * registered as an uncreatable QML type, which keeps the prototype chains
+ * that qmllint and qmlls generate for derived types resolvable down to
+ * QObject.
  *
- * @tparam Derived The class at the top of the hierarchy that "owns" the UUID
- * type.
+ * Family owners add their typed UUID identity with DEFINE_UUID_IDENTITY(),
+ * paired with a UUID type defined at namespace scope with DEFINE_UUID_TYPE():
+ *
+ *   DEFINE_UUID_TYPE (TrackUuid)
+ *
+ *   class Track : public utils::UuidIdentifiableObject
+ *   {
+ *   public:
+ *     DEFINE_UUID_IDENTITY (TrackUuid)
+ *   };
+ *
+ * Derived types (e.g., MidiTrack from Track) inherit the identity through
+ * the base — they must not define their own, since each object has exactly
+ * one UUID identity.
  */
-template <typename Derived>
-class UuidIdentifiableObject : public UuidIdentifiableBase
+class UuidIdentifiableObject : public QObject
 {
+  Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+  Q_PROPERTY (QString uuidString READ uuidString CONSTANT)
+
 public:
-  /** Exposes the CRTP parameter for concept checking. */
-  using uuid_base_type = Derived;
-
-  struct Uuid final
-      : type_safe::strong_typedef<Uuid, QUuid>,
-        type_safe::strong_typedef_op::equality_comparison<Uuid>,
-        type_safe::strong_typedef_op::relational_comparison<Uuid>
-  {
-    using UuidTag = void; // used by the fmt formatter below
-    using type_safe::strong_typedef<Uuid, QUuid>::strong_typedef;
-
-    explicit Uuid () = default;
-
-    static_assert (utils::StrongTypedef<Uuid>);
-    // static_assert (type_safe::is_strong_typedef<Uuid>::value);
-    // static_assert (std::is_same_v<type_safe::underlying_type<Uuid>, QUuid>);
-
-    /**
-     * @brief Checks if the UUID is null.
-     */
-    bool is_null () const { return type_safe::get (*this).isNull (); }
-
-    void set_null () { type_safe::get (*this) = QUuid (); }
-
-    // Used by boost hash
-    friend std::size_t hash_value (const Uuid &p) { return p.hash (); }
-
-    std::size_t hash () const { return qHash (type_safe::get (*this)); }
-  };
-  static_assert (std::regular<Uuid>);
-  static_assert (sizeof (Uuid) == sizeof (QUuid));
+  /**
+   * @brief Structural marker for the UuidIdentifiable concept.
+   *
+   * Inherited by every identifiable type, so the concept can verify
+   * membership without duck-typing on unrelated nested types.
+   */
+  using uuid_base_type = void;
 
   explicit UuidIdentifiableObject (QObject * parent = nullptr)
-      : UuidIdentifiableBase (QUuid::createUuid (), parent)
+      : QObject (parent), uuid_ (QUuid::createUuid ())
   {
   }
-  UuidIdentifiableObject (const Uuid &id, QObject * parent = nullptr)
-      : UuidIdentifiableBase (type_safe::get (id), parent)
+  explicit UuidIdentifiableObject (const QUuid &id, QObject * parent = nullptr)
+      : QObject (parent), uuid_ (id)
   {
   }
 
   Q_DISABLE_COPY_MOVE (UuidIdentifiableObject)
   ~UuidIdentifiableObject () override = default;
 
-  auto get_uuid () const { return Uuid (raw_uuid ()); }
+  QUuid raw_uuid () const { return uuid_; }
 
+  /**
+   * @brief The UUID as a string without braces.
+   */
+  QString uuidString () const { return uuid_.toString (QUuid::WithoutBraces); }
+
+  friend bool operator== (
+    const UuidIdentifiableObject &lhs,
+    const UuidIdentifiableObject &rhs)
+  {
+    return lhs.uuid_ == rhs.uuid_;
+  }
+
+  friend void to_json (nlohmann::json &j, const UuidIdentifiableObject &obj);
+  friend void from_json (const nlohmann::json &j, UuidIdentifiableObject &obj);
+
+  /** Assigns the source identity, or a fresh one for new-identity clones. */
   friend void init_from (
     UuidIdentifiableObject       &obj,
     const UuidIdentifiableObject &other,
@@ -102,35 +106,58 @@ public:
       }
   }
 
-  friend void to_json (nlohmann::json &j, const UuidIdentifiableObject &obj)
-  {
-    to_json (j, static_cast<const UuidIdentifiableBase &> (obj));
-  }
-  friend void from_json (const nlohmann::json &j, UuidIdentifiableObject &obj)
-  {
-    from_json (j, static_cast<UuidIdentifiableBase &> (obj));
-  }
+protected:
+  void set_raw_uuid (const QUuid &id) { uuid_ = id; }
 
-  friend bool operator== (
-    const UuidIdentifiableObject &lhs,
-    const UuidIdentifiableObject &rhs)
-  {
-    return static_cast<const UuidIdentifiableBase &> (lhs)
-           == static_cast<const UuidIdentifiableBase &> (rhs);
-  }
+private:
+  QUuid uuid_;
 
-  BOOST_DESCRIBE_CLASS (UuidIdentifiableObject, (UuidIdentifiableBase), (), (), ())
+  BOOST_DESCRIBE_CLASS (UuidIdentifiableObject, (), (), (), (uuid_))
 };
 
 /**
- * @brief Concept: T has a UUID identity from a UuidIdentifiableObject hierarchy.
+ * @brief Defines a distinct UUID strong type at namespace scope.
  *
- * Works for both base types (e.g., Track : UuidIdentifiableObject<Track>) and
- * derived types (e.g., MidiTrack : Track) because uuid_base_type is inherited
- * and resolves to the correct CRTP parameter in both cases.
+ * Each identifiable family (Track, Port, ProcessorBase, ...) declares its
+ * UUID type with this macro next to the family class. DEFINE_UUID_IDENTITY()
+ * inside the class makes it available as Class::Uuid.
+ */
+#define DEFINE_UUID_TYPE(UuidType) \
+  struct UuidType final \
+      : type_safe::strong_typedef<UuidType, QUuid>, \
+        type_safe::strong_typedef_op::equality_comparison<UuidType>, \
+        type_safe::strong_typedef_op::relational_comparison<UuidType> \
+  { \
+    using UuidTag = void; /* used by the UUID fmt::formatter specializations */ \
+    using type_safe::strong_typedef<UuidType, QUuid>::strong_typedef; \
+    explicit UuidType () = default; \
+    bool is_null () const { return type_safe::get (*this).isNull (); } \
+    void set_null () { type_safe::get (*this) = QUuid (); } \
+    friend std::size_t hash_value (const UuidType &p) { return p.hash (); } \
+    std::size_t        hash () const { return qHash (type_safe::get (*this)); } \
+  }; \
+  static_assert (std::regular<UuidType>); \
+  static_assert (sizeof (UuidType) == sizeof (QUuid));
+
+/**
+ * @brief Adds the family's typed UUID identity to an identifiable class.
  *
- * QObject is now implicit via UuidIdentifiableBase, so
- * TypedUuidReference<T>::get() can use qobject_cast without a separate check.
+ * Defines the Class::Uuid alias and the typed get_uuid() accessor. The UUID
+ * type must be defined with DEFINE_UUID_TYPE() at namespace scope.
+ */
+#define DEFINE_UUID_IDENTITY(UuidType) \
+  using Uuid = UuidType; \
+  UuidType get_uuid () const \
+  { \
+    return UuidType (raw_uuid ()); \
+  }
+
+/**
+ * @brief Concept: T has a UUID identity from a UuidIdentifiableObject
+ * hierarchy.
+ *
+ * Works for both family owners (e.g., Track) and derived types (e.g.,
+ * MidiTrack) because uuid_base_type and the Uuid alias are inherited by both.
  *
  * Uses structural checks instead of std::derived_from so that the concept
  * works with incomplete types (e.g., TypedUuidReference<Track> as a member
@@ -154,7 +181,7 @@ concept UuidIdentifiable = requires {
 
 } // namespace zrythm::utils
 
-// Concept to detect UuidIdentifiableObject::Uuid types
+// Concept to detect UUID strong types defined with DEFINE_UUID_TYPE()
 template <typename T>
 concept UuidType = requires (T t) {
   typename T::UuidTag;

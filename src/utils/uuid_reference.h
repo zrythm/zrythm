@@ -15,7 +15,7 @@ namespace zrythm::utils
  *
  * Holds a raw QUuid and a pointer to IObjectRegistry. Acquires/releases
  * reference counts on construction/destruction so the registry can manage
- * object lifetimes. Returns UuidIdentifiableBase* from get() — callers
+ * object lifetimes. Returns UuidIdentifiableObject* from get() — callers
  * that need a specific type should use TypedUuidReference<T> instead.
  * Can be in an unengaged state (no id) for deferred initialization during
  * deserialization.
@@ -78,14 +78,14 @@ public:
 
   QUuid id () const { return id_.value (); }
 
-  UuidIdentifiableBase * get () const
+  UuidIdentifiableObject * get () const
   {
     if (!id_.has_value () || registry_ == nullptr)
       return nullptr;
     return registry_->find_by_raw_uuid (id_.value ());
   }
 
-  UuidIdentifiableBase * get_or_throw () const
+  UuidIdentifiableObject * get_or_throw () const
   {
     if (!id_.has_value () || registry_ == nullptr)
       {

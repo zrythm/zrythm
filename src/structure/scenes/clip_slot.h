@@ -16,7 +16,9 @@
 namespace zrythm::structure::scenes
 {
 
-class ClipSlot : public utils::UuidIdentifiableObject<ClipSlot>
+DEFINE_UUID_TYPE (ClipSlotUuid)
+
+class ClipSlot : public utils::UuidIdentifiableObject
 {
   Q_OBJECT
   Q_PROPERTY (
@@ -28,6 +30,7 @@ class ClipSlot : public utils::UuidIdentifiableObject<ClipSlot>
   QML_EXTENDED_NAMESPACE (zrythm::structure::tracks)
 
 public:
+  DEFINE_UUID_IDENTITY (ClipSlotUuid)
   enum class ClipState
   {
     Stopped,

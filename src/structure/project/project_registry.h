@@ -154,11 +154,11 @@ public:
 private:
   using ObjectVisitor = utils::IObjectRegistry::ObjectVisitor;
 
-  void register_object_impl (utils::UuidIdentifiableBase &obj) override;
+  void register_object_impl (utils::UuidIdentifiableObject &obj) override;
   void acquire_reference_impl (const QUuid &id) override;
   void release_reference_impl (const QUuid &id) override;
 
-  [[gnu::hot]] utils::UuidIdentifiableBase *
+  [[gnu::hot]] utils::UuidIdentifiableObject *
   find_by_raw_uuid_impl (const QUuid &id) const override;
 
   bool contains_impl (const QUuid &id) const override;

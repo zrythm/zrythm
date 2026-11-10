@@ -68,7 +68,7 @@ ListView {
 
           Component.onCompleted: {
             if (background && background instanceof Rectangle)
-              background.radius = ZrythmTheme.textFieldRadius;
+              (background as Rectangle).radius = ZrythmTheme.textFieldRadius;
           }
 
           ToolTip {

@@ -19,8 +19,9 @@ ArrangerObjectBaseView {
   // Start/end markers carry a directional glyph (|> / <|) whose bar
   // sits on the marker's position; custom markers a pennant whose
   // notch tip sits on it
-  readonly property bool isStart: root.arrangerObject.isStartMarker ()
-  readonly property bool isEnd: root.arrangerObject.isEndMarker ()
+  readonly property Marker marker: root.arrangerObject as Marker
+  readonly property bool isStart: root.marker.isStartMarker ()
+  readonly property bool isEnd: root.marker.isEndMarker ()
   // Head extent left/right of the anchor position
   readonly property real headLeft:
     root.isEnd ? -(root.barHalfWidth + root.triangleWidth)
