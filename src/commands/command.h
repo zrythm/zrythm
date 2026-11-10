@@ -122,6 +122,13 @@ public:
 
   void add_child (std::unique_ptr<Command> child);
 
+  /**
+   * @brief Removes and destroys the most recently added child.
+   *
+   * @pre The macro has at least one child.
+   */
+  void remove_last_child ();
+
   [[nodiscard]] Command *       child_at (std::size_t index) noexcept;
   [[nodiscard]] const Command * child_at (std::size_t index) const noexcept;
 

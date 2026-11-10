@@ -3,12 +3,15 @@
 
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
 #include "commands/command.h"
+#include "undo/journal.h"
 #include "utils/inplace_function.h"
 
 #include <QObject>
@@ -27,6 +30,11 @@ using namespace std::string_view_literals;
  * Owns the executed commands, tracks the current position for undo/redo,
  * groups commands into macros, and cooperates with the audio engine
  * according to each command's declared engine requirement.
+ *
+ * Every history mutation bumps a monotonic revision counter and emits a
+ * plain-data journal entry (see set_journal_callback()). Revisions are
+ * journal sequence numbers: they are never reused, including after an
+ * aborted transaction.
  */
 class UndoStack : public QObject
 {
@@ -83,7 +91,9 @@ public:
   // Macro creation is lazy: beginMacro() only records the macro text, and
   // the macro is realized on the history when the first command is
   // pushed. endMacro() without any intervening push() discards the macro, so
-  // empty macros never pollute the undo history.
+  // empty macros never pollute the undo history. While a transaction is
+  // open, beginMacro() and endMacro() are refused and the transaction
+  // owns the grouping.
   Q_INVOKABLE void beginMacro (const QString &text);
   Q_INVOKABLE void endMacro ();
 
@@ -94,6 +104,134 @@ public:
    * remains accurate even though macro creation is lazy.
    */
   Q_INVOKABLE bool macroActive () const { return open_macro_count_ > 0; }
+
+  /** @brief Current revision; 0 before any mutation. */
+  [[nodiscard]] std::uint64_t revision () const noexcept { return revision_; }
+
+  /** @brief Receiver of one journal entry per history mutation. */
+  using JournalCallback = std::function<void (const JournalEntry &)>;
+
+  /**
+   * @brief Sets the receiver of journal entries.
+   *
+   * The callback runs synchronously right after each mutation, in
+   * mutation order, and must not block or edit the project.
+   */
+  void set_journal_callback (JournalCallback callback);
+
+  /**
+   * @brief An atomic group of pushes with a clean abort.
+   *
+   * A transaction opens an undo macro under a caller-chosen label.
+   * commit() closes that macro, so the whole group becomes one undo
+   * step. abort() reverts every command pushed since begin_transaction(),
+   * drops them from the history, and records an Abort journal entry;
+   * the revision keeps counting forward. Aborting a transaction that
+   * received no commands discards it without a journal entry.
+   *
+   * Transactions may nest; the enclosing transaction is unaffected by
+   * an inner commit or abort. While any transaction is open, plain
+   * macros and undo/redo are refused.
+   *
+   * A transaction that is neither committed nor aborted is aborted by
+   * its destructor, so early returns and exceptions leave no partial
+   * group behind. A transaction must not outlive its stack.
+   */
+  class Transaction
+  {
+  public:
+    /**
+     * @brief Closes the transaction as one undo step.
+     *
+     * @return false when the transaction already ended or an inner
+     * transaction is still open; the transaction then stays open.
+     */
+    [[nodiscard]] bool commit ();
+
+    /**
+     * @brief Reverts the transaction's commands and drops them.
+     *
+     * @return false when the transaction already ended, an inner
+     * transaction is still open, or the engine refused the pause needed
+     * to revert; in the last case the transaction stays open with its
+     * commands applied, and abort() can be called again.
+     */
+    [[nodiscard]] bool abort ();
+
+    /** @brief Aborts the transaction unless it already ended. */
+    ~Transaction ();
+
+    Q_DISABLE_COPY (Transaction)
+    Transaction (Transaction &&other) noexcept;
+    // assignment stays deleted: transactions are scope-bound handles
+    Transaction &operator= (Transaction &&) = delete;
+
+    [[nodiscard]] bool is_open () const { return state_ == State::Open; }
+
+  private:
+    friend class UndoStack;
+
+    Transaction (
+      UndoStack    &stack,
+      QString       label,
+      int           pending_size,
+      int           open_macro_count_at_begin,
+      int           transaction_depth_at_begin,
+      std::uint64_t revision_at_begin);
+
+    enum class State
+    {
+      Open,
+      Committed,
+      Aborted,
+      MovedFrom,
+    };
+
+    UndoStack &stack_;
+    QString    label_;
+    int        pending_size_;
+
+    /**
+     * @brief Open-macro count at begin_transaction() time.
+     *
+     * Doubles as the index of this transaction's macro in the open-macro
+     * stack once realized: every macro open above this transaction
+     * (pending or realized) takes a slot first.
+     */
+    int open_macro_count_at_begin_;
+
+    /** @brief Transaction depth at begin_transaction() time. */
+    int transaction_depth_at_begin_;
+
+    std::uint64_t revision_at_begin_;
+    State         state_ = State::Open;
+  };
+
+  /**
+   * @brief Begins a transaction under the given label.
+   *
+   * @return The transaction, or empty when the stack is executing a
+   * command or a plain macro is open.
+   */
+  std::optional<Transaction> begin_transaction (const QString &label);
+
+  /**
+   * @brief Reverts and drops every history entry touched at
+   * @p from_revision or later.
+   *
+   * Still-applied entries are reverted as undo steps first (each
+   * journaled as Undo), then the whole suffix is erased and journaled as
+   * one Abort entry, so the dropped commands cannot be redone. Entries
+   * are dropped whole: an entry is dropped when any push inside it
+   * reached @p from_revision.
+   *
+   * @return false when @p from_revision is not a known revision (0 or
+   * above the current one), a macro or transaction is open, or the
+   * engine refused a pause needed for a revert; in the last case the
+   * already-reverted entries stay undone and redoable, and nothing is
+   * erased.
+   */
+  [[nodiscard]] bool discard_from (std::uint64_t from_revision);
 
   /**
    * @brief RAII helper that ends an undo macro on destruction.
@@ -122,7 +260,7 @@ public:
   int  index () const { return index_; }
   void setIndex (int idx);
 
-  int     count () const { return static_cast<int> (commands_.size ()); }
+  int     count () const { return static_cast<int> (entries_.size ()); }
   QString text (int idx) const;
 
 Q_SIGNALS:
@@ -187,15 +325,77 @@ private:
   /** @brief Emits all history change signals. */
   void emit_changed ();
 
-private:
-  /** @brief Done commands; entries above index_ are redoable. */
-  std::vector<std::unique_ptr<commands::Command>> commands_;
+  /**
+   * @brief Reverts the most recently applied entry with engine
+   * cooperation and journals an Undo entry.
+   *
+   * @return false when the engine refused the pause; the history is
+   * unchanged then.
+   */
+  bool revert_top_entry ();
 
-  /** @brief Number of done commands; commands_[index_] is next to redo. */
+  /**
+   * @brief Applies the next redoable entry with engine cooperation and
+   * journals a Redo entry.
+   *
+   * @return false when the engine refused the pause; the history is
+   * unchanged then.
+   */
+  bool apply_next_entry ();
+
+  /**
+   * @brief Records a completed mutation: bumps the revision and
+   * delivers the journal entry.
+   */
+  void
+  record_mutation (JournalEntryKind kind, std::vector<std::string> command_texts);
+
+  /**
+   * @brief Closes the innermost open macro, discarding it when it is
+   * empty.
+   *
+   * Shared by endMacro() and Transaction::commit().
+   */
+  void close_one_open_macro ();
+
+  /**
+   * @brief Removes the innermost open realized macro from the history:
+   * from its parent macro, or from the root history entries.
+   */
+  void splice_out_open_macro ();
+
+private:
+  /** @brief One root-level history entry: the command plus bookkeeping. */
+  struct HistoryEntry
+  {
+    std::unique_ptr<commands::Command> command;
+
+    /**
+     * @brief Revision of the last push that touched this entry.
+     *
+     * A push into an open root macro updates the open entry, so
+     * discard_from() can drop whole entries by revision.
+     */
+    std::uint64_t last_push_revision = 0;
+  };
+
+  /** @brief Done entries; entries above index_ are redoable. */
+  std::vector<HistoryEntry> entries_;
+
+  /** @brief Number of done entries; entries_[index_] is next to redo. */
   int index_ = 0;
 
   /** @brief Maximum history size; 0 means unlimited. */
   int undo_limit_ = 0;
+
+  /** @brief Monotonic mutation counter; see revision(). */
+  std::uint64_t revision_ = 0;
+
+  /** @brief Journal receiver; see set_journal_callback(). */
+  JournalCallback journal_callback_;
+
+  /** @brief Number of open transactions; see begin_transaction(). */
+  int transaction_depth_ = 0;
 
   /** @brief Open realized macros, outermost first (non-owning). */
   std::vector<commands::MacroCommand *> macro_stack_;
@@ -214,13 +414,15 @@ private:
   CallbackWithPausedEngineRequester callback_with_paused_engine_requester_;
 
   /**
-   * @brief True while the history is executing a push, undo or redo.
+   * @brief Depth of in-progress history activity.
    *
    * A nested push from inside another command's undo()/redo() (e.g. a UI
-   * control reacting to a value it restores by pushing an echo edit)
-   * corrupts the command list. Pushes, undos and redos arriving while this
-   * is set are refused with an error log instead.
+   * control reacting to a value it restores by pushing an echo edit), or
+   * from a change-signal slot firing while the stack is still finishing
+   * a mutation, corrupts the command list or the journal order. Pushes,
+   * undos, redos, transactions and discards arriving while this is
+   * non-zero are refused with an error log instead.
    */
-  bool executing_ = false;
+  int executing_depth_ = 0;
 };
 };

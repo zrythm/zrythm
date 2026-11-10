@@ -5,6 +5,7 @@ qt_add_library(zrythm_undo_lib STATIC)
 
 target_sources(zrythm_undo_lib
   PRIVATE
+    journal.h
     undo_stack.h
     undo_stack.cpp
 )

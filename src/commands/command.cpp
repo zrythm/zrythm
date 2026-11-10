@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <cassert>
 #include <ranges>
 
 #include "commands/command.h"
@@ -42,6 +43,13 @@ void
 MacroCommand::add_child (std::unique_ptr<Command> child)
 {
   children_.push_back (std::move (child));
+}
+
+void
+MacroCommand::remove_last_child ()
+{
+  assert (!children_.empty ());
+  children_.pop_back ();
 }
 
 Command *

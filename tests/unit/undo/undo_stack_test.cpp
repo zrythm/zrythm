@@ -13,7 +13,7 @@
 namespace zrythm::undo
 {
 
-class UndoStackTest : public ::testing::Test
+class UndoStackTestBase : public ::testing::Test
 {
 protected:
   void SetUp () override
@@ -28,6 +28,9 @@ protected:
         last_requested_graph_recalculation_ = recalculate_graph;
         callback ();
       });
+    undo_stack_->set_journal_callback ([this] (const JournalEntry &entry) {
+      journal_entries_.push_back (entry);
+    });
   }
 
   // Command that toggles a flag so undo/redo effects are observable
@@ -57,6 +60,26 @@ protected:
 
     void redo () override { }
     void undo () override { }
+  };
+
+  // Toggle command with a chosen engine requirement, for testing
+  // cooperation refusals with observable state
+  class PausingToggleCommand : public commands::Command
+  {
+  public:
+    explicit PausingToggleCommand (bool &flag)
+        : Command (
+            QStringLiteral ("Pausing Toggle"),
+            EngineRequirement::PauseProcessing),
+          flag_ (flag)
+    {
+    }
+
+    void redo () override { flag_ = true; }
+    void undo () override { flag_ = false; }
+
+  private:
+    bool &flag_;
   };
 
   // Command that absorbs any MergingCommand pushed right after it, like the
@@ -106,6 +129,18 @@ protected:
   // Engine cooperation requested by the stack so far
   int  pause_request_count_ = 0;
   bool last_requested_graph_recalculation_ = false;
+
+  // Journal entries received so far
+  std::vector<JournalEntry> journal_entries_;
+};
+
+class UndoStackTest : public UndoStackTestBase
+{
+};
+
+// Fixture for the revision, journal, transaction and discard API
+class TransactionTest : public UndoStackTestBase
+{
 };
 
 TEST_F (UndoStackTest, EmptyMacroIsDiscarded)
@@ -790,6 +825,587 @@ TEST_F (UndoStackTest, MacroCompositionEmitsOnceAtClose)
   // closing the root macro emits once for the whole composition
   undo_stack_->endMacro ();
   EXPECT_EQ (spy.size (), 2);
+}
+
+// ---------------------------------------------------------------------------
+// Revisions and journal
+// ---------------------------------------------------------------------------
+
+TEST_F (TransactionTest, JournalRecordsEveryMutationWithMonotonicRevisions)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+  undo_stack_->undo ();
+  undo_stack_->redo ();
+
+  ASSERT_EQ (journal_entries_.size (), 4);
+  EXPECT_EQ (journal_entries_[0].revision, 1);
+  EXPECT_EQ (journal_entries_[0].kind, JournalEntryKind::Push);
+  EXPECT_EQ (journal_entries_[0].command_texts.at (0), "Cmd 1");
+  EXPECT_EQ (journal_entries_[1].revision, 2);
+  EXPECT_EQ (journal_entries_[1].kind, JournalEntryKind::Push);
+  EXPECT_EQ (journal_entries_[2].revision, 3);
+  EXPECT_EQ (journal_entries_[2].kind, JournalEntryKind::Undo);
+  EXPECT_EQ (journal_entries_[2].command_texts.at (0), "Cmd 2");
+  EXPECT_EQ (journal_entries_[3].revision, 4);
+  EXPECT_EQ (journal_entries_[3].kind, JournalEntryKind::Redo);
+  EXPECT_EQ (undo_stack_->revision (), 4);
+}
+
+TEST_F (TransactionTest, RefusedMutationLeavesRevisionAndJournalUntouched)
+{
+  // a requester that never invokes the callback, like an engine refusing
+  // to pause during an offline render
+  undo::UndoStack stack ([] (auto &&callback, bool) { (void) callback; });
+  std::vector<JournalEntry> entries;
+  stack.set_journal_callback ([&entries] (const JournalEntry &entry) {
+    entries.push_back (entry);
+  });
+
+  stack.push (
+    std::make_unique<RequirementCommand> (
+      commands::Command::EngineRequirement::PauseProcessing));
+
+  EXPECT_EQ (stack.revision (), 0);
+  EXPECT_TRUE (entries.empty ());
+}
+
+TEST_F (TransactionTest, MergedPushStillBumpsRevisionAndJournals)
+{
+  bool flag_a = false;
+  bool flag_b = false;
+  undo_stack_->push (
+    std::make_unique<MergingCommand> (flag_a, QStringLiteral ("Merge 1")));
+  undo_stack_->push (
+    std::make_unique<MergingCommand> (flag_b, QStringLiteral ("Merge 2")));
+
+  ASSERT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->revision (), 2);
+  ASSERT_EQ (journal_entries_.size (), 2);
+  EXPECT_EQ (journal_entries_[1].revision, 2);
+  EXPECT_EQ (journal_entries_[1].kind, JournalEntryKind::Push);
+  EXPECT_EQ (journal_entries_[1].command_texts.at (0), "Merge 2");
+}
+
+// ---------------------------------------------------------------------------
+// Transactions
+// ---------------------------------------------------------------------------
+
+TEST_F (TransactionTest, EmptyTransactionCommitsNothing)
+{
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Empty"));
+  ASSERT_TRUE (tx.has_value ());
+  EXPECT_TRUE (tx->commit ());
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_FALSE (undo_stack_->canUndo ());
+  EXPECT_EQ (undo_stack_->revision (), 0);
+  EXPECT_TRUE (journal_entries_.empty ());
+}
+
+TEST_F (TransactionTest, EmptyTransactionAbortsCleanly)
+{
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Empty"));
+  ASSERT_TRUE (tx.has_value ());
+  EXPECT_TRUE (tx->abort ());
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_FALSE (undo_stack_->macroActive ());
+  EXPECT_EQ (undo_stack_->revision (), 0);
+  EXPECT_TRUE (journal_entries_.empty ());
+}
+
+TEST_F (TransactionTest, CommitMakesTheGroupOneUndoStep)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Group"));
+  ASSERT_TRUE (tx.has_value ());
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+  EXPECT_FALSE (undo_stack_->canUndo ());
+  ASSERT_TRUE (tx->commit ());
+
+  ASSERT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->text (0), QStringLiteral ("Group"));
+  const auto undo_actions = undo_stack_->undoActions ();
+  ASSERT_EQ (undo_actions.size (), 1);
+  EXPECT_EQ (undo_actions.at (0), QStringLiteral ("Group"));
+
+  // the journal records the pushes; closing the group records nothing
+  ASSERT_EQ (journal_entries_.size (), 2);
+  EXPECT_EQ (undo_stack_->revision (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (flag1);
+  EXPECT_FALSE (flag2);
+  undo_stack_->redo ();
+  EXPECT_TRUE (flag1);
+  EXPECT_TRUE (flag2);
+}
+
+TEST_F (TransactionTest, AbortRevertsCommandsAndDropsThem)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Group"));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+  ASSERT_TRUE (tx->abort ());
+
+  EXPECT_FALSE (flag1);
+  EXPECT_FALSE (flag2);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->index (), 0);
+  EXPECT_FALSE (undo_stack_->canUndo ());
+  EXPECT_FALSE (undo_stack_->canRedo ());
+  EXPECT_FALSE (undo_stack_->macroActive ());
+
+  ASSERT_EQ (journal_entries_.size (), 3);
+  EXPECT_EQ (journal_entries_[2].revision, 3);
+  EXPECT_EQ (journal_entries_[2].kind, JournalEntryKind::Abort);
+  ASSERT_EQ (journal_entries_[2].command_texts.size (), 1);
+  EXPECT_EQ (journal_entries_[2].command_texts.at (0), "Group");
+}
+
+TEST_F (TransactionTest, RevisionsKeepCountingAfterAnAbort)
+{
+  bool flag = false;
+  {
+    auto tx = undo_stack_->begin_transaction (QStringLiteral ("Doomed"));
+    undo_stack_->push (
+      std::make_unique<ToggleCommand> (flag, QStringLiteral ("Cmd 1")));
+    ASSERT_TRUE (tx->abort ());
+  }
+  ASSERT_EQ (undo_stack_->revision (), 2);
+
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag, QStringLiteral ("Cmd 2")));
+  EXPECT_EQ (undo_stack_->revision (), 3);
+  ASSERT_EQ (journal_entries_.size (), 3);
+  EXPECT_EQ (journal_entries_[2].revision, 3);
+  EXPECT_EQ (journal_entries_[2].kind, JournalEntryKind::Push);
+  EXPECT_EQ (journal_entries_[2].command_texts.at (0), "Cmd 2");
+}
+
+TEST_F (TransactionTest, DestructorAbortsAnOpenTransaction)
+{
+  bool flag = false;
+  {
+    auto tx = undo_stack_->begin_transaction (QStringLiteral ("Scoped"));
+    undo_stack_->push (
+      std::make_unique<ToggleCommand> (flag, QStringLiteral ("Cmd")));
+  }
+
+  EXPECT_FALSE (flag);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  ASSERT_EQ (journal_entries_.size (), 2);
+  EXPECT_EQ (journal_entries_[1].kind, JournalEntryKind::Abort);
+}
+
+TEST_F (TransactionTest, AbortingInnerTransactionKeepsOuterCommands)
+{
+  bool flag_outer = false;
+  bool flag_inner = false;
+  auto outer = undo_stack_->begin_transaction (QStringLiteral ("Outer"));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag_outer, QStringLiteral ("Cmd 1")));
+  auto inner = undo_stack_->begin_transaction (QStringLiteral ("Inner"));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag_inner, QStringLiteral ("Cmd 2")));
+  ASSERT_TRUE (inner->abort ());
+
+  EXPECT_FALSE (flag_inner);
+  EXPECT_TRUE (flag_outer);
+  EXPECT_TRUE (undo_stack_->macroActive ());
+  ASSERT_TRUE (outer->commit ());
+
+  ASSERT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->text (0), QStringLiteral ("Outer"));
+  ASSERT_EQ (journal_entries_.size (), 3);
+  EXPECT_EQ (journal_entries_[2].kind, JournalEntryKind::Abort);
+  EXPECT_EQ (journal_entries_[2].command_texts.at (0), "Inner");
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (flag_outer);
+}
+
+TEST_F (TransactionTest, AbortingOuterTransactionRevertsCommittedInner)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  bool flag3 = false;
+  auto outer = undo_stack_->begin_transaction (QStringLiteral ("Outer"));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  {
+    auto inner = undo_stack_->begin_transaction (QStringLiteral ("Inner"));
+    undo_stack_->push (
+      std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+    ASSERT_TRUE (inner->commit ());
+  }
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag3, QStringLiteral ("Cmd 3")));
+  ASSERT_TRUE (outer->abort ());
+
+  EXPECT_FALSE (flag1);
+  EXPECT_FALSE (flag2);
+  EXPECT_FALSE (flag3);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (undo_stack_->revision (), 4);
+}
+
+TEST_F (TransactionTest, OuterCommitAndAbortRefusedWhileInnerOpen)
+{
+  auto outer = undo_stack_->begin_transaction (QStringLiteral ("Outer"));
+  auto inner = undo_stack_->begin_transaction (QStringLiteral ("Inner"));
+
+  EXPECT_FALSE (outer->commit ());
+  EXPECT_FALSE (outer->abort ());
+  EXPECT_TRUE (outer->is_open ());
+  EXPECT_TRUE (undo_stack_->macroActive ());
+
+  EXPECT_TRUE (inner->abort ());
+  EXPECT_TRUE (outer->commit ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (TransactionTest, EngineRefusedAbortKeepsTransactionOpen)
+{
+  bool                      drop = false;
+  undo::UndoStack           stack ([&drop] (auto &&callback, bool) {
+    if (!drop)
+      callback ();
+  });
+  std::vector<JournalEntry> entries;
+  stack.set_journal_callback ([&entries] (const JournalEntry &entry) {
+    entries.push_back (entry);
+  });
+
+  auto tx = stack.begin_transaction (QStringLiteral ("Tx"));
+  // the pause-requiring command makes the abort need an engine pause
+  stack.push (
+    std::make_unique<RequirementCommand> (
+      commands::Command::EngineRequirement::PauseProcessing));
+  ASSERT_EQ (stack.revision (), 1);
+
+  drop = true;
+  EXPECT_FALSE (tx->abort ());
+  EXPECT_TRUE (tx->is_open ());
+  EXPECT_TRUE (stack.macroActive ());
+  EXPECT_EQ (stack.revision (), 1);
+
+  drop = false;
+  EXPECT_TRUE (tx->abort ());
+  EXPECT_EQ (stack.count (), 0);
+  EXPECT_EQ (stack.revision (), 2);
+  ASSERT_EQ (entries.size (), 2);
+  EXPECT_EQ (entries[1].kind, JournalEntryKind::Abort);
+}
+
+TEST_F (TransactionTest, EmptyRealizedTransactionIsSplicedOnCommit)
+{
+  // both transactions are realized by the same push; aborting the inner
+  // one leaves the outer realized without children
+  auto outer = undo_stack_->begin_transaction (QStringLiteral ("Outer"));
+  auto inner = undo_stack_->begin_transaction (QStringLiteral ("Inner"));
+  undo_stack_->push (
+    std::make_unique<RequirementCommand> (
+      commands::Command::EngineRequirement::None));
+  ASSERT_TRUE (inner->abort ());
+  ASSERT_TRUE (outer->commit ());
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_FALSE (undo_stack_->canUndo ());
+  EXPECT_EQ (undo_stack_->revision (), 2);
+}
+
+TEST_F (TransactionTest, BeginTransactionRefusedWhilePlainMacroOpen)
+{
+  undo_stack_->beginMacro (QStringLiteral ("Macro"));
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Tx"));
+  EXPECT_FALSE (tx.has_value ());
+  undo_stack_->endMacro ();
+
+  EXPECT_FALSE (undo_stack_->macroActive ());
+}
+
+TEST_F (TransactionTest, PlainMacrosRefusedWhileTransactionOpen)
+{
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Tx"));
+  ASSERT_TRUE (tx.has_value ());
+
+  undo_stack_->beginMacro (QStringLiteral ("Refused"));
+  undo_stack_->endMacro ();
+  EXPECT_TRUE (undo_stack_->macroActive ());
+
+  bool flag = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag, QStringLiteral ("Cmd")));
+  ASSERT_TRUE (tx->commit ());
+
+  ASSERT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->text (0), QStringLiteral ("Tx"));
+}
+
+TEST_F (TransactionTest, TransactionCanBeMoved)
+{
+  auto tx1 = undo_stack_->begin_transaction (QStringLiteral ("Tx"));
+  bool flag = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag, QStringLiteral ("Cmd")));
+
+  auto tx2 = std::move (*tx1);
+  EXPECT_FALSE (tx1->is_open ());
+  EXPECT_TRUE (tx2.is_open ());
+
+  EXPECT_FALSE (tx1->abort ());
+  ASSERT_TRUE (tx2.abort ());
+  EXPECT_FALSE (flag);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// ---------------------------------------------------------------------------
+// discard_from()
+// ---------------------------------------------------------------------------
+
+TEST_F (TransactionTest, DiscardFromRevertsAndDropsTouchedEntries)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  bool flag3 = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag3, QStringLiteral ("Cmd 3")));
+
+  ASSERT_TRUE (undo_stack_->discard_from (2));
+
+  EXPECT_TRUE (flag1);
+  EXPECT_FALSE (flag2);
+  EXPECT_FALSE (flag3);
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 1);
+  EXPECT_FALSE (undo_stack_->canRedo ());
+
+  // the two reverts are journaled as undo steps, the drop as one abort
+  ASSERT_EQ (journal_entries_.size (), 6);
+  EXPECT_EQ (journal_entries_[3].kind, JournalEntryKind::Undo);
+  EXPECT_EQ (journal_entries_[3].command_texts.at (0), "Cmd 3");
+  EXPECT_EQ (journal_entries_[4].kind, JournalEntryKind::Undo);
+  EXPECT_EQ (journal_entries_[4].command_texts.at (0), "Cmd 2");
+  EXPECT_EQ (journal_entries_[5].kind, JournalEntryKind::Abort);
+  ASSERT_EQ (journal_entries_[5].command_texts.size (), 2);
+  EXPECT_EQ (journal_entries_[5].command_texts.at (0), "Cmd 2");
+  EXPECT_EQ (journal_entries_[5].command_texts.at (1), "Cmd 3");
+  EXPECT_EQ (undo_stack_->revision (), 6);
+}
+
+TEST_F (TransactionTest, DiscardFromDropsRedoEntriesWithoutReverting)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+  undo_stack_->undo ();
+  ASSERT_FALSE (flag2);
+  ASSERT_EQ (undo_stack_->index (), 1);
+
+  ASSERT_TRUE (undo_stack_->discard_from (2));
+
+  // the second command was already undone: it is dropped without running
+  // its undo again
+  EXPECT_TRUE (flag1);
+  EXPECT_FALSE (flag2);
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_FALSE (undo_stack_->canRedo ());
+  ASSERT_EQ (journal_entries_.size (), 4);
+  EXPECT_EQ (journal_entries_[3].kind, JournalEntryKind::Abort);
+}
+
+TEST_F (TransactionTest, DiscardFromMidMacroDropsTheWholeMacro)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  bool flag3 = false;
+  undo_stack_->beginMacro (QStringLiteral ("My Macro"));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+  undo_stack_->endMacro ();
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag3, QStringLiteral ("Cmd 3")));
+
+  // revision 2 is a push inside the macro: the macro is dropped whole
+  ASSERT_TRUE (undo_stack_->discard_from (2));
+
+  EXPECT_FALSE (flag1);
+  EXPECT_FALSE (flag2);
+  EXPECT_FALSE (flag3);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_FALSE (undo_stack_->canUndo ());
+}
+
+TEST_F (TransactionTest, DiscardFromRefusesInvalidRevisions)
+{
+  EXPECT_FALSE (undo_stack_->discard_from (0));
+  EXPECT_FALSE (undo_stack_->discard_from (1));
+
+  bool flag = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag, QStringLiteral ("Cmd")));
+  undo_stack_->beginMacro (QStringLiteral ("Macro"));
+  EXPECT_FALSE (undo_stack_->discard_from (1));
+  undo_stack_->endMacro ();
+
+  // a revision only used by undo/redo matches no entry: nothing is
+  // dropped and the call succeeds
+  undo_stack_->undo ();
+  EXPECT_TRUE (undo_stack_->discard_from (2));
+  EXPECT_EQ (undo_stack_->count (), 1);
+}
+
+// A change-signal slot firing while the stack is still finishing a
+// mutation must not be able to edit: the edit would land around the
+// mutation's own journal entry
+TEST_F (TransactionTest, ReentrantPushDuringAbortEmissionIsRefused)
+{
+  bool flag = false;
+  bool echo_flag = false;
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Tx"));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag, QStringLiteral ("Cmd")));
+
+  bool slot_ran = false;
+  QObject::connect (
+    undo_stack_.get (), &UndoStack::canRedoChanged, undo_stack_.get (),
+    [this, &slot_ran, &echo_flag] () {
+      if (slot_ran)
+        return;
+      slot_ran = true;
+      undo_stack_->push (
+        std::make_unique<ToggleCommand> (echo_flag, QStringLiteral ("Echo")));
+    });
+
+  ASSERT_TRUE (tx->abort ());
+  EXPECT_TRUE (slot_ran);
+  EXPECT_FALSE (echo_flag);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  // the refused echo push produced no journal entry; the abort is last
+  ASSERT_EQ (journal_entries_.size (), 2);
+  EXPECT_EQ (journal_entries_[1].kind, JournalEntryKind::Abort);
+  EXPECT_EQ (undo_stack_->revision (), 2);
+}
+
+TEST_F (TransactionTest, ReentrantPushDuringDiscardEmissionIsRefused)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  bool echo_flag = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+
+  bool slot_ran = false;
+  QObject::connect (
+    undo_stack_.get (), &UndoStack::canRedoChanged, undo_stack_.get (),
+    [this, &slot_ran, &echo_flag] () {
+      if (slot_ran)
+        return;
+      slot_ran = true;
+      undo_stack_->push (
+        std::make_unique<ToggleCommand> (echo_flag, QStringLiteral ("Echo")));
+    });
+
+  // the first emission fires during the inner undo guard of the revert
+  // loop, with the outer discard guard active
+  ASSERT_TRUE (undo_stack_->discard_from (2));
+  EXPECT_TRUE (slot_ran);
+  EXPECT_FALSE (echo_flag);
+  EXPECT_EQ (undo_stack_->count (), 1);
+  ASSERT_EQ (journal_entries_.size (), 4);
+  EXPECT_EQ (journal_entries_[3].kind, JournalEntryKind::Abort);
+}
+
+// The revert loop stops at the first engine refusal: the reverted
+// entries stay undone and redoable, nothing is erased, and no Abort
+// entry is recorded
+TEST_F (TransactionTest, DiscardFromStopsWhenEngineRefuses)
+{
+  bool                      drop = false;
+  undo::UndoStack           stack ([&drop] (auto &&callback, bool) {
+    if (!drop)
+      callback ();
+  });
+  std::vector<JournalEntry> entries;
+  stack.set_journal_callback ([&entries] (const JournalEntry &entry) {
+    entries.push_back (entry);
+  });
+
+  bool pausing_flag = false;
+  bool plain_flag = false;
+  stack.push (std::make_unique<PausingToggleCommand> (pausing_flag));
+  stack.push (
+    std::make_unique<ToggleCommand> (plain_flag, QStringLiteral ("Cmd 2")));
+
+  drop = true;
+  EXPECT_FALSE (stack.discard_from (1));
+
+  // the None-requirement entry reverted; the pause-requiring one did not
+  EXPECT_TRUE (pausing_flag);
+  EXPECT_FALSE (plain_flag);
+  EXPECT_EQ (stack.index (), 1);
+  EXPECT_TRUE (stack.canRedo ());
+  EXPECT_EQ (stack.count (), 2);
+  ASSERT_EQ (entries.size (), 3);
+  EXPECT_EQ (entries[2].kind, JournalEntryKind::Undo);
+
+  // the discard completes once the engine cooperates again
+  drop = false;
+  EXPECT_TRUE (stack.discard_from (1));
+  EXPECT_EQ (stack.count (), 0);
+}
+
+TEST_F (TransactionTest, SetIndexStopsWhenEngineRefuses)
+{
+  bool            drop = false;
+  undo::UndoStack stack ([&drop] (auto &&callback, bool) {
+    if (!drop)
+      callback ();
+  });
+
+  bool flag = false;
+  stack.push (std::make_unique<PausingToggleCommand> (flag));
+
+  // the undo direction is refused
+  drop = true;
+  stack.setIndex (0);
+  EXPECT_EQ (stack.index (), 1);
+  EXPECT_TRUE (flag);
+
+  drop = false;
+  stack.setIndex (0);
+  EXPECT_EQ (stack.index (), 0);
+  EXPECT_FALSE (flag);
+
+  // the redo direction is refused
+  drop = true;
+  stack.setIndex (1);
+  EXPECT_EQ (stack.index (), 0);
 }
 
 } // namespace zrythm::undo
