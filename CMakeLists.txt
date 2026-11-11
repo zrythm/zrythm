@@ -1330,5 +1330,11 @@ set(CPACK_INNOSETUP_USE_MODERN_WIZARD ON)
 set(CPACK_INNOSETUP_ICON_FILE "${ZRYTHM_ICO_FILE}")
 set(CPACK_INNOSETUP_LANGUAGES "english;brazilianPortuguese;catalan;french;german;hebrew;italian;japanese;norwegian;polish;portuguese;russian;spanish;turkish;ukrainian")
 set(CPACK_INNOSETUP_RUN_EXECUTABLES "zrythm")
+# Authenticode signing (only runs when WINDOWS_CODESIGN_CERT_THUMBPRINT is
+# set in the environment): the pre-build script signs the staged PE files,
+# and the project config file makes the Inno Setup compiler sign the
+# installer, the uninstaller and Setup's temporary self-copies
+list(APPEND CPACK_PRE_BUILD_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/windows_codesign_pre_build.cmake")
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/windows_codesign_project_config.cmake")
 
 include(CPack) # must be included after specifying the CPACK_ variables
