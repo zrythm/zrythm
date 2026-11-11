@@ -29,18 +29,14 @@ Item {
 
   function pulse(): void {
     releaseAnimation.stop();
-    releaseBehavior.enabled = false;
     activeOverlay.opacity = 1;
-    releaseBehavior.enabled = true;
     holdTimer.restart();
   }
 
   function reset(): void {
     holdTimer.stop();
     releaseAnimation.stop();
-    releaseBehavior.enabled = false;
     activeOverlay.opacity = 0;
-    releaseBehavior.enabled = true;
   }
 
   // decorative: not focusable and hidden from the accessibility tree
@@ -73,25 +69,22 @@ Item {
     opacity: 0
     radius: idleWell.radius
     width: idleWell.width
+  }
 
-    Behavior on opacity {
-      id: releaseBehavior
+  NumberAnimation {
+    id: releaseAnimation
 
-      enabled: false
-
-      NumberAnimation {
-        id: releaseAnimation
-
-        duration: root.releaseDurationMs
-        easing.type: ZrythmTheme.animationEasingType
-      }
-    }
+    duration: root.releaseDurationMs
+    easing.type: ZrythmTheme.animationEasingType
+    property: "opacity"
+    target: activeOverlay
+    to: 0
   }
 
   Timer {
     id: holdTimer
 
     interval: root.holdDurationMs
-    onTriggered: activeOverlay.opacity = 0
+    onTriggered: releaseAnimation.restart()
   }
 }
