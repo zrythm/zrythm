@@ -725,20 +725,11 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       /* reconnect any sends sent from the track */
                       for (
                         const auto &[clone_send, send] : std::views::zip (
-                          own_track->channel ()->pre_fader_sends (),
-                          prj_track->channel ()->pre_fader_sends ()))
+                          own_track->channel ()->sends ()->get_sends (),
+                          prj_track->channel ()->sends ()->get_sends ()))
                         {
                           init_from (
-                            *send, *clone_send,
-                            utils::ObjectCloneType::Snapshot);
-                        }
-                      for (
-                        const auto &[clone_send, send] : std::views::zip (
-                          own_track->channel ()->post_fader_sends (),
-                          prj_track->channel ()->post_fader_sends ()))
-                        {
-                          init_from (
-                            *send, *clone_send,
+                            *send.get (), *clone_send.get (),
                             utils::ObjectCloneType::Snapshot);
                         }
 

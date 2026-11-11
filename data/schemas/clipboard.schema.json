@@ -124,7 +124,8 @@
         "lanes",
         "clipSlots",
         "arrangerObjects",
-        "fileAudioSources"
+        "fileAudioSources",
+        "channelSends"
       ],
       "properties": {
         "ports": {
@@ -187,6 +188,13 @@
           "type": "array",
           "items": {
             "$ref": "common.schema.json#/definitions/fileAudioSource"
+          },
+          "maxItems": 100000
+        },
+        "channelSends": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/channelSend"
           },
           "maxItems": 100000
         }

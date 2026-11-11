@@ -330,6 +330,21 @@ ProcessorGraphBuilder::add_connections (
     }
 }
 
+std::unordered_set<dsp::PortUuid>
+ProcessorBase::get_all_port_ids () const
+{
+  std::unordered_set<dsp::PortUuid> ids;
+  const auto                        add = [&ids] (const auto &port_refs) {
+    for (const auto &port_ref : port_refs)
+      {
+        ids.insert (port_ref.id ());
+      }
+  };
+  add (input_ports_);
+  add (output_ports_);
+  return ids;
+}
+
 void
 to_json (nlohmann::json &j, const ProcessorBase &p)
 {

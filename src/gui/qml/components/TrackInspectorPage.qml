@@ -461,7 +461,7 @@ ScrollView {
       sourceComponent: PluginExpander {
         iconName: "audio-insert.svg"
         model: root.track.channel.midiFx
-        title: "MIDI FX"
+        title: qsTr("MIDI FX")
       }
     }
 
@@ -486,6 +486,21 @@ ScrollView {
         iconName: "audio-insert.svg"
         model: root.track.channel.inserts
         title: qsTr("Inserts")
+      }
+    }
+
+    Loader {
+      Layout.fillWidth: true
+      active: root.track.channel !== null && root.track.type !== Track.Master
+      visible: active
+
+      sourceComponent: ChannelSendsPanel {
+        channelSendRouting: root.session.project.tracklist.channelSendRouting
+        parameterOperator: root.session.processorParameterOperator
+        project: root.session.project
+        sends: root.track.channel.sends
+        track: root.track
+        undoStack: root.undoStack
       }
     }
 

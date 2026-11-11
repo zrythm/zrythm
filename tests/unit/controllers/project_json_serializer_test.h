@@ -83,6 +83,7 @@ create_minimal_valid_project_json ()
   pd["registry"]["clipSlots"] = nlohmann::json::array ();
   pd["registry"]["arrangerObjects"] = nlohmann::json::array ();
   pd["registry"]["fileAudioSources"] = nlohmann::json::array ();
+  pd["registry"]["channelSends"] = nlohmann::json::array ();
 
   return j;
 }

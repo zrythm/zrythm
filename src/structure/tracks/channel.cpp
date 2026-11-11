@@ -58,6 +58,9 @@ Channel::Channel (
           plugins::PluginGroup::DeviceGroupType::Audio,
           plugins::PluginGroup::ProcessingTypeHint::Serial,
           this)),
+      sends_ (
+        utils::make_qobject_unique<
+          ChannelSendGroup> (registry, signal_type_, this)),
       fader_ (
         utils::make_qobject_unique<dsp::Fader> (
           registry,
@@ -98,14 +101,6 @@ Channel::Channel (
           midi_event_tap_->set_name (u8"MIDI Event Tap");
         }
     }
-
-  /* init sends */
-  prefader_sends_.emplace_back (
-    utils::make_qobject_unique<ChannelSend> (
-      registry, signal_type_, 0, true, this));
-  postfader_sends_.emplace_back (
-    utils::make_qobject_unique<ChannelSend> (
-      registry, signal_type_, 0, false, this));
 }
 
 void
@@ -214,8 +209,7 @@ to_json (nlohmann::json &j, const Channel &c)
 {
   j[Channel::kMidiFxKey] = *c.midi_fx_;
   j[Channel::kInsertsKey] = *c.inserts_;
-  j[Channel::kPreFaderSendsKey] = c.prefader_sends_;
-  j[Channel::kPostFaderSendsKey] = c.postfader_sends_;
+  j[Channel::kSendsKey] = *c.sends_;
   j[Channel::kInstrumentsKey] = *c.instruments_;
   j[Channel::kFaderKey] = c.fader_;
 }
@@ -226,24 +220,7 @@ from_json (const nlohmann::json &j, Channel &c)
   j.at (Channel::kMidiFxKey).get_to (*c.midi_fx_);
   j.at (Channel::kInstrumentsKey).get_to (*c.instruments_);
   j.at (Channel::kInsertsKey).get_to (*c.inserts_);
-  for (
-    const auto &[index, send_json] :
-    utils::views::enumerate (j.at (Channel::kPreFaderSendsKey)))
-    {
-      auto send = utils::make_qobject_unique<ChannelSend> (
-        c.registry (), c.signal_type_, index, true);
-      from_json (send_json, *send);
-      c.prefader_sends_.at (index) = std::move (send);
-    }
-  for (
-    const auto &[index, send_json] :
-    utils::views::enumerate (j.at (Channel::kPostFaderSendsKey)))
-    {
-      auto send = utils::make_qobject_unique<ChannelSend> (
-        c.registry (), c.signal_type_, index, false);
-      from_json (send_json, *send);
-      c.postfader_sends_.at (index) = std::move (send);
-    }
+  j.at (Channel::kSendsKey).get_to (*c.sends_);
   // TODO:  fader
   // c.prefader_ = utils::make_qobject_unique<Fader> (&c);
   // j.at (Channel::kPrefaderKey).get_to (*c.prefader_);

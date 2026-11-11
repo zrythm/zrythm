@@ -59,7 +59,14 @@ public:
   void
   add_or_replace_route (const TrackUuid &source, const TrackUuid &destination);
   void remove_route_for_source (const TrackUuid &source);
-  void remove_routes_for_destination (const TrackUuid &destination);
+
+  /**
+   * @brief Removes all routes whose destination is @p destination.
+   *
+   * @return The sources that were routed to it, for restoration.
+   */
+  std::vector<TrackUuid>
+  remove_routes_for_destination (const TrackUuid &destination);
 
   std::optional<TrackUuidReference>
   get_output_track (const TrackUuid &source) const;

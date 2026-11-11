@@ -107,13 +107,23 @@ TrackRouting::remove_route_for_source (const TrackUuid &source)
   track_routes_.erase (source);
   Q_EMIT routingChanged ();
 }
-void
+std::vector<TrackUuid>
 TrackRouting::remove_routes_for_destination (const TrackUuid &destination)
 {
-  std::erase_if (track_routes_, [&destination] (const auto &kv) {
-    return kv.second == destination;
+  std::vector<TrackUuid> removed_sources;
+  std::erase_if (track_routes_, [&destination, &removed_sources] (const auto &kv) {
+    if (kv.second == destination)
+      {
+        removed_sources.push_back (kv.first);
+        return true;
+      }
+    return false;
   });
-  Q_EMIT routingChanged ();
+  if (!removed_sources.empty ())
+    {
+      Q_EMIT routingChanged ();
+    }
+  return removed_sources;
 }
 std::optional<TrackUuidReference>
 TrackRouting::get_output_track (const TrackUuid &source) const

@@ -28,10 +28,10 @@ protected:
     registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     audio_send_ =
-      std::make_unique<ChannelSend> (*registry_, dsp::PortType::Audio, 0, true);
+      std::make_unique<ChannelSend> (*registry_, dsp::PortType::Audio, true);
 
     midi_send_ =
-      std::make_unique<ChannelSend> (*registry_, dsp::PortType::Midi, 1, false);
+      std::make_unique<ChannelSend> (*registry_, dsp::PortType::Midi, false);
 
     // Set up mock transport
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
@@ -85,8 +85,8 @@ TEST_F (ChannelSendTest, PortConfiguration)
   auto &stereo_in = audio_send_->get_stereo_in_port ();
   auto &stereo_out = audio_send_->get_stereo_out_port ();
 
-  EXPECT_EQ (stereo_in.get_node_name (), u8"Pre-Fader Send 1/Audio Input");
-  EXPECT_EQ (stereo_out.get_node_name (), u8"Pre-Fader Send 1/Audio Output");
+  EXPECT_EQ (stereo_in.get_node_name (), u8"Pre-Fader Send/Audio Input");
+  EXPECT_EQ (stereo_out.get_node_name (), u8"Pre-Fader Send/Audio Output");
 
   // Test MIDI send ports
   EXPECT_EQ (midi_send_->get_all_input_ports ().size (), 1);
@@ -95,8 +95,8 @@ TEST_F (ChannelSendTest, PortConfiguration)
   auto &midi_in = midi_send_->get_midi_in_port ();
   auto &midi_out = midi_send_->get_midi_out_port ();
 
-  EXPECT_EQ (midi_in.get_node_name (), u8"Post-Fader Send 2/MIDI input");
-  EXPECT_EQ (midi_out.get_node_name (), u8"Post-Fader Send 2/MIDI output");
+  EXPECT_EQ (midi_in.get_node_name (), u8"Post-Fader Send/MIDI input");
+  EXPECT_EQ (midi_out.get_node_name (), u8"Post-Fader Send/MIDI output");
 }
 
 TEST_F (ChannelSendTest, ParameterFunctionality)
@@ -379,7 +379,7 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
   nlohmann::json j = *audio_send_;
 
   // Create new send from JSON
-  ChannelSend deserialized (*registry_, dsp::PortType::Audio, 2, false);
+  ChannelSend deserialized (*registry_, dsp::PortType::Audio, false);
 
   from_json (j, deserialized);
 
@@ -393,11 +393,13 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
   EXPECT_EQ (
     audio_send_->amountParam ()->get_uuid (),
     deserialized.amountParam ()->get_uuid ());
-
   // Verify properties
   EXPECT_EQ (deserialized.is_audio (), true);
   EXPECT_EQ (deserialized.is_midi (), false);
   EXPECT_EQ (deserialized.is_prefader (), true);
+  // The name is derived from the deserialized tap point, not kept from
+  // the constructor default
+  EXPECT_EQ (deserialized.get_node_name (), u8"Pre-Fader Send");
   EXPECT_NEAR (deserialized.amountParam ()->baseValue (), 0.75f, 0.001f);
 
   // Verify destination port was serialized
@@ -418,7 +420,7 @@ TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
   nlohmann::json j = *midi_send_;
 
   // Create new send from JSON
-  ChannelSend deserialized (*registry_, dsp::PortType::Midi, 3, true);
+  ChannelSend deserialized (*registry_, dsp::PortType::Midi, true);
 
   from_json (j, deserialized);
 
@@ -447,7 +449,7 @@ TEST_F (ChannelSendTest, JsonSerializationWithoutDestination)
   nlohmann::json j = *audio_send_;
 
   // Create new send from JSON
-  ChannelSend deserialized (*registry_, dsp::PortType::Audio, 2, false);
+  ChannelSend deserialized (*registry_, dsp::PortType::Audio, false);
 
   from_json (j, deserialized);
 
@@ -456,14 +458,13 @@ TEST_F (ChannelSendTest, JsonSerializationWithoutDestination)
   EXPECT_FALSE (deserialized.destination_port ().has_value ());
 }
 
-TEST_F (ChannelSendTest, DifferentSlotNumbers)
+TEST_F (ChannelSendTest, DistinctSendsHaveDistinctParameterIds)
 {
-  // Test different slot numbers create different parameter IDs
-  ChannelSend send1 (*registry_, dsp::PortType::Audio, 0, true);
-
-  ChannelSend send2 (*registry_, dsp::PortType::Audio, 1, true);
-
-  ChannelSend send3 (*registry_, dsp::PortType::Audio, 2, true);
+  // Parameter and port identities derive from the send's UUID, so every
+  // send is distinguishable regardless of insertion order
+  ChannelSend send1 (*registry_, dsp::PortType::Audio, true);
+  ChannelSend send2 (*registry_, dsp::PortType::Audio, true);
+  ChannelSend send3 (*registry_, dsp::PortType::Audio, true);
 
   EXPECT_NE (
     send1.amountParam ()->get_unique_id (),

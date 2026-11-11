@@ -616,7 +616,25 @@
           "$ref": "#/definitions/processorBase"
         },
         {
+          "required": [
+            "id",
+            "signalType",
+            "isPrefader"
+          ],
           "properties": {
+            "id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "signalType": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2,
+              "description": "Port type index in dsp::PortType (0 = Audio, 1 = Midi, 2 = CV)"
+            },
+            "isPrefader": {
+              "type": "boolean",
+              "description": "Whether the send taps the channel before its fader"
+            },
             "destinationPort": {
               "$ref": "#/definitions/uuid",
               "description": "UUID of the destination input port (must be Audio or MIDI type matching the send)"
@@ -719,9 +737,32 @@
         "fader"
       ]
     },
+    "channelSendGroup": {
+      "type": "object",
+      "description": "Container for channel sends (referenced by UUID from the channel)",
+      "properties": {
+        "sends": {
+          "type": "array",
+          "description": "Ordered UUID references to channelSend objects in the registry's channelSends bucket",
+          "items": {
+            "$ref": "#/definitions/uuid"
+          }
+        }
+      },
+      "required": [
+        "sends"
+      ]
+    },
     "channel": {
       "type": "object",
       "description": "Track channel (fader, sends, plugins, etc.)",
+      "required": [
+        "midiFx",
+        "instruments",
+        "inserts",
+        "sends",
+        "fader"
+      ],
       "properties": {
         "midiFx": {
           "$ref": "#/definitions/pluginGroup",
@@ -735,19 +776,9 @@
           "$ref": "#/definitions/pluginGroup",
           "description": "Insert effects plugin group"
         },
-        "preFaderSends": {
-          "type": "array",
-          "description": "Pre-fader channel sends",
-          "items": {
-            "$ref": "#/definitions/channelSend"
-          }
-        },
-        "postFaderSends": {
-          "type": "array",
-          "description": "Post-fader channel sends",
-          "items": {
-            "$ref": "#/definitions/channelSend"
-          }
+        "sends": {
+          "$ref": "#/definitions/channelSendGroup",
+          "description": "Channel sends group"
         },
         "fader": {
           "$ref": "#/definitions/fader",

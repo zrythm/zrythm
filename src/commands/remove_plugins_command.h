@@ -11,6 +11,7 @@
 #include "plugins/plugin_group.h"
 #include "structure/project/port_connections_manager.h"
 #include "structure/tracks/automation_tracklist.h"
+#include "structure/tracks/channel_send.h"
 #include "utils/iobject_registry.h"
 #include "utils/qt.h"
 
@@ -66,6 +67,9 @@ private:
   /** Snapshots the connections that reference the plugins' ports. */
   void snapshot_plugin_connections ();
 
+  /** Snapshots sends whose destination is one of the plugins' ports. */
+  void snapshot_sends_targeting_plugins ();
+
   /** Resolves a port UUID through the registry, or null. */
   [[nodiscard]] dsp::Port * find_port (const dsp::PortUuid &uuid) const;
 
@@ -89,6 +93,15 @@ private:
   /** Destinations detached during redo because their last source went
    * away, stored by UUID. */
   std::vector<dsp::PortUuid> detached_destinations_;
+
+  /** Channel sends whose destination is a port of a removed plugin;
+   * severed during redo, restored during undo. */
+  struct SeveredSend
+  {
+    structure::tracks::ChannelSendUuidReference send;
+    dsp::PortUuid                               destination;
+  };
+  std::vector<SeveredSend> severed_sends_;
 
   /** Automation tracks removed during redo, stored for undo restoration. */
   struct RemovedAutomation

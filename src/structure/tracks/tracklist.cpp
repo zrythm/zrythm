@@ -12,6 +12,8 @@ Tracklist::Tracklist (utils::IObjectRegistry &registry, QObject * parent)
       track_collection_ (
         utils::make_qobject_unique<TrackCollection> (registry, this)),
       track_routing_ (utils::make_qobject_unique<TrackRouting> (registry, this)),
+      channel_send_routing_ (
+        utils::make_qobject_unique<ChannelSendRouting> (*track_collection_, this)),
       singleton_tracks_ (utils::make_qobject_unique<SingletonTracks> (this))
 {
 }

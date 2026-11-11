@@ -14,6 +14,7 @@
 #include "structure/project/project_registry.h"
 #include "structure/scenes/clip_slot.h"
 #include "structure/tracks/automation_track.h"
+#include "structure/tracks/channel_send.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane.h"
@@ -51,6 +52,8 @@ struct ProjectRegistry::Impl
       std::visit ([] (auto * p) { delete p; }, var);
     for (auto &[id, ptr] : file_audio_sources_)
       delete ptr;
+    for (auto &[id, ptr] : channel_sends_)
+      delete ptr;
     for (auto &[id, ptr] : tempo_object_managers_)
       delete ptr;
   }
@@ -71,6 +74,9 @@ struct ProjectRegistry::Impl
       arranger_objects_;
   boost::unordered::unordered_flat_map<QUuid, dsp::FileAudioSource *>
     file_audio_sources_;
+
+  boost::unordered::unordered_flat_map<QUuid, structure::tracks::ChannelSend *>
+    channel_sends_;
 
   boost::unordered::
     unordered_flat_map<QUuid, structure::arrangement::TempoObjectManager *>
@@ -195,6 +201,15 @@ ProjectRegistry::register_object_impl (utils::UuidIdentifiableObject &base)
     }
 
   if (
+    auto * channel_send = qobject_cast<structure::tracks::ChannelSend *> (qobj))
+    {
+      impl_->channel_sends_.emplace (uuid, channel_send);
+      impl_->uuid_to_category_.emplace (uuid, Impl::Category::ChannelSend);
+      qobj->setParent (this);
+      return;
+    }
+
+  if (
     auto * tom =
       qobject_cast<structure::arrangement::TempoObjectManager *> (qobj))
     {
@@ -299,6 +314,11 @@ ProjectRegistry::find_by_raw_uuid_impl (const QUuid &id) const
         auto it = impl_->file_audio_sources_.find (id);
         return it != impl_->file_audio_sources_.end () ? it->second : nullptr;
       }
+    case Impl::Category::ChannelSend:
+      {
+        auto it = impl_->channel_sends_.find (id);
+        return it != impl_->channel_sends_.end () ? it->second : nullptr;
+      }
     case Impl::Category::TempoObjectManager:
       {
         auto it = impl_->tempo_object_managers_.find (id);
@@ -331,6 +351,12 @@ ProjectRegistry::for_each_matching_impl (
   if (meta_type.inherits (&dsp::FileAudioSource::staticMetaObject))
     {
       for (const auto &[uuid, ptr] : impl_->file_audio_sources_)
+        visit_if_matching (*ptr);
+      return;
+    }
+  if (meta_type.inherits (&structure::tracks::ChannelSend::staticMetaObject))
+    {
+      for (const auto &[uuid, ptr] : impl_->channel_sends_)
         visit_if_matching (*ptr);
       return;
     }
@@ -549,6 +575,16 @@ ProjectRegistry::delete_object_by_id (const QUuid &id)
           }
         break;
       }
+    case Impl::Category::ChannelSend:
+      {
+        auto it = impl_->channel_sends_.find (id);
+        if (it != impl_->channel_sends_.end ())
+          {
+            raw = it->second;
+            impl_->channel_sends_.erase (it);
+          }
+        break;
+      }
     case Impl::Category::TempoObjectManager:
       {
         auto it = impl_->tempo_object_managers_.find (id);
@@ -608,6 +644,9 @@ ProjectRegistry::serialize_object_by_uuid (
     case ObjectCategory::FileAudioSource:
       j_out = *impl_->file_audio_sources_.at (id);
       break;
+    case ObjectCategory::ChannelSend:
+      j_out = *impl_->channel_sends_.at (id);
+      break;
     case ObjectCategory::TempoObjectManager:
       j_out = *impl_->tempo_object_managers_.at (id);
       break;
@@ -657,6 +696,8 @@ to_json (nlohmann::json &j, const ProjectRegistry &registry)
     serialize_bucket_variant (registry.impl_->arranger_objects_);
   j[ProjectRegistry::kFileAudioSourcesKey] =
     serialize_bucket_ptr (registry.impl_->file_audio_sources_);
+  j[ProjectRegistry::kChannelSendsKey] =
+    serialize_bucket_ptr (registry.impl_->channel_sends_);
 }
 
 // ============================================================================
@@ -748,6 +789,18 @@ struct ClipSlotBuilder
   {
     static_assert (std::is_same_v<T, structure::scenes::ClipSlot>);
     return std::make_unique<T> (registry, nullptr);
+  }
+};
+
+struct ChannelSendBuilder
+{
+  ProjectRegistry                         &registry;
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    static_assert (std::is_same_v<T, structure::tracks::ChannelSend>);
+    // Neutral signal type: the deserialization below replaces the ports
+    // and fields created from it
+    return std::make_unique<T> (registry, dsp::PortType::Audio, false, nullptr);
   }
 };
 
@@ -914,6 +967,8 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
     deferred_lanes;
   std::vector<std::pair<structure::scenes::ClipSlot *, nlohmann::json>>
     deferred_clip_slots;
+  std::vector<std::pair<structure::tracks::ChannelSend *, nlohmann::json>>
+    deferred_channel_sends;
 
   // --- Phase 1: Create and register ALL objects from ALL buckets ---
   // All objects are created, assigned their UUIDs from JSON, and registered.
@@ -997,9 +1052,19 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
         ClipSlotBuilder{ registry }, deferred_clip_slots);
     }
 
+  if (j.contains (ProjectRegistry::kChannelSendsKey))
+    {
+      deferred_channel_sends.reserve (
+        j[ProjectRegistry::kChannelSendsKey].size ());
+      create_and_register_ptr_all<structure::tracks::ChannelSend> (
+        registry, j[ProjectRegistry::kChannelSendsKey],
+        ChannelSendBuilder{ registry }, deferred_channel_sends);
+    }
+
   // --- Phase 2: Deserialize data into ALL objects from ALL buckets ---
   // Same order as Phase 1: ports → params → plugins → file audio sources →
-  // arranger objects → tracks → automation tracks → lanes → clip slots.
+  // arranger objects → tracks → automation tracks → lanes → clip slots →
+  // channel sends.
   // Within each bucket, JSON array order is preserved so children are
   // deserialized before parents. Lanes come after tracks: the tracks'
   // TrackLaneLists attach the (still empty) lanes and wire their
@@ -1019,6 +1084,7 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
     deferred_automation_tracks);
   deserialize_ptr_all<structure::tracks::TrackLane> (deferred_lanes);
   deserialize_ptr_all<structure::scenes::ClipSlot> (deferred_clip_slots);
+  deserialize_ptr_all<structure::tracks::ChannelSend> (deferred_channel_sends);
 }
 
 } // namespace zrythm::structure::project

@@ -14,6 +14,7 @@ add_executable(zrythm_commands_unit_tests
   change_track_color_command_test.cpp
   change_track_comment_command_test.cpp
   change_uuid_identifiable_object_property_command_test.cpp
+  channel_send_commands_test.cpp
   chord_pad_commands_test.cpp
   delete_lane_command_test.cpp
   delete_tracks_command_test.cpp
@@ -26,6 +27,7 @@ add_executable(zrythm_commands_unit_tests
   remove_plugins_command_test.cpp
   rename_track_command_test.cpp
   resize_arranger_objects_command_test.cpp
+  route_channel_send_command_test.cpp
   route_track_command_test.cpp
   set_audio_clip_transforms_command_test.cpp
   set_clip_loop_points_command_test.cpp

@@ -78,6 +78,8 @@ protected:
       nlohmann::json::array ();
     registry[structure::project::ProjectRegistry::kFileAudioSourcesKey] =
       nlohmann::json::array ();
+    registry[structure::project::ProjectRegistry::kChannelSendsKey] =
+      nlohmann::json::array ();
     j["registry"] = std::move (registry);
     j["roots"] = nlohmann::json::array ();
     return j.get<structure::project::ClipboardPayload> ();

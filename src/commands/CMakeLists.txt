@@ -36,6 +36,7 @@ target_sources(zrythm_commands_lib
       change_track_comment_command.h
       change_timebase_override_command.h
       change_uuid_identifiable_object_property_command.h
+      channel_send_commands.h
       chord_pad_commands.h
       command.h
       delete_lane_command.h
@@ -50,6 +51,7 @@ target_sources(zrythm_commands_lib
       remove_plugins_command.h
       rename_track_command.h
       resize_arranger_objects_command.h
+      route_channel_send_command.h
       route_track_command.h
       set_audio_clip_transforms_command.h
       set_clip_loop_points_command.h

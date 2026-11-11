@@ -402,7 +402,8 @@
             "lanes",
             "clipSlots",
             "arrangerObjects",
-            "fileAudioSources"
+            "fileAudioSources",
+            "channelSends"
           ],
           "properties": {
             "ports": {
@@ -466,6 +467,13 @@
               "description": "All audio file references",
               "items": {
                 "$ref": "common.schema.json#/definitions/fileAudioSource"
+              }
+            },
+            "channelSends": {
+              "type": "array",
+              "description": "All channel sends (referenced by tracks' channels)",
+              "items": {
+                "$ref": "common.schema.json#/definitions/channelSend"
               }
             }
           }

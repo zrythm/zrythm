@@ -18,6 +18,8 @@ target_sources(zrythm_structure_tracks_lib
     automation_tracklist.cpp
     channel.cpp
     channel_send.cpp
+    channel_send_group.cpp
+    channel_send_routing.cpp
     channel_subgraph_builder.cpp
     chord_track.cpp
     clip_playback_data_provider.cpp
@@ -50,6 +52,8 @@ target_sources(zrythm_structure_tracks_lib
       automation_tracklist.h
       channel.h
       channel_send.h
+      channel_send_group.h
+      channel_send_routing.h
       channel_subgraph_builder.h
       chord_track.h
       clip_playback_data_provider.h

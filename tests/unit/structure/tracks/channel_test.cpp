@@ -161,15 +161,14 @@ TEST_F (ChannelTest, ChannelSendsInitialization)
   audio_channel_ = createAudioChannel ();
   midi_channel_ = createMidiChannel ();
 
-  // Test that sends are properly initialized
-  EXPECT_EQ (audio_channel_->pre_fader_sends ().size (), 1);
-  EXPECT_EQ (audio_channel_->post_fader_sends ().size (), 1);
-  EXPECT_EQ (midi_channel_->pre_fader_sends ().size (), 1);
-  EXPECT_EQ (midi_channel_->post_fader_sends ().size (), 1);
+  // Channels start without sends; they are added by the user
+  EXPECT_EQ (audio_channel_->sends ()->rowCount (), 0);
+  EXPECT_EQ (midi_channel_->sends ()->rowCount (), 0);
 
-  // Test send properties
-  auto &audio_pre_send = audio_channel_->pre_fader_sends ().front ();
-  auto &audio_post_send = audio_channel_->post_fader_sends ().front ();
+  // Added sends keep their tap point
+  auto * audio_pre_send = audio_channel_->sends ()->append_send (true).get ();
+  auto * audio_post_send = audio_channel_->sends ()->append_send (false).get ();
+  EXPECT_EQ (audio_channel_->sends ()->rowCount (), 2);
   EXPECT_EQ (audio_pre_send->is_prefader (), true);
   EXPECT_EQ (audio_post_send->is_prefader (), false);
 }

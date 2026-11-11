@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/channel_subgraph_builder.h"
+#include "utils/logger.h"
 
 namespace zrythm::structure::tracks
 {
@@ -31,13 +32,9 @@ ChannelSubgraphBuilder::add_nodes (dsp::graph::Graph &graph, Channel &ch)
     }
 
   // sends
-  for (const auto &send : ch.pre_fader_sends ())
+  for (const auto &send_ref : ch.sends ()->get_sends ())
     {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, *send);
-    }
-  for (const auto &send : ch.post_fader_sends ())
-    {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, *send);
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *send_ref);
     }
 }
 
@@ -387,70 +384,54 @@ ChannelSubgraphBuilder::add_connections (
     }
 
   // connect sends
-  for (const auto &send : ch.pre_fader_sends ())
+  for (const auto &send_ref : ch.sends ()->get_sends ())
     {
+      auto * send = send_ref.get ();
       dsp::ProcessorGraphBuilder::add_connections (graph, *send);
-
       if (send->is_midi ())
         {
-          // connect prefader output to send input
+          // connect the tap point output to the send input
           connect_ports (
-            ch.get_midi_pre_fader ().get_midi_out_port (0),
+            send->is_prefader ()
+              ? ch.get_midi_pre_fader ().get_midi_out_port (0)
+              : fader->get_midi_out_port (),
             send->get_midi_in_port ());
 
           // connect send output to destination port (if set)
           if (auto dest = send->destination_port ())
             {
-              connect_ports (
-                send->get_midi_out_port (),
-                *dest->get_object_as<dsp::MidiPort> ());
+              if (auto * dest_port = dest->get_object_as<dsp::MidiPort> ())
+                {
+                  connect_ports (send->get_midi_out_port (), *dest_port);
+                }
+              else
+                {
+                  z_warning (
+                    "Send destination port not found; skipping connection");
+                }
             }
         }
       else if (send->is_audio ())
         {
-          // connect prefader output to send input
+          // connect the tap point output to the send input
           connect_ports (
-            ch.get_audio_pre_fader ().get_audio_out_port (),
+            send->is_prefader ()
+              ? ch.get_audio_pre_fader ().get_audio_out_port ()
+              : fader->get_stereo_out_port (),
             send->get_stereo_in_port ());
 
           // connect send output to destination port (if set)
           if (auto dest = send->destination_port ())
             {
-              connect_ports (
-                send->get_stereo_out_port (),
-                *dest->get_object_as<dsp::AudioPort> ());
-            }
-        }
-    }
-  for (const auto &send : ch.post_fader_sends ())
-    {
-      dsp::ProcessorGraphBuilder::add_connections (graph, *send);
-
-      if (send->is_midi ())
-        {
-          // connect fader output to send input
-          connect_ports (fader->get_midi_out_port (), send->get_midi_in_port ());
-
-          // connect send output to destination port (if set)
-          if (auto dest = send->destination_port ())
-            {
-              connect_ports (
-                send->get_midi_out_port (),
-                *dest->get_object_as<dsp::MidiPort> ());
-            }
-        }
-      else if (send->is_audio ())
-        {
-          // connect fader output to send input
-          connect_ports (
-            fader->get_stereo_out_port (), send->get_stereo_in_port ());
-
-          // connect send output to destination port (if set)
-          if (auto dest = send->destination_port ())
-            {
-              connect_ports (
-                send->get_stereo_out_port (),
-                *dest->get_object_as<dsp::AudioPort> ());
+              if (auto * dest_port = dest->get_object_as<dsp::AudioPort> ())
+                {
+                  connect_ports (send->get_stereo_out_port (), *dest_port);
+                }
+              else
+                {
+                  z_warning (
+                    "Send destination port not found; skipping connection");
+                }
             }
         }
     }

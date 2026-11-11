@@ -16,6 +16,9 @@ Control {
   readonly property int radius: 4
   property string title: "Expander"
   property bool vertical: false
+  // Optional component placed at the header's trailing edge (e.g. an
+  // add button); instantiated only when set
+  property Component headerAction: null
 
   padding: 4
 
@@ -74,6 +77,11 @@ Control {
           elide: Text.ElideRight
           font: expandButton.font
           text: expandButton.text
+        }
+
+        Loader {
+          Layout.alignment: Qt.AlignVCenter
+          sourceComponent: root.headerAction
         }
 
         ColorImage {

@@ -693,7 +693,8 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
     *registry_, u8"Destination Track Input", dsp::PortFlow::Input,
     dsp::SpeakerArrangement::stereo ());
 
-  auto &send = audio_channel_->pre_fader_sends ().front ();
+  auto   send_ref = audio_channel_->sends ()->append_send (true);
+  auto * send = send_ref.get ();
   send->set_destination_port (dest_port_ref);
   ASSERT_TRUE (send->has_destination ());
 
@@ -719,9 +720,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
   verifyBasicAudioChannelConnections (*track_processor);
 
   // Check that pre-fader has connections to sends
-  verifyProcessorsConnected (
-    audio_channel_->get_audio_pre_fader (),
-    *audio_channel_->pre_fader_sends ().front ());
+  verifyProcessorsConnected (audio_channel_->get_audio_pre_fader (), *send);
 
   // Verify send output is connected to destination port by ChannelSubgraphBuilder
   EXPECT_TRUE (
@@ -738,7 +737,8 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
     *registry_, u8"Destination Track Input", dsp::PortFlow::Input,
     dsp::SpeakerArrangement::stereo ());
 
-  auto &send = audio_channel_->post_fader_sends ().front ();
+  auto   send_ref = audio_channel_->sends ()->append_send (false);
+  auto * send = send_ref.get ();
   send->set_destination_port (dest_port_ref);
   ASSERT_TRUE (send->has_destination ());
 
@@ -764,8 +764,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
   verifyBasicAudioChannelConnections (*track_processor);
 
   // Check that fader has connections to sends
-  verifyProcessorsConnected (
-    audio_channel_->get_fader (), *audio_channel_->post_fader_sends ().front ());
+  verifyProcessorsConnected (audio_channel_->get_fader (), *send);
 
   // Verify send output is connected to destination port by ChannelSubgraphBuilder
   EXPECT_TRUE (

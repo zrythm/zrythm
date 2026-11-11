@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <unordered_set>
 
 #include "commands/remove_plugins_command.h"
 #include "dsp/parameter.h"
@@ -10,6 +11,8 @@
 #include "plugins/plugin.h"
 #include "utils/logger.h"
 #include "utils/registry_utils.h"
+
+#include <type_safe/strong_typedef.hpp>
 
 namespace zrythm::commands
 {
@@ -38,6 +41,7 @@ RemovePluginsCommand::RemovePluginsCommand (
     }
 
   snapshot_plugin_connections ();
+  snapshot_sends_targeting_plugins ();
 }
 
 void
@@ -102,6 +106,34 @@ RemovePluginsCommand::find_port (const dsp::PortUuid &uuid) const
 }
 
 void
+RemovePluginsCommand::snapshot_sends_targeting_plugins ()
+{
+  std::unordered_set<dsp::PortUuid> removed_port_ids;
+  for (const auto &info : plugin_infos_)
+    {
+      const auto * plugin = info.plugin_ref.get ();
+      if (plugin == nullptr)
+        continue;
+      removed_port_ids.merge (plugin->get_all_port_ids ());
+    }
+
+  registry_.for_each_matching<structure::tracks::ChannelSend> (
+    [this, &removed_port_ids] (structure::tracks::ChannelSend &send) {
+      const auto destination = send.destination_port ();
+      if (
+        !destination.has_value ()
+        || !removed_port_ids.contains (destination->id ()))
+        return;
+      severed_sends_.push_back (
+        SeveredSend{
+          structure::tracks::ChannelSendUuidReference{
+                                                      send.get_uuid (), registry_ },
+          destination->id ()
+      });
+    });
+}
+
+void
 RemovePluginsCommand::redo ()
 {
   // Remember each plugin's index in its group
@@ -137,6 +169,15 @@ RemovePluginsCommand::redo ()
   for (const auto &removed : removed_connections_)
     {
       connections_manager_.remove_connection (removed.src, removed.dest);
+    }
+
+  // Sever sends whose destination is one of the removed plugins' ports
+  for (const auto &severed : severed_sends_)
+    {
+      if (auto * send = severed.send.get ())
+        {
+          send->clear_destination_port ();
+        }
     }
 
   // Destination ports that lost their last source return to the detached
@@ -198,6 +239,16 @@ RemovePluginsCommand::undo ()
         destination->set_detached (false);
     }
   detached_destinations_.clear ();
+
+  // Restore the severed send destinations
+  for (const auto &severed : severed_sends_)
+    {
+      if (auto * send = severed.send.get ())
+        {
+          send->set_destination_port (
+            dsp::PortUuidReference{ severed.destination, send->registry () });
+        }
+    }
 
   // Sort by index ascending so reinsertions don't shift later positions
   auto sorted_infos = plugin_infos_;

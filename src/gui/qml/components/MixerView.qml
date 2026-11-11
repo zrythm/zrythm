@@ -16,6 +16,7 @@ RowLayout {
   required property PluginOperator pluginOperator
   required property PortObservationManager portObservationManager
   required property ProcessorParameterOperator parameterOperator
+  required property Project project
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -34,6 +35,7 @@ RowLayout {
       pluginImporter: root.pluginImporter
       pluginOperator: root.pluginOperator
       portObservationManager: root.portObservationManager
+      project: root.project
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.tracklist
       undoStack: root.undoStack

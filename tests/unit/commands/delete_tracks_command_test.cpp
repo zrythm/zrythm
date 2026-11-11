@@ -33,6 +33,8 @@ protected:
 
   utils::ObjectRegistry registry_;
 
+  structure::tracks::TrackRouting router_{ registry_ };
+
   structure::tracks::FinalTrackDependencies dependencies_{
     tempo_map_wrapper_,
     registry_,
@@ -59,7 +61,7 @@ TEST_F (DeleteTracksCommandTest, DeleteSingleTrack)
   collection_->add_track (track_ref);
   ASSERT_EQ (collection_->track_count (), 1);
 
-  DeleteTracksCommand cmd (*collection_, { track_ref });
+  DeleteTracksCommand cmd (*collection_, router_, { track_ref });
   cmd.redo ();
 
   EXPECT_EQ (collection_->track_count (), 0);
@@ -85,7 +87,7 @@ TEST_F (DeleteTracksCommandTest, DeleteMultipleTracks)
   collection_->add_track (track3);
   ASSERT_EQ (collection_->track_count (), 3);
 
-  DeleteTracksCommand cmd (*collection_, { track1, track3 });
+  DeleteTracksCommand cmd (*collection_, router_, { track1, track3 });
   cmd.redo ();
 
   EXPECT_EQ (collection_->track_count (), 1);
@@ -114,7 +116,7 @@ TEST_F (DeleteTracksCommandTest, RestoresOriginalPositions)
   collection_->add_track (track2);
   collection_->add_track (track3);
 
-  DeleteTracksCommand cmd (*collection_, { track2 });
+  DeleteTracksCommand cmd (*collection_, router_, { track2 });
   cmd.redo ();
   ASSERT_EQ (collection_->track_count (), 2);
 
@@ -134,7 +136,7 @@ TEST_F (DeleteTracksCommandTest, MultipleUndoRedoCycles)
     registry_, dependencies_);
   collection_->add_track (track_ref);
 
-  DeleteTracksCommand cmd (*collection_, { track_ref });
+  DeleteTracksCommand cmd (*collection_, router_, { track_ref });
 
   for (int i = 0; i < 3; ++i)
     {
@@ -151,7 +153,7 @@ TEST_F (DeleteTracksCommandTest, CommandText)
 {
   auto track_ref = utils::create_object<structure::tracks::AudioTrack> (
     registry_, dependencies_);
-  DeleteTracksCommand cmd (*collection_, { track_ref });
+  DeleteTracksCommand cmd (*collection_, router_, { track_ref });
   EXPECT_EQ (cmd.text (), QString ("Delete Track"));
 }
 
@@ -164,7 +166,7 @@ TEST_F (DeleteTracksCommandTest, CommandTextPlural)
   collection_->add_track (track1);
   collection_->add_track (track2);
 
-  DeleteTracksCommand cmd (*collection_, { track1, track2 });
+  DeleteTracksCommand cmd (*collection_, router_, { track1, track2 });
   EXPECT_EQ (cmd.text (), QString ("Delete Tracks"));
 }
 
@@ -199,7 +201,7 @@ TEST_F (DeleteTracksCommandTest, DeleteFolderWithChildren)
   for (const auto &desc_id : descendants)
     expanded_refs.emplace_back (desc_id, registry_);
 
-  DeleteTracksCommand cmd (*collection_, std::move (expanded_refs));
+  DeleteTracksCommand cmd (*collection_, router_, std::move (expanded_refs));
   cmd.redo ();
 
   // Only the unrelated track remains
@@ -263,7 +265,7 @@ TEST_F (DeleteTracksCommandTest, DeleteNestedFolders)
 
   ASSERT_EQ (expanded_refs.size (), 3u);
 
-  DeleteTracksCommand cmd (*collection_, std::move (expanded_refs));
+  DeleteTracksCommand cmd (*collection_, router_, std::move (expanded_refs));
   cmd.redo ();
 
   EXPECT_EQ (collection_->track_count (), 1);
@@ -300,7 +302,7 @@ TEST_F (DeleteTracksCommandTest, DeleteNestedFolders)
 
 TEST_F (DeleteTracksCommandTest, DeleteEmptyRefsIsNoop)
 {
-  DeleteTracksCommand cmd (*collection_, {});
+  DeleteTracksCommand cmd (*collection_, router_, {});
   EXPECT_EQ (cmd.text (), QString ("Delete Tracks"));
 
   cmd.redo ();
@@ -323,7 +325,7 @@ TEST_F (DeleteTracksCommandTest, RedoClosesPluginWindows)
   collection_->add_track (track_ref);
   ASSERT_EQ (collection_->track_count (), 1);
 
-  DeleteTracksCommand cmd (*collection_, { track_ref });
+  DeleteTracksCommand cmd (*collection_, router_, { track_ref });
   cmd.redo ();
   EXPECT_FALSE (plugin->uiVisible ());
 }
@@ -339,7 +341,7 @@ TEST_F (DeleteTracksCommandTest, RedoAfterReopenClosesPluginWindows)
 
   collection_->add_track (track_ref);
 
-  DeleteTracksCommand cmd (*collection_, { track_ref });
+  DeleteTracksCommand cmd (*collection_, router_, { track_ref });
   cmd.redo ();
   EXPECT_FALSE (plugin->uiVisible ());
 
@@ -351,6 +353,63 @@ TEST_F (DeleteTracksCommandTest, RedoAfterReopenClosesPluginWindows)
 
   cmd.redo ();
   EXPECT_FALSE (plugin->uiVisible ());
+}
+
+TEST_F (DeleteTracksCommandTest, SeversAndRestoresRoutesAndSendDestinations)
+{
+  auto source = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto target = utils::create_object<structure::tracks::AudioGroupTrack> (
+    registry_, dependencies_);
+  collection_->add_track (source);
+  collection_->add_track (target);
+
+  // Route source -> target
+  router_.add_or_replace_route (source.id (), target.id ());
+
+  // Send on source pointing at the target's input port
+  auto * send = source->channel ()->sends ()->append_send (false).get ();
+  auto  &target_in_port = target->get_track_processor ()->get_stereo_in_port ();
+  send->set_destination_port (
+    dsp::PortUuidReference{ target_in_port.get_uuid (), registry_ });
+  ASSERT_TRUE (send->has_destination ());
+
+  DeleteTracksCommand cmd (*collection_, router_, { target });
+  cmd.redo ();
+
+  // The route and the send destination are severed with the target
+  EXPECT_FALSE (router_.get_output_track (source.id ()).has_value ());
+  EXPECT_FALSE (send->has_destination ());
+
+  cmd.undo ();
+
+  EXPECT_TRUE (router_.get_output_track (source.id ()).has_value ());
+  EXPECT_EQ (router_.get_output_track (source.id ())->id (), target.id ());
+  EXPECT_TRUE (send->has_destination ());
+}
+
+TEST_F (DeleteTracksCommandTest, SeversAndRestoresDeletedTracksOwnRoute)
+{
+  auto deleted = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto survivor = utils::create_object<structure::tracks::AudioGroupTrack> (
+    registry_, dependencies_);
+  collection_->add_track (deleted);
+  collection_->add_track (survivor);
+
+  // The deleted track routes into the surviving track
+  router_.add_or_replace_route (deleted.id (), survivor.id ());
+
+  DeleteTracksCommand cmd (*collection_, router_, { deleted });
+  cmd.redo ();
+
+  // The deleted track's outgoing route is severed with it
+  EXPECT_FALSE (router_.get_output_track (deleted.id ()).has_value ());
+
+  cmd.undo ();
+
+  EXPECT_TRUE (router_.get_output_track (deleted.id ()).has_value ());
+  EXPECT_EQ (router_.get_output_track (deleted.id ())->id (), survivor.id ());
 }
 
 } // namespace zrythm::commands

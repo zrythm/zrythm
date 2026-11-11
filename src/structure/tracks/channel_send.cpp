@@ -15,19 +15,22 @@ namespace zrythm::structure::tracks
 ChannelSend::ChannelSend (
   utils::IObjectRegistry &object_registry,
   dsp::PortType           signal_type,
-  int                     slot,
   bool                    is_prefader,
   QObject *               parent)
     : dsp::ProcessorBase (object_registry, u8"Channel Send", parent),
       signal_type_ (signal_type), is_prefader_ (is_prefader)
 {
+  // Port and parameter symbols derive from the send's UUID so they stay
+  // stable when sends are inserted or removed around this one
+  const auto id_str = fmt::format ("{}", get_uuid ());
+
   // Amount parameter (volume/gain)
   add_parameter (
     utils::create_object<dsp::ProcessorParameter> (
       registry (), registry (),
       dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (
-          fmt::format ("channel_send_{}_amount", slot + 1))),
+          fmt::format ("channel_send_{}_amount", id_str))),
       dsp::ParameterRange (
         dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
       utils::Utf8String::from_qstring (QObject::tr ("Amount"))));
@@ -38,7 +41,7 @@ ChannelSend::ChannelSend (
       registry (), registry (),
       dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (
-          fmt::format ("channel_send_{}_enabled", slot + 1))),
+          fmt::format ("channel_send_{}_enabled", id_str))),
       dsp::ParameterRange::make_toggle (true),
       utils::Utf8String::from_qstring (QObject::tr ("Enabled"))));
 
@@ -50,7 +53,7 @@ ChannelSend::ChannelSend (
           dsp::SpeakerArrangement::stereo ());
         port.get_object_as<dsp::AudioPort> ()->set_symbol (
           utils::Utf8String::from_utf8_encoded_string (
-            fmt::format ("channel_send_{}_audio_in", slot + 1)));
+            fmt::format ("channel_send_{}_audio_in", id_str)));
         add_input_port (port);
       }
 
@@ -60,7 +63,7 @@ ChannelSend::ChannelSend (
           dsp::SpeakerArrangement::stereo ());
         port.get_object_as<dsp::AudioPort> ()->set_symbol (
           utils::Utf8String::from_utf8_encoded_string (
-            fmt::format ("channel_send_{}_audio_out", slot + 1)));
+            fmt::format ("channel_send_{}_audio_out", id_str)));
         add_output_port (port);
       }
     }
@@ -74,7 +77,7 @@ ChannelSend::ChannelSend (
       auto &midi_in_port = get_midi_in_port ();
       midi_in_port.set_symbol (
         utils::Utf8String::from_utf8_encoded_string (
-          fmt::format ("channel_send_{}_midi_in", slot + 1)));
+          fmt::format ("channel_send_{}_midi_in", id_str)));
 
       add_output_port (
         utils::create_object<dsp::MidiPort> (
@@ -84,13 +87,10 @@ ChannelSend::ChannelSend (
       auto &midi_out_port = get_midi_out_port ();
       midi_out_port.set_symbol (
         utils::Utf8String::from_utf8_encoded_string (
-          fmt::format ("channel_send_{}_midi_out", slot + 1)));
+          fmt::format ("channel_send_{}_midi_out", id_str)));
     }
 
-  set_name (
-    utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "{} Send {}", is_prefader_ ? "Pre-Fader" : "Post-Fader", slot + 1)));
+  update_name ();
 }
 
 dsp::ProcessorParameter *
@@ -99,28 +99,34 @@ ChannelSend::enabledParam () const
   return get_parameters ().at (1).get ();
 }
 
-QVariant
+dsp::Port *
 ChannelSend::destinationPort () const
 {
-  if (destination_port_)
-    {
-      return QVariant::fromValue (destination_port_->get ());
-    }
-  return QVariant{};
+  return destination_port_
+           ? static_cast<dsp::Port *> (destination_port_->get ())
+           : nullptr;
 }
 
 void
-ChannelSend::setDestinationPort (const QVariant &port)
+ChannelSend::setDestinationPort (dsp::Port * port)
 {
-  const auto * port_ptr = port.value<dsp::Port *> ();
+  if (port == nullptr)
+    {
+      clear_destination_port ();
+      return;
+    }
   set_destination_port (
-    dsp::PortUuidReference{ port_ptr->get_uuid (), registry () });
+    dsp::PortUuidReference{ port->get_uuid (), registry () });
 }
 
 void
 ChannelSend::set_destination_port (dsp::PortUuidReference port)
 {
   auto * port_ptr = port.get_object_as<dsp::Port> ();
+  if (port_ptr == nullptr)
+    {
+      throw std::invalid_argument ("Destination port not found in the registry");
+    }
   if (!port_ptr->is_input ())
     {
       throw std::invalid_argument (
@@ -139,6 +145,25 @@ ChannelSend::set_destination_port (dsp::PortUuidReference port)
 
   destination_port_.emplace (std::move (port));
   Q_EMIT destinationPortChanged ();
+}
+
+void
+ChannelSend::update_name ()
+{
+  set_name (
+    utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("{} Send", is_prefader_ ? "Pre-Fader" : "Post-Fader")));
+}
+
+void
+ChannelSend::setIsPrefader (bool pre)
+{
+  if (pre == is_prefader_)
+    return;
+
+  is_prefader_ = pre;
+  update_name ();
+  Q_EMIT isPrefaderChanged ();
 }
 
 void
@@ -237,6 +262,7 @@ init_from (
 void
 to_json (nlohmann::json &j, const ChannelSend &p)
 {
+  to_json (j, static_cast<const utils::UuidIdentifiableObject &> (p));
   to_json (j, static_cast<const dsp::ProcessorBase &> (p));
   j[ChannelSend::kSignalTypeKey] = p.signal_type_;
   j[ChannelSend::kIsPrefaderKey] = p.is_prefader_;
@@ -249,9 +275,11 @@ to_json (nlohmann::json &j, const ChannelSend &p)
 void
 from_json (const nlohmann::json &j, ChannelSend &p)
 {
+  from_json (j, static_cast<utils::UuidIdentifiableObject &> (p));
   from_json (j, static_cast<dsp::ProcessorBase &> (p));
   j.at (ChannelSend::kSignalTypeKey).get_to (p.signal_type_);
   j.at (ChannelSend::kIsPrefaderKey).get_to (p.is_prefader_);
+  p.update_name ();
   if (j.contains (ChannelSend::kDestinationPortKey))
     {
       p.destination_port_.emplace (p.registry ());

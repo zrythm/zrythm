@@ -258,6 +258,18 @@ public:
            || type == Type::Instrument || type == Type::Master;
   }
 
+  /**
+   * @brief Returns if the Track can be a channel send destination.
+   *
+   * This is the group target set plus the bus tracks: bus tracks cannot
+   * be direct route targets but can receive sends.
+   */
+  static constexpr bool type_can_be_send_target (const Type type)
+  {
+    return type_can_be_group_target (type) || type == Type::AudioBus
+           || type == Type::MidiBus;
+  }
+
   static constexpr bool type_can_have_automation (const Type type)
   {
     return type == Type::Instrument || type == Type::Audio || type == Type::Master

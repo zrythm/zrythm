@@ -6,7 +6,7 @@
 #include "dsp/fader.h"
 #include "dsp/passthrough_processors.h"
 #include "plugins/plugin_group.h"
-#include "structure/tracks/channel_send.h"
+#include "structure/tracks/channel_send_group.h"
 #include "utils/icloneable.h"
 #include "utils/object_registry.h"
 
@@ -65,6 +65,8 @@ class Channel : public QObject
   Q_PROPERTY (zrythm::plugins::PluginGroup * midiFx READ midiFx CONSTANT)
   Q_PROPERTY (
     zrythm::plugins::PluginGroup * instruments READ instruments CONSTANT)
+  Q_PROPERTY (
+    zrythm::structure::tracks::ChannelSendGroup * sends READ sends CONSTANT)
   QML_UNCREATABLE ("")
 
 public:
@@ -132,6 +134,9 @@ public:
   plugins::PluginGroup * inserts () const { return inserts_.get (); }
   plugins::PluginGroup * instruments () const { return instruments_.get (); }
 
+  /** The channel's sends, in list order. */
+  ChannelSendGroup * sends () const { return sends_.get (); }
+
   // ============================================================================
 
   bool is_midi () const { return signal_type_ == PortType::Midi; }
@@ -167,8 +172,7 @@ public:
    * These exist for the channel's lifetime and are chosen at construction
    * from its signal types: the MIDI event tap, the pre-faders, the fader
    * and the post-faders. User-added content is enumerated separately:
-   * plugins (get_plugins()) and sends (pre_fader_sends() /
-   * post_fader_sends()).
+   * plugins (get_plugins()) and sends (sends()).
    */
   std::vector<dsp::ProcessorBase *> get_builtin_processors () const;
 
@@ -192,15 +196,11 @@ public:
   auto       &get_midi_post_fader () const { return *midi_postfader_; }
   auto       &get_audio_post_fader () const { return *audio_postfader_; }
 
-  auto &pre_fader_sends () const { return prefader_sends_; }
-  auto &post_fader_sends () const { return postfader_sends_; }
-
 private:
   static constexpr auto kMidiFxKey = "midiFx"sv;
   static constexpr auto kInstrumentsKey = "instruments"sv;
   static constexpr auto kInsertsKey = "inserts"sv;
-  static constexpr auto kPreFaderSendsKey = "preFaderSends"sv;
-  static constexpr auto kPostFaderSendsKey = "postFaderSends"sv;
+  static constexpr auto kSendsKey = "sends"sv;
   static constexpr auto kFaderKey = "fader"sv;
 
   friend void to_json (nlohmann::json &j, const Channel &c);
@@ -236,8 +236,8 @@ private:
   /** The channel insert strip. */
   utils::QObjectUniquePtr<plugins::PluginGroup> inserts_;
 
-  std::vector<utils::QObjectUniquePtr<ChannelSend>> prefader_sends_;
-  std::vector<utils::QObjectUniquePtr<ChannelSend>> postfader_sends_;
+  /** The channel's sends. */
+  utils::QObjectUniquePtr<ChannelSendGroup> sends_;
 
   /** The channel fader. */
   utils::QObjectUniquePtr<dsp::Fader> fader_;

@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 #pragma once
 
+#include <cassert>
+
 #include "utils/traits.h"
 #include "utils/uuid_identifiable_object.h"
 #include "utils/uuid_reference.h"
@@ -60,6 +62,23 @@ public:
     auto * base = ref_.get ();
     return qobject_cast<T *> (base);
   }
+
+  /**
+   * @brief Member access; using it asserts the object is alive.
+   *
+   * Prefer this over get() when the object is guaranteed to exist
+   * (e.g. freshly created or owned by a parent); use get() where a
+   * null check is needed.
+   */
+  T * operator->() const
+  {
+    auto * ptr = get ();
+    assert (ptr != nullptr);
+    return ptr;
+  }
+
+  /** @brief Dereference; see operator->(). */
+  T &operator* () const { return *operator->(); }
 
   template <typename DerivedT>
     requires std::derived_from<DerivedT, T>

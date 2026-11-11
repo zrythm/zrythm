@@ -19,6 +19,7 @@ ColumnLayout {
   required property PluginOperator pluginOperator
   required property PortObservationManager portObservationManager
   required property ProcessorParameterOperator parameterOperator
+  required property Project project
   required property Track track
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
@@ -128,40 +129,54 @@ ColumnLayout {
         text: root.track.name
       }
 
-      PluginSlotList {
+      ExpanderBox {
         Layout.fillWidth: true
-        Layout.minimumHeight: contentHeight
-        pluginGroup: root.channel.midiFx
-        pluginImporter: root.pluginImporter
-        pluginOperator: root.pluginOperator
-        track: root.track
-        trackSelectionModel: root.trackSelectionModel
+        icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
+        title: qsTr("MIDI FX")
 
-        header: Label {
-          text: "MIDI FX"
-        }
+        frameContentItem: PluginSlotList {
+          pluginGroup: root.channel.midiFx
+          pluginImporter: root.pluginImporter
+          pluginOperator: root.pluginOperator
+          track: root.track
+          trackSelectionModel: root.trackSelectionModel
 
-        onPluginClicked: function (plugin: Plugin) {
-          root.pluginClicked(plugin);
+          onPluginClicked: function (plugin: Plugin) {
+            root.pluginClicked(plugin);
+          }
         }
       }
 
-      PluginSlotList {
+      ExpanderBox {
         Layout.fillWidth: true
-        Layout.minimumHeight: contentHeight
-        pluginGroup: root.channel.inserts
-        pluginImporter: root.pluginImporter
-        pluginOperator: root.pluginOperator
+        icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
+        title: qsTr("Inserts")
+
+        frameContentItem: PluginSlotList {
+          pluginGroup: root.channel.inserts
+          pluginImporter: root.pluginImporter
+          pluginOperator: root.pluginOperator
+          track: root.track
+          trackSelectionModel: root.trackSelectionModel
+
+          onPluginClicked: function (plugin: Plugin) {
+            root.pluginClicked(plugin);
+          }
+        }
+      }
+
+      ChannelSendsPanel {
+        Layout.fillWidth: true
+        expanded: false
+        headerIconName: ""
+        visible: root.track.type !== Track.Master
+
+        channelSendRouting: root.tracklist.channelSendRouting
+        parameterOperator: root.parameterOperator
+        project: root.project
+        sends: root.channel.sends
         track: root.track
-        trackSelectionModel: root.trackSelectionModel
-
-        header: Label {
-          text: "Inserts"
-        }
-
-        onPluginClicked: function (plugin: Plugin) {
-          root.pluginClicked(plugin);
-        }
+        undoStack: root.undoStack
       }
 
       BalanceControl {

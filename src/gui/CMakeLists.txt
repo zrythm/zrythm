@@ -202,6 +202,7 @@ endforeach()
 
 set(rel_qml_file_paths
   components/basic/ActionRowGroup.qml
+  components/basic/AmountBar.qml
   components/basic/ChannelStateButton.qml
   components/basic/DestructiveButton.qml
   components/basic/DropAreaBase.qml
@@ -301,6 +302,8 @@ set(rel_qml_file_paths
   components/MainToolbar.qml
   components/BalanceControl.qml
   components/ChannelView.qml
+  components/ChannelSendControls.qml
+  components/ChannelSendsPanel.qml
   components/ChordPadPanel.qml
   components/ChordSelectorDialog.qml
   components/ClipLaunchButton.qml

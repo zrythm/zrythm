@@ -8,6 +8,7 @@
 #include "dsp/parameter.h"
 #include "dsp/port.h"
 #include "structure/project/project_registry.h"
+#include "structure/tracks/channel_send.h"
 #include "utils/object_registry.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
@@ -349,6 +350,26 @@ TEST_F (ProjectRegistryTest, ToJsonEmptyRegistry)
   EXPECT_TRUE (j.contains ("ports"));
   EXPECT_TRUE (j["ports"].is_array ());
   EXPECT_EQ (j["ports"].size (), 0u);
+}
+
+// ChannelSend::to_json must serialize the identity base: bucket entries
+// without an id cannot be registered during deserialization
+TEST_F (ProjectRegistryTest, ToJsonChannelSendContainsId)
+{
+  auto send = std::make_unique<structure::tracks::ChannelSend> (
+    *registry_, dsp::PortType::Audio, true);
+  const auto send_uuid = send->raw_uuid ();
+  registry_->register_object (*send);
+  send.release ();
+
+  nlohmann::json j;
+  to_json (j, *registry_);
+
+  ASSERT_TRUE (j.contains ("channelSends"));
+  ASSERT_TRUE (j["channelSends"].is_array ());
+  ASSERT_EQ (j["channelSends"].size (), 1u);
+  ASSERT_TRUE (j["channelSends"][0].contains ("id"));
+  EXPECT_EQ (j["channelSends"][0]["id"].get<QUuid> (), send_uuid);
 }
 
 // ============================================================================

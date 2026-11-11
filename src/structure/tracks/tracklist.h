@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object.h"
+#include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/singleton_tracks.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
@@ -25,6 +26,9 @@ class Tracklist : public QObject
   Q_PROPERTY (
     zrythm::structure::tracks::TrackRouting * trackRouting READ trackRouting
       CONSTANT)
+  Q_PROPERTY (
+    zrythm::structure::tracks::ChannelSendRouting * channelSendRouting READ
+      channelSendRouting CONSTANT)
   Q_PROPERTY (
     zrythm::structure::tracks::SingletonTracks * singletonTracks READ
       singletonTracks CONSTANT)
@@ -98,6 +102,11 @@ public:
   }
 
   TrackRouting * trackRouting () const { return track_routing_.get (); }
+
+  ChannelSendRouting * channelSendRouting () const
+  {
+    return channel_send_routing_.get ();
+  }
 
   int  pinnedTracksCutoff () const { return pinned_tracks_cutoff_; }
   void setPinnedTracksCutoff (int index)
@@ -229,6 +238,8 @@ private:
   utils::QObjectUniquePtr<TrackCollection> track_collection_;
 
   utils::QObjectUniquePtr<TrackRouting> track_routing_;
+
+  utils::QObjectUniquePtr<ChannelSendRouting> channel_send_routing_;
 
   utils::QObjectUniquePtr<SingletonTracks> singleton_tracks_;
 

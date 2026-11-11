@@ -60,6 +60,7 @@ target_sources(zrythm_test_helpers_lib
       helpers/qt_helpers.h
       helpers/scoped_qcoreapplication.h
       helpers/scoped_juce_qapplication.h
+      helpers/sidechain_test_plugin.h
 )
 target_link_libraries(zrythm_test_helpers_lib
   PUBLIC

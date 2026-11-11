@@ -4,6 +4,7 @@
 #pragma once
 
 #include <ranges>
+#include <unordered_set>
 #include <vector>
 
 #include "dsp/graph.h"
@@ -186,6 +187,9 @@ public:
    */
   auto &get_all_input_ports () const { return input_ports_; }
   auto &get_all_output_ports () const { return output_ports_; }
+
+  /** UUIDs of all input and output ports. */
+  std::unordered_set<dsp::PortUuid> get_all_port_ids () const;
 
   /**
    * @brief View of the attached subset of the port lists (detached ports

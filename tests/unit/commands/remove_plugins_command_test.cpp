@@ -10,6 +10,8 @@
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
+#include "helpers/sidechain_test_plugin.h"
+
 #include <gtest/gtest.h>
 
 namespace zrythm::commands
@@ -211,6 +213,37 @@ TEST_F (RemovePluginsCommandTest, MultipleUndoRedoCycles)
       EXPECT_EQ (get_plugin_id_at_index (*group_, 0), ref0.id ());
       EXPECT_EQ (get_plugin_id_at_index (*group_, 1), ref1.id ());
     }
+}
+
+TEST_F (RemovePluginsCommandTest, SeversAndRestoresSendDestinations)
+{
+  auto ref =
+    utils::create_object<plugins::SidechainTestPlugin> (registry_, registry_);
+  group_->append_plugin (ref);
+  auto * plugin = ref.get ();
+  auto * dest_port =
+    plugin->get_all_input_ports ().front ().get_object_as<dsp::AudioPort> ();
+  ASSERT_NE (dest_port, nullptr);
+
+  auto send_ref = utils::create_object<structure::tracks::ChannelSend> (
+    registry_, registry_, dsp::PortType::Audio, false);
+  auto * send = send_ref.get ();
+  send->set_destination_port (
+    dsp::PortUuidReference{ dest_port->get_uuid (), registry_ });
+  ASSERT_TRUE (send->has_destination ());
+
+  RemovePluginsCommand cmd (
+    {
+      RemovePluginsCommand::PluginRemoveInfo{
+                                             .plugin_ref = ref, .source_group = group_.get (), .source_atl = nullptr }
+  },
+    connections_manager_, registry_);
+
+  cmd.redo ();
+  EXPECT_FALSE (send->has_destination ());
+
+  cmd.undo ();
+  EXPECT_TRUE (send->has_destination ());
 }
 
 // --- Command text ---

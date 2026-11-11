@@ -27,8 +27,12 @@ class ChannelSend : public dsp::ProcessorBase
   Q_PROPERTY (
     zrythm::dsp::ProcessorParameter * enabledParam READ enabledParam CONSTANT)
   Q_PROPERTY (
-    QVariant destinationPort READ destinationPort WRITE setDestinationPort
-      NOTIFY destinationPortChanged)
+    zrythm::dsp::Port * destinationPort READ destinationPort WRITE
+      setDestinationPort NOTIFY destinationPortChanged)
+  Q_PROPERTY (
+    bool isPrefader READ isPrefader WRITE setIsPrefader NOTIFY isPrefaderChanged)
+  Q_PROPERTY (
+    bool hasDestination READ hasDestination NOTIFY destinationPortChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -44,12 +48,11 @@ class ChannelSend : public dsp::ProcessorBase
 
 public:
   /**
-   * @param slot Slot, used only in parameter/port names.
+   * @param is_prefader Whether the send taps the channel before its fader.
    */
   ChannelSend (
     utils::IObjectRegistry &registry,
     dsp::PortType           signal_type,
-    int                     slot,
     bool                    is_prefader,
     QObject *               parent = nullptr);
   Q_DISABLE_COPY_MOVE (ChannelSend)
@@ -78,12 +81,29 @@ public:
   /**
    * @brief QML accessor for destination port.
    */
-  QVariant destinationPort () const;
-  void     setDestinationPort (const QVariant &port);
+  dsp::Port * destinationPort () const;
+  void        setDestinationPort (dsp::Port * port);
 
   Q_SIGNAL void destinationPortChanged ();
 
-  // ============================================================================
+  /**
+   * @brief Whether the send taps the channel before its fader.
+   */
+  bool isPrefader () const { return is_prefader_; }
+
+  /**
+   * @brief Whether the send has a destination configured.
+   */
+  bool hasDestination () const { return has_destination (); }
+
+  /**
+   * @brief Sets the send's tap point before or after the channel fader.
+   *
+   * The change takes effect at the next processing graph rebuild.
+   */
+  void setIsPrefader (bool pre);
+
+  Q_SIGNAL void isPrefaderChanged ();
 
   // ============================================================================
   // ProcessorBase Interface
@@ -157,6 +177,9 @@ public:
   static constexpr auto kDestinationPortKey = "destinationPort"sv;
 
 private:
+  /** Sets the processor name from the current tap point. */
+  void update_name ();
+
   static constexpr auto kSignalTypeKey = "signalType"sv;
   static constexpr auto kIsPrefaderKey = "isPrefader"sv;
   friend void           to_json (nlohmann::json &j, const ChannelSend &p);
@@ -185,5 +208,7 @@ private:
   // Processing caches
   std::unique_ptr<ChannelSendProcessingCaches> processing_caches_;
 };
+
+using ChannelSendUuidReference = utils::TypedUuidReference<ChannelSend>;
 
 } // namespace zrythm::structure::tracks

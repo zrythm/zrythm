@@ -49,6 +49,7 @@ public:
   static constexpr std::string_view kClipSlotsKey = "clipSlots";
   static constexpr std::string_view kArrangerObjectsKey = "arrangerObjects";
   static constexpr std::string_view kFileAudioSourcesKey = "fileAudioSources";
+  static constexpr std::string_view kChannelSendsKey = "channelSends";
 
   struct DeserializationDependencies
   {
@@ -77,6 +78,7 @@ public:
     ClipSlot,
     ArrangerObject,
     FileAudioSource,
+    ChannelSend,
     TempoObjectManager,
   };
 
@@ -95,6 +97,7 @@ public:
     std::pair{ ObjectCategory::ClipSlot,        kClipSlotsKey        },
     std::pair{ ObjectCategory::ArrangerObject,  kArrangerObjectsKey  },
     std::pair{ ObjectCategory::FileAudioSource, kFileAudioSourcesKey },
+    std::pair{ ObjectCategory::ChannelSend,     kChannelSendsKey     },
   };
   static_assert (
     !std::ranges::contains (

@@ -204,7 +204,7 @@ TrackCollectionOperator::deleteTracks (
   auto expanded_refs = expand_with_descendants (track_refs);
 
   auto cmd = std::make_unique<commands::DeleteTracksCommand> (
-    *collection_, std::move (expanded_refs));
+    *collection_, *track_routing_, std::move (expanded_refs));
   undo_stack_->push (std::move (cmd));
 }
 
@@ -320,7 +320,7 @@ TrackCollectionOperator::cutTracks (
     *undo_stack_, QObject::tr ("Cut %1 Tracks").arg (root_refs.size ()));
   undo_stack_->push (
     std::make_unique<commands::DeleteTracksCommand> (
-      *collection_, std::move (root_refs)));
+      *collection_, *track_routing_, std::move (root_refs)));
   return true;
 }
 
