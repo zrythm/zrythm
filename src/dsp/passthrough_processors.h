@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -12,6 +12,10 @@ namespace zrythm::dsp
  */
 class MidiPassthroughProcessor : public ProcessorBase
 {
+  Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   MidiPassthroughProcessor (
     utils::IObjectRegistry &registry,
@@ -35,6 +39,10 @@ public:
  */
 class AudioPassthroughProcessor : public ProcessorBase
 {
+  Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   AudioPassthroughProcessor (
     utils::IObjectRegistry &registry,
@@ -55,6 +63,10 @@ public:
 
 class StereoPassthroughProcessor : public AudioPassthroughProcessor
 {
+  Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   StereoPassthroughProcessor (
     utils::IObjectRegistry &registry,
