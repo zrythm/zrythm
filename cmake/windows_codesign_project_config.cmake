@@ -5,17 +5,17 @@
 # CPACK_PROJECT_CONFIG_FILE). It defines a Sign Tool for the Inno Setup
 # compiler, which then signs the installer, the uninstaller and Setup's
 # temporary self-copies by invoking scripts/windows_codesign.ps1 (see that
-# file for the environment contract). Signing runs only when
-# WINDOWS_CODESIGN_CERT_THUMBPRINT is set, matching the install-tree
-# signing in cmake/windows_codesign_pre_build.cmake.
+# file for the environment contract). Signing runs only when CERTUM_EMAIL and
+# CERTUM_OTP are set, matching the install-tree signing in
+# cmake/windows_codesign_pre_build.cmake.
 
 if(NOT CPACK_GENERATOR STREQUAL "INNOSETUP")
   return()
 endif()
 
-if("$ENV{WINDOWS_CODESIGN_CERT_THUMBPRINT}" STREQUAL "")
+if("$ENV{CERTUM_EMAIL}" STREQUAL "" OR "$ENV{CERTUM_OTP}" STREQUAL "")
   message(STATUS
-    "windows codesign: WINDOWS_CODESIGN_CERT_THUMBPRINT not set, skipping installer and uninstaller signing")
+    "windows codesign: CERTUM_EMAIL/CERTUM_OTP not set, skipping installer and uninstaller signing")
   return()
 endif()
 

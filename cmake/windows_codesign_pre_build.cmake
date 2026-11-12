@@ -3,15 +3,15 @@
 
 # Signs every PE file in the staged install tree before the Inno Setup
 # installer is built, so the files inside the installer carry signatures.
-# Signing runs only when WINDOWS_CODESIGN_CERT_THUMBPRINT is set (see
+# Signing runs only when CERTUM_EMAIL and CERTUM_OTP are set (see
 # scripts/windows_codesign.ps1 for the full environment contract).
 
 if(NOT CPACK_GENERATOR STREQUAL "INNOSETUP")
   return()
 endif()
 
-if("$ENV{WINDOWS_CODESIGN_CERT_THUMBPRINT}" STREQUAL "")
-  message(STATUS "windows codesign: WINDOWS_CODESIGN_CERT_THUMBPRINT not set, skipping install tree signing")
+if("$ENV{CERTUM_EMAIL}" STREQUAL "" OR "$ENV{CERTUM_OTP}" STREQUAL "")
+  message(STATUS "windows codesign: CERTUM_EMAIL/CERTUM_OTP not set, skipping install tree signing")
   return()
 endif()
 

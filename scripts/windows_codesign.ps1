@@ -1,8 +1,9 @@
 # SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 #
-# Signs Windows PE files (executables and libraries) with signtool, using a
-# code signing certificate from the local certificate store.
+# Signs Windows PE files (executables and libraries) through Certum's
+# SimplySign cloud service via ssign, then verifies every signature with
+# signtool (verification needs no certificate on this machine).
 #
 # Parameters (specify exactly one):
 #   -Root  <directory>  Sign every *.exe and *.dll file under this directory
@@ -10,17 +11,22 @@
 #                       semicolons cannot appear in these paths)
 #
 # Environment:
-#   WINDOWS_CODESIGN_CERT_THUMBPRINT    SHA-1 thumbprint of the signing
-#                                       certificate (required)
-#   WINDOWS_CODESIGN_TIMESTAMP_SERVER   RFC 3161 timestamp server URL
-#                                       (required; signatures without a
-#                                       timestamp expire with the
-#                                       certificate)
+#   CERTUM_EMAIL                        Certum account e-mail (required to
+#                                       sign)
+#   CERTUM_OTP                          TOTP seed; ssign derives the one-time
+#                                       code (required to sign)
+#   WINDOWS_CODESIGN_SSIGN              Path to the ssign binary (default:
+#                                       searched on PATH)
+#   WINDOWS_CODESIGN_TIMESTAMP_SERVER   Optional RFC 3161 timestamp server
+#                                       URL (ssign defaults to
+#                                       time.certum.pl)
+#   WINDOWS_CODESIGN_REQUIRED           Set on release pipelines: missing
+#                                       credentials fail the run instead of
+#                                       skipping signing
 #
-# The certificate is looked up in the current user store first and in the
-# local machine store if it is not there.
-#
-# Exits with a nonzero status if any file cannot be signed and verified.
+# Signing runs only when CERTUM_EMAIL and CERTUM_OTP are set; pipelines
+# without them leave the artifacts unsigned. A signing or verification
+# failure always exits with a nonzero status.
 
 param(
   [string]$Root = "",
@@ -40,18 +46,19 @@ if ($hasRoot -eq $hasFiles) {
   exit 1
 }
 
-$thumbprintText = $env:WINDOWS_CODESIGN_CERT_THUMBPRINT
-if ([string]::IsNullOrWhiteSpace($thumbprintText)) {
-  [Console]::Error.WriteLine("WINDOWS_CODESIGN_CERT_THUMBPRINT is not set")
-  exit 1
+if ([string]::IsNullOrWhiteSpace($env:CERTUM_EMAIL) -or [string]::IsNullOrWhiteSpace($env:CERTUM_OTP)) {
+  if ("$env:WINDOWS_CODESIGN_REQUIRED" -match "^(?i:1|yes|true)$") {
+    [Console]::Error.WriteLine("windows codesign: CERTUM_EMAIL and CERTUM_OTP must be set to sign")
+    exit 1
+  }
+  Write-Warning "windows codesign: CERTUM_EMAIL/CERTUM_OTP are not set, leaving the artifacts UNSIGNED"
+  exit 0
 }
-# thumbprints are often copied with spaces between the byte pairs
-$thumbprint = ($thumbprintText -replace "\s", "").ToUpperInvariant()
 
-$timestampServer = $env:WINDOWS_CODESIGN_TIMESTAMP_SERVER
-if ([string]::IsNullOrWhiteSpace($timestampServer)) {
-  [Console]::Error.WriteLine("WINDOWS_CODESIGN_TIMESTAMP_SERVER is not set: signatures must be timestamped to outlive the certificate")
-  exit 1
+# ssign defaults to Certum's own timestamp server; the variable overrides it
+$timestampArgs = @()
+if (-not [string]::IsNullOrWhiteSpace($env:WINDOWS_CODESIGN_TIMESTAMP_SERVER)) {
+  $timestampArgs = @("--timestamp-url", $env:WINDOWS_CODESIGN_TIMESTAMP_SERVER)
 }
 
 function Get-HostArchitecture
@@ -111,6 +118,23 @@ if (-not $signtool) {
   exit 1
 }
 
+function Find-Ssign
+{
+  $fromEnv = $env:WINDOWS_CODESIGN_SSIGN
+  if (-not [string]::IsNullOrEmpty($fromEnv) -and (Test-Path $fromEnv -PathType Leaf)) {
+    return $fromEnv
+  }
+  $fromPath = Get-Command ssign.exe -ErrorAction SilentlyContinue
+  if ($fromPath) { return $fromPath.Source }
+  return $null
+}
+
+$ssign = Find-Ssign
+if (-not $ssign) {
+  [Console]::Error.WriteLine("ssign not found: install it on PATH or set WINDOWS_CODESIGN_SSIGN to its full path")
+  exit 1
+}
+
 if ($hasRoot) {
   if (-not (Test-Path $Root -PathType Container)) {
     [Console]::Error.WriteLine("directory not found: $Root")
@@ -132,11 +156,7 @@ if ($targets.Count -eq 0) {
   exit 0
 }
 
-Write-Output ("windows codesign: signing {0} file(s) with {1}" -f $targets.Count, $signtool)
-
-# Set to true after signtool reports that the certificate is not in the
-# current user store, so later batches use the machine store directly
-$script:useMachineStore = $false
+Write-Output ("windows codesign: signing {0} file(s) with {1}" -f $targets.Count, $ssign)
 
 function Invoke-SignBatch
 {
@@ -147,22 +167,11 @@ function Invoke-SignBatch
   # a script-terminating error; success is judged by the exit code
   $ErrorActionPreference = "Continue"
 
-  $signArgs = @("sign", "/v", "/fd", "SHA256", "/sha1", $thumbprint)
-  if ($script:useMachineStore) { $signArgs += "/sm" }
-  # /td must follow /tr, otherwise the timestamp digest defaults to SHA1
-  $signArgs += @("/tr", $timestampServer, "/td", "SHA256")
-  $signArgs += $Batch
-
-  $output = & $signtool @signArgs 2>&1
+  # ssign reads CERTUM_EMAIL and CERTUM_OTP from the environment, signs every
+  # file of the batch in one cloud session, and embeds an RFC 3161 timestamp
+  $output = & $ssign $timestampArgs @Batch 2>&1
   if ($LASTEXITCODE -ne 0) {
-    $text = $output | Out-String
-    if (-not $script:useMachineStore -and $text -match "No certificates were found") {
-      Write-Output "windows codesign: certificate not in the current user store, using the machine store"
-      $script:useMachineStore = $true
-      Invoke-SignBatch -Batch $Batch
-      return
-    }
-    [Console]::Error.WriteLine($text)
+    [Console]::Error.WriteLine("ssign failed:`n" + ($output | Out-String))
     exit 1
   }
   Write-Output $output
@@ -182,7 +191,7 @@ function Invoke-VerifyBatch
   }
 }
 
-# signtool accepts multiple files per invocation; batch to keep the command
+# ssign accepts multiple files per invocation; batch to keep the command
 # line well below the 32 KiB Windows limit
 $batchSize = 30
 for ($i = 0; $i -lt $targets.Count; $i += $batchSize) {
