@@ -9,5 +9,6 @@ add_subdirectory(commands)
 add_subdirectory(controllers)
 add_subdirectory(actions)
 add_subdirectory(undo)
+add_subdirectory(operations)
 
 add_subdirectory(gui)

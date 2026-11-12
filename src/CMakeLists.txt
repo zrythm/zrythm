@@ -12,6 +12,7 @@ add_subdirectory(commands)
 add_subdirectory(undo)
 add_subdirectory(controllers)
 add_subdirectory(actions)
+add_subdirectory(operations)
 
 target_include_directories(zrythm_gui_lib
   PUBLIC
