@@ -84,7 +84,7 @@ def test_main_reads_stdin(monkeypatch, capsys):
     monkeypatch.setattr(
         "sys.stdin", type("Stdin", (), {"readlines": lambda self: [warning("src/gui/qml/Foo.qml")]})()
     )
-    assert main(["-"]) == 0
+    assert main(["-", "--max-warnings", "1"]) == 0
     assert "warning count (filtered): 1" in capsys.readouterr().out
 
 

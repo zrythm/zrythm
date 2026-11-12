@@ -36,6 +36,7 @@ target_link_libraries(zrythm_structure_tracks_unit_tests PRIVATE
   GTest::gmock_main
   zrythm_structure_tracks_lib
   zrythm_test_helpers_lib
+  zrythm_plugin_test_helpers_lib
   zrythm_test_warning_suppressions_link_last
 )
 

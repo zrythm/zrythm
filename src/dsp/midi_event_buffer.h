@@ -149,7 +149,8 @@ public:
 
   private:
     const midi_byte_t * ptr_ = nullptr;
-    const midi_byte_t * end_ = nullptr;
+    // Read only in assertions; kept for iterator bounds checks in debug builds.
+    [[maybe_unused]] const midi_byte_t * end_ = nullptr;
   };
 
   /**

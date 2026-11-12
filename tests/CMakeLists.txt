@@ -60,7 +60,6 @@ target_sources(zrythm_test_helpers_lib
       helpers/qt_helpers.h
       helpers/scoped_qcoreapplication.h
       helpers/scoped_juce_qapplication.h
-      helpers/sidechain_test_plugin.h
 )
 target_link_libraries(zrythm_test_helpers_lib
   PUBLIC
@@ -90,6 +89,28 @@ target_precompile_headers(zrythm_test_helpers_lib
 )
 
 set_target_properties(zrythm_test_helpers_lib PROPERTIES
+  VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
+)
+
+# Plugin-derived test doubles. Every Q_OBJECT header of a library is moc'd
+# into one object linked by all of its consumers, so these live in their own
+# library and only the suites that use them build zrythm_plugins_lib.
+add_library(zrythm_plugin_test_helpers_lib STATIC)
+target_sources(zrythm_plugin_test_helpers_lib
+  PUBLIC
+    FILE_SET HEADERS
+    FILES
+      helpers/sidechain_test_plugin.h
+)
+target_link_libraries(zrythm_plugin_test_helpers_lib
+  PUBLIC
+    zrythm_plugins_lib
+)
+target_include_directories(zrythm_plugin_test_helpers_lib
+  INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+set_target_properties(zrythm_plugin_test_helpers_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 

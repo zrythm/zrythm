@@ -4,6 +4,8 @@
 #include "structure/tracks/channel_send_group.h"
 #include "utils/logger.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::structure::tracks
 {
 
