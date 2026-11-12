@@ -407,8 +407,8 @@ AudioEngine::activate_impl (const bool activate)
   else
     {
       // This check and the offline-render ownership transitions both run
-      // on the main thread, so a session cannot begin between the check
-      // and the teardown below
+      // on the engine's thread, so a session cannot begin between the
+      // check and the teardown below
       if (offline_render_active_.load ())
         {
           z_warning (
@@ -766,6 +766,28 @@ AudioEngine::advance_playhead_after_processing (
     }
 }
 
+std::weak_ptr<AudioEngine::OfflineRenderSession>
+AudioEngine::create_offline_render_session ()
+{
+  Q_ASSERT (QThread::currentThread () == thread ());
+  if (offline_render_active_.load ())
+    {
+      z_warning (
+        "an offline render owns processing; refusing a second offline "
+        "render session");
+      return {};
+    }
+  if (active_offline_render_)
+    {
+      // The parked session already finished; dropping it here runs its
+      // no-op destructor backstop on this thread
+      active_offline_render_.reset ();
+    }
+  active_offline_render_ =
+    std::shared_ptr<OfflineRenderSession> (new OfflineRenderSession (*this));
+  return active_offline_render_;
+}
+
 AudioEngine::OfflineRenderSession::OfflineRenderSession (AudioEngine &engine)
     : engine_ (engine),
       pause_scope_ (std::make_unique<ProcessingPauseScope> (engine))
@@ -775,27 +797,18 @@ AudioEngine::OfflineRenderSession::OfflineRenderSession (AudioEngine &engine)
 
 AudioEngine::OfflineRenderSession::~OfflineRenderSession ()
 {
-  if (finished_.load ())
-    return;
-
-  if (QThread::currentThread () == engine_.thread ())
+  // The engine owns the session and drops it on its own thread
+  Q_ASSERT (QThread::currentThread () == engine_.thread ());
+  if (!finished_.load ())
     {
       finish ();
-      return;
     }
-
-  // finish() recalculates the graph and destroys the pause scope; both
-  // belong on the engine's thread. The blocking connection keeps this
-  // object valid until the call returns: the engine thread's event loop
-  // must still process events, and the engine thread must not be
-  // synchronously waiting on the destroying thread.
-  QMetaObject::invokeMethod (
-    &engine_, [this] { finish (); }, Qt::BlockingQueuedConnection);
 }
 
 void
 AudioEngine::OfflineRenderSession::finish () noexcept
 {
+  Q_ASSERT (QThread::currentThread () == engine_.thread ());
   if (finished_.exchange (true))
     return;
   engine_.release_offline_render ();
@@ -822,8 +835,8 @@ AudioEngine::with_paused_processing (
   if (offline_render_active_.load ())
     {
       // This check and the offline-render ownership transitions both run
-      // on the main thread, so a session cannot begin between the check
-      // and the work below
+      // on the engine's thread, so a session cannot begin between the
+      // check and the work below
       // The pause this function relies on is already in effect for the
       // render, but the render thread is processing the same instances:
       // the function must not run until the render finishes
@@ -872,6 +885,10 @@ AudioEngine::panic_all ()
 AudioEngine::~AudioEngine ()
 {
   z_debug ("Destroying audio engine...");
+
+  // A session whose completion callbacks never ran is finished here,
+  // inline on the engine's thread
+  active_offline_render_.reset ();
 
   if (state_ == State::Active)
     {

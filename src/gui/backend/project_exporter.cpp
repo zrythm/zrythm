@@ -27,161 +27,198 @@ ProjectExporter::exportAudio (
     .block_length_ = project->engine ()->block_length ()
   };
   // Pauses the engine and marks processing as owned by the render; the
-  // completion callbacks below release the handover
-  auto render_session = std::make_shared<dsp::AudioEngine::OfflineRenderSession> (
-    *project->engine ());
-  structure::project::ProjectGraphBuilder builder (
-    *project, project->metronome (), project->monitor_fader ());
-  dsp::graph::Graph graph;
-  builder.build_graph (graph);
+  // engine owns the session and the completion callbacks below release
+  // the handover on the engine's thread
+  const auto render_session =
+    project->engine ()->create_offline_render_session ();
+  if (render_session.expired ())
+    {
+      // The engine refused: an export already owns processing. The
+      // wrapper reports the failure on the next event loop pass.
+      QPromise<QStringList> promise;
+      promise.start ();
+      promise.setException (
+        std::make_exception_ptr (
+          std::runtime_error ("An audio export is already in progress")));
+      promise.finish ();
+      auto * wrapper =
+        new gui::qquick::QFutureQmlWrapperT<QStringList> (promise.future ());
+      QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
+      return wrapper;
+    }
 
-  // Prune graph to master output
-  {
-    std::vector<std::reference_wrapper<dsp::graph::GraphNode>> terminals;
-    auto * node = graph.get_nodes ().find_node_for_processable (
-      *project->tracklist ()
-         ->singletonTracks ()
-         ->masterTrack ()
-         ->channel ()
-         ->audioOutPort ());
-    terminals.emplace_back (*node);
-    dsp::graph::GraphPruner::prune_graph_to_terminals (graph, terminals);
-  }
+  QFuture<QStringList> combined_future;
+  try
+    {
+      structure::project::ProjectGraphBuilder builder (
+        *project, project->metronome (), project->monitor_fader ());
+      dsp::graph::Graph graph;
+      builder.build_graph (graph);
 
-  const auto * marker_track =
-    project->tracklist ()->singletonTracks ()->markerTrack ();
-  auto graph_render_future = dsp::GraphRenderer::render_async (
-    options, graph.steal_nodes (),
-    [context = project] (std::function<void ()> func) {
-      QMetaObject::invokeMethod (context, func, Qt::BlockingQueuedConnection);
-    },
-    std::make_pair (
-      project->tempo_map ().tick_to_samples_rounded (
-        marker_track->get_start_marker ()->position ()->asTick ()),
-      project->tempo_map ().tick_to_samples_rounded (
-        marker_track->get_end_marker ()->position ()->asTick ())),
-    project->tempo_map ());
+      // Prune graph to master output
+      {
+        std::vector<std::reference_wrapper<dsp::graph::GraphNode>> terminals;
+        auto * node = graph.get_nodes ().find_node_for_processable (
+          *project->tracklist ()
+             ->singletonTracks ()
+             ->masterTrack ()
+             ->channel ()
+             ->audioOutPort ());
+        terminals.emplace_back (*node);
+        dsp::graph::GraphPruner::prune_graph_to_terminals (graph, terminals);
+      }
 
-  auto combined_future =
-    QtConcurrent::run (
-      [title = projectTitle, sample_rate = project->engine ()->sampleRate (),
-       exports_path =
-         utils::Utf8String::from_qstring (exportDirectory).to_path ()] (
-        QPromise<QStringList>           &promise,
-        QFuture<juce::AudioSampleBuffer> inner_graph_render_future) {
-        // Wait for task to establish its progress min/max
-        while (inner_graph_render_future.progressMaximum () <= 0)
-          {
-            std::this_thread::sleep_for (1ms);
-          }
+      const auto * marker_track =
+        project->tracklist ()->singletonTracks ()->markerTrack ();
+      auto graph_render_future = dsp::GraphRenderer::render_async (
+        options, graph.steal_nodes (),
+        [context = project] (std::function<void ()> func) {
+          QMetaObject::invokeMethod (
+            context, func, Qt::BlockingQueuedConnection);
+        },
+        std::make_pair (
+          project->tempo_map ().tick_to_samples_rounded (
+            marker_track->get_start_marker ()->position ()->asTick ()),
+          project->tempo_map ().tick_to_samples_rounded (
+            marker_track->get_end_marker ()->position ()->asTick ())),
+        project->tempo_map ());
 
-        const auto render_task_progress_range = std::make_pair (
-          inner_graph_render_future.progressMinimum (),
-          inner_graph_render_future.progressMaximum ());
-        const auto write_to_file_task_additional_progress = static_cast<int> (
-          (render_task_progress_range.second - render_task_progress_range.first)
-          * 0.1);
-        promise.setProgressRange (
-          inner_graph_render_future.progressMinimum (),
-          inner_graph_render_future.progressMaximum ()
-            + write_to_file_task_additional_progress);
-        while (!inner_graph_render_future.isFinished ())
-          {
-            std::this_thread::sleep_for (5ms);
-            promise.setProgressValueAndText (
-              inner_graph_render_future.progressValue (),
-              inner_graph_render_future.progressText ());
-            if (promise.isCanceled ())
-              {
-                inner_graph_render_future.cancel ();
-              }
-          }
+      combined_future = QtConcurrent::run (
+        [title = projectTitle, sample_rate = project->engine ()->sampleRate (),
+         exports_path =
+           utils::Utf8String::from_qstring (exportDirectory).to_path ()] (
+          QPromise<QStringList>           &promise,
+          QFuture<juce::AudioSampleBuffer> inner_graph_render_future) {
+          // Wait for task to establish its progress min/max
+          while (inner_graph_render_future.progressMaximum () <= 0)
+            {
+              std::this_thread::sleep_for (1ms);
+            }
 
-        if (
-          inner_graph_render_future.isValid ()
-          && inner_graph_render_future.isResultReadyAt (0))
-          {
-            std::unordered_map<juce::String, juce::String> metadata;
-            metadata.emplace (
-              juce::String ("title"),
-              utils::Utf8String::from_qstring (title).to_juce_string ());
-            metadata.emplace (
-              juce::String ("software"), juce::String (PROGRAM_NAME));
+          const auto render_task_progress_range = std::make_pair (
+            inner_graph_render_future.progressMinimum (),
+            inner_graph_render_future.progressMaximum ());
+          const auto write_to_file_task_additional_progress = static_cast<int> (
+            (render_task_progress_range.second - render_task_progress_range.first)
+            * 0.1);
+          promise.setProgressRange (
+            inner_graph_render_future.progressMinimum (),
+            inner_graph_render_future.progressMaximum ()
+              + write_to_file_task_additional_progress);
+          while (!inner_graph_render_future.isFinished ())
+            {
+              std::this_thread::sleep_for (5ms);
+              promise.setProgressValueAndText (
+                inner_graph_render_future.progressValue (),
+                inner_graph_render_future.progressText ());
+              if (promise.isCanceled ())
+                {
+                  inner_graph_render_future.cancel ();
+                }
+            }
 
-            juce::AudioFormatWriterOptions juce_writer_options;
-            juce_writer_options =
-              juce_writer_options.withSampleRate (sample_rate)
-                .withNumChannels (2)
-                .withBitsPerSample (
-                  utils::audio::bit_depth_enum_to_int (
-                    zrythm::utils::audio::BitDepth::BIT_DEPTH_16))
-                .withMetadataValues (metadata)
-                .withQualityOptionIndex (0);
-            utils::AudioFileWriter::WriteOptions write_options{
-              .writer_options_ = juce_writer_options,
-              .block_length_ = units::samples (4096)
-            };
-            const auto path =
-              exports_path
-              / (utils::Utf8String::from_qstring (title) + u8"- Mixdown.wav")
-                  .to_path ();
-            auto file_write_future = utils::AudioFileWriter::write_async (
-              write_options, path, inner_graph_render_future.takeResult ());
+          if (
+            inner_graph_render_future.isValid ()
+            && inner_graph_render_future.isResultReadyAt (0))
+            {
+              std::unordered_map<juce::String, juce::String> metadata;
+              metadata.emplace (
+                juce::String ("title"),
+                utils::Utf8String::from_qstring (title).to_juce_string ());
+              metadata.emplace (
+                juce::String ("software"), juce::String (PROGRAM_NAME));
 
-            // Wait for task to establish its progress min/max
-            while (file_write_future.progressMaximum () <= 0)
-              {
-                std::this_thread::sleep_for (1ms);
-              }
+              juce::AudioFormatWriterOptions juce_writer_options;
+              juce_writer_options =
+                juce_writer_options.withSampleRate (sample_rate)
+                  .withNumChannels (2)
+                  .withBitsPerSample (
+                    utils::audio::bit_depth_enum_to_int (
+                      zrythm::utils::audio::BitDepth::BIT_DEPTH_16))
+                  .withMetadataValues (metadata)
+                  .withQualityOptionIndex (0);
+              utils::AudioFileWriter::WriteOptions write_options{
+                .writer_options_ = juce_writer_options,
+                .block_length_ = units::samples (4096)
+              };
+              const auto path =
+                exports_path
+                / (utils::Utf8String::from_qstring (title) + u8"- Mixdown.wav")
+                    .to_path ();
+              auto file_write_future = utils::AudioFileWriter::write_async (
+                write_options, path, inner_graph_render_future.takeResult ());
 
-            const auto file_write_progress_range = std::make_pair (
-              file_write_future.progressMinimum (),
-              file_write_future.progressMaximum ());
-            while (!file_write_future.isFinished ())
-              {
-                std::this_thread::sleep_for (5ms);
-                const auto progress_in_file_write =
-                  file_write_future.progressValue ();
-                const auto current_progress_ratio_in_file_write =
+              // Wait for task to establish its progress min/max
+              while (file_write_future.progressMaximum () <= 0)
+                {
+                  std::this_thread::sleep_for (1ms);
+                }
+
+              const auto file_write_progress_range = std::make_pair (
+                file_write_future.progressMinimum (),
+                file_write_future.progressMaximum ());
+              while (!file_write_future.isFinished ())
+                {
+                  std::this_thread::sleep_for (5ms);
+                  const auto progress_in_file_write =
+                    file_write_future.progressValue ();
+                  const auto current_progress_ratio_in_file_write =
                   static_cast<double>(progress_in_file_write - file_write_progress_range.first) / (file_write_progress_range.second - file_write_progress_range.first);
-                promise.setProgressValueAndText (
-                  render_task_progress_range.second
-                    + static_cast<int> (
-                      write_to_file_task_additional_progress
-                      * current_progress_ratio_in_file_write),
-                  file_write_future.progressText ());
-                if (promise.isCanceled ())
-                  {
-                    file_write_future.cancel ();
-                    return;
-                  }
-              }
-            promise.addResult (
-              QStringList{ utils::Utf8String::from_path (path).to_qstring () });
-          }
-        else
-          {
-            z_debug ("cancelled or failed");
-            promise.future ().cancel ();
-          }
-      },
-      graph_render_future);
+                  promise.setProgressValueAndText (
+                    render_task_progress_range.second
+                      + static_cast<int> (
+                        write_to_file_task_additional_progress
+                        * current_progress_ratio_in_file_write),
+                    file_write_future.progressText ());
+                  if (promise.isCanceled ())
+                    {
+                      file_write_future.cancel ();
+                      return;
+                    }
+                }
+              promise.addResult (
+                QStringList{ utils::Utf8String::from_path (path).to_qstring () });
+            }
+          else
+            {
+              z_debug ("cancelled or failed");
+              promise.future ().cancel ();
+            }
+        },
+        graph_render_future);
 
-  // No matter what happens, we must release the engine handover
-  combined_future
-    .then (
-      project->engine (),
-      [render_session] (QFuture<QStringList>) { render_session->finish (); })
-    .onCanceled (
-      project->engine (),
-      [render_session] () {
-        z_debug ("Audio export canceled");
-        render_session->finish ();
-      })
-    .onFailed (project->engine (), [render_session] () {
-      z_warning ("Audio export failed");
-      render_session->finish ();
-    });
+      // No matter what happens, we must release the engine handover
+      combined_future
+        .then (
+          project->engine (),
+          [render_session] (QFuture<QStringList>) {
+            if (const auto session = render_session.lock ())
+              session->finish ();
+          })
+        .onCanceled (
+          project->engine (),
+          [render_session] () {
+            z_debug ("Audio export canceled");
+            if (const auto session = render_session.lock ())
+              session->finish ();
+          })
+        .onFailed (project->engine (), [render_session] () {
+          z_warning ("Audio export failed");
+          if (const auto session = render_session.lock ())
+            session->finish ();
+        });
+    }
+  catch (...)
+    {
+      // A failure before the completion callbacks are attached would
+      // leave nobody to release the handover: release it here, on the
+      // engine's thread, and let the failure propagate
+      if (const auto session = render_session.lock ())
+        {
+          session->finish ();
+        }
+      throw;
+    }
 
   auto * future_qml_wrapper =
     new gui::qquick::QFutureQmlWrapperT (combined_future);

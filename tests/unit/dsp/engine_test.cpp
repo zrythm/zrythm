@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <atomic>
 #include <chrono>
 #include <stdexcept>
 #include <thread>
@@ -13,8 +12,6 @@
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
-
-#include <QCoreApplication>
 
 #include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/mock_hardware_midi_interface.h"
@@ -1041,15 +1038,14 @@ TEST_F (AudioEngineTest, OfflineRenderSessionBlocksStateEditsWhileActive)
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
     *tempo_map_);
 
-  auto render_session =
-    std::make_shared<AudioEngine::OfflineRenderSession> (*engine);
+  const auto render_session = engine->create_offline_render_session ();
   EXPECT_TRUE (engine->offline_render_active ());
 
   auto func_ran = false;
   engine->with_paused_processing ([&func_ran] () { func_ran = true; }, false);
   EXPECT_FALSE (func_ran);
 
-  render_session->finish ();
+  render_session.lock ()->finish ();
 }
 
 // Deactivation would tear the engine down under the render thread's
@@ -1063,12 +1059,11 @@ TEST_F (AudioEngineTest, OfflineRenderSessionRefusesEngineDeactivation)
   engine->activate ();
   EXPECT_TRUE (engine->activated ());
 
-  auto render_session =
-    std::make_shared<AudioEngine::OfflineRenderSession> (*engine);
+  const auto render_session = engine->create_offline_render_session ();
   engine->deactivate ();
   EXPECT_TRUE (engine->activated ());
 
-  render_session->finish ();
+  render_session.lock ()->finish ();
   engine->deactivate ();
   EXPECT_FALSE (engine->activated ());
 }
@@ -1079,10 +1074,10 @@ TEST_F (AudioEngineTest, OfflineRenderSessionFinishAllowsStateEditsAgain)
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
     *tempo_map_);
 
-  AudioEngine::OfflineRenderSession render_session (*engine);
-  render_session.finish ();
+  const auto render_session = engine->create_offline_render_session ().lock ();
+  render_session->finish ();
   // A second finish must be a no-op
-  render_session.finish ();
+  render_session->finish ();
   EXPECT_FALSE (engine->offline_render_active ());
 
   auto func_ran = false;
@@ -1090,23 +1085,58 @@ TEST_F (AudioEngineTest, OfflineRenderSessionFinishAllowsStateEditsAgain)
   EXPECT_TRUE (func_ran);
 }
 
-TEST_F (
-  AudioEngineTest,
-  OfflineRenderSessionDestructorCleansUpWhenFinishNotCalled)
+// A session whose completion callbacks never ran is finished when the
+// engine is destroyed
+TEST_F (AudioEngineTest, AudioEngineDestructorFinishesAbandonedRenderSession)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
     *tempo_map_);
 
-  {
-    AudioEngine::OfflineRenderSession render_session (*engine);
-    EXPECT_TRUE (engine->offline_render_active ());
-  }
-  EXPECT_FALSE (engine->offline_render_active ());
+  const auto render_session = engine->create_offline_render_session ();
+  EXPECT_TRUE (engine->offline_render_active ());
 
-  auto func_ran = false;
-  engine->with_paused_processing ([&func_ran] () { func_ran = true; }, false);
-  EXPECT_TRUE (func_ran);
+  // The session's finish() recalculates the graph: the builder survives
+  // the engine, so this expectation proves the backstop ran it
+  EXPECT_CALL (*mock_graph_builder_, build_graph_impl (_)).Times (1);
+  engine.reset ();
+
+  EXPECT_TRUE (render_session.expired ());
+}
+
+// A finished session stays parked until a new render replaces it
+TEST_F (AudioEngineTest, OfflineRenderSessionHandleExpiresWhenReplaced)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  auto first_session = engine->create_offline_render_session ();
+  first_session.lock ()->finish ();
+
+  auto second_session = engine->create_offline_render_session ();
+  EXPECT_TRUE (first_session.expired ());
+  EXPECT_TRUE (engine->offline_render_active ());
+
+  second_session.lock ()->finish ();
+  EXPECT_FALSE (engine->offline_render_active ());
+}
+
+// A second render while one owns processing is refused
+TEST_F (AudioEngineTest, OfflineRenderSessionRefusesSecondRenderWhileActive)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  const auto first_session = engine->create_offline_render_session ();
+  EXPECT_TRUE (engine->offline_render_active ());
+
+  const auto second_session = engine->create_offline_render_session ();
+  EXPECT_TRUE (second_session.expired ());
+  EXPECT_TRUE (engine->offline_render_active ());
+
+  first_session.lock ()->finish ();
 }
 
 // Only the outermost pause scope of a nesting chain pauses and resumes
@@ -1235,15 +1265,15 @@ TEST_F (AudioEngineTest, OfflineRenderSessionFinishResumesEngineExactlyOnce)
 
   engine->set_running (true);
 
-  AudioEngine::OfflineRenderSession render_session (*engine);
+  const auto render_session = engine->create_offline_render_session ().lock ();
   EXPECT_FALSE (engine->running ());
 
-  render_session.finish ();
+  render_session->finish ();
   EXPECT_TRUE (engine->running ());
   EXPECT_FALSE (engine->offline_render_active ());
 
   // A second finish must not touch the engine again
-  render_session.finish ();
+  render_session->finish ();
   EXPECT_TRUE (engine->running ());
 }
 
@@ -1278,47 +1308,6 @@ TEST_F (AudioEngineTest, RunWithProcessingSuspendedRestoresRunningOnThrow)
     }),
     std::runtime_error);
 
-  EXPECT_TRUE (engine->running ());
-}
-
-// The destructor backstop finishes the session on the engine's thread when
-// the last reference is dropped on another thread
-TEST_F (AudioEngineTest, OfflineRenderSessionDestructorFinishesOnEngineThread)
-{
-  auto engine = std::make_unique<AudioEngine> (
-    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
-    *tempo_map_);
-
-  engine->set_running (true);
-
-  auto session = std::make_shared<AudioEngine::OfflineRenderSession> (*engine);
-  EXPECT_TRUE (engine->offline_render_active ());
-  EXPECT_FALSE (engine->running ());
-
-  std::atomic<bool> destroyed_on_worker{ false };
-  // The worker gets its own reference: concurrent reset() calls on the same
-  // shared_ptr instance are a data race
-  std::jthread destroyer (
-    [worker_session = session, &destroyed_on_worker] () mutable {
-      worker_session.reset ();
-      destroyed_on_worker.store (true);
-    });
-  // Drop the main-thread reference so the worker's reset performs the
-  // destruction
-  session.reset ();
-
-  // The worker blocks in a blocking queued connection: the engine thread
-  // must pump its event loop for the marshalled finish() to run
-  const auto deadline =
-    std::chrono::steady_clock::now () + std::chrono::seconds (5);
-  while (!destroyed_on_worker.load ())
-    {
-      ASSERT_LT (std::chrono::steady_clock::now (), deadline)
-        << "the marshalled finish() never completed";
-      QCoreApplication::processEvents (QEventLoop::AllEvents, 10);
-    }
-
-  EXPECT_FALSE (engine->offline_render_active ());
   EXPECT_TRUE (engine->running ());
 }
 

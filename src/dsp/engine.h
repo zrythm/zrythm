@@ -314,20 +314,18 @@ public:
    * The constructor pauses the engine and marks processing as owned
    * by the render. finish() clears the mark, recalculates the graph
    * and resumes the engine; it is idempotent and runs at most once,
-   * and the destructor calls it as a backstop when a future chain was
-   * torn down without any completion callback running. finish() and the
-   * destructor both leave the engine resumed on the engine's thread: a
-   * destructor running on another thread marshals the call there and
-   * blocks until it completes.
+   * on the engine's thread.
    *
-   * The render runs asynchronously: callers keep the session in a
-   * shared_ptr captured by the future's completion callbacks and call
-   * finish() from whichever callback runs.
+   * The engine owns the session, so construction and destruction
+   * happen on the engine's thread. The destructor calls finish() as a
+   * backstop when a render's completion callbacks never ran: the
+   * engine drops the session when it is replaced or when the engine
+   * itself is destroyed. Do not retain strong references to a session
+   * beyond calling finish() on the engine's thread.
    */
   class OfflineRenderSession
   {
   public:
-    explicit OfflineRenderSession (AudioEngine &engine);
     ~OfflineRenderSession ();
 
     void finish () noexcept;
@@ -338,6 +336,10 @@ public:
     OfflineRenderSession &operator= (OfflineRenderSession &&) = delete;
 
   private:
+    friend class AudioEngine;
+
+    explicit OfflineRenderSession (AudioEngine &engine);
+
     AudioEngine &engine_;
 
     /** Pause owned by this session; released by finish(). */
@@ -345,6 +347,17 @@ public:
 
     std::atomic<bool> finished_{ false };
   };
+
+  /**
+   * @brief Starts an offline render session: the engine pauses and
+   * processing is owned by the render until finish() runs.
+   *
+   * Returns a handle for the render's completion callbacks (which run
+   * on the engine's thread) to call finish() through. Only one session
+   * may own processing at a time; the handle is empty when another
+   * session already owns it.
+   */
+  std::weak_ptr<OfflineRenderSession> create_offline_render_session ();
 
   auto &graph_dispatcher () { return graph_dispatcher_; }
 
@@ -402,18 +415,19 @@ private:
   void activate_impl (bool activate);
 
   /**
-   * @brief Sets the engine lifecycle state (main thread only).
+   * @brief Sets the engine lifecycle state (engine's thread only).
    */
   void set_state (State new_state);
 
   /**
-   * @brief Marks processing as owned by an offline render (main thread
-   * only).
+   * @brief Marks processing as owned by an offline render (engine's
+   * thread only).
    */
   void claim_offline_render ();
 
   /**
-   * @brief Clears the offline-render ownership mark (main thread only).
+   * @brief Clears the offline-render ownership mark (engine's thread
+   * only).
    *
    * Releasing an unclaimed mark is an assertion failure.
    */
@@ -491,8 +505,8 @@ private:
   std::atomic_bool run_{ false };
 
   /**
-   * @brief Number of ProcessingPauseScope objects currently open (main
-   * thread only).
+   * @brief Number of ProcessingPauseScope objects currently open
+   * (engine's thread only).
    *
    * A depth above 1 marks the scopes as nested; only the outermost
    * scope pauses and resumes the engine.
@@ -517,6 +531,15 @@ private:
   static_assert (decltype (state_)::is_always_lock_free);
   /** @see offline_render_active() */
   std::atomic<bool> offline_render_active_{ false };
+
+  /**
+   * @brief The active offline render session (engine's thread only).
+   *
+   * The engine owns the session, so it is created and destroyed on the
+   * engine's thread. A finished session stays parked here until it is
+   * replaced or the engine is destroyed.
+   */
+  std::shared_ptr<OfflineRenderSession> active_offline_render_;
 
   std::optional<dsp::AudioDeviceInfo> cached_device_info_;
 
