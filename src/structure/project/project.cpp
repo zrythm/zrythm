@@ -82,9 +82,7 @@ Project::Project (
           .graph_recalc_ = [this] { graph_dispatcher_.recalc_graph (false); },
           .with_paused_processing_ =
             [this] (std::function<void ()> func) {
-              audio_engine_
-                ->execute_function_with_paused_processing_synchronously (
-                  std::move (func), false);
+              audio_engine_->with_paused_processing (std::move (func), false);
             } }),
       tracklist_ (
         utils::make_qobject_unique<
@@ -176,11 +174,7 @@ Project::Project (
         [this] () { return std::span (playback_graph_endpoints_); },
         hw_interface_,
         [this] (const std::function<void ()> &callable) {
-          bool engine_running = audio_engine_->running ();
-          audio_engine_->set_running (false);
-          auto lock = audio_engine_->get_processing_lock ();
-          callable ();
-          audio_engine_->set_running (engine_running);
+          audio_engine_->run_with_processing_suspended (callable);
         },
         [context = this] (std::function<void ()> func) {
           QMetaObject::invokeMethod (context, func);

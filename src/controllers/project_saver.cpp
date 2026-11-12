@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <exception>
+#include <memory>
 
 #include "utils/format_qt.h"
 #include <fmt/std.h>
@@ -329,21 +330,13 @@ ProjectSaver::save (
         .to_path ();
 
   /* pause engine */
-  dsp::AudioEngine::EngineState state{};
-  bool                          engine_paused = false;
-  auto *                        engine = project.engine ();
+  auto * engine = project.engine ();
+  std::unique_ptr<dsp::AudioEngine::ProcessingPauseScope> pause_scope;
   if (engine->activated ())
     {
-      engine->wait_for_pause (state, false, true);
-      engine_paused = true;
+      pause_scope =
+        std::make_unique<dsp::AudioEngine::ProcessingPauseScope> (*engine);
     }
-
-  const auto resume_engine = [engine, engine_paused, state] () {
-    if (engine_paused)
-      {
-        engine->resume (state);
-      }
-  };
 
   /* Subtask lambdas */
   const auto create_dirs_task = [is_backup, path] () {
@@ -449,9 +442,10 @@ ProjectSaver::save (
   constexpr int kStageDone = 100;
 
   return QtConcurrent::run (
-    [engine, resume_engine, create_dirs_task, write_pool_task, build_json_task,
-     validate_json_task, write_json_task, rename_file_task, path, is_backup,
-     &project] (QPromise<QString> &promise) {
+    [engine, pause_scope = std::move (pause_scope), create_dirs_task,
+     write_pool_task, build_json_task, validate_json_task, write_json_task,
+     rename_file_task, path, is_backup,
+     &project] (QPromise<QString> &promise) mutable {
       // The pool write and serialization access live project data, so they
       // must run on the engine's thread. The engine lives on the main
       // thread: each posted task runs as a single main-thread event, so
@@ -476,9 +470,13 @@ ProjectSaver::save (
         if (eptr != nullptr)
           std::rethrow_exception (eptr);
       };
+      // Destroys the pause scope on the engine's thread, which resumes the
+      // engine. The reference stays valid: each call blocks until the
+      // engine thread has finished running the posted function.
+      const auto resume_engine = [&pause_scope] () { pause_scope.reset (); };
       // Resumes the engine and reports whether cancellation was requested
       const auto cancel_if_requested =
-        [&run_on_engine_thread, &promise, resume_engine] () {
+        [&run_on_engine_thread, &promise, &resume_engine] () {
           if (!promise.isCanceled ())
             return false;
           z_debug ("Project save canceled");
@@ -561,6 +559,14 @@ ProjectSaver::save (
       catch (const std::exception &e)
         {
           utils::log_exception (e, "Project save failed");
+          run_on_engine_thread (resume_engine);
+          promise.setException (std::current_exception ());
+        }
+      // The pause scope lives in this closure, which dies on the pool
+      // thread: no exception of any type may escape it
+      catch (...)
+        {
+          z_warning ("Project save failed with a non-standard exception");
           run_on_engine_thread (resume_engine);
           promise.setException (std::current_exception ());
         }

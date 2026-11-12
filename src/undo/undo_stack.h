@@ -54,7 +54,7 @@ public:
    * When the pause cannot be honored (e.g. an offline render owns
    * processing), they drop the callback instead.
    *
-   * @see AudioEngine.execute_function_with_paused_processing_synchronously().
+   * @see AudioEngine.with_paused_processing().
    */
   using CallbackWithPausedEngineRequester =
     std::function<void (utils::InplaceCallback, bool)>;

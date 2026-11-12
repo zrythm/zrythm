@@ -212,9 +212,8 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
     structure::project::ProjectUiState> (*loaded_project, *app_settings);
   auto loaded_undo_stack = utils::make_qobject_unique<undo::UndoStack> (
     [&] (auto action, bool recalculate_graph) {
-      loaded_project->engine ()
-        ->execute_function_with_paused_processing_synchronously (
-          std::move (action), recalculate_graph);
+      loaded_project->engine ()->with_paused_processing (
+        std::move (action), recalculate_graph);
     },
     nullptr);
 
@@ -274,9 +273,8 @@ TEST_F (ProjectLoaderTest, LoadsSourceWithUnknownBpm)
     structure::project::ProjectUiState> (*loaded_project, *app_settings);
   auto loaded_undo_stack = utils::make_qobject_unique<undo::UndoStack> (
     [&] (auto action, bool recalculate_graph) {
-      loaded_project->engine ()
-        ->execute_function_with_paused_processing_synchronously (
-          std::move (action), recalculate_graph);
+      loaded_project->engine ()->with_paused_processing (
+        std::move (action), recalculate_graph);
     },
     nullptr);
 

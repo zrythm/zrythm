@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <atomic>
+#include <chrono>
 #include <stdexcept>
 #include <thread>
 #include <tuple>
@@ -11,6 +13,8 @@
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
+
+#include <QCoreApplication>
 
 #include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/mock_hardware_midi_interface.h"
@@ -680,7 +684,7 @@ TEST_F (AudioEngineTest, PostProcessWithNonRollingStateDoesNotUpdatePlayhead)
   EXPECT_EQ (new_pos.in (units::samples), initial_pos.in (units::samples));
 }
 
-TEST_F (AudioEngineTest, WaitforPauseWithNonRunningEngineReturnsEarly)
+TEST_F (AudioEngineTest, PauseScopeOnNonRunningEnginePausesAndRestoresNothing)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
@@ -689,16 +693,18 @@ TEST_F (AudioEngineTest, WaitforPauseWithNonRunningEngineReturnsEarly)
   engine->set_running (false);
 
   transport_->setLoopEnabled (false);
+  transport_->setPlayState (dsp::ITransport::PlayState::Paused);
 
-  AudioEngine::EngineState state{};
-  engine->wait_for_pause (state, false, false);
+  {
+    AudioEngine::ProcessingPauseScope pause (*engine);
+    EXPECT_FALSE (engine->running ());
+  }
 
-  EXPECT_FALSE (state.running_);
-  EXPECT_FALSE (state.playing_);
-  EXPECT_FALSE (state.looping_);
+  EXPECT_FALSE (engine->running ());
+  EXPECT_EQ (transport_->getPlayState (), dsp::ITransport::PlayState::Paused);
 }
 
-TEST_F (AudioEngineTest, WaitforPauseWithPlayingEngineStopsPlayback)
+TEST_F (AudioEngineTest, HardPauseScopeWhilePlayingStopsProcessing)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
@@ -710,35 +716,22 @@ TEST_F (AudioEngineTest, WaitforPauseWithPlayingEngineStopsPlayback)
   transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
   transport_->setLoopEnabled (true);
 
-  AudioEngine::EngineState state{};
-  engine->wait_for_pause (state, true, false);
+  {
+    AudioEngine::ProcessingPauseScope pause (
+      *engine, { .hard_transport_pause = true });
+    EXPECT_FALSE (engine->running ());
+    EXPECT_EQ (transport_->getPlayState (), dsp::ITransport::PlayState::Paused);
+  }
 
-  EXPECT_TRUE (state.running_);
-  EXPECT_TRUE (state.playing_);
-  EXPECT_TRUE (state.looping_);
-  EXPECT_FALSE (engine->running ());
+  // The outermost scope's destruction restores processing and rolls again
+  // from the position the pause left the playhead at
+  EXPECT_TRUE (engine->running ());
+  EXPECT_TRUE (transport_->loopEnabled ());
+  EXPECT_EQ (
+    transport_->getPlayState (), dsp::ITransport::PlayState::RollRequested);
 }
 
-TEST_F (AudioEngineTest, ResumeWithNonRunningEngineDoesNothing)
-{
-  auto engine = std::make_unique<AudioEngine> (
-    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
-    *tempo_map_);
-
-  engine->set_running (true);
-
-  AudioEngine::EngineState state{
-    .running_ = false, .playing_ = true, .looping_ = true
-  };
-  engine->resume (state);
-
-  // Should not modify the state since engine wasn't running
-  EXPECT_FALSE (state.running_);
-  EXPECT_TRUE (state.playing_);
-  EXPECT_TRUE (state.looping_);
-}
-
-TEST_F (AudioEngineTest, ResumeWithRunningEngineRestoresState)
+TEST_F (AudioEngineTest, PauseScopeDestructionRestoresStateCapturedAtPause)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
@@ -747,20 +740,23 @@ TEST_F (AudioEngineTest, ResumeWithRunningEngineRestoresState)
   engine->set_running (true);
 
   // Start rolling and enable loop
-  transport_->requestRoll ();
+  transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
   transport_->setLoopEnabled (true);
 
-  AudioEngine::EngineState state{
-    .running_ = true, .playing_ = true, .looping_ = true
-  };
-  engine->resume (state);
+  {
+    AudioEngine::ProcessingPauseScope pause (
+      *engine, { .hard_transport_pause = true });
+    // A loop change made during the pause is replaced by the restoration
+    transport_->setLoopEnabled (false);
+  }
 
-  EXPECT_TRUE (state.running_);
-  EXPECT_TRUE (state.playing_);
-  EXPECT_TRUE (state.looping_);
+  EXPECT_TRUE (engine->running ());
+  EXPECT_TRUE (transport_->loopEnabled ());
+  EXPECT_EQ (
+    transport_->getPlayState (), dsp::ITransport::PlayState::RollRequested);
 }
 
-TEST_F (AudioEngineTest, ResumeWhileNotPlayingLeavesTransportUntouched)
+TEST_F (AudioEngineTest, PauseScopeWhileNotPlayingLeavesTransportUntouched)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
@@ -771,10 +767,9 @@ TEST_F (AudioEngineTest, ResumeWhileNotPlayingLeavesTransportUntouched)
   transport_->setPlayState (dsp::ITransport::PlayState::Paused);
   transport_->move_playhead (units::ticks (1920.0), false);
 
-  AudioEngine::EngineState state{
-    .running_ = true, .playing_ = false, .looping_ = true
-  };
-  engine->resume (state);
+  {
+    AudioEngine::ProcessingPauseScope pause (*engine);
+  }
 
   EXPECT_TRUE (engine->running ());
   EXPECT_EQ (transport_->getPlayState (), dsp::ITransport::PlayState::Paused);
@@ -801,15 +796,14 @@ TEST_F (AudioEngineTest, EnginePauseDoesNotMovePlayheadToCue)
   transport_->setPlayState (dsp::ITransport::PlayState::Paused);
   transport_->move_playhead (units::ticks (1920.0), false);
 
-  engine->execute_function_with_paused_processing_synchronously (
-    [] () { }, false);
+  engine->with_paused_processing ([] () { }, false);
 
   EXPECT_EQ (
     transport_->playhead ()->playhead ().position_ticks ().in (units::ticks),
     1920.0);
 }
 
-TEST_F (AudioEngineTest, WaitforPauseWhilePlayingDoesNotMovePlayheadToCue)
+TEST_F (AudioEngineTest, HardPauseWhilePlayingDoesNotMovePlayheadToCue)
 {
   config_provider_.return_to_cue_on_pause_ = [] () { return true; };
   transport_ =
@@ -824,10 +818,14 @@ TEST_F (AudioEngineTest, WaitforPauseWhilePlayingDoesNotMovePlayheadToCue)
   transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
   transport_->move_playhead (units::ticks (1920.0), false);
 
-  AudioEngine::EngineState state{};
-  engine->wait_for_pause (state, true, false);
+  {
+    AudioEngine::ProcessingPauseScope pause (
+      *engine, { .hard_transport_pause = true });
+    EXPECT_EQ (
+      transport_->playhead ()->playhead ().position_ticks ().in (units::ticks),
+      1920.0);
+  }
 
-  EXPECT_TRUE (state.playing_);
   EXPECT_EQ (
     transport_->playhead ()->playhead ().position_ticks ().in (units::ticks),
     1920.0);
@@ -1018,7 +1016,7 @@ TEST_F (AudioEngineTest, DestructorDeactivatesIfActive)
   }
 }
 
-TEST_F (AudioEngineTest, ExecuteFunctionWithPausedProcessingResumesOnThrow)
+TEST_F (AudioEngineTest, WithPausedProcessingResumesOnThrow)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
@@ -1029,7 +1027,7 @@ TEST_F (AudioEngineTest, ExecuteFunctionWithPausedProcessingResumesOnThrow)
 
   // The exception propagates to the caller...
   EXPECT_THROW (
-    engine->execute_function_with_paused_processing_synchronously (
+    engine->with_paused_processing (
       [] () { throw std::runtime_error ("boom"); }, false),
     std::runtime_error);
 
@@ -1048,8 +1046,7 @@ TEST_F (AudioEngineTest, OfflineRenderSessionBlocksStateEditsWhileActive)
   EXPECT_TRUE (engine->offline_render_active ());
 
   auto func_ran = false;
-  engine->execute_function_with_paused_processing_synchronously (
-    [&func_ran] () { func_ran = true; }, false);
+  engine->with_paused_processing ([&func_ran] () { func_ran = true; }, false);
   EXPECT_FALSE (func_ran);
 
   render_session->finish ();
@@ -1089,8 +1086,7 @@ TEST_F (AudioEngineTest, OfflineRenderSessionFinishAllowsStateEditsAgain)
   EXPECT_FALSE (engine->offline_render_active ());
 
   auto func_ran = false;
-  engine->execute_function_with_paused_processing_synchronously (
-    [&func_ran] () { func_ran = true; }, false);
+  engine->with_paused_processing ([&func_ran] () { func_ran = true; }, false);
   EXPECT_TRUE (func_ran);
 }
 
@@ -1109,9 +1105,221 @@ TEST_F (
   EXPECT_FALSE (engine->offline_render_active ());
 
   auto func_ran = false;
-  engine->execute_function_with_paused_processing_synchronously (
-    [&func_ran] () { func_ran = true; }, false);
+  engine->with_paused_processing ([&func_ran] () { func_ran = true; }, false);
   EXPECT_TRUE (func_ran);
+}
+
+// Only the outermost pause scope of a nesting chain pauses and resumes
+TEST_F (AudioEngineTest, NestedPauseScopesResumeOnlyOnOutermostDestruction)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+  transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
+
+  {
+    AudioEngine::ProcessingPauseScope outer (
+      *engine, { .hard_transport_pause = true });
+    EXPECT_FALSE (engine->running ());
+
+    {
+      AudioEngine::ProcessingPauseScope inner (*engine);
+      EXPECT_FALSE (engine->running ());
+      EXPECT_EQ (
+        transport_->getPlayState (), dsp::ITransport::PlayState::Paused);
+    }
+
+    // The inner scope's destruction must not resume anything
+    EXPECT_FALSE (engine->running ());
+    EXPECT_EQ (transport_->getPlayState (), dsp::ITransport::PlayState::Paused);
+  }
+
+  EXPECT_TRUE (engine->running ());
+  EXPECT_EQ (
+    transport_->getPlayState (), dsp::ITransport::PlayState::RollRequested);
+}
+
+// A transport call that throws during the pause leaves the nesting depth
+// balanced: a later scope must still pause and resume the engine
+TEST_F (
+  AudioEngineTest,
+  PauseScopeThrowingTransportPauseKeepsLaterScopesEffective)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+  transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
+
+  {
+    // The connection lives only for the failing pause; destroying the
+    // context object breaks it
+    QObject throw_context;
+    QObject::connect (
+      transport_.get (), &Transport::playStateChanged, &throw_context,
+      [] (dsp::ITransport::PlayState) { throw std::runtime_error ("boom"); });
+    EXPECT_THROW (
+      AudioEngine::ProcessingPauseScope (
+        *engine, { .hard_transport_pause = true }),
+      std::runtime_error);
+  }
+
+  {
+    AudioEngine::ProcessingPauseScope pause (*engine);
+    EXPECT_FALSE (engine->running ());
+  }
+  EXPECT_TRUE (engine->running ());
+}
+
+TEST_F (AudioEngineTest, WithPausedProcessingThrowingBodyRestoresTransport)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+  transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
+
+  EXPECT_THROW (
+    engine->with_paused_processing (
+      [] () { throw std::runtime_error ("boom"); }, false),
+    std::runtime_error);
+
+  EXPECT_TRUE (engine->running ());
+  EXPECT_EQ (
+    transport_->getPlayState (), dsp::ITransport::PlayState::RollRequested);
+}
+
+TEST_F (AudioEngineTest, KeepPausedLeavesEnginePausedAfterScopeDestruction)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  {
+    AudioEngine::ProcessingPauseScope pause (*engine);
+    pause.keep_paused ();
+  }
+
+  EXPECT_FALSE (engine->running ());
+}
+
+TEST_F (AudioEngineTest, DeactivateKeepsEnginePausedAndReactivateIsIdempotent)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->activate ();
+  engine->set_running (true);
+
+  engine->deactivate ();
+  EXPECT_FALSE (engine->activated ());
+  EXPECT_FALSE (engine->running ());
+
+  engine->activate ();
+  engine->activate ();
+  EXPECT_TRUE (engine->activated ());
+}
+
+TEST_F (AudioEngineTest, OfflineRenderSessionFinishResumesEngineExactlyOnce)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  AudioEngine::OfflineRenderSession render_session (*engine);
+  EXPECT_FALSE (engine->running ());
+
+  render_session.finish ();
+  EXPECT_TRUE (engine->running ());
+  EXPECT_FALSE (engine->offline_render_active ());
+
+  // A second finish must not touch the engine again
+  render_session.finish ();
+  EXPECT_TRUE (engine->running ());
+}
+
+TEST_F (AudioEngineTest, RunWithProcessingSuspendedRestoresRunningOnReturn)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  auto body_saw_running = true;
+  engine->run_with_processing_suspended ([&engine, &body_saw_running] () {
+    body_saw_running = engine->running ();
+  });
+
+  EXPECT_FALSE (body_saw_running);
+  EXPECT_TRUE (engine->running ());
+}
+
+TEST_F (AudioEngineTest, RunWithProcessingSuspendedRestoresRunningOnThrow)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  EXPECT_THROW (
+    engine->run_with_processing_suspended ([] () {
+      throw std::runtime_error ("boom");
+    }),
+    std::runtime_error);
+
+  EXPECT_TRUE (engine->running ());
+}
+
+// The destructor backstop finishes the session on the engine's thread when
+// the last reference is dropped on another thread
+TEST_F (AudioEngineTest, OfflineRenderSessionDestructorFinishesOnEngineThread)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  auto session = std::make_shared<AudioEngine::OfflineRenderSession> (*engine);
+  EXPECT_TRUE (engine->offline_render_active ());
+  EXPECT_FALSE (engine->running ());
+
+  std::atomic<bool> destroyed_on_worker{ false };
+  // The worker gets its own reference: concurrent reset() calls on the same
+  // shared_ptr instance are a data race
+  std::jthread destroyer (
+    [worker_session = session, &destroyed_on_worker] () mutable {
+      worker_session.reset ();
+      destroyed_on_worker.store (true);
+    });
+  // Drop the main-thread reference so the worker's reset performs the
+  // destruction
+  session.reset ();
+
+  // The worker blocks in a blocking queued connection: the engine thread
+  // must pump its event loop for the marshalled finish() to run
+  const auto deadline =
+    std::chrono::steady_clock::now () + std::chrono::seconds (5);
+  while (!destroyed_on_worker.load ())
+    {
+      ASSERT_LT (std::chrono::steady_clock::now (), deadline)
+        << "the marshalled finish() never completed";
+      QCoreApplication::processEvents (QEventLoop::AllEvents, 10);
+    }
+
+  EXPECT_FALSE (engine->offline_render_active ());
+  EXPECT_TRUE (engine->running ());
 }
 
 } // namespace zrythm::dsp

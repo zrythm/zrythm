@@ -173,7 +173,7 @@ protected:
 
     auto undo_stack = utils::make_qobject_unique<undo::UndoStack> (
       [proj = project.get ()] (auto action, bool recalculate_graph) {
-        proj->engine ()->execute_function_with_paused_processing_synchronously (
+        proj->engine ()->with_paused_processing (
           std::move (action), recalculate_graph);
       },
       nullptr);
@@ -297,7 +297,7 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
 
   auto undo_stack2 = utils::make_qobject_unique<undo::UndoStack> (
     [proj = project2.get ()] (auto action, bool recalculate_graph) {
-      proj->engine ()->execute_function_with_paused_processing_synchronously (
+      proj->engine ()->with_paused_processing (
         std::move (action), recalculate_graph);
     },
     nullptr);

@@ -39,6 +39,8 @@
 #include "utils/logger.h"
 #include "utils/tracy.h"
 
+#include <QThread>
+
 namespace zrythm::dsp
 {
 
@@ -154,7 +156,7 @@ AudioEngine::AudioEngine (
               // collection still referencing them
               std::vector<utils::QObjectUniquePtr<MidiInputProcessor>>
                 removed_processors;
-              execute_function_with_paused_processing_synchronously (
+              with_paused_processing (
                 [this, &removed_processors] () {
                   removed_processors =
                     update_midi_processors (midi_interface_.device_buffers ());
@@ -181,140 +183,157 @@ AudioEngine::AudioEngine (
   z_debug ("Audio engine created");
 }
 
-void
-AudioEngine::
-  wait_for_pause (EngineState &state, bool force_pause, bool with_fadeout)
+AudioEngine::ProcessingPauseScope::ProcessingPauseScope (AudioEngine &engine)
+    : ProcessingPauseScope (engine, Options ())
 {
-  z_debug ("waiting for engine to pause...");
+}
 
-  state.running_ = run_.load ();
-  state.playing_ = transport_.isRolling ();
-  state.looping_ = transport_.loopEnabled ();
-  if (!state.running_)
-    {
-      z_debug ("engine not running - won't wait for pause");
-      return;
-    }
+AudioEngine::ProcessingPauseScope::ProcessingPauseScope (
+  AudioEngine &engine,
+  Options      options)
+    : engine_ (engine)
+{
+  Q_ASSERT (QThread::currentThread () == engine_.thread ());
+  nested_ = ++engine_.pause_depth_ > 1;
+  if (nested_)
+    return;
 
-  if (with_fadeout && state.running_)
+  try
     {
-// TODO (or use graph cross-fade)
-#if 0
-      z_debug (
-        "setting fade out samples and waiting for remaining samples to become 0");
-      control_room_->monitor_fader_->request_fade_out ();
-      const auto start_time = SteadyClock::now ();
-      const auto max_time_to_wait = std::chrono::seconds (2);
-      while (control_room_->monitor_fader_->has_fade_out_samples_left ())
+      z_debug ("waiting for engine to pause...");
+
+      saved_running_ = engine_.run_.load ();
+      saved_playing_ = engine_.transport_.isRolling ();
+      saved_looping_ = engine_.transport_.loopEnabled ();
+      if (!saved_running_)
         {
-          std::this_thread::sleep_for (std::chrono::microseconds (100));
-          if (SteadyClock::now () - start_time > max_time_to_wait)
+          z_debug ("engine not running - won't wait for pause");
+          return;
+        }
+
+      /* send panic */
+      engine_.panic_all ();
+
+      if (saved_playing_)
+        {
+          engine_.transport_.pause_for_engine_internal ();
+
+          if (options.hard_transport_pause)
             {
-              /* abort */
-              control_room_->monitor_fader_->abort_fade_out ();
-              break;
+              engine_.transport_.setPlayState (
+                dsp::Transport::PlayState::Paused);
             }
-        }
-#endif
-    }
-
-  /* send panic */
-  panic_all ();
-
-  if (state.playing_)
-    {
-      transport_.pause_for_engine_internal ();
-
-      if (force_pause)
-        {
-          transport_.setPlayState (dsp::Transport::PlayState::Paused);
-        }
-      else
-        {
-          // Best-effort drain of an in-flight audio cycle that has already
-          // latched the pause request. This may exit immediately if no cycle
-          // has latched it yet - the flush cycle below is what actually
-          // applies the pause.
-          constexpr auto kPauseDrainTimeout = std::chrono::seconds (2);
-          const auto     start_time = std::chrono::steady_clock::now ();
-          while (
-            transport_.effective_rt_play_state ()
-            == dsp::Transport::PlayState::PauseRequested)
+          else
             {
-              if (
-                std::chrono::steady_clock::now () - start_time
-                >= kPauseDrainTimeout)
+              // Best-effort drain of an in-flight audio cycle that has
+              // already latched the pause request. This may exit immediately
+              // if no cycle has latched it yet - the flush cycle below is
+              // what actually applies the pause.
+              constexpr auto kPauseDrainTimeout = std::chrono::seconds (2);
+              const auto     start_time = std::chrono::steady_clock::now ();
+              while (
+                engine_.transport_.effective_rt_play_state ()
+                == dsp::Transport::PlayState::PauseRequested)
                 {
-                  // The audio callback is likely wedged - continue anyway;
-                  // the flush cycle below applies the pause
-                  z_warning ("timed out waiting for the audio thread to pause");
-                  break;
+                  if (
+                    std::chrono::steady_clock::now () - start_time
+                    >= kPauseDrainTimeout)
+                    {
+                      // The audio callback is likely wedged - continue
+                      // anyway; the flush cycle below applies the pause
+                      z_warning (
+                        "timed out waiting for the audio thread to pause");
+                      break;
+                    }
+                  std::this_thread::sleep_for (std::chrono::microseconds (100));
                 }
-              std::this_thread::sleep_for (std::chrono::microseconds (100));
             }
         }
+
+      z_debug ("setting run to false and waiting for cycle to finish...");
+      engine_.run_.store (false);
+      {
+        // Note: if the audio callback is wedged while holding the lock, this
+        // still blocks indefinitely - the drain timeout above only bounds the
+        // polling phase
+        auto lock = engine_.get_processing_lock ();
+      }
+      z_debug ("cycle finished");
+
+      if (engine_.audio_callback_active_)
+        {
+          /* run 1 more time to flush panic messages */
+          auto                         lock = engine_.get_processing_lock ();
+          dsp::PlayheadProcessingGuard playhead_processing_guard{
+            engine_.transport_.playhead ()->playhead ()
+          };
+          auto current_transport_state = engine_.transport_.get_snapshot ();
+          engine_.preprocess (current_transport_state, lock);
+
+          auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+            engine_.transport_.get_playhead_position_in_audio_thread (),
+            units::samples (1));
+
+          engine_.graph_dispatcher_.start_cycle (
+            current_transport_state, time_nfo,
+            engine_.remaining_latency_preroll_, false, engine_.tempo_map_);
+          engine_.advance_playhead_after_processing (
+            current_transport_state, playhead_processing_guard,
+            units::samples (0), units::samples (1));
+        }
     }
-
-  z_debug ("setting run to false and waiting for cycle to finish...");
-  run_.store (false);
-  {
-    // Note: if the audio callback is wedged while holding the lock, this
-    // still blocks indefinitely - the drain timeout above only bounds the
-    // polling phase
-    auto lock = get_processing_lock ();
-  }
-  z_debug ("cycle finished");
-
-  // control_room_->monitor_fader_->abort_fade_out ();
-
-  if (audio_callback_active_)
+  catch (...)
     {
-      /* run 1 more time to flush panic messages */
-      auto                         lock = get_processing_lock ();
-      dsp::PlayheadProcessingGuard playhead_processing_guard{
-        transport_.playhead ()->playhead ()
-      };
-      auto current_transport_state = transport_.get_snapshot ();
-      preprocess (current_transport_state, lock);
-
-      auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
-        transport_.get_playhead_position_in_audio_thread (), units::samples (1));
-
-      graph_dispatcher_.start_cycle (
-        current_transport_state, time_nfo, remaining_latency_preroll_, false,
-        tempo_map_);
-      advance_playhead_after_processing (
-        current_transport_state, playhead_processing_guard, units::samples (0),
-        units::samples (1));
+      // No destructor runs when construction fails, so the nesting depth
+      // must be restored here
+      --engine_.pause_depth_;
+      throw;
     }
 }
 
-void
-
-AudioEngine::resume (const EngineState &state)
+AudioEngine::ProcessingPauseScope::~ProcessingPauseScope ()
 {
+  Q_ASSERT (QThread::currentThread () == engine_.thread ());
+  Q_ASSERT (engine_.pause_depth_ > 0);
+  --engine_.pause_depth_;
+
+  if (nested_ || keep_paused_called_)
+    return;
+
   z_debug ("resuming engine...");
-  if (!state.running_)
+  if (!saved_running_)
     {
       z_debug ("engine was not running - won't resume");
       return;
     }
-  transport_.setLoopEnabled (state.looping_);
-  if (state.playing_)
+
+  // A throwing transport call must not propagate out of a destructor: the
+  // engine is left paused, which callers can still recover from
+  try
     {
-      // Resume from the current position: the engine-internal pause did not
-      // move the playhead. Any tempo change made during the pause was handled
-      // by the tempoEventsChanged handler, which re-anchors a paused playhead
-      // to its musical position
-      transport_.requestRoll ();
+      engine_.transport_.setLoopEnabled (saved_looping_);
+      if (saved_playing_)
+        {
+          // Resume from the current position: the pause did not move the
+          // playhead. Any tempo change made during the pause was handled by
+          // the tempoEventsChanged handler, which re-anchors a paused
+          // playhead to its musical position
+          engine_.transport_.requestRoll ();
+        }
+      // when not playing, the transport was never touched during the pause
+      // so there is nothing to restore
+      engine_.run_.store (true);
     }
-  // when not playing, the transport was never touched during the pause so
-  // there is nothing to restore
+  catch (...)
+    {
+      z_critical ("resuming the engine failed");
+    }
+}
 
-  // z_debug ("restarting engine: setting fade in samples");
-  // control_room_->monitor_fader_->request_fade_in ();
-
-  run_.store (state.running_);
+void
+AudioEngine::ProcessingPauseScope::keep_paused () noexcept
+{
+  keep_paused_called_ = true;
 }
 
 void
@@ -323,7 +342,7 @@ AudioEngine::activate ()
   activate_impl (true);
 
   // Pause, recalculate the graph and resume
-  execute_function_with_paused_processing_synchronously ([] () { }, true);
+  with_paused_processing ([] () { }, true);
 }
 
 void
@@ -378,18 +397,18 @@ AudioEngine::activate_impl (const bool activate)
       return;
     }
 
-  z_debug ("Setting engine status to: {}", new_state);
   if (activate)
     {
       load_measurer_.reset (sampleRate (), blockLength ());
 
       hw_interface_.add_audio_callback (audio_callback_.get ());
+      set_state (new_state);
     }
   else
     {
-      // This check and the OfflineRenderSession flag transitions both
-      // run on the main thread, so a session cannot begin between the
-      // check and the teardown below
+      // This check and the offline-render ownership transitions both run
+      // on the main thread, so a session cannot begin between the check
+      // and the teardown below
       if (offline_render_active_.load ())
         {
           z_warning (
@@ -398,15 +417,41 @@ AudioEngine::activate_impl (const bool activate)
           return;
         }
 
-      EngineState state{};
-      wait_for_pause (state, true, true);
-
+      ProcessingPauseScope pause (*this, { .hard_transport_pause = true });
       hw_interface_.remove_audio_callback (audio_callback_.get ());
+      set_state (new_state);
+      // Deactivation leaves the engine paused with the transport stopped
+      pause.keep_paused ();
     }
+}
 
-  state_ = new_state;
+void
+AudioEngine::set_state (State new_state)
+{
+  Q_ASSERT (QThread::currentThread () == thread ());
+  const auto old_state = state_.exchange (new_state);
+  z_debug ("audio engine state: {} -> {}", old_state, new_state);
+}
 
-  z_debug ("New engine status: {}", new_state);
+void
+AudioEngine::claim_offline_render ()
+{
+  Q_ASSERT (QThread::currentThread () == thread ());
+  z_debug ("claiming processing for an offline render");
+  offline_render_active_.store (true);
+}
+
+void
+AudioEngine::release_offline_render ()
+{
+  Q_ASSERT (QThread::currentThread () == thread ());
+  z_debug ("releasing processing after an offline render");
+  const bool was_claimed = offline_render_active_.exchange (false);
+  if (!was_claimed)
+    {
+      z_error ("releasing an offline render that was not claimed");
+    }
+  Q_ASSERT (was_claimed);
 }
 
 EngineProcessingLockGuard::EngineProcessingLockGuard (
@@ -722,15 +767,30 @@ AudioEngine::advance_playhead_after_processing (
 }
 
 AudioEngine::OfflineRenderSession::OfflineRenderSession (AudioEngine &engine)
-    : engine_ (engine)
+    : engine_ (engine),
+      pause_scope_ (std::make_unique<ProcessingPauseScope> (engine))
 {
-  engine_.wait_for_pause (state_, false, true);
-  engine_.offline_render_active_.store (true);
+  engine_.claim_offline_render ();
 }
 
 AudioEngine::OfflineRenderSession::~OfflineRenderSession ()
 {
-  finish ();
+  if (finished_.load ())
+    return;
+
+  if (QThread::currentThread () == engine_.thread ())
+    {
+      finish ();
+      return;
+    }
+
+  // finish() recalculates the graph and destroys the pause scope; both
+  // belong on the engine's thread. The blocking connection keeps this
+  // object valid until the call returns: the engine thread's event loop
+  // must still process events, and the engine thread must not be
+  // synchronously waiting on the destroying thread.
+  QMetaObject::invokeMethod (
+    &engine_, [this] { finish (); }, Qt::BlockingQueuedConnection);
 }
 
 void
@@ -738,7 +798,7 @@ AudioEngine::OfflineRenderSession::finish () noexcept
 {
   if (finished_.exchange (true))
     return;
-  engine_.offline_render_active_.store (false);
+  engine_.release_offline_render ();
   // Each step runs on its own: a failed graph recalculation must not
   // keep the engine paused
   try
@@ -751,26 +811,19 @@ AudioEngine::OfflineRenderSession::finish () noexcept
     {
       z_warning ("graph recalculation after the offline render failed");
     }
-  try
-    {
-      engine_.resume (state_);
-    }
-  catch (...)
-    {
-      z_critical ("resuming the engine after the offline render failed");
-    }
+  pause_scope_.reset ();
 }
 
 void
-AudioEngine::execute_function_with_paused_processing_synchronously (
+AudioEngine::with_paused_processing (
   utils::InplaceCallback func,
   bool                   recalculate_graph)
 {
   if (offline_render_active_.load ())
     {
-      // This check and the OfflineRenderSession flag transitions both
-      // run on the main thread, so a session cannot begin between the
-      // check and the work below
+      // This check and the offline-render ownership transitions both run
+      // on the main thread, so a session cannot begin between the check
+      // and the work below
       // The pause this function relies on is already in effect for the
       // render, but the render thread is processing the same instances:
       // the function must not run until the render finishes
@@ -780,25 +833,33 @@ AudioEngine::execute_function_with_paused_processing_synchronously (
       return;
     }
 
-  EngineState state{};
-  wait_for_pause (state, false, true);
+  // The scope restores the engine while the exception unwinds when the
+  // function or the graph recalculation throws
+  ProcessingPauseScope pause (*this);
+  func ();
+  if (recalculate_graph)
+    {
+      graph_dispatcher_.recalc_graph (false);
+    }
+}
 
-  // Resume on all paths: a throwing function must not strand the engine in
-  // the paused state
+void
+AudioEngine::run_with_processing_suspended (const std::function<void ()> &func)
+{
+  Q_ASSERT (QThread::currentThread () == thread ());
+  const bool engine_was_running = run_.load ();
+  run_.store (false);
   try
     {
+      auto lock = get_processing_lock ();
       func ();
-      if (recalculate_graph)
-        {
-          graph_dispatcher_.recalc_graph (false);
-        }
+      run_.store (engine_was_running);
     }
   catch (...)
     {
-      resume (state);
+      run_.store (engine_was_running);
       throw;
     }
-  resume (state);
 }
 
 void

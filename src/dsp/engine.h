@@ -4,6 +4,8 @@
 #pragma once
 
 #include <atomic>
+#include <functional>
+#include <memory>
 #include <optional>
 #include <thread>
 #include <vector>
@@ -88,15 +90,65 @@ public:
     Active,
   };
 
-  // TODO: check if pausing/resuming can be done with RAII
-  struct EngineState
+  /**
+   * @brief RAII scope that pauses engine processing for its lifetime.
+   *
+   * The outermost scope of a nesting chain performs the full pause: it
+   * sends a MIDI panic, pauses the transport, stops processing cycles
+   * and, while the audio device is running, processes one flush cycle
+   * for the panic messages. Its destruction restores the transport and
+   * resumes processing. Nested scopes are inert: the outermost scope
+   * owns both the pause and the restoration.
+   *
+   * A scope constructed while the engine is not running pauses nothing
+   * and its destruction restores nothing.
+   *
+   * Scopes must be created and destroyed on the engine's thread. A
+   * scope that must outlive the current stack frame can be
+   * heap-allocated and destroyed on the engine's thread later.
+   */
+  class ProcessingPauseScope
   {
-    /** Engine running. */
-    bool running_;
-    /** Playback. */
-    bool playing_;
-    /** Transport loop. */
-    bool looping_;
+  public:
+    struct Options
+    {
+      /**
+       * @brief Set the transport play state to Paused directly instead
+       * of waiting for an in-flight pause request to be applied by an
+       * audio cycle.
+       */
+      bool hard_transport_pause = false;
+    };
+
+    explicit ProcessingPauseScope (AudioEngine &engine);
+    explicit ProcessingPauseScope (AudioEngine &engine, Options options);
+    ~ProcessingPauseScope ();
+
+    /**
+     * @brief Makes the destruction of this scope skip the resumption.
+     *
+     * The engine stays paused with the transport stopped.
+     */
+    void keep_paused () noexcept;
+
+    ProcessingPauseScope (const ProcessingPauseScope &) = delete;
+    ProcessingPauseScope &operator= (const ProcessingPauseScope &) = delete;
+    ProcessingPauseScope (ProcessingPauseScope &&) = delete;
+    ProcessingPauseScope &operator= (ProcessingPauseScope &&) = delete;
+
+  private:
+    AudioEngine &engine_;
+
+    /** Whether this scope is nested inside another pause scope. */
+    bool nested_ = false;
+
+    /** Whether keep_paused() was called. */
+    bool keep_paused_called_ = false;
+
+    /** Transport and engine state captured when the pause started. */
+    bool saved_running_ = false;
+    bool saved_playing_ = false;
+    bool saved_looping_ = false;
   };
 
 public:
@@ -154,15 +206,6 @@ public:
    * @brief Current audio device name from the hardware interface.
    */
   utils::Utf8String device_name () const;
-
-  /**
-   * @param force_pause Whether to force transport
-   *   pause, otherwise for engine to process and
-   *   handle the pause request.
-   */
-  void wait_for_pause (EngineState &state, bool force_pause, bool with_fadeout);
-
-  void resume (const EngineState &state);
 
   /**
    * @brief Activate the engine if not already active.
@@ -272,7 +315,10 @@ public:
    * by the render. finish() clears the mark, recalculates the graph
    * and resumes the engine; it is idempotent and runs at most once,
    * and the destructor calls it as a backstop when a future chain was
-   * torn down without any completion callback running.
+   * torn down without any completion callback running. finish() and the
+   * destructor both leave the engine resumed on the engine's thread: a
+   * destructor running on another thread marshals the call there and
+   * blocks until it completes.
    *
    * The render runs asynchronously: callers keep the session in a
    * shared_ptr captured by the future's completion callbacks and call
@@ -292,8 +338,11 @@ public:
     OfflineRenderSession &operator= (OfflineRenderSession &&) = delete;
 
   private:
-    AudioEngine      &engine_;
-    EngineState       state_{};
+    AudioEngine &engine_;
+
+    /** Pause owned by this session; released by finish(). */
+    std::unique_ptr<ProcessingPauseScope> pause_scope_;
+
     std::atomic<bool> finished_{ false };
   };
 
@@ -329,9 +378,20 @@ public:
    * @param recalculate_graph Whether to also recreate the processing graph
    * before resuming processing.
    */
-  void execute_function_with_paused_processing_synchronously (
+  void with_paused_processing (
     utils::InplaceCallback func,
-    bool                   recalculate_graph);
+    bool                   recalculate_graph = false);
+
+  /**
+   * @brief Runs @p func with processing suspended: the run flag is
+   * cleared, the processing lock is held across the call and the run
+   * flag is restored afterwards, also when @p func throws.
+   *
+   * Unlike a ProcessingPauseScope, this does not panic processors or
+   * touch the transport: it is a lightweight suspension for callers
+   * that already hold a pause or only need the processing lock.
+   */
+  void run_with_processing_suspended (const std::function<void ()> &func);
 
 private:
   /**
@@ -340,6 +400,24 @@ private:
    * @param activate Activate or deactivate.
    */
   void activate_impl (bool activate);
+
+  /**
+   * @brief Sets the engine lifecycle state (main thread only).
+   */
+  void set_state (State new_state);
+
+  /**
+   * @brief Marks processing as owned by an offline render (main thread
+   * only).
+   */
+  void claim_offline_render ();
+
+  /**
+   * @brief Clears the offline-render ownership mark (main thread only).
+   *
+   * Releasing an unclaimed mark is an assertion failure.
+   */
+  void release_offline_render ();
 
   /**
    * @brief Updates the per-device MIDI input processors based on active
@@ -411,6 +489,15 @@ private:
 
   /** Ok to process or not. */
   std::atomic_bool run_{ false };
+
+  /**
+   * @brief Number of ProcessingPauseScope objects currently open (main
+   * thread only).
+   *
+   * A depth above 1 marks the scopes as nested; only the outermost
+   * scope pauses and resumes the engine.
+   */
+  int pause_depth_ = 0;
 
   juce::AudioProcessLoadMeasurer load_measurer_;
 
