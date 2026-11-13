@@ -82,10 +82,4 @@ OperationEnvironment::find_track (const QUuid &uuid) const
   return track_collection_.track_ref_at_id (track_id).get ();
 }
 
-std::uint64_t
-OperationEnvironment::next_revision ()
-{
-  return ++last_revision_;
-}
-
 } // namespace zrythm::operations

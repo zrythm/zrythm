@@ -4,7 +4,9 @@
 #pragma once
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -53,6 +55,23 @@ private:
   nlohmann::json tool_definition_;
   std::function<OperationReport (const nlohmann::json &, OperationEnvironment &)>
     invoke_;
+};
+
+/**
+ * Optional dispatch policies, applied by the registry before the operation
+ * runs.
+ */
+struct DispatchOptions
+{
+  /**
+   * The project revision the caller last saw.
+   *
+   * Edit operations are refused when this does not match the undo stack's
+   * current revision, so a client working from stale state cannot
+   * overwrite another client's changes unnoticed. Query and Control
+   * operations ignore it.
+   */
+  std::optional<std::uint64_t> expected_revision;
 };
 
 /**
@@ -112,20 +131,39 @@ public:
    * Looks up the operation by name and runs it.
    *
    * An unknown name is an Error report; anything the operation rejects is a
-   * Refused report. Dispatch is not synchronized: every call must happen on
+   * Refused report. The expected-revision check runs before argument
+   * validation. Dispatch is not synchronized: every call must happen on
    * one thread.
    */
   OperationReport dispatch (
-    std::string_view      name,
-    const nlohmann::json &args,
-    OperationEnvironment &env) const
+    std::string_view       name,
+    const nlohmann::json  &args,
+    OperationEnvironment  &env,
+    const DispatchOptions &options = {}) const
   {
+    const auto   current_revision = env.undo_stack ().revision ();
     const auto * op = find (name);
     if (op == nullptr)
       {
         OperationReport report;
         report.status = OperationStatus::Error;
         report.message = fmt::format ("unknown operation '{}'", name);
+        report.revision_before = current_revision;
+        report.revision_after = current_revision;
+        return report;
+      }
+    if (
+      options.expected_revision.has_value () && op->kind () == OperationKind::Edit
+      && *options.expected_revision != current_revision)
+      {
+        OperationReport report;
+        report.status = OperationStatus::Refused;
+        report.message = fmt::format (
+          "expected revision {} but the current revision is {}; re-read and "
+          "retry",
+          *options.expected_revision, current_revision);
+        report.revision_before = current_revision;
+        report.revision_after = current_revision;
         return report;
       }
     return op->invoke (args, env);

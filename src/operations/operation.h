@@ -76,12 +76,15 @@ struct OperationReport
   std::vector<AffectedObject> affected_objects;
 
   /**
-   * Sequence number of this edit within the session.
+   * The project revision before and after this invocation, from the undo
+   * stack's journal sequence.
    *
-   * Zero for anything that did not change the project document. Each
-   * applied Edit gets a number one higher than the previous one.
+   * The two are equal whenever the invocation changed nothing. On a
+   * refusal both carry the current revision, so a refused client can
+   * re-read and retry.
    */
-  std::uint64_t revision = 0;
+  std::uint64_t revision_before = 0;
+  std::uint64_t revision_after = 0;
 
   bool applied () const { return status == OperationStatus::Applied; }
   bool refused () const { return status == OperationStatus::Refused; }

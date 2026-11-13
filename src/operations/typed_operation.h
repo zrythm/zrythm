@@ -4,6 +4,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <functional>
 #include <optional>
@@ -105,16 +106,19 @@ public:
   OperationReport
   invoke (const nlohmann::json &args, OperationEnvironment &env) const
   {
+    const auto       revision_before = env.undo_stack ().revision ();
     OperationContext ctx (env);
     OperationReport  report =
       invoke_with (args, ctx, std::make_index_sequence<NumParams>{});
     report.command_texts = ctx.take_command_texts ();
     report.affected_objects = ctx.take_affected_objects ();
-    if (
-      kind_ == OperationKind::Edit && report.status == OperationStatus::Applied)
-      {
-        report.revision = env.next_revision ();
-      }
+    report.revision_before = revision_before;
+    report.revision_after = env.undo_stack ().revision ();
+    // a refusal promises the project is unchanged, so a handler that
+    // pushed a command and then refused is a bug
+    assert (
+      report.status != OperationStatus::Refused
+      || report.revision_after == report.revision_before);
     return report;
   }
 

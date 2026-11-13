@@ -70,14 +70,6 @@ public:
    */
   structure::tracks::Track * find_track (const QUuid &uuid) const;
 
-  /**
-   * Returns the next edit sequence number.
-   *
-   * Every applied Edit operation gets a number one higher than the previous
-   * one; numbers are never reused within a session.
-   */
-  std::uint64_t next_revision ();
-
 private:
   utils::IObjectRegistry             &object_registry_;
   undo::UndoStack                    &undo_stack_;
@@ -86,7 +78,6 @@ private:
   structure::tracks::TrackRouting    &track_routing_;
   structure::tracks::SingletonTracks &singleton_tracks_;
   dsp::Transport *                    transport_;
-  std::uint64_t                       last_revision_ = 0;
 };
 
 } // namespace zrythm::operations

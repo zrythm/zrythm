@@ -112,10 +112,11 @@ protected:
   }
 
   OperationReport dispatch (
-    std::string_view name,
-    nlohmann::json   args = nlohmann::json::object ())
+    std::string_view       name,
+    nlohmann::json         args = nlohmann::json::object (),
+    const DispatchOptions &options = {})
   {
-    return operation_registry_.dispatch (name, args, *environment_);
+    return operation_registry_.dispatch (name, args, *environment_, options);
   }
 
   dsp::TempoMap         tempo_map_{ units::sample_rate (44100.0) };
@@ -216,7 +217,7 @@ TEST_F (OperationsTest, TrackSetNameAppliesAndUndoes)
   EXPECT_EQ (report.command_texts.front (), "Rename Track");
   ASSERT_EQ (report.affected_objects.size (), 1);
   EXPECT_EQ (report.affected_objects.front ().kind, "track");
-  EXPECT_GT (report.revision, 0);
+  EXPECT_GT (report.revision_after, report.revision_before);
 
   undo_stack_->undo ();
   EXPECT_EQ (track->name (), QString ("Original"));
@@ -237,7 +238,7 @@ TEST_F (OperationsTest, TrackSetNameRefusesMissingParameter)
   EXPECT_NE (report.message.find ("new_name"), std::string::npos);
   EXPECT_EQ (track->name (), QString ("Original"));
   EXPECT_EQ (undo_stack_->count (), 0);
-  EXPECT_EQ (report.revision, 0);
+  EXPECT_EQ (report.revision_after, report.revision_before);
 }
 
 TEST_F (OperationsTest, TrackSetNameRefusesEmptyName)
@@ -355,6 +356,8 @@ TEST_F (OperationsTest, TrackSetColorIsIdempotentForSameColor)
 
   ASSERT_TRUE (report.applied ());
   EXPECT_TRUE (report.command_texts.empty ());
+  // no command was pushed, so the revision did not move
+  EXPECT_EQ (report.revision_after, report.revision_before);
   EXPECT_EQ (undo_stack_->count (), 1);
 }
 
@@ -492,7 +495,7 @@ TEST_F (OperationsTest, TrackListReturnsSummaries)
     tracks.at (3).at ("type").get<int> (),
     ENUM_VALUE_TO_INT (structure::tracks::Track::Type::Audio));
   EXPECT_EQ (report.result.at ("total").get<int> (), 4);
-  EXPECT_EQ (report.revision, 0);
+  EXPECT_EQ (report.revision_after, report.revision_before);
 }
 
 TEST_F (OperationsTest, TrackListHonorsLimit)
@@ -537,7 +540,7 @@ TEST_F (OperationsTest, TransportSetPlayStateAppliesWithoutCommands)
   EXPECT_EQ (transport_->getPlayState (), dsp::Transport::PlayState::Rolling);
   EXPECT_TRUE (report.command_texts.empty ());
   EXPECT_EQ (undo_stack_->count (), 0);
-  EXPECT_EQ (report.revision, 0);
+  EXPECT_EQ (report.revision_after, report.revision_before);
 }
 
 TEST_F (OperationsTest, TransportSetPlayStateRefusesUnknownState)
@@ -549,6 +552,211 @@ TEST_F (OperationsTest, TransportSetPlayStateRefusesUnknownState)
   });
 
   ASSERT_TRUE (report.refused ());
+}
+
+// ============================================================================
+// Expected-revision guard
+// ============================================================================
+
+TEST_F (OperationsTest, EditRefusesStaleExpectedRevision)
+{
+  auto * track = add_audio_track_directly ();
+  track->setName ("Original");
+
+  auto first = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Intro"          }
+  });
+  ASSERT_TRUE (first.applied ()) << first.message;
+  ASSERT_GT (first.revision_after, first.revision_before);
+
+  auto report = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Drums"          }
+  },
+    DispatchOptions{ .expected_revision = first.revision_before });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("expected revision"), std::string::npos);
+  EXPECT_EQ (report.revision_before, first.revision_after);
+  EXPECT_EQ (report.revision_after, report.revision_before);
+  EXPECT_EQ (track->name (), QString ("Intro"));
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  // with the revision it was told about, the same edit applies
+  auto retry = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Drums"          }
+  },
+    DispatchOptions{ .expected_revision = first.revision_after });
+  ASSERT_TRUE (retry.applied ()) << retry.message;
+  EXPECT_GT (retry.revision_after, retry.revision_before);
+  EXPECT_EQ (track->name (), QString ("Drums"));
+}
+
+TEST_F (OperationsTest, QueryAndControlIgnoreExpectedRevision)
+{
+  auto report =
+    dispatch ("track.list", {}, DispatchOptions{ .expected_revision = 99 });
+  EXPECT_TRUE (report.applied ());
+
+  report = dispatch (
+    "transport.set_play_state",
+    {
+      { "state", "Rolling" }
+  },
+    DispatchOptions{ .expected_revision = 99 });
+  EXPECT_TRUE (report.applied ());
+}
+
+TEST_F (OperationsTest, EditRefusesExpectedRevisionFromBeforeAnUndo)
+{
+  auto * track = add_audio_track_directly ();
+  track->setName ("Original");
+
+  auto edit = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Intro"          }
+  });
+  ASSERT_TRUE (edit.applied ()) << edit.message;
+  undo_stack_->undo ();
+  ASSERT_EQ (track->name (), QString ("Original"));
+
+  // the undo moved the revision, so the revision from before it is stale
+  auto report = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Drums"          }
+  },
+    DispatchOptions{ .expected_revision = edit.revision_after });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("expected revision"), std::string::npos);
+}
+
+// ============================================================================
+// Transactions over dispatched edits
+// ============================================================================
+
+TEST_F (OperationsTest, DispatchedEditsCommitAsOneUndoStep)
+{
+  auto * track = add_audio_track_directly ();
+  track->setName ("Original");
+
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Batch rename"));
+  auto first = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Intro"          }
+  });
+  ASSERT_TRUE (first.applied ()) << first.message;
+  auto second = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Drums"          }
+  });
+  ASSERT_TRUE (second.applied ()) << second.message;
+  ASSERT_TRUE (tx->commit ());
+
+  EXPECT_EQ (track->name (), QString ("Drums"));
+  EXPECT_EQ (undo_stack_->count (), 1);
+  undo_stack_->undo ();
+  EXPECT_EQ (track->name (), QString ("Original"));
+}
+
+TEST_F (OperationsTest, DispatchedEditsAbortLeavesProjectUnchanged)
+{
+  auto * track = add_audio_track_directly ();
+  track->setName ("Original");
+
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Batch rename"));
+  dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Intro"          }
+  });
+  const auto revision_before_abort = undo_stack_->revision ();
+  ASSERT_TRUE (tx->abort ());
+
+  EXPECT_EQ (track->name (), QString ("Original"));
+  EXPECT_EQ (undo_stack_->count (), 0);
+  // the revision keeps counting forward after the abort
+  EXPECT_GT (undo_stack_->revision (), revision_before_abort);
+}
+
+TEST_F (OperationsTest, TransactionAbortsAfterMidwayRefusal)
+{
+  auto * track = add_audio_track_directly ();
+  track->setName ("Original");
+
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Batch rename"));
+  auto applied = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Intro"          }
+  });
+  ASSERT_TRUE (applied.applied ());
+  auto refused = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track)                 },
+      { "new_name", std::string ("Bad\xC3\x28 name") }
+  });
+  ASSERT_TRUE (refused.refused ());
+  ASSERT_TRUE (tx->abort ());
+
+  EXPECT_EQ (track->name (), QString ("Original"));
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (OperationsTest, InTransactionEditsThreadExpectedRevisionsFromReports)
+{
+  auto * track = add_audio_track_directly ();
+  track->setName ("Original");
+
+  auto tx = undo_stack_->begin_transaction (QStringLiteral ("Batch rename"));
+  auto first = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Intro"          }
+  });
+  ASSERT_TRUE (first.applied ()) << first.message;
+
+  // the first push moved the revision, so the revision from before the
+  // transaction is stale now
+  auto stale = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Drums"          }
+  },
+    DispatchOptions{ .expected_revision = first.revision_before });
+  EXPECT_TRUE (stale.refused ());
+
+  // each report's revision_after is the revision the next call must pass
+  auto second = dispatch (
+    "track.set_name",
+    {
+      { "track",    uuid_of (*track) },
+      { "new_name", "Drums"          }
+  },
+    DispatchOptions{ .expected_revision = first.revision_after });
+  ASSERT_TRUE (second.applied ()) << second.message;
+
+  ASSERT_TRUE (tx->commit ());
+  EXPECT_EQ (track->name (), QString ("Drums"));
 }
 
 // ============================================================================
