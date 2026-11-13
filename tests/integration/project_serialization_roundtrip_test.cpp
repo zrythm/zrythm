@@ -327,15 +327,33 @@ protected:
       },
       original_plugin_var);
 
-    // Process again so the baseValue changes propagate to the underlying
-    // plugin (JUCE/CLAP) before the state blob is captured during save.
-    // Wait until the value stabilizes to avoid a race where the plugin
-    // reports back its stale default before processing the new value.
+    // Process until the plugin's own serialized state contains the
+    // value: the save captures that state, so the baseValue alone is
+    // not proof that the change reached the plugin
+    const auto plugin_state_has_test_value = [&] () {
+      return std::visit (
+        [&] (auto &&pl) {
+          if (descriptor.protocol_ == plugins::Protocol::ProtocolType::Internal)
+            {
+              return std::abs (gain_param->baseValue () - test_value) < 0.01f;
+            }
+          const auto raw = QByteArray::fromBase64 (
+            QByteArray::fromStdString (pl->save_state ()));
+          const auto state =
+            descriptor.protocol_ == plugins::Protocol::ProtocolType::VST3
+              ? decode_test_vst3_state (raw)
+              : decode_test_clap_state (raw);
+          return !state.empty () && std::ranges::all_of (state, [&] (const auto &entry) {
+            return std::abs (gain_range.convertTo0To1 (entry.second) - test_value)
+                   < 0.01f;
+          });
+        },
+        original_plugin_var);
+    };
     if (gain_param != nullptr)
       {
-        process_until_true (*original_bundle->project, [&] () {
-          return std::abs (gain_param->baseValue () - test_value) < 0.01f;
-        });
+        process_until_true (
+          *original_bundle->project, plugin_state_has_test_value);
       }
     else
       {
