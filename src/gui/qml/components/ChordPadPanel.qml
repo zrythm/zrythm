@@ -48,6 +48,28 @@ ColumnLayout {
     }
   }
 
+  // Shared drag source for dragging chord pads into the chord arranger:
+  // owned by the panel so it survives the destruction of the pad delegate
+  // being dragged
+  AutoDragItem {
+    id: chordDragItem
+
+    property ChordDescriptor chordDescriptor
+
+    Drag.keys: ["application/x-zrythm-chord"]
+    Drag.mimeData: chordDragItem.chordDescriptor ? {
+      "application/x-zrythm-chord": JSON.stringify({
+        root: chordDragItem.chordDescriptor.rootNote,
+        type: chordDragItem.chordDescriptor.chordType,
+        accent: chordDragItem.chordDescriptor.chordAccent,
+        hasBass: chordDragItem.chordDescriptor.hasBass,
+        bass: chordDragItem.chordDescriptor.hasBass ? chordDragItem.chordDescriptor.bassNote : 0,
+        inversion: chordDragItem.chordDescriptor.inversion
+      })
+    } : ({})
+    Drag.supportedActions: Qt.CopyAction
+  }
+
   ZrythmToolBar {
     Layout.fillWidth: true
 
@@ -230,20 +252,6 @@ ColumnLayout {
         property real previousSuggestionScore: -1.0
         property real suggestionScore: -1.0
 
-        // Drag-to-editor support: declarative Drag properties + DragHandler.
-        Drag.dragType: Drag.Automatic
-        Drag.keys: ["application/x-zrythm-chord"]
-        Drag.mimeData: padWrapper.chordDescriptor ? {
-          "application/x-zrythm-chord": JSON.stringify({
-            root: padWrapper.chordDescriptor.rootNote,
-            type: padWrapper.chordDescriptor.chordType,
-            accent: padWrapper.chordDescriptor.chordAccent,
-            hasBass: padWrapper.chordDescriptor.hasBass,
-            bass: padWrapper.chordDescriptor.hasBass ? padWrapper.chordDescriptor.bassNote : 0,
-            inversion: padWrapper.chordDescriptor.inversion
-          })
-        } : ({})
-        Drag.supportedActions: Qt.CopyAction
         height: 64
         width: 120
 
@@ -257,7 +265,12 @@ ColumnLayout {
           target: null
 
           onActiveChanged: {
-            padWrapper.Drag.active = active;
+            if (active) {
+              chordDragItem.chordDescriptor = padWrapper.chordDescriptor;
+              chordDragItem.Drag.active = true;
+            } else {
+              chordDragItem.Drag.active = false;
+            }
           }
         }
 

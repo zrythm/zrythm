@@ -52,6 +52,7 @@ ListView {
   model: pluginGroup
 
   delegate: PluginSlotView {
+    dragItem: pluginDragItem
     pluginGroup: root.pluginGroup
     pluginImporter: root.pluginImporter
     pluginOperator: root.pluginOperator
@@ -128,5 +129,11 @@ ListView {
     id: internalSelectionModel
 
     model: root.pluginGroup
+  }
+
+  // Shared drag source for moving plugins out of this list: owned by the
+  // list so it survives the destruction of the slot delegate being dragged
+  PluginDragItem {
+    id: pluginDragItem
   }
 }

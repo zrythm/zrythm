@@ -232,6 +232,7 @@ set(rel_qml_file_paths
   components/docking/ClipEditorPanel.qml
   components/docking/ProjectDockWorkspace.qml
   components/docking/TrackInspectorPanel.qml
+  components/dragndrop/AutoDragItem.qml
   components/dragndrop/DescriptorDragItem.qml
   components/dragndrop/PluginDragItem.qml
   components/arranger/AudioClipContent.qml

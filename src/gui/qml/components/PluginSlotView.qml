@@ -12,6 +12,10 @@ Control {
   required property var deviceGroupOrPlugin
   property bool down: false
 
+  // Shared drag source (owned by the hosting slot list, so it outlives the
+  // slot delegates)
+  required property PluginDragItem dragItem
+
   // Drop handling
   property bool dropHovered: false
   required property int index
@@ -297,18 +301,14 @@ Control {
       if (active && root.plugin) {
         const plugins = root.gatherSelectedPlugins();
 
-        dragItem.selectedPlugins = plugins;
-        dragItem.sourceGroup = root.pluginGroup;
-        dragItem.sourceTrack = root.track;
-        dragItem.Drag.active = true;
+        root.dragItem.selectedPlugins = plugins;
+        root.dragItem.sourceGroup = root.pluginGroup;
+        root.dragItem.sourceTrack = root.track;
+        root.dragItem.Drag.active = true;
       } else {
-        dragItem.Drag.active = false;
+        root.dragItem.Drag.active = false;
       }
     }
-  }
-
-  PluginDragItem {
-    id: dragItem
   }
 
   DropArea {

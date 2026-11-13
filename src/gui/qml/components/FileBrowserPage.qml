@@ -16,6 +16,21 @@ ColumnLayout {
 
   signal fileActivated(string filePath)
 
+  // Shared drag source for dragging files out of the browser: owned by the
+  // page so it survives the destruction of the file delegate being dragged
+  AutoDragItem {
+    id: fileDragItem
+
+    property string filePath: ""
+
+    Drag.keys: ["file", "text/plain"]
+    Drag.supportedActions: Qt.CopyAction
+    Drag.mimeData: fileDragItem.filePath !== "" ? {
+      "text/plain": fileDragItem.filePath,
+      "application/x-file-path": fileDragItem.filePath
+    } : ({})
+  }
+
   Item {
     id: filters
 
@@ -51,10 +66,6 @@ ColumnLayout {
       required property string filePath
       required property int index
 
-      Drag.active: false
-      Drag.dragType: Drag.Automatic
-      Drag.keys: ["file", "text/plain"]
-      Drag.supportedActions: Qt.CopyAction
       highlighted: row == treeView.currentRow
       text: fileName + fileName
       width: fileListView.width
@@ -86,18 +97,13 @@ ColumnLayout {
           smoothed: true
           target: itemDelegate
 
-          // Set the data to be transferred during drag
           onActiveChanged: {
             if (drag.active) {
               fileListView.selectedFile = itemDelegate.filePath;
-              parent.Drag.active = drag.active;
-              parent.Drag.mimeData = {
-                "text/plain": itemDelegate.filePath,
-                "application/x-file-path": itemDelegate.filePath
-              };
-              parent.Drag.hotSpot = Qt.point(width / 2, height / 2);
+              fileDragItem.filePath = itemDelegate.filePath;
+              fileDragItem.Drag.active = true;
             } else {
-              parent.Drag.active = false;
+              fileDragItem.Drag.active = false;
             }
           }
         }
