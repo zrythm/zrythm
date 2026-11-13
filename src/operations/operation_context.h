@@ -34,12 +34,23 @@ public:
   /**
    * Pushes an undo command (taking ownership) and records its text for
    * the report.
+   *
+   * The text is recorded only when the stack accepts the command. A
+   * refused push is counted instead; a report with refused pushes
+   * becomes an error report.
    */
   void push_command (std::unique_ptr<commands::Command> cmd)
   {
-    pending_command_texts_.push_back (
-      std::string (utils::Utf8String::from_qstring (cmd->text ()).view ()));
-    env_->undo_stack ().push (std::move (cmd));
+    const auto text =
+      std::string (utils::Utf8String::from_qstring (cmd->text ()).view ());
+    if (env_->undo_stack ().push (std::move (cmd)))
+      {
+        pending_command_texts_.push_back (std::move (text));
+      }
+    else
+      {
+        ++failed_push_count_;
+      }
   }
 
   /** Records an object changed by this invocation. */
@@ -67,6 +78,9 @@ public:
     return report;
   }
 
+  /** Number of commands the stack refused during this invocation. */
+  [[nodiscard]] int failed_push_count () const { return failed_push_count_; }
+
   std::vector<std::string> take_command_texts ()
   {
     return std::move (pending_command_texts_);
@@ -81,6 +95,7 @@ private:
   OperationEnvironment *      env_;
   std::vector<std::string>    pending_command_texts_;
   std::vector<AffectedObject> pending_affected_;
+  int                         failed_push_count_ = 0;
 };
 
 } // namespace zrythm::operations

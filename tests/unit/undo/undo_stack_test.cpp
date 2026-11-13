@@ -737,6 +737,29 @@ TEST_F (UndoStackTest, CommandDestroyedWhenEngineDropsCallback)
   EXPECT_TRUE (destroyed);
 }
 
+// push reports whether the engine accepted the command: a requester that
+// drops the request leaves the flag, the history and the revision untouched
+TEST_F (UndoStackTest, PushReportsEngineRefusal)
+{
+  bool            drop = true;
+  undo::UndoStack stack ([&drop] (auto &&callback, bool) {
+    if (!drop)
+      callback ();
+  });
+
+  bool flag = false;
+  EXPECT_FALSE (stack.push (std::make_unique<PausingToggleCommand> (flag)));
+  EXPECT_FALSE (flag);
+  EXPECT_EQ (stack.count (), 0);
+  EXPECT_EQ (stack.revision (), 0);
+
+  drop = false;
+  EXPECT_TRUE (stack.push (std::make_unique<PausingToggleCommand> (flag)));
+  EXPECT_TRUE (flag);
+  EXPECT_EQ (stack.count (), 1);
+  EXPECT_EQ (stack.revision (), 1);
+}
+
 TEST_F (UndoStackTest, CanUndoFalseWhileRealizedMacroOpen)
 {
   bool flag1 = false;

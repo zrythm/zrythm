@@ -47,9 +47,16 @@ protected:
         return factory_deps;
       });
 
-    undo_stack_ = std::make_unique<undo::UndoStack> ([] (auto callback, bool) {
-      callback ();
-    });
+    undo_stack_ =
+      std::make_unique<undo::UndoStack> ([this] (auto callback, bool) {
+        ++engine_request_count_;
+        if (
+          drop_push_requests_from_ == 0
+          || engine_request_count_ < drop_push_requests_from_)
+          {
+            callback ();
+          }
+      });
 
     for (
       const auto type :
@@ -135,6 +142,15 @@ protected:
   std::unique_ptr<dsp::Transport>                     transport_;
   std::unique_ptr<OperationEnvironment>               environment_;
   OperationRegistry                                   operation_registry_;
+
+  /**
+   * The fixture's undo stack drops engine requests from this request
+   * number onward (1 drops every request); 0 accepts every request.
+   */
+  int drop_push_requests_from_ = 0;
+
+  /** Number of engine requests the fixture's undo stack has received. */
+  int engine_request_count_ = 0;
 };
 
 // ============================================================================
@@ -757,6 +773,69 @@ TEST_F (OperationsTest, InTransactionEditsThreadExpectedRevisionsFromReports)
 
   ASSERT_TRUE (tx->commit ());
   EXPECT_EQ (track->name (), QString ("Drums"));
+}
+
+// ============================================================================
+// Engine-refused pushes
+// ============================================================================
+
+TEST_F (OperationsTest, EditReportsErrorWhenTheEngineRefusesTheCommands)
+{
+  const auto count_before = track_collection_->track_count ();
+
+  drop_push_requests_from_ = 1;
+  auto report = dispatch (
+    "track.add",
+    {
+      { "type", "Audio" }
+  });
+  ASSERT_TRUE (report.failed ());
+  EXPECT_NE (report.message.find ("refused"), std::string::npos);
+  EXPECT_TRUE (report.command_texts.empty ());
+  EXPECT_TRUE (report.result.is_null ());
+  EXPECT_TRUE (report.affected_objects.empty ());
+  EXPECT_EQ (track_collection_->track_count (), count_before);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (report.revision_after, report.revision_before);
+
+  // the same edit applies once the engine cooperates again
+  drop_push_requests_from_ = 0;
+  auto retry = dispatch (
+    "track.add",
+    {
+      { "type", "Audio" }
+  });
+  ASSERT_TRUE (retry.applied ()) << retry.message;
+  EXPECT_EQ (track_collection_->track_count (), count_before + 1);
+  EXPECT_GT (retry.revision_after, retry.revision_before);
+}
+
+TEST_F (OperationsTest, PartiallyRefusedEditReportsErrorWithTheCommandsThatRan)
+{
+  const auto count_before = track_collection_->track_count ();
+
+  // the track is added, its master routing is refused
+  drop_push_requests_from_ = 2;
+  auto report = dispatch (
+    "track.add",
+    {
+      { "type", "Audio" }
+  });
+
+  ASSERT_TRUE (report.failed ());
+  EXPECT_NE (report.message.find ("refused 1"), std::string::npos);
+  ASSERT_EQ (report.command_texts.size (), 1);
+  EXPECT_EQ (report.command_texts.front (), "Add Track");
+  EXPECT_TRUE (report.result.is_null ());
+  EXPECT_FALSE (report.affected_objects.empty ());
+  EXPECT_EQ (track_collection_->track_count (), count_before + 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_GT (report.revision_after, report.revision_before);
+
+  // the commands that ran still undo
+  drop_push_requests_from_ = 0;
+  undo_stack_->undo ();
+  EXPECT_EQ (track_collection_->track_count (), count_before);
 }
 
 // ============================================================================

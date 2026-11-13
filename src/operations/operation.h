@@ -41,7 +41,11 @@ enum class OperationStatus
   /** The operation rejected the request; nothing changed. */
   Refused,
 
-  /** The operation could not run (unknown name, internal failure). */
+  /**
+   * The operation could not run, or ran only partially (unknown name, a
+   * refused command push, internal failure). command_texts lists what
+   * ran; the caller must not assume a retry is safe.
+   */
   Error,
 };
 
@@ -69,7 +73,7 @@ struct OperationReport
   /** Result payload of a query, or extra data for the caller. */
   nlohmann::json result = nullptr;
 
-  /** Texts of the commands pushed by this invocation, in order. */
+  /** Texts of the commands the stack accepted, in order. */
   std::vector<std::string> command_texts;
 
   /** Objects changed by this invocation. */

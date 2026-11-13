@@ -68,8 +68,13 @@ public:
    *
    * Takes ownership of @p cmd: the command is destroyed when the history
    * is done with it, including when the push is refused.
+   *
+   * @return false when the push was refused: the stack was executing
+   * another command, or the engine would not run the command with
+   * processing paused. The command is then destroyed and the history is
+   * unchanged.
    */
-  void             push (std::unique_ptr<commands::Command> cmd);
+  bool             push (std::unique_ptr<commands::Command> cmd);
   Q_INVOKABLE void undo ();
   Q_INVOKABLE void redo ();
 

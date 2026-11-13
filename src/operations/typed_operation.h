@@ -119,6 +119,24 @@ public:
     assert (
       report.status != OperationStatus::Refused
       || report.revision_after == report.revision_before);
+    // a push the stack refused never ran, so an applied report would
+    // claim changes that did not happen
+    if (
+      report.status == OperationStatus::Applied && ctx.failed_push_count () > 0)
+      {
+        report.status = OperationStatus::Error;
+        report.message = fmt::format (
+          "the undo stack refused {} of the pushed commands; those "
+          "commands were not applied, and command_texts lists the ones "
+          "that ran",
+          ctx.failed_push_count ());
+        report.result = nullptr;
+        // nothing ran, so no object changed
+        if (report.command_texts.empty ())
+          {
+            report.affected_objects.clear ();
+          }
+      }
     return report;
   }
 

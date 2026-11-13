@@ -173,7 +173,7 @@ UndoStack::end_macro_core ()
     }
 }
 
-void
+bool
 UndoStack::push (std::unique_ptr<commands::Command> cmd)
 {
   if (executing_depth_ > 0)
@@ -181,7 +181,7 @@ UndoStack::push (std::unique_ptr<commands::Command> cmd)
       z_critical (
         "Refusing nested push of '{}' while the undo stack is executing another command: undo/redo must not trigger new edits",
         cmd->text ());
-      return;
+      return false;
     }
   const auto cmd_text = cmd->text ();
   z_debug ("Performing action '{}'", cmd_text);
@@ -208,7 +208,9 @@ UndoStack::push (std::unique_ptr<commands::Command> cmd)
       z_warning (
         "The engine refused to run with processing paused; edit '{}' was discarded",
         cmd_text);
+      return false;
     }
+  return true;
 }
 
 void
