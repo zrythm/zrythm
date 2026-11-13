@@ -242,11 +242,11 @@ RecordingCoordinator::process_pending ()
   old_snapshots_ = std::move (pending_snapshot_deletion_);
   pending_snapshot_deletion_.clear ();
 
-  for (const auto &[id, packets] : audio_ready)
+  for (auto &[id, packets] : audio_ready)
     {
       Q_EMIT audioDataReady (id, std::move (packets));
     }
-  for (const auto &[id, packets] : midi_ready)
+  for (auto &[id, packets] : midi_ready)
     {
       Q_EMIT midiDataReady (id, std::move (packets));
     }
@@ -322,11 +322,11 @@ RecordingCoordinator::finalizeAllSessions ()
   old_snapshots_ = std::move (pending_snapshot_deletion_);
   pending_snapshot_deletion_.clear ();
 
-  for (const auto &[id, packets] : audio_ready)
+  for (auto &[id, packets] : audio_ready)
     {
       Q_EMIT audioDataReady (id, std::move (packets));
     }
-  for (const auto &[id, packets] : midi_ready)
+  for (auto &[id, packets] : midi_ready)
     {
       Q_EMIT midiDataReady (id, std::move (packets));
     }
