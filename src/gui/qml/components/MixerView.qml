@@ -32,62 +32,10 @@ Item {
 
   readonly property int stripWidth: 112
 
-  // Shared mixer section state, driven by the strips' section headers
-  // and content heights
-  QtObject {
+  // Shared section state: strips report their section content to it and
+  // bind their section bodies to its uniform heights
+  MixerSectionMetrics {
     id: mixerSectionMetrics
-
-    property bool insertsExpanded: true
-    property bool midiFxExpanded: true
-    property bool sendsExpanded: true
-
-    property bool anyMidiFx: false
-    property real insertsBodyHeight: 0
-    property real midiFxBodyHeight: 0
-    property real sendsBodyHeight: 0
-
-    signal dirty
-
-    function markDirty(): void {
-      dirty();
-    }
-  }
-
-  Component.onCompleted: root.recomputeSectionMetrics()
-
-  Connections {
-    target: mixerSectionMetrics
-
-    function onDirty(): void {
-      root.recomputeSectionMetrics();
-    }
-  }
-
-  function recomputeSectionMetrics(): void {
-    let anyFx = false;
-    let fx = 0;
-    let ins = 0;
-    let snd = 0;
-    for (let i = 0; i < channelRepeater.count; i++) {
-      const item = channelRepeater.itemAt(i);
-      if (item === null)
-        continue;
-      anyFx = anyFx || item.supportsMidiFx;
-      fx = Math.max(fx, item.midiFxContentHeight);
-      ins = Math.max(ins, item.insertsContentHeight);
-      snd = Math.max(snd, item.sendsContentHeight);
-    }
-    const master = masterLoader.item;
-    if (master !== null) {
-      anyFx = anyFx || master.supportsMidiFx;
-      fx = Math.max(fx, master.midiFxContentHeight);
-      ins = Math.max(ins, master.insertsContentHeight);
-      snd = Math.max(snd, master.sendsContentHeight);
-    }
-    mixerSectionMetrics.anyMidiFx = anyFx;
-    mixerSectionMetrics.midiFxBodyHeight = fx;
-    mixerSectionMetrics.insertsBodyHeight = ins;
-    mixerSectionMetrics.sendsBodyHeight = snd;
   }
 
   RowLayout {
@@ -115,8 +63,6 @@ Item {
         spacing: 2
 
         Repeater {
-          id: channelRepeater
-
           delegate: ChannelView {
             id: stripDelegate
 
@@ -140,12 +86,7 @@ Item {
             }
           }
 
-          onItemAdded: (index, item) => root.recomputeSectionMetrics()
-          onItemRemoved: (index, item) => root.recomputeSectionMetrics()
-
           model: SortFilterProxyModel {
-            id: mixerProxyModel
-
             sourceModel: root.tracklist.collection
 
             filters: [
@@ -188,9 +129,6 @@ Item {
           root.pluginClicked(plugin);
         }
       }
-
-      onItemChanged: root.recomputeSectionMetrics()
-      onLoaded: root.recomputeSectionMetrics()
     }
   }
 }

@@ -45,24 +45,29 @@ ColumnLayout {
   // Shared mixer section state, owned by the mixer view: the fold state
   // of each level (folding folds it in every strip) and the uniform body
   // heights each section takes across strips
-  // Shared section state is passed untyped: the gate's false-positive
-  // filter only excuses dynamic members on `var` properties
-  property var sectionMetrics: null
+  property MixerSectionMetrics sectionMetrics: null
 
   // Whether this channel carries the MIDI FX level
   readonly property bool supportsMidiFx: !!root.channel.midiOut
 
   // This strip's own section content heights (0 where the level is not
-  // supported); the mixer view reduces them into sectionMetrics
+  // supported); reported to sectionMetrics
   readonly property real midiFxContentHeight: root.supportsMidiFx ? midiFxList.contentHeight : 0
   readonly property real insertsContentHeight: insertsList.contentHeight
   readonly property real sendsContentHeight: root.track.type === Track.Master ? 0 : sendsContent.implicitHeight
 
-  onMidiFxContentHeightChanged: root.sectionMetrics?.markDirty()
-  onInsertsContentHeightChanged: root.sectionMetrics?.markDirty()
-  onSendsContentHeightChanged: root.sectionMetrics?.markDirty()
-  onSupportsMidiFxChanged: root.sectionMetrics?.markDirty()
-  Component.onCompleted: root.sectionMetrics?.markDirty()
+  function reportSectionMetrics(): void {
+    root.sectionMetrics?.updateStrip(
+      root, root.supportsMidiFx, root.midiFxContentHeight,
+      root.insertsContentHeight, root.sendsContentHeight);
+  }
+
+  onMidiFxContentHeightChanged: root.reportSectionMetrics()
+  onInsertsContentHeightChanged: root.reportSectionMetrics()
+  onSendsContentHeightChanged: root.reportSectionMetrics()
+  onSupportsMidiFxChanged: root.reportSectionMetrics()
+  Component.onCompleted: root.reportSectionMetrics()
+  Component.onDestruction: root.sectionMetrics?.forgetStrip(root)
 
   implicitWidth: 112
 

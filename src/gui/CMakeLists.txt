@@ -323,6 +323,7 @@ set(rel_qml_file_paths
   components/MainMenuBar.qml
   components/Meter.qml
   components/MetronomeSplitButton.qml
+  components/MixerSectionMetrics.qml
   components/MixerView.qml
   components/MonitorSection.qml
   components/NotificationArea.qml
