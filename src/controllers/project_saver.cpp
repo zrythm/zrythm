@@ -331,10 +331,10 @@ ProjectSaver::save (
 
   /* pause engine */
   auto * engine = project.engine ();
-  std::unique_ptr<dsp::AudioEngine::ProcessingPauseScope> pause_scope;
+  std::unique_ptr<dsp::AudioEngine::ProcessingPauseScope> processing_pause_scope;
   if (engine->activated ())
     {
-      pause_scope =
+      processing_pause_scope =
         std::make_unique<dsp::AudioEngine::ProcessingPauseScope> (*engine);
     }
 
@@ -442,7 +442,7 @@ ProjectSaver::save (
   constexpr int kStageDone = 100;
 
   return QtConcurrent::run (
-    [engine, pause_scope = std::move (pause_scope), create_dirs_task,
+    [engine, pause_scope = std::move (processing_pause_scope), create_dirs_task,
      write_pool_task, build_json_task, validate_json_task, write_json_task,
      rename_file_task, path, is_backup,
      &project] (QPromise<QString> &promise) mutable {
