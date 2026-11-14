@@ -7,7 +7,6 @@
 #include "commands/change_uuid_identifiable_object_property_command.h"
 #include "commands/channel_send_commands.h"
 #include "commands/route_channel_send_command.h"
-#include "commands/route_track_command.h"
 #include "structure/project/project_graph_builder.h"
 #include "utils/logger.h"
 #include "utils/utf8_string.h"
@@ -92,19 +91,28 @@ TrackOperator::setComment (const QString &comment)
 void
 TrackOperator::setOutputTrack (structure::tracks::Track * destination)
 {
-  if (!track_routing_ || !track_ || !undo_stack_)
-    return;
-
-  // Validate the routing before creating the command
-  if (!track_routing_->canRouteTo (track_, destination))
-    return;
-
-  auto dest_id =
-    destination ? std::make_optional (destination->get_uuid ()) : std::nullopt;
-
-  auto cmd = std::make_unique<commands::RouteTrackCommand> (
-    *track_routing_, track_->get_uuid (), dest_id);
-  undo_stack_->push (std::move (cmd));
+  if (track_ == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning (
+        "Track routing changes need a track and an operation dispatcher");
+      return;
+    }
+  if (destination != nullptr)
+    {
+      const auto report = operation_dispatcher_->invoke (
+        operations::track_route_operation (), track_, destination);
+      if (!report.applied ())
+        {
+          z_warning ("Track routing refused: {}", report.message);
+        }
+      return;
+    }
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_unroute_operation (), track_);
+  if (!report.applied ())
+    {
+      z_warning ("Track unrouting refused: {}", report.message);
+    }
 }
 
 void

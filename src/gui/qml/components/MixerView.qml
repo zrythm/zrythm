@@ -18,6 +18,7 @@ Item {
   id: root
 
   required property AudioEngine audioEngine
+  required property OperationDispatcher operationDispatcher
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
   required property PortObservationManager portObservationManager
@@ -122,6 +123,7 @@ Item {
             audioEngine: root.audioEngine
             channel: stripDelegate.track.channel
             height: channelsRow.height
+            operationDispatcher: root.operationDispatcher
             parameterOperator: root.parameterOperator
             pluginImporter: root.pluginImporter
             pluginOperator: root.pluginOperator
@@ -170,6 +172,7 @@ Item {
 
         audioEngine: root.audioEngine
         channel: masterStrip.track.channel
+        operationDispatcher: root.operationDispatcher
         parameterOperator: root.parameterOperator
         pluginImporter: root.pluginImporter
         pluginOperator: root.pluginOperator

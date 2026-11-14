@@ -16,6 +16,7 @@ ColumnLayout {
   required property AudioEngine audioEngine
   required property Channel channel
   property bool hovered: false
+  required property OperationDispatcher operationDispatcher
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
   required property PortObservationManager portObservationManager
@@ -419,6 +420,7 @@ ColumnLayout {
 
       TrackRouteControl {
         compact: true
+        operationDispatcher: root.operationDispatcher
         track: root.track
         tracklist: root.tracklist
         undoStack: root.undoStack

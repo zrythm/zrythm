@@ -4,8 +4,8 @@
 #pragma once
 
 #include "structure/project/project.h"
+#include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/track_all.h"
-#include "structure/tracks/track_routing.h"
 #include "undo/undo_stack.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -27,9 +27,6 @@ class TrackOperator : public QObject
     zrythm::operations::OperationDispatcher * operationDispatcher READ
       operationDispatcher WRITE setOperationDispatcher NOTIFY
         operationDispatcherChanged)
-  Q_PROPERTY (
-    zrythm::structure::tracks::TrackRouting * trackRouting READ trackRouting
-      WRITE setTrackRouting NOTIFY trackRoutingChanged)
   Q_PROPERTY (
     zrythm::structure::tracks::ChannelSendRouting * channelSendRouting READ
       channelSendRouting WRITE setChannelSendRouting NOTIFY
@@ -63,20 +60,6 @@ public:
       }
   }
   Q_SIGNAL void undoStackChanged ();
-
-  structure::tracks::TrackRouting * trackRouting () const
-  {
-    return track_routing_;
-  }
-  void setTrackRouting (structure::tracks::TrackRouting * routing)
-  {
-    if (track_routing_ != routing)
-      {
-        track_routing_ = routing;
-        Q_EMIT trackRoutingChanged ();
-      }
-  }
-  Q_SIGNAL void trackRoutingChanged ();
 
   structure::tracks::ChannelSendRouting * channelSendRouting () const
   {
@@ -164,7 +147,6 @@ private:
   structure::tracks::Track *              track_{};
   undo::UndoStack *                       undo_stack_{};
   operations::OperationDispatcher *       operation_dispatcher_{};
-  structure::tracks::TrackRouting *       track_routing_{};
   structure::tracks::ChannelSendRouting * channel_send_routing_{};
   structure::project::Project *           project_{};
 };

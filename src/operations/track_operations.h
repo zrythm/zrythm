@@ -173,6 +173,72 @@ track_set_timebase_operation ()
 }
 
 /**
+ * Routes a track to another track. Edit; takes the track and the
+ * routing target. Refuses a target that would create a routing cycle
+ * or that takes a different signal type.
+ */
+inline const auto &
+track_route_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.route", "Route a track to another track",
+    std::array<ParamSpec, 2>{
+      { { "track", "UUID of the track to route" },
+       { "target", "UUID of the routing target" } }
+  },
+    [] (OperationContext &ctx, TrackParam track, TrackParam target)
+      -> OperationReport {
+      auto      &routing = ctx.environment ().track_routing ();
+      const auto refusal =
+        routing.route_refusal_reason (track.value (), target.value ());
+      if (refusal.has_value ())
+        {
+          return ctx.refused (std::string (refusal->view ()));
+        }
+      const auto current_target =
+        routing.get_output_track (track.value ()->get_uuid ());
+      if (
+        current_target.has_value ()
+        && current_target->id () == target.value ()->get_uuid ())
+        {
+          return ctx.applied ();
+        }
+      ctx.push_command (
+        std::make_unique<commands::RouteTrackCommand> (
+          routing, track.value ()->get_uuid (), target.value ()->get_uuid ()));
+      ctx.note_affected (track.uuid_string (), "track");
+      ctx.note_affected (target.uuid_string (), "track");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
+ * Removes a track's route, leaving it unrouted. Edit; takes the
+ * track.
+ */
+inline const auto &
+track_unroute_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.unroute", "Remove a track's route",
+    std::array<ParamSpec, 1>{ { { "track", "UUID of the track to unroute" } } },
+    [] (OperationContext &ctx, TrackParam track) -> OperationReport {
+      auto &routing = ctx.environment ().track_routing ();
+      if (!routing.get_output_track (track.value ()->get_uuid ()).has_value ())
+        {
+          return ctx.applied ();
+        }
+      ctx.push_command (
+        std::make_unique<commands::RouteTrackCommand> (
+          routing, track.value ()->get_uuid (), std::nullopt));
+      ctx.note_affected (track.uuid_string (), "track");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
  * Adds a new empty track. Edit; takes the track type. Returns the new
  * track's UUID and name.
  */

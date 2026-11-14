@@ -5,6 +5,9 @@
 
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_routing.h"
+#include "utils/utf8_string.h"
+
+#include <magic_enum/magic_enum.hpp>
 
 namespace zrythm::structure::tracks
 {
@@ -48,26 +51,45 @@ TrackRouting::setOutputTrack (const Track * source, const Track * destination)
 bool
 TrackRouting::canRouteTo (const Track * source, const Track * destination) const
 {
+  return !route_refusal_reason (source, destination).has_value ();
+}
+
+std::optional<utils::Utf8String>
+TrackRouting::route_refusal_reason (
+  const Track * source,
+  const Track * destination) const
+{
   // Null source cannot be routed
   if (source == nullptr)
-    return false;
+    return utils::Utf8String{ u8"no source track" };
 
   // Null destination means "unroute" - always valid if source is valid
   if (destination == nullptr)
-    return true;
+    return std::nullopt;
+
+  // Reasons are formatted on the refusal branches only, so allowed
+  // pairings stay free of string conversions
+  const auto track_name = [] (const Track * track) {
+    return utils::Utf8String::from_qstring (track->name ());
+  };
 
   // Cannot route a track to itself
   if (source->get_uuid () == destination->get_uuid ())
-    return false;
+    return utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("'{}' cannot be routed to itself", track_name (source)));
 
-  // Master track cannot be routed to anything (it routes internally to device
-  // output)
+  // Master track cannot be routed to anything (it routes internally to
+  // device output)
   if (source->is_master ())
-    return false;
+    return utils::Utf8String::from_utf8_encoded_string (
+      fmt::format (
+        "'{}' is the master track and routes to the audio device",
+        track_name (source)));
 
   // Destination must be able to be a group target
   if (!destination->can_be_group_target ())
-    return false;
+    return utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("'{}' cannot be a routing target", track_name (destination)));
 
   // Check for circular routes - follow destination's output chain
   // to see if it eventually leads back to source
@@ -79,7 +101,10 @@ TrackRouting::canRouteTo (const Track * source, const Track * destination) const
         break; // No more routes in chain
 
       if (output_it->second == source->get_uuid ())
-        return false; // Found cycle: destination -> ... -> source
+        return utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "routing '{}' to '{}' would create a cycle", track_name (source),
+            track_name (destination)));
 
       current_uuid = output_it->second;
     }
@@ -88,9 +113,25 @@ TrackRouting::canRouteTo (const Track * source, const Track * destination) const
   const auto source_out_type = source->output_signal_type ();
   const auto dest_in_type = destination->input_signal_type ();
 
-  // Both must have signal types defined and they must match
-  return source_out_type.has_value () && dest_in_type.has_value ()
-         && source_out_type.value () == dest_in_type.value ();
+  if (
+    !source_out_type.has_value () || !dest_in_type.has_value ()
+    || source_out_type.value () != dest_in_type.value ())
+    {
+      const auto type_name = [] (const auto &type) {
+        return type
+          .transform ([] (auto t) {
+            return std::string (magic_enum::enum_name (t));
+          })
+          .value_or ("no signal");
+      };
+      return utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' outputs {} but '{}' takes {}", track_name (source),
+          type_name (source_out_type), track_name (destination),
+          type_name (dest_in_type)));
+    }
+
+  return std::nullopt;
 }
 
 void

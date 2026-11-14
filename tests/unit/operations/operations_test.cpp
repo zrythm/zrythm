@@ -162,9 +162,11 @@ protected:
 TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
 {
   const auto expected = std::vector<std::string>{
-    "track.set_name",    "track.set_color",          "track.unset_color",
-    "track.set_comment", "track.set_timebase",       "track.add",
-    "track.list",        "transport.set_play_state",
+    "track.set_name",     "track.set_color",
+    "track.unset_color",  "track.set_comment",
+    "track.set_timebase", "track.route",
+    "track.unroute",      "track.add",
+    "track.list",         "transport.set_play_state",
   };
   for (const auto &name : expected)
     {
@@ -517,6 +519,138 @@ TEST_F (OperationsTest, TrackSetTimebaseAppliesAndUndoes)
   EXPECT_EQ (
     track->timebaseProvider ()->overrideValue (),
     std::optional{ dsp::Timebase::Absolute });
+}
+
+// ============================================================================
+// track.route / track.unroute
+// ============================================================================
+
+TEST_F (OperationsTest, TrackRouteAppliesAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+
+  auto report = dispatch (
+    "track.route",
+    {
+      { "track",  uuid_of (*track)            },
+      { "target", uuid_of (*group_ref.get ()) }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  const auto output = track_routing_->get_output_track (track->get_uuid ());
+  ASSERT_TRUE (output.has_value ());
+  EXPECT_EQ (output->id (), group_ref.id ());
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (
+    track_routing_->get_output_track (track->get_uuid ()).has_value ());
+}
+
+TEST_F (OperationsTest, TrackRouteRefusesCycleWithReason)
+{
+  auto * track = add_audio_track_directly ();
+  auto   group1_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  auto group2_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group1_ref);
+  track_collection_->add_track (group2_ref);
+  dispatch (
+    "track.route",
+    {
+      { "track",  uuid_of (*track)             },
+      { "target", uuid_of (*group1_ref.get ()) }
+  });
+  dispatch (
+    "track.route",
+    {
+      { "track",  uuid_of (*group1_ref.get ()) },
+      { "target", uuid_of (*group2_ref.get ()) }
+  });
+
+  auto report = dispatch (
+    "track.route",
+    {
+      { "track",  uuid_of (*group2_ref.get ()) },
+      { "target", uuid_of (*group1_ref.get ()) }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("cycle"), std::string::npos);
+  EXPECT_EQ (undo_stack_->count (), 2);
+}
+
+TEST_F (OperationsTest, TrackRouteRefusesSignalTypeMismatchWithReason)
+{
+  auto * track = add_audio_track_directly ();
+  auto   midi_group_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiGroupTrack> ();
+  track_collection_->add_track (midi_group_ref);
+
+  auto report = dispatch (
+    "track.route",
+    {
+      { "track",  uuid_of (*track)                 },
+      { "target", uuid_of (*midi_group_ref.get ()) }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("outputs"), std::string::npos);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (OperationsTest, TrackRouteRefusesMasterSourceWithReason)
+{
+  auto * master = singleton_tracks_->masterTrack ();
+  ASSERT_NE (master, nullptr);
+  auto group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+
+  auto report = dispatch (
+    "track.route",
+    {
+      { "track",  uuid_of (*master)           },
+      { "target", uuid_of (*group_ref.get ()) }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("master"), std::string::npos);
+}
+
+TEST_F (OperationsTest, TrackUnrouteRemovesRouteAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+  dispatch (
+    "track.route",
+    {
+      { "track",  uuid_of (*track)            },
+      { "target", uuid_of (*group_ref.get ()) }
+  });
+  ASSERT_TRUE (
+    track_routing_->get_output_track (track->get_uuid ()).has_value ());
+
+  auto report = dispatch (
+    "track.unroute",
+    {
+      { "track", uuid_of (*track) }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_FALSE (
+    track_routing_->get_output_track (track->get_uuid ()).has_value ());
+
+  undo_stack_->undo ();
+  const auto output = track_routing_->get_output_track (track->get_uuid ());
+  ASSERT_TRUE (output.has_value ());
+  EXPECT_EQ (output->id (), group_ref.id ());
 }
 
 // ============================================================================

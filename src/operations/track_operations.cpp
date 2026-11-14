@@ -15,6 +15,8 @@ make_track_operations ()
     Operation{ track_unset_color_operation () },
     Operation{ track_set_comment_operation () },
     Operation{ track_set_timebase_operation () },
+    Operation{ track_route_operation () },
+    Operation{ track_unroute_operation () },
     Operation{ track_add_operation () },
     Operation{ track_list_operation () },
   };

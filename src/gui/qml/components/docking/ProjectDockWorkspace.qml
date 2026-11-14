@@ -210,6 +210,7 @@ Item {
       MixerView {
         anchors.fill: parent
         audioEngine: root.project.engine
+        operationDispatcher: root.session.operationDispatcher
         parameterOperator: root.session.processorParameterOperator
         pluginImporter: root.session.pluginImporter
         pluginOperator: root.session.pluginOperator

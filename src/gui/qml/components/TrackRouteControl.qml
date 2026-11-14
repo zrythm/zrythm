@@ -15,6 +15,7 @@ Loader {
   // Dense variant for mixer strips: hides the standalone unroute button
   // (unrouting stays available through the combo's context menu)
   property bool compact: false
+  required property OperationDispatcher operationDispatcher
   required property Track track
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -26,8 +27,8 @@ Loader {
     id: trackOp
 
     track: root.track
-    trackRouting: root.tracklist.trackRouting
     undoStack: root.undoStack
+    operationDispatcher: root.operationDispatcher
   }
 
   Component {

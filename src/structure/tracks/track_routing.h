@@ -50,6 +50,21 @@ public:
   canRouteTo (const Track * source, const Track * destination) const;
 
   /**
+   * @brief Returns why @p source cannot be routed to @p destination,
+   * or no value when routing is allowed.
+   *
+   * A null destination means "unroute" and is allowed for any valid
+   * source. Implements the same rules as @ref canRouteTo, which wraps
+   * it.
+   *
+   * @param source The source track.
+   * @param destination The destination track.
+   * @return The refusal reason, or no value when routing is allowed.
+   */
+  std::optional<utils::Utf8String>
+  route_refusal_reason (const Track * source, const Track * destination) const;
+
+  /**
    * @brief Emitted when a change was made in the routing.
    */
   Q_SIGNAL void routingChanged ();
