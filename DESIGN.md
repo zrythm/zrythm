@@ -198,6 +198,8 @@ accessibility contracts. Per-component realization arithmetic — padding
 sums, inset offsets, one-off geometry no other surface reuses — lives in
 the components' code; canonical proportions more than one surface shares
 (control heights, floating-surface widths) are tokens and stay here.
+Views and screens are specified by their layout rules and the shared
+components they reuse, not by per-view geometry.
 
 ## Overview
 
@@ -425,7 +427,7 @@ three-step scale, with fully-round pill ends for tab bars:
 | `rounded.full` | 12 px (half the 24 px control height) | Pill ends: first/last tab outer corners |
 
 Tab bars read as a single pill: only the outer corners of the first and last
-tabs are rounded. Progress bar radii are half the bar height (3 px today).
+tabs are rounded. Progress bar radii are half the bar height.
 
 ## Components
 
@@ -568,7 +570,7 @@ standard transition.
 ### Progress bar
 
 6 px tall track in `textColor` and an accent fill, both with radius set to
-half the bar height (3 px today). The indeterminate state scrolls five accent
+half the bar height. The indeterminate state scrolls five accent
 blocks of width/3 in a 1500 ms `InOutQuad` loop.
 
 ### Slider
@@ -669,7 +671,7 @@ Dense checkable chips for channel and signal states on track headers
 and mixer strips: 18 × 18, radius 4, a single bold 9 px glyph
 (`channelStateTextFont`) — letters for states (M, S, L, Ø), a 10 px `●`
 for record — always with a tooltip. Related chips group into pills
-(horizontal in track headers, vertical in mixer strips) whose shared
+(horizontal in track headers and mixer strips) whose shared
 corners are flattened, rounding only the pill's outer corners. These
 chips are flat — the dense-inline exception to button elevation.
 
@@ -693,6 +695,65 @@ Compact word-mode selectors at the same density (e.g. the automation
 lane's On/Touch/Off group) share the chip geometry — 18 px tall, radius
 4, `channelStateTextFont`, flat linked pills — with the selected mode
 taking the accent, since they select a mode rather than latch a state.
+
+### Expanders
+
+Expandable sections (`ExpanderBox`) fold a titled body under a header
+row of icon, title and chevron; the header toggles the fold and can
+carry an optional trailing action. The compact density — borderless,
+no frame padding, a `compactControlHeight` header — serves dense
+surfaces such as mixer strips and inspector sections; the standard
+density frames and pads the body. A host can drive the fold state from
+outside so that one toggle folds a level across many expanders at once.
+
+### Mixer
+
+Channel strips sit side by side at a uniform fixed width in a
+horizontally scrollable row, the master strip pinned at the trailing
+edge. Strips sit on the page color and follow the shared
+selection/hover derivation rules. Section state is shared by every
+strip: folding a level folds it in all channels, and each section body
+takes the height of the tallest content among strips, so headers,
+faders and lower rows line up exactly. All content stays visible —
+nothing scrolls inside a strip — and plugin groups always show one
+trailing empty slot as a drop target. Top to bottom, a strip carries:
+
+- **Header** — a full-width track-color bar above the track icon and
+  name (elided); the name takes the selection's bold font and the
+  header dims while the channel is muted.
+- **Sections** — MIDI FX, Inserts and Sends as compact-density
+  [Expanders](#expanders). A level a channel does not carry (MIDI FX
+  on audio channels, Sends on the master strip) is hidden with its
+  height reserved as blank space, keeping the strips below aligned; a
+  level no strip carries disappears everywhere.
+- **Balance** — the shared balance control: a center-detent knob
+  between `L`/`R` labels with the position as text (`C`, `L50`,
+  `R50`).
+- **Fader and meters** — the fader carries dB ticks with unity in the
+  accent; the amplitude range tops at 2.0, so +6 dB is the top stop,
+  and tick positions come from the parameter's fader-curve inverse,
+  landing exactly where the cap reads. Fader and meter dB legends hide
+  when the fader runs too short for the legend rows. Channel meters
+  are continuous gradient bars in the shared meter palette with a
+  falling peak marker; the master strip meters with K-system ballistics
+  as LED segments in the K-system palette. Level and peak bars move
+  with the standard falloff rate and carry no easing.
+- **Readouts** — the fader level and the peak level in boxes on the
+  button fill; the peak readout turns the error text color over full
+  scale and shows the maximum observed since the last reset, so the
+  digits stay steady while the bar marker decays. Clicking the peak
+  readout clears it.
+- **State chips and routing** — the channel state pills (see
+  [Channel state buttons](#channel-state-buttons)) are centered on the
+  strip and the routing selector fills the trailing rows. The route
+  selector carries no unroute button; unroute lives in its context
+  menu. Fader, balance, route-selector and plugin-slot menus open on
+  right click.
+
+The track inspector's fader section reuses the same controls —
+balance, state chips, readouts, the fader with its legend, and the
+meters with theirs — stacked beside the fader to fit the narrower
+panel.
 
 ### Track event activity indicator
 
