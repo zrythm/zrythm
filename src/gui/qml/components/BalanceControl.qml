@@ -1,199 +1,76 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import ZrythmStyle
 import Zrythm
 
+// Stereo balance as a center-detent knob between `L`/`R` labels with the
+// position as text (`C`, `L50`, `R50`); shared by the mixer strips and
+// the inspector's fader section.
 Item {
   id: root
 
   required property ProcessorParameter balanceParameter
-  property real balanceValue: balanceParameter.baseValue
-  readonly property real defaultBalanceValue: balanceParameter?.range.defaultNormalizedValue ?? 0.5
-  readonly property bool dragging: mouseArea.dragging
-  property bool hovered: false
   required property ProcessorParameterOperator parameterOperator
 
-  signal bindMidiCC
-  signal resetBalance
+  readonly property string panText: {
+    const value = root.balanceParameter.baseValue;
+    const pct = Math.round(Math.abs(value - 0.5) / 0.5 * 100);
+    if (pct === 0)
+      return qsTr("C");
+    return value < 0.5 ? qsTr("L%1").arg(pct) : qsTr("R%1").arg(pct);
+  }
 
-  implicitHeight: 16
-  implicitWidth: 48
+  implicitHeight: balanceLayout.implicitHeight
+  implicitWidth: balanceLayout.implicitWidth
 
-  ContextMenu.menu: Menu {
-    id: contextMenu
+  RowLayout {
+    id: balanceLayout
 
-    MenuItem {
-      text: qsTr("Reset")
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    spacing: 4
 
-      onTriggered: {
-        root.parameterOperator.setValue(root.balanceParameter, root.defaultBalanceValue);
+    Label {
+      color: Qt.alpha(palette.windowText, 0.4)
+      font: ZrythmTheme.xxSmallTextFont
+      text: "L"
+    }
+
+    Knob {
+      Layout.alignment: Qt.AlignVCenter
+
+      defaultValue: 0.5
+      maxValue: 1
+      minValue: 0
+      size: 26
+      value: root.balanceParameter.baseValue
+      zero: 0.5
+
+      onValueModified: function (newValue) {
+        root.parameterOperator.setValue(root.balanceParameter, newValue);
       }
     }
 
-    MenuItem {
-      text: qsTr("Bind MIDI CC")
-
-      onTriggered: {
-        root.bindMidiCC();
-      }
-    }
-  }
-
-  Rectangle {
-    id: background
-
-    anchors.fill: parent
-    color: ZrythmTheme.getColorBlendedTowardsContrast(palette.window)
-    opacity: root.hovered ? 0.8 : 0.6
-    radius: ZrythmTheme.textFieldRadius
-  }
-
-  // Left channel indicator
-  Rectangle {
-    id: leftIndicator
-
-    color: {
-      var intensity = root.hovered || root.dragging ? 0.7 : 0.4;
-      return palette.accent.alpha(intensity);
-    }
-    height: parent.height
-    visible: root.balanceValue < 0.5
-    width: {
-      var halfWidth = parent.width / 2;
-      var valuePx = root.balanceValue * parent.width;
-      return root.balanceValue < 0.5 ? halfWidth - valuePx : 0;
+    Label {
+      color: Qt.alpha(palette.windowText, 0.4)
+      font: ZrythmTheme.xxSmallTextFont
+      text: "R"
     }
 
-    anchors {
-      right: parent.horizontalCenter
-      top: parent.top
-    }
-  }
-
-  // Right channel indicator
-  Rectangle {
-    id: rightIndicator
-
-    color: {
-      var intensity = root.hovered || root.dragging ? 0.7 : 0.4;
-      return palette.accent.alpha(intensity);
-    }
-    height: parent.height
-    visible: root.balanceValue > 0.5
-    width: {
-      var halfWidth = parent.width / 2;
-      var valuePx = root.balanceValue * parent.width;
-      return root.balanceValue > 0.5 ? valuePx - halfWidth : 0;
+    Item {
+      Layout.fillWidth: true
     }
 
-    anchors {
-      left: parent.horizontalCenter
-      top: parent.top
-    }
-  }
-
-  // Center line
-  Rectangle {
-    id: centerLine
-
-    color: {
-      var intensity = root.hovered || root.dragging ? 1.0 : 0.7;
-      return palette.text.alpha(intensity);
-    }
-    height: parent.height
-    visible: false
-    width: 1
-
-    anchors {
-      horizontalCenter: parent.horizontalCenter
-      top: parent.top
-    }
-  }
-
-  // Current value indicator
-  Rectangle {
-    id: valueIndicator
-
-    color: {
-      var intensity = root.hovered || root.dragging ? 1.0 : 0.7;
-      return palette.accent.alpha(intensity);
-    }
-    height: parent.height
-    width: 2
-
-    anchors {
-      left: parent.left
-      leftMargin: root.balanceValue * parent.width - 1
-      top: parent.top
-    }
-  }
-
-  // Left label
-  Text {
-    id: leftLabel
-
-    color: palette.text
-    font.pixelSize: 10
-    text: "L"
-
-    anchors {
-      left: parent.left
-      leftMargin: 3
-      verticalCenter: parent.verticalCenter
-    }
-  }
-
-  // Right label
-  Text {
-    id: rightLabel
-
-    color: palette.text
-    font.pixelSize: 10
-    text: "R"
-
-    anchors {
-      right: parent.right
-      rightMargin: 3
-      verticalCenter: parent.verticalCenter
-    }
-  }
-
-  // Value display
-  Text {
-    id: valueText
-
-    anchors.centerIn: parent
-    color: palette.text
-    font.pixelSize: 10
-    text: {
-      var panVal = root.balanceValue - 0.5;
-      var percentage = Math.abs(panVal) / 0.5 * 100;
-      var sign = panVal < 0 ? "-" : "";
-      return sign + Math.round(percentage) + "%";
-    }
-    visible: root.hovered || root.dragging
-  }
-
-  WarpDragArea {
-    id: mouseArea
-
-    allowedAxes: Qt.Horizontal
-    anchors.fill: parent
-    defaultValue: root.defaultBalanceValue
-    value: root.balanceParameter.baseValue
-    wheelAxis: Qt.Horizontal
-
-    onEntered: {
-      root.hovered = true;
-    }
-    onExited: {
-      root.hovered = false;
-    }
-    onValueModified: function (newValue) {
-      root.parameterOperator.setValue(root.balanceParameter, newValue);
+    Label {
+      font: ZrythmTheme.smallTextFont
+      text: root.panText
     }
   }
 }

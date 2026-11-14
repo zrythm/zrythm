@@ -89,6 +89,14 @@ Control {
     }
   }
 
+  // Right-click opens the menu directly, matching the track and
+  // plugin-slot context menus
+  TapHandler {
+    acceptedButtons: Qt.RightButton
+
+    onTapped: contextMenu.popup()
+  }
+
   onKnobBaseColorChanged: knobCanvas.requestPaint()
 
   // Update canvas when value changes

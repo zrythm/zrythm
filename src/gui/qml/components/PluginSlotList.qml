@@ -4,6 +4,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.impl
 import Zrythm
 
 ListView {
@@ -71,9 +72,24 @@ ListView {
     // Reacts to row changes through the view's count property
     readonly property bool groupEmpty: ListView.view.count === 0
 
-    height: groupEmpty ? Math.max(32, pasteButton.implicitHeight + 8) : 24
+    height: groupEmpty ? Math.max(24, pasteButton.implicitHeight) : 20
     text: qsTr("Drop plugins here")
     width: ListView.view.width
+
+    // Visible unfilled slot: the drop target once the group has plugins
+    Rectangle {
+      anchors.fill: parent
+      color: dropArea.dragInProgress ? Qt.alpha(palette.base, 0.8) : Qt.alpha(palette.alternateBase, 0.6)
+      radius: ZrythmTheme.textFieldRadius
+      visible: !dropArea.groupEmpty
+
+      ColorImage {
+        anchors.centerIn: parent
+        color: Qt.alpha(palette.windowText, 0.55)
+        source: ResourceManager.getIconUrl("zrythm-dark", "add.svg")
+        sourceSize: Qt.size(12, 12)
+      }
+    }
 
     onDataDropped: (drop, dragSource) => {
       const pluginSrc = dragSource as PluginDragItem;
@@ -92,9 +108,12 @@ ListView {
     Label {
       anchors.centerIn: parent
       color: ZrythmTheme.placeholderTextColor
-      font: ZrythmTheme.smallTextFont
+      elide: Text.ElideRight
+      font: ZrythmTheme.xSmallTextFont
+      horizontalAlignment: Text.AlignHCenter
       text: qsTr("Drop or Paste Plugins Here")
       visible: dropArea.groupEmpty && !root.pluginOperator.canPastePlugins && !dropArea.dragInProgress
+      width: parent.width
     }
 
     Button {

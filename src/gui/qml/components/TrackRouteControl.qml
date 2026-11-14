@@ -12,6 +12,9 @@ import Zrythm
 Loader {
   id: root
 
+  // Dense variant for mixer strips: hides the standalone unroute button
+  // (unrouting stays available through the combo's context menu)
+  property bool compact: false
   required property Track track
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -65,6 +68,25 @@ Loader {
           ]
         }
 
+        ContextMenu.menu: Menu {
+          id: routeMenu
+
+          MenuItem {
+            enabled: routeTargetComboBox.currentIndex >= 0
+            text: qsTr("Unroute")
+
+            onTriggered: trackOp.setOutputTrack(null)
+          }
+        }
+
+        // Right-click opens the menu directly, matching the track and
+        // plugin-slot context menus
+        TapHandler {
+          acceptedButtons: Qt.RightButton
+
+          onTapped: routeMenu.popup()
+        }
+
         onActivated: trackOp.setOutputTrack(currentValue)
 
         Connections {
@@ -84,7 +106,7 @@ Loader {
       Button {
         icon.source: ResourceManager.getIconUrl("zrythm-dark", "draw-cross.svg")
         padding: 2
-        visible: routeTargetComboBox.currentIndex >= 0
+        visible: !root.compact && routeTargetComboBox.currentIndex >= 0
 
         onClicked: trackOp.setOutputTrack(null)
 

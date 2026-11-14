@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.impl
 import QtQuick.Layouts
 import Zrythm
 import ZrythmStyle
@@ -34,7 +35,35 @@ ColumnLayout {
     return tracklist.collection.indexForTrack(track);
   }
 
-  implicitWidth: 48
+  readonly property bool channelMuted: root.channel.fader.mute ? root.channel.fader.mute.baseValue > 0.5 : false
+  // Whether the fader and meter dB legends fit the current fader height
+  // (progressive disclosure: they disappear on short strips, where the
+  // legend rows would collide)
+  readonly property bool showFaderScale: faderControl.height >= 100
+
+  // Shared mixer section state, owned by the mixer view: the fold state
+  // of each level (folding folds it in every strip) and the uniform body
+  // heights each section takes across strips
+  // Shared section state is passed untyped: the gate's false-positive
+  // filter only excuses dynamic members on `var` properties
+  property var sectionMetrics: null
+
+  // Whether this channel carries the MIDI FX level
+  readonly property bool supportsMidiFx: !!root.channel.midiOut
+
+  // This strip's own section content heights (0 where the level is not
+  // supported); the mixer view reduces them into sectionMetrics
+  readonly property real midiFxContentHeight: root.supportsMidiFx ? midiFxList.contentHeight : 0
+  readonly property real insertsContentHeight: insertsList.contentHeight
+  readonly property real sendsContentHeight: root.track.type === Track.Master ? 0 : sendsContent.implicitHeight
+
+  onMidiFxContentHeightChanged: root.sectionMetrics?.markDirty()
+  onInsertsContentHeightChanged: root.sectionMetrics?.markDirty()
+  onSendsContentHeightChanged: root.sectionMetrics?.markDirty()
+  onSupportsMidiFxChanged: root.sectionMetrics?.markDirty()
+  Component.onCompleted: root.sectionMetrics?.markDirty()
+
+  implicitWidth: 112
 
   SelectionTracker {
     id: selectionTracker
@@ -114,107 +143,282 @@ ColumnLayout {
 
     ColumnLayout {
       anchors.fill: parent
-      spacing: 0
+      anchors.margins: 4
+      spacing: 2
 
-      Rectangle {
+      // Strip header: track color bar, type icon, name
+      ColumnLayout {
+        // Nested layouts only stretch past their implicit size with an
+        // explicit maximum
         Layout.fillWidth: true
-        Layout.minimumHeight: 4
-        color: TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode)
-      }
+        Layout.maximumWidth: Number.POSITIVE_INFINITY
+        spacing: 2
 
-      Label {
-        Layout.fillWidth: true
-        elide: Text.ElideRight
-        font: selectionTracker.isSelected ? ZrythmTheme.buttonTextFont : ZrythmTheme.normalTextFont
-        text: root.track.name
-      }
+        Rectangle {
+          Layout.fillWidth: true
+          Layout.preferredHeight: 4
+          color: TrackColors.effectiveColor(root.track, ZrythmTheme.darkMode)
+        }
 
-      ExpanderBox {
-        Layout.fillWidth: true
-        icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
-        title: qsTr("MIDI FX")
+        RowLayout {
+          Layout.fillWidth: true
+          Layout.leftMargin: 2
+          Layout.rightMargin: 2
+          spacing: 4
 
-        frameContentItem: PluginSlotList {
-          pluginGroup: root.channel.midiFx
-          pluginImporter: root.pluginImporter
-          pluginOperator: root.pluginOperator
-          track: root.track
-          trackSelectionModel: root.trackSelectionModel
+          IconImage {
+            Layout.alignment: Qt.AlignVCenter
+            color: nameLabel.color
+            opacity: nameLabel.opacity
+            source: TrackIcons.iconUrl(root.track)
+            sourceSize.height: 14
+            sourceSize.width: 14
+          }
 
-          onPluginClicked: function (plugin: Plugin) {
-            root.pluginClicked(plugin);
+          Label {
+            id: nameLabel
+
+            Layout.fillWidth: true
+            elide: Text.ElideRight
+            font: selectionTracker.isSelected ? ZrythmTheme.buttonTextFont : ZrythmTheme.trackNameTextFont
+            opacity: root.channelMuted ? ZrythmTheme.disabledOpacityFactor : 1
+            text: root.track.name
           }
         }
       }
 
+      // MIDI FX; channels without the level reserve its height as blank
+      // space below so the following sections stay aligned
       ExpanderBox {
+        id: midiFxSection
+
         Layout.fillWidth: true
+        compact: true
+        externalExpandedState: root.sectionMetrics !== null
+        expanded: root.sectionMetrics ? root.sectionMetrics.midiFxExpanded : true
+        icon.source: ResourceManager.getIconUrl("zrythm-dark", "midi-insert.svg")
+        title: qsTr("MIDI FX")
+        visible: root.supportsMidiFx && (!root.sectionMetrics || root.sectionMetrics.anyMidiFx)
+
+        onExpandedByUser: (willExpand) => {
+          if (root.sectionMetrics)
+            root.sectionMetrics.midiFxExpanded = willExpand;
+        }
+
+        frameContentItem: Item {
+          implicitHeight: root.sectionMetrics ? root.sectionMetrics.midiFxBodyHeight : midiFxList.contentHeight
+
+          PluginSlotList {
+            id: midiFxList
+
+            anchors.fill: parent
+            interactive: false
+            pluginGroup: root.channel.midiFx
+            pluginImporter: root.pluginImporter
+            pluginOperator: root.pluginOperator
+            track: root.track
+            trackSelectionModel: root.trackSelectionModel
+
+            onPluginClicked: function (plugin: Plugin) {
+              root.pluginClicked(plugin);
+            }
+          }
+        }
+      }
+
+      Item {
+        Layout.fillWidth: true
+        Layout.preferredHeight: {
+          if (!root.sectionMetrics || !root.sectionMetrics.anyMidiFx || root.supportsMidiFx)
+            return 0;
+          return (root.sectionMetrics.midiFxExpanded ? root.sectionMetrics.midiFxBodyHeight : 0) + midiFxSection.headerBlockHeight;
+        }
+        visible: root.sectionMetrics && root.sectionMetrics.anyMidiFx && !root.supportsMidiFx
+      }
+
+      // Inserts
+      ExpanderBox {
+        id: insertsSection
+
+        Layout.fillWidth: true
+        compact: true
+        externalExpandedState: root.sectionMetrics !== null
+        expanded: root.sectionMetrics ? root.sectionMetrics.insertsExpanded : true
         icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-insert.svg")
         title: qsTr("Inserts")
 
-        frameContentItem: PluginSlotList {
-          pluginGroup: root.channel.inserts
-          pluginImporter: root.pluginImporter
-          pluginOperator: root.pluginOperator
-          track: root.track
-          trackSelectionModel: root.trackSelectionModel
+        onExpandedByUser: (willExpand) => {
+          if (root.sectionMetrics)
+            root.sectionMetrics.insertsExpanded = willExpand;
+        }
 
-          onPluginClicked: function (plugin: Plugin) {
-            root.pluginClicked(plugin);
+        frameContentItem: Item {
+          implicitHeight: root.sectionMetrics ? root.sectionMetrics.insertsBodyHeight : insertsList.contentHeight
+
+          PluginSlotList {
+            id: insertsList
+
+            anchors.fill: parent
+            interactive: false
+            pluginGroup: root.channel.inserts
+            pluginImporter: root.pluginImporter
+            pluginOperator: root.pluginOperator
+            track: root.track
+            trackSelectionModel: root.trackSelectionModel
+
+            onPluginClicked: function (plugin: Plugin) {
+              root.pluginClicked(plugin);
+            }
           }
         }
       }
 
-      ChannelSendsPanel {
+      // Sends; the master strip reserves the level's height as blank
+      // space instead
+      ExpanderBox {
+        id: sendsSection
+
         Layout.fillWidth: true
-        expanded: false
-        headerIconName: ""
+        compact: true
+        externalExpandedState: root.sectionMetrics !== null
+        expanded: root.sectionMetrics ? root.sectionMetrics.sendsExpanded : true
+        title: qsTr("Sends")
         visible: root.track.type !== Track.Master
 
-        channelSendRouting: root.tracklist.channelSendRouting
-        parameterOperator: root.parameterOperator
-        project: root.project
-        sends: root.channel.sends
-        track: root.track
-        undoStack: root.undoStack
+        headerAction: Component {
+          ChannelStateButton {
+            Accessible.name: qsTr("Add send")
+            checkable: false
+            ghost: true
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "add.svg")
+
+            onClicked: addSendOp.addSend(false)
+
+            ToolTip {
+              text: qsTr("Add a post-fader send to this channel")
+            }
+          }
+        }
+
+        onExpandedByUser: (willExpand) => {
+          if (root.sectionMetrics)
+            root.sectionMetrics.sendsExpanded = willExpand;
+        }
+
+        frameContentItem: Item {
+          implicitHeight: root.sectionMetrics ? root.sectionMetrics.sendsBodyHeight : sendsContent.implicitHeight
+
+          ColumnLayout {
+            id: sendsContent
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            spacing: 2
+
+            TrackOperator {
+              id: addSendOp
+
+              track: root.track
+              undoStack: root.undoStack
+            }
+
+            Repeater {
+              model: root.channel.sends
+
+              delegate: ChannelSendControls {
+                Layout.fillWidth: true
+                channelSendRouting: root.tracklist.channelSendRouting
+                parameterOperator: root.parameterOperator
+                project: root.project
+                track: root.track
+                undoStack: root.undoStack
+              }
+            }
+          }
+        }
       }
 
-      BalanceControl {
-        Layout.fillHeight: false
+      Item {
         Layout.fillWidth: true
+        Layout.preferredHeight: root.track.type === Track.Master && root.sectionMetrics ? (root.sectionMetrics.sendsExpanded ? root.sectionMetrics.sendsBodyHeight : 0) + sendsSection.headerBlockHeight : 0
+        visible: root.track.type === Track.Master
+      }
+
+      // Stereo balance
+      BalanceControl {
+        Layout.fillWidth: true
+        Layout.leftMargin: 2
+        Layout.rightMargin: 2
         balanceParameter: root.channel.fader.balance
         parameterOperator: root.parameterOperator
       }
 
+      // Fader with its dB legend, and the channel meters
       RowLayout {
+        // Nested layouts only stretch past their implicit size with an
+        // explicit maximum
         Layout.fillHeight: true
-        Layout.fillWidth: false
+        Layout.fillWidth: true
+        Layout.maximumWidth: Number.POSITIVE_INFINITY
+        Layout.minimumHeight: 80
+        spacing: 4
 
-        FaderButtons {
-          Layout.fillHeight: true
-          Layout.fillWidth: false
-          fader: root.channel.fader
-          track: root.track
+        Item {
+          Layout.fillWidth: true
         }
 
         FaderControl {
+          id: faderControl
+
+          Layout.alignment: Qt.AlignHCenter
           Layout.fillHeight: true
-          Layout.fillWidth: false
           faderGain: root.channel.fader.gain
           parameterOperator: root.parameterOperator
+          showScale: root.showFaderScale
         }
 
         TrackMeters {
+          id: trackMeters
+
           Layout.fillHeight: true
-          Layout.fillWidth: false
           audioEngine: root.audioEngine
           channel: root.channel
           portObservationManager: root.portObservationManager
+          showScale: root.showFaderScale
           track: root.track
+        }
+
+        Item {
+          Layout.fillWidth: true
         }
       }
 
+      // Fader and peak level readouts
+      FaderReadouts {
+        // Nested layouts only stretch past their implicit size with an
+        // explicit maximum
+        Layout.fillWidth: true
+        Layout.maximumWidth: Number.POSITIVE_INFINITY
+        faderText: faderControl.dbText
+        peakOver: trackMeters.peakOver
+        peakText: trackMeters.peakDbText
+        peakVisible: trackMeters.hasAudio
+
+        onResetPeak: trackMeters.resetPeakHold()
+      }
+
+      FaderButtons {
+        // Nested layouts only stretch past their implicit size with an
+        // explicit maximum
+        Layout.fillWidth: true
+        Layout.maximumWidth: Number.POSITIVE_INFINITY
+        fader: root.channel.fader
+        track: root.track
+      }
+
       TrackRouteControl {
+        compact: true
         track: root.track
         tracklist: root.tracklist
         undoStack: root.undoStack

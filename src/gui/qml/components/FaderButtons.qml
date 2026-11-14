@@ -7,12 +7,11 @@ import QtQuick.Layouts
 import ZrythmStyle
 import Zrythm
 
-// Channel state controls for a mixer strip, stacked as pills next to
-// the fader: the primary pill carries the channel states (mute, solo,
-// record, listen) and the secondary pill the signal toggles (mono,
-// phase, monitor). The secondary pill is ghosted at rest and
-// materializes when any of its toggles is active. The channel settings
-// button stays standalone below the pills.
+// Channel state controls for a mixer strip, stacked as rows of pills:
+// the primary row carries the channel states (mute, solo, record,
+// listen) and the secondary row the signal toggles (mono, phase,
+// monitor) beside the channel settings button. The secondary pill is
+// ghosted at rest and materializes when any of its toggles is active.
 ColumnLayout {
   id: root
 
@@ -27,12 +26,12 @@ ColumnLayout {
   // The secondary pill materializes when any of its toggles is active
   readonly property bool secondaryActive: root.monoOn || root.phaseOn || root.monitorMode > 0
 
-  spacing: 8
+  spacing: 4
 
   LinkedButtons {
     id: primaryPill
 
-    vertical: true
+    Layout.alignment: Qt.AlignHCenter
 
     ChannelStateButton {
       Accessible.name: qsTr("Mute")
@@ -98,85 +97,88 @@ ColumnLayout {
     }
   }
 
-  LinkedButtons {
-    id: secondaryPill
+  RowLayout {
+    Layout.alignment: Qt.AlignHCenter
+    spacing: 2
 
-    vertical: true
+    LinkedButtons {
+      id: secondaryPill
 
-    ChannelStateButton {
-      Accessible.name: qsTr("Mono compatibility")
-      checkable: false
-      checked: root.monoOn
-      checkedFill: palette.dark
-      ghost: !root.secondaryActive
-      icon.source: ResourceManager.getIconUrl("codicons", "merge.svg")
-      visible: root.fader.monoToggle !== null
+      ChannelStateButton {
+        Accessible.name: qsTr("Mono compatibility")
+        checkable: false
+        checked: root.monoOn
+        checkedFill: palette.dark
+        ghost: !root.secondaryActive
+        icon.source: ResourceManager.getIconUrl("codicons", "merge.svg")
+        visible: root.fader.monoToggle !== null
 
-      onClicked: {
-        root.fader.monoToggle?.setBaseValueByUser(root.monoOn ? 0.0 : 1.0);
+        onClicked: {
+          root.fader.monoToggle?.setBaseValueByUser(root.monoOn ? 0.0 : 1.0);
+        }
+
+        ToolTip {
+          text: qsTr("Mono compatibility")
+        }
       }
 
-      ToolTip {
-        text: qsTr("Mono compatibility")
-      }
-    }
+      ChannelStateButton {
+        Accessible.name: qsTr("Swap phase")
+        checkable: false
+        checked: root.phaseOn
+        checkedFill: palette.dark
+        ghost: !root.secondaryActive
+        text: "Ø"
 
-    ChannelStateButton {
-      Accessible.name: qsTr("Swap phase")
-      checkable: false
-      checked: root.phaseOn
-      checkedFill: palette.dark
-      ghost: !root.secondaryActive
-      text: "Ø"
+        onClicked: {
+          root.fader.swapPhaseToggle?.setBaseValueByUser(root.phaseOn ? 0.0 : 1.0);
+        }
 
-      onClicked: {
-        root.fader.swapPhaseToggle?.setBaseValueByUser(root.phaseOn ? 0.0 : 1.0);
-      }
-
-      ToolTip {
-        text: qsTr("Swap phase")
-      }
-    }
-
-    ChannelStateButton {
-      Accessible.name: qsTr("Monitor")
-      checkable: false
-      checked: root.monitorMode > 0
-      checkedFill: palette.dark
-      ghost: !root.secondaryActive
-      icon.source: ResourceManager.getIconUrl("zrythm-dark", "audition.svg")
-      showActiveDot: root.monitorMode === 2
-      visible: root.track.monitorParam !== null
-
-      onClicked: {
-        if (!root.track.monitorParam)
-          return;
-        const next = (root.monitorMode + 1) % root.track.monitorParam.range.enumCount();
-        root.track.monitorParam.setBaseValueByUser(root.track.monitorParam.range.normalizedEnumValue(next));
+        ToolTip {
+          text: qsTr("Swap phase")
+        }
       }
 
-      ToolTip {
-        text: {
+      ChannelStateButton {
+        Accessible.name: qsTr("Monitor")
+        checkable: false
+        checked: root.monitorMode > 0
+        checkedFill: palette.dark
+        ghost: !root.secondaryActive
+        icon.source: ResourceManager.getIconUrl("zrythm-dark", "audition.svg")
+        showActiveDot: root.monitorMode === 2
+        visible: root.track.monitorParam !== null
+
+        onClicked: {
           if (!root.track.monitorParam)
-            return "";
-          return qsTr("Monitor: %1").arg(root.track.monitorParam.range.enumLabel(root.monitorMode));
+            return;
+          const next = (root.monitorMode + 1) % root.track.monitorParam.range.enumCount();
+          root.track.monitorParam.setBaseValueByUser(root.track.monitorParam.range.normalizedEnumValue(next));
+        }
+
+        ToolTip {
+          text: {
+            if (!root.track.monitorParam)
+              return "";
+            return qsTr("Monitor: %1").arg(root.track.monitorParam.range.enumLabel(root.monitorMode));
+          }
         }
       }
     }
-  }
 
-  ChannelStateButton {
-    Accessible.name: qsTr("Channel settings")
-    checkable: false
-    ghost: true
-    icon.source: ResourceManager.getIconUrl("gnome-icon-library", "settings-symbolic.svg")
+    ChannelStateButton {
+      Accessible.name: qsTr("Channel settings")
+      checkable: false
+      ghost: true
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "settings-symbolic.svg")
 
-    onClicked:
-    // TODO: Open channel settings dialog
-    {}
+      onClicked:
+      // TODO: Open channel settings dialog
+      {}
 
-    ToolTip {
-      text: qsTr("Channel settings")
+      ToolTip {
+        text: qsTr("Channel settings")
+      }
     }
   }
 }

@@ -16,9 +16,10 @@ Rectangle {
   readonly property real currentPx: meterProcessorItem.toFader(meterProcessorItem.currentAmplitude) * levelLength
   // Render the bar left-to-right instead of bottom-to-top.
   property bool horizontal: false
-  // K-System-style palette: green below the warning zone, yellow above it.
-  // The default palette is the classic orange-to-green gradient. In both
-  // palettes the peak marker turns red when the level is over full scale.
+  // K-System-style palette: yellow above the warning zone, green below it.
+  // The default palette is the classic green-to-orange gradient: green
+  // below, orange near full scale. In both palettes the peak marker turns
+  // red when the level is over full scale.
   property bool k20Colors: false
   // Current level as a 0-1 fraction of the bar, for segment activation.
   readonly property real levelFraction: levelLength > 0 ? Math.min(Math.max(currentPx / levelLength, 0), 1) : 0
@@ -38,10 +39,10 @@ Rectangle {
       return pos >= warningPos ? "#F7FF11" : "#2BD700";
 
     const p = Math.min(Math.max(pos, 0), 1);
-    if (p < 0.25)
-      return lerpColor("#FF9C11", "#F7FF11", p / 0.25);
+    if (p < 0.75)
+      return lerpColor("#2BD700", "#F7FF11", p / 0.75);
 
-    return lerpColor("#F7FF11", "#2BD700", (p - 0.25) / 0.75);
+    return lerpColor("#F7FF11", "#FF9C11", (p - 0.75) / 0.25);
   }
 
   function lerpColor(from: color, to: color, t: real): color {
@@ -85,6 +86,8 @@ Rectangle {
     gradient: Gradient {
       orientation: root.horizontal ? Gradient.Horizontal : Gradient.Vertical
 
+      // Gradient position 0 paints the top edge, so the hot color sits
+      // at the top and the quiet color at the bottom.
       GradientStop {
         color: "#FF9C11"
         position: 0
@@ -100,12 +103,7 @@ Rectangle {
         position: 1
       }
     }
-    Behavior on height {
-      animation: ZrythmTheme.propertyAnimation
-    }
-    Behavior on width {
-      animation: ZrythmTheme.propertyAnimation
-    }
+    // Bar position follows the processor's falloff directly
   }
 
   Rectangle {
@@ -119,13 +117,6 @@ Rectangle {
     width: root.horizontal ? (isOver ? 2 : 1.5) : root.width
     x: root.horizontal ? root.peakPx - width : 0
     y: root.horizontal ? 0 : root.height - root.peakPx
-
-    Behavior on x {
-      animation: ZrythmTheme.propertyAnimation
-    }
-    Behavior on y {
-      animation: ZrythmTheme.propertyAnimation
-    }
   }
 
   Repeater {

@@ -603,21 +603,7 @@ Control {
             Layout.preferredWidth: iconSize
             color: trackNameLabel.color
             fillMode: Image.PreserveAspectFit
-            source: {
-              if (root.track.icon.startsWith("gnome-icon-library-"))
-                return ResourceManager.getIconUrl("gnome-icon-library", root.track.icon.substring(19) + ".svg");
-
-              if (root.track.icon.startsWith("fluentui-"))
-                return ResourceManager.getIconUrl("fluentui", root.track.icon.substring(9) + ".svg");
-
-              if (root.track.icon.startsWith("lorc-"))
-                return ResourceManager.getIconUrl("lorc", root.track.icon.substring(5) + ".svg");
-
-              if (root.track.icon.startsWith("jam-icons-"))
-                return ResourceManager.getIconUrl("jam-icons", root.track.icon.substring(10) + ".svg");
-
-              return ResourceManager.getIconUrl("zrythm-dark", root.track.icon + ".svg");
-            }
+            source: TrackIcons.iconUrl(root.track)
             sourceSize.height: iconSize
             sourceSize.width: iconSize
           }

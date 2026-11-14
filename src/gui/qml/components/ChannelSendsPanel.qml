@@ -26,6 +26,7 @@ ExpanderBox {
   required property UndoStack undoStack
 
   icon.source: root.headerIconName !== "" ? ResourceManager.getIconUrl("zrythm-dark", root.headerIconName) : ""
+  title: qsTr("Sends")
 
   headerAction: Component {
     Button {

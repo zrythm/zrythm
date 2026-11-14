@@ -49,7 +49,7 @@ RowLayout {
   // reads as the enabled next step
   opacity: !root.send.hasDestination || root.sendEnabled ? 1.0 : ZrythmTheme.disabledOpacityFactor
 
-  spacing: 4
+  spacing: 2
 
   TrackOperator {
     id: sendOp

@@ -317,6 +317,7 @@ set(rel_qml_file_paths
   components/EventActivityIndicator.qml
   components/FaderButtons.qml
   components/FaderControl.qml
+  components/FaderReadouts.qml
   components/FileBrowserPage.qml
   components/GenericPluginEditorWindow.qml
   components/MainMenuBar.qml
@@ -365,6 +366,7 @@ set(rel_qml_file_paths
   utils/DragUtils.qml
   utils/SelectionTracker.qml
   utils/TrackColors.qml
+  utils/TrackIcons.qml
   views/ExportDialog.qml
   views/PreferencesDialog.qml
   views/ProjectWindow.qml
@@ -385,6 +387,7 @@ set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/AudioTransformKindColors.qml
   ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/DragUtils.qml
   ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/TrackColors.qml
+  ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/TrackIcons.qml
   PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 )
 
