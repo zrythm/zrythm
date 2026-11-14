@@ -20,6 +20,10 @@
 #include <QPromise>
 #include <QQmlEngine>
 
+#include "operations/builtin_operations.h"
+#include "operations/operation_environment.h"
+#include "operations/operation_registry.h"
+
 namespace zrythm::gui
 {
 
@@ -198,7 +202,17 @@ ProjectSession::ProjectSession (
         utils::make_qobject_unique<controllers::TransportController> (
           *project_->transport_,
           *ui_state_->snapGridTimeline (),
-          this))
+          this)),
+      operation_environment_ (
+        std::make_unique<operations::OperationEnvironment> (
+          project_->get_registry (),
+          *undo_stack_,
+          *project_->tracklist ()->collection (),
+          *project_->track_factory_,
+          *project_->tracklist ()->trackRouting (),
+          *project_->tracklist ()->singletonTracks (),
+          project_->getTransport ())),
+      operation_registry_ (std::make_unique<operations::OperationRegistry> ())
 {
   project_->setParent (this);
 
@@ -207,6 +221,8 @@ ProjectSession::ProjectSession (
     &app_settings_, &utils::AppSettings::undoStackLengthChanged,
     undo_stack_.get (),
     [this] (int limit) { undo_stack_->set_undo_limit (limit); });
+
+  operations::register_builtin_operations (*operation_registry_);
 
   modular_project_model_ = utils::make_qobject_unique<ModularProjectModel> (
     *project_, *ui_state_, this);
@@ -666,6 +682,18 @@ controllers::TransportController *
 ProjectSession::transportController () const
 {
   return transport_controller_.get ();
+}
+
+operations::OperationEnvironment *
+ProjectSession::operation_environment () const
+{
+  return operation_environment_.get ();
+}
+
+const operations::OperationRegistry *
+ProjectSession::operation_registry () const
+{
+  return operation_registry_.get ();
 }
 
 controllers::RecordingCoordinator *

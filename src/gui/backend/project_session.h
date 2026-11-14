@@ -35,6 +35,12 @@ namespace zrythm::gui::old_dsp
 class QuantizeOptions;
 }
 
+namespace zrythm::operations
+{
+class OperationEnvironment;
+class OperationRegistry;
+}
+
 namespace zrythm::gui
 {
 
@@ -148,6 +154,17 @@ public:
   actions::UuidPropertyOperator *       uuidPropertyOperator () const;
   controllers::TransportController *    transportController () const;
   controllers::RecordingCoordinator *   recordingCoordinator () const;
+
+  /**
+   * The services operation dispatch runs against for this session.
+   */
+  operations::OperationEnvironment * operation_environment () const;
+
+  /**
+   * The operations available in this session, with the builtin
+   * operations registered.
+   */
+  const operations::OperationRegistry * operation_registry () const;
 
   /**
    * @brief Returns the application-wide object clipboard.
@@ -268,6 +285,11 @@ private:
     recording_coordinator_;
   utils::QObjectUniquePtr<controllers::RecordingMaterializer>
     recording_materializer_;
+
+  // Operation dispatch for this session: the services operations run
+  // against, and the available operations
+  std::unique_ptr<operations::OperationEnvironment> operation_environment_;
+  std::unique_ptr<operations::OperationRegistry>    operation_registry_;
 };
 
 } // namespace zrythm::gui

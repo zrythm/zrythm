@@ -71,6 +71,7 @@ target_link_libraries(zrythm_gui_lib
   PUBLIC
     zrythm_actions_lib
     zrythm_controllers_lib
+    zrythm_operations_lib
     zrythm::include_dirs
     zrythm::all_compile_options
     Qt6::CanvasPainter

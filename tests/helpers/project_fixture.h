@@ -86,10 +86,18 @@ protected:
     };
   }
 
+  /**
+   * Creates a minimal project.
+   *
+   * @param install_recording_callback Pass false when the project will be
+   * handed to a ProjectSession: the session installs its own recording
+   * callback, and Project refuses a second installation.
+   */
   std::unique_ptr<structure::project::Project> create_minimal_project (
     structure::tracks::TrackRecordingCallback recording_callback =
       make_null_recording_callback (),
-    plugins::PluginHostWindowFactory window_factory = make_null_window_factory ())
+    plugins::PluginHostWindowFactory window_factory = make_null_window_factory (),
+    bool install_recording_callback = true)
   {
     using namespace zrythm::structure::project;
     using namespace zrythm::plugins;
@@ -102,7 +110,10 @@ protected:
       *app_settings_, path_provider, *hw_interface_, midi_interface_,
       plugin_format_manager_, std::move (window_factory), *metronome_,
       *monitor_fader_);
-    project->install_recording_callback (std::move (recording_callback));
+    if (install_recording_callback)
+      {
+        project->install_recording_callback (std::move (recording_callback));
+      }
     return project;
   }
 
@@ -114,6 +125,18 @@ protected:
   {
     return create_minimal_project (
       make_null_recording_callback (), std::move (window_factory));
+  }
+
+  /**
+   * @brief Creates a minimal project with no recording callback
+   * installed; the project's owner must install its own before creating
+   * tracks.
+   */
+  std::unique_ptr<structure::project::Project>
+  create_minimal_project_without_recording_callback ()
+  {
+    return create_minimal_project (
+      make_null_recording_callback (), make_null_window_factory (), false);
   }
 
   std::unique_ptr<QTemporaryDir>                  temp_dir_obj_;
