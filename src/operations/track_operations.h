@@ -6,10 +6,13 @@
 #include <vector>
 
 #include "commands/add_track_command.h"
+#include "commands/change_timebase_override_command.h"
 #include "commands/change_track_color_command.h"
+#include "commands/change_track_comment_command.h"
 #include "commands/rename_track_command.h"
 #include "commands/route_track_command.h"
 #include "dsp/port_fwd.h"
+#include "dsp/timebase.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
@@ -98,6 +101,71 @@ track_unset_color_operation ()
       ctx.push_command (
         std::make_unique<commands::ChangeTrackColorCommand> (
           *track.value (), std::nullopt));
+      ctx.note_affected (track.uuid_string (), "track");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/** Longest comment accepted by track.set_comment, in bytes. */
+inline constexpr std::size_t kMaxTrackCommentBytes = 4096;
+
+/**
+ * Sets a track's comment. Edit; takes the track and the comment (an
+ * empty comment clears it).
+ */
+inline const auto &
+track_set_comment_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.set_comment", "Set a track's comment",
+    std::array<ParamSpec, 2>{
+      { { "track", "UUID of the track" },
+       { "comment",
+          "New comment (0 to 4096 bytes); an empty string clears it" } }
+  },
+    [] (
+      OperationContext &ctx, TrackParam track,
+      StringParam<0, kMaxTrackCommentBytes> comment) -> OperationReport {
+      if (
+        utils::Utf8String::from_qstring (track.value ()->comment ())
+        == comment.value ())
+        {
+          return ctx.applied ();
+        }
+      ctx.push_command (
+        std::make_unique<commands::ChangeTrackCommentCommand> (
+          *track.value (), comment.value ().to_qstring ()));
+      ctx.note_affected (track.uuid_string (), "track");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
+ * Sets a track's timebase override. Edit; takes the track and the new
+ * timebase.
+ */
+inline const auto &
+track_set_timebase_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.set_timebase", "Set a track's timebase override",
+    std::array<ParamSpec, 2>{
+      { { "track", "UUID of the track" },
+       { "timebase", "New timebase override" } }
+  },
+    [] (
+      OperationContext &ctx, TrackParam track,
+      EnumParam<dsp::Timebase> timebase) -> OperationReport {
+      auto * provider = track.value ()->timebaseProvider ();
+      if (provider->overrideValue () == timebase.value ())
+        {
+          return ctx.applied ();
+        }
+      ctx.push_command (
+        std::make_unique<commands::ChangeTimebaseOverrideCommand> (
+          *provider, timebase.value ()));
       ctx.note_affected (track.uuid_string (), "track");
       return ctx.applied ();
     });

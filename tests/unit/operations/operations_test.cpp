@@ -162,8 +162,9 @@ protected:
 TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
 {
   const auto expected = std::vector<std::string>{
-    "track.set_name", "track.set_color", "track.unset_color",
-    "track.add",      "track.list",      "transport.set_play_state",
+    "track.set_name",    "track.set_color",          "track.unset_color",
+    "track.set_comment", "track.set_timebase",       "track.add",
+    "track.list",        "transport.set_play_state",
   };
   for (const auto &name : expected)
     {
@@ -440,6 +441,82 @@ TEST_F (OperationsTest, TrackUnsetColorIsIdempotentForDefaultColor)
   // no command was pushed, so the revision did not move
   EXPECT_EQ (report.revision_after, report.revision_before);
   EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// ============================================================================
+// track.set_comment
+// ============================================================================
+
+TEST_F (OperationsTest, TrackSetCommentAppliesAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+
+  auto report = dispatch (
+    "track.set_comment",
+    {
+      { "track",   uuid_of (*track) },
+      { "comment", "hello world"    }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_EQ (track->comment (), QString ("hello world"));
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (track->comment ().isEmpty ());
+}
+
+TEST_F (OperationsTest, TrackSetCommentClearsWithEmptyString)
+{
+  auto * track = add_audio_track_directly ();
+  dispatch (
+    "track.set_comment",
+    {
+      { "track",   uuid_of (*track) },
+      { "comment", "hello world"    }
+  });
+  ASSERT_EQ (track->comment (), QString ("hello world"));
+
+  auto report = dispatch (
+    "track.set_comment",
+    {
+      { "track",   uuid_of (*track) },
+      { "comment", ""               }
+  });
+
+  ASSERT_TRUE (report.applied ());
+  EXPECT_TRUE (track->comment ().isEmpty ());
+}
+
+// ============================================================================
+// track.set_timebase
+// ============================================================================
+
+TEST_F (OperationsTest, TrackSetTimebaseAppliesAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+  ASSERT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+
+  auto report = dispatch (
+    "track.set_timebase",
+    {
+      { "track",    uuid_of (*track) },
+      { "timebase", "Musical"        }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Musical);
+  EXPECT_EQ (
+    track->timebaseProvider ()->overrideValue (),
+    std::optional{ dsp::Timebase::Musical });
+
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+  EXPECT_EQ (
+    track->timebaseProvider ()->overrideValue (),
+    std::optional{ dsp::Timebase::Absolute });
 }
 
 // ============================================================================

@@ -14,6 +14,7 @@
 #include "operations/operation_dispatcher.h"
 #include "operations/operation_environment.h"
 #include "operations/operation_registry.h"
+#include "operations/track_operations.h"
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/dsp/graph_helpers.h"
 #include "unit/structure/tracks/mock_track.h"
@@ -95,43 +96,6 @@ TEST_F (TrackOperatorTest, InitialState)
   EXPECT_EQ (track->name (), QString ("Original Track Name"));
   EXPECT_EQ (undo_stack->count (), 0);
   EXPECT_EQ (undo_stack->index (), 0);
-}
-
-// Test basic setComment operation with undo/redo
-TEST_F (TrackOperatorTest, SetCommentWithUndoRedo)
-{
-  track->setComment ("Initial comment");
-  track_operator->setComment ("New comment");
-
-  EXPECT_EQ (track->comment (), QString ("New comment"));
-  EXPECT_EQ (undo_stack->text (0), QString ("Change Track Comment"));
-
-  undo_stack->undo ();
-  EXPECT_EQ (track->comment (), QString ("Initial comment"));
-
-  undo_stack->redo ();
-  EXPECT_EQ (track->comment (), QString ("New comment"));
-}
-
-// Test setTimebase with undo/redo
-TEST_F (TrackOperatorTest, SetTimebaseWithUndoRedo)
-{
-  // MockTrack defaults to Musical (base Track default)
-  ASSERT_EQ (
-    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Musical);
-
-  track_operator->setTimebase (dsp::Timebase::Absolute);
-  EXPECT_EQ (
-    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
-  EXPECT_EQ (undo_stack->count (), 1);
-
-  undo_stack->undo ();
-  EXPECT_EQ (
-    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Musical);
-
-  undo_stack->redo ();
-  EXPECT_EQ (
-    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
 }
 
 // ============================================================================
@@ -307,6 +271,125 @@ TEST_F (TrackOperatorDispatchTest, ColorChangesWithoutDispatcherAreIgnored)
   track_operator_->unsetColor ();
 
   EXPECT_FALSE (track_->useColor ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Set comment through the registry, with undo and redo
+TEST_F (TrackOperatorDispatchTest, SetCommentAppliesUndoesAndRedoes)
+{
+  track_->setComment ("Initial comment");
+  track_operator_->setComment ("New comment");
+
+  EXPECT_EQ (track_->comment (), QString ("New comment"));
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->text (0), QString ("Change Track Comment"));
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_->comment (), QString ("Initial comment"));
+
+  undo_stack_->redo ();
+  EXPECT_EQ (track_->comment (), QString ("New comment"));
+}
+
+// Setting the comment a track already stores is not a change
+TEST_F (TrackOperatorDispatchTest, SetCommentToStoredCommentPushesNothing)
+{
+  track_->setComment ("Same comment");
+  track_operator_->setComment ("Same comment");
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// An empty comment clears the comment and undo restores it
+TEST_F (TrackOperatorDispatchTest, EmptyCommentClearsAndUndoes)
+{
+  track_->setComment ("Initial comment");
+  track_operator_->setComment ("");
+  EXPECT_TRUE (track_->comment ().isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_->comment (), QString ("Initial comment"));
+}
+
+// A comment over the size limit is refused
+TEST_F (TrackOperatorDispatchTest, OverlongCommentIsRefused)
+{
+  track_operator_->setComment (
+    QString (operations::kMaxTrackCommentBytes + 1, 'a'));
+
+  EXPECT_TRUE (track_->comment ().isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// The comment limit counts UTF-8 bytes, not characters: 2048 two-byte
+// characters fit, 2049 do not
+TEST_F (TrackOperatorDispatchTest, CommentLimitCountsBytesNotCharacters)
+{
+  const QString at_limit (2048, QChar (0x00E9));
+  track_operator_->setComment (at_limit);
+  EXPECT_EQ (track_->comment (), at_limit);
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  const QString over_limit (2049, QChar (0x00E9));
+  track_operator_->setComment (over_limit);
+  EXPECT_EQ (track_->comment (), at_limit);
+  EXPECT_EQ (undo_stack_->count (), 1);
+}
+
+// Set timebase through the registry, with undo and redo. An audio
+// track stores an Absolute override from construction.
+TEST_F (TrackOperatorDispatchTest, SetTimebaseAppliesUndoesAndRedoes)
+{
+  ASSERT_EQ (
+    track_->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+  ASSERT_EQ (
+    track_->timebaseProvider ()->overrideValue (),
+    std::optional{ dsp::Timebase::Absolute });
+
+  track_operator_->setTimebase (dsp::Timebase::Musical);
+  EXPECT_EQ (
+    track_->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Musical);
+  EXPECT_EQ (
+    track_->timebaseProvider ()->overrideValue (),
+    std::optional{ dsp::Timebase::Musical });
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->text (0), QString ("Change Timebase"));
+
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    track_->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+  EXPECT_EQ (
+    track_->timebaseProvider ()->overrideValue (),
+    std::optional{ dsp::Timebase::Absolute });
+
+  undo_stack_->redo ();
+  EXPECT_EQ (
+    track_->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Musical);
+}
+
+// Setting the override a track already stores is not a change
+TEST_F (TrackOperatorDispatchTest, SetTimebaseToStoredOverridePushesNothing)
+{
+  track_operator_->setTimebase (dsp::Timebase::Musical);
+  ASSERT_EQ (undo_stack_->count (), 1);
+
+  track_operator_->setTimebase (dsp::Timebase::Musical);
+
+  EXPECT_EQ (undo_stack_->count (), 1);
+}
+
+// Comment and timebase changes without a dispatcher wired do nothing
+TEST_F (TrackOperatorDispatchTest, CommentAndTimebaseWithoutDispatcherAreIgnored)
+{
+  track_operator_->setOperationDispatcher (nullptr);
+
+  track_operator_->setComment ("New comment");
+  track_operator_->setTimebase (dsp::Timebase::Musical);
+
+  EXPECT_TRUE (track_->comment ().isEmpty ());
+  EXPECT_EQ (
+    track_->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
   EXPECT_EQ (undo_stack_->count (), 0);
 }
 

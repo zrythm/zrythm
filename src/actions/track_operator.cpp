@@ -4,12 +4,8 @@
 #include "utils/format_qt.h"
 
 #include "actions/track_operator.h"
-#include "commands/change_timebase_override_command.h"
-#include "commands/change_track_color_command.h"
-#include "commands/change_track_comment_command.h"
 #include "commands/change_uuid_identifiable_object_property_command.h"
 #include "commands/channel_send_commands.h"
-#include "commands/rename_track_command.h"
 #include "commands/route_channel_send_command.h"
 #include "commands/route_track_command.h"
 #include "structure/project/project_graph_builder.h"
@@ -78,9 +74,19 @@ TrackOperator::unsetColor ()
 void
 TrackOperator::setComment (const QString &comment)
 {
-  auto cmd =
-    std::make_unique<commands::ChangeTrackCommentCommand> (*track_, comment);
-  undo_stack_->push (std::move (cmd));
+  if (track_ == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning (
+        "Track comment changes need a track and an operation dispatcher");
+      return;
+    }
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_set_comment_operation (), track_,
+    utils::Utf8String::from_qstring (comment));
+  if (!report.applied ())
+    {
+      z_warning ("Track comment change refused: {}", report.message);
+    }
 }
 
 void
@@ -104,12 +110,18 @@ TrackOperator::setOutputTrack (structure::tracks::Track * destination)
 void
 TrackOperator::setTimebase (dsp::Timebase timebase)
 {
-  if (track_ == nullptr || undo_stack_ == nullptr)
-    return;
-
-  auto cmd = std::make_unique<commands::ChangeTimebaseOverrideCommand> (
-    *track_->timebaseProvider (), timebase);
-  undo_stack_->push (std::move (cmd));
+  if (track_ == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning (
+        "Track timebase changes need a track and an operation dispatcher");
+      return;
+    }
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_set_timebase_operation (), track_, timebase);
+  if (!report.applied ())
+    {
+      z_warning ("Track timebase change refused: {}", report.message);
+    }
 }
 
 void
