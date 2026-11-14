@@ -515,24 +515,44 @@ ScrollView {
         title: "Fader"
 
         frameContentItem: ColumnLayout {
-          BalanceControl {
-            Layout.fillWidth: true
-            balanceParameter: root.track.channel.fader.balance
-            parameterOperator: root.session.processorParameterOperator
-          }
-
           RowLayout {
             Layout.fillWidth: true
 
-            FaderButtons {
-              Layout.fillWidth: false
-              fader: root.track.channel.fader
-              track: root.track
+            // Balance, state chips and readouts stacked in the column
+            // left of the fader
+            ColumnLayout {
+              spacing: 4
+
+              BalanceControl {
+                Layout.fillWidth: true
+                balanceParameter: root.track.channel.fader.balance
+                parameterOperator: root.session.processorParameterOperator
+              }
+
+              FaderButtons {
+                Layout.fillWidth: false
+                fader: root.track.channel.fader
+                track: root.track
+              }
+
+              FaderReadouts {
+                Layout.fillWidth: true
+                faderText: faderControl.dbText
+                peakOver: meters.peakOver
+                peakText: meters.peakDbText
+                peakVisible: meters.hasAudio
+
+                onResetPeak: meters.resetPeakHold()
+              }
             }
 
             FaderControl {
+              id: faderControl
+
+              Layout.preferredHeight: 160
               faderGain: root.track.channel.fader.gain
               parameterOperator: root.session.processorParameterOperator
+              showScale: true
             }
 
             TrackMeters {
@@ -543,42 +563,8 @@ ScrollView {
               audioEngine: root.audioEngine
               channel: root.track.channel
               portObservationManager: root.session.project.portObservationManager
+              showScale: true
               track: root.track
-            }
-
-            TextMetrics {
-              id: peakLabelMetrics
-
-              font: peakLabel.font
-              text: "Peak:\n-9.9 db"
-            }
-
-            Label {
-              id: peakLabel
-
-              readonly property real peak_in_dbfs: QmlUtils.amplitudeToDbfs(meters.currentPeak)
-
-              Layout.minimumWidth: peakLabelMetrics.width
-              text: {
-                let txt_val = "Peak:\n";
-                if (peak_in_dbfs < -98) {
-                  txt_val += "-∞";
-                } else {
-                  let decimal_places = 1;
-                  if (peak_in_dbfs < -10) {
-                    decimal_places = 0;
-                  }
-                  txt_val += Number(peak_in_dbfs).toFixed(decimal_places);
-                }
-                return txt_val + " db";
-              }
-
-              Binding {
-                property: "color"
-                target: peakLabel
-                value: ZrythmTheme.errorTextColor
-                when: peakLabel.peak_in_dbfs > 0
-              }
             }
           }
         }
