@@ -97,56 +97,6 @@ TEST_F (TrackOperatorTest, InitialState)
   EXPECT_EQ (undo_stack->index (), 0);
 }
 
-// Test basic setColor operation
-TEST_F (TrackOperatorTest, BasicSetColor)
-{
-  track->setColor (QColor ("#FF0000"));          // Red
-  track_operator->setColor (QColor ("#00FF00")); // Green
-
-  EXPECT_EQ (track->color (), QColor ("#00FF00"));
-  EXPECT_EQ (undo_stack->count (), 1);
-  EXPECT_EQ (undo_stack->index (), 1);
-  EXPECT_TRUE (undo_stack->canUndo ());
-  EXPECT_FALSE (undo_stack->canRedo ());
-}
-
-// Test undo after setColor
-TEST_F (TrackOperatorTest, UndoAfterSetColor)
-{
-  track->setColor (QColor ("#FF0000"));
-  track_operator->setColor (QColor ("#00FF00"));
-  undo_stack->undo ();
-
-  EXPECT_EQ (track->color (), QColor ("#FF0000"));
-  EXPECT_EQ (undo_stack->count (), 1);
-  EXPECT_EQ (undo_stack->index (), 0);
-  EXPECT_FALSE (undo_stack->canUndo ());
-  EXPECT_TRUE (undo_stack->canRedo ());
-}
-
-// Test redo after undo for setColor
-TEST_F (TrackOperatorTest, RedoAfterUndoSetColor)
-{
-  track->setColor (QColor ("#FF0000"));
-  track_operator->setColor (QColor ("#00FF00"));
-  undo_stack->undo ();
-  undo_stack->redo ();
-
-  EXPECT_EQ (track->color (), QColor ("#00FF00"));
-  EXPECT_EQ (undo_stack->count (), 1);
-  EXPECT_EQ (undo_stack->index (), 1);
-  EXPECT_TRUE (undo_stack->canUndo ());
-  EXPECT_FALSE (undo_stack->canRedo ());
-}
-
-// Test command text in undo stack for setColor
-TEST_F (TrackOperatorTest, CommandTextInUndoStackSetColor)
-{
-  track_operator->setColor (QColor ("#123456"));
-
-  EXPECT_EQ (undo_stack->text (0), QString ("Change Track Color"));
-}
-
 // Test basic setComment operation with undo/redo
 TEST_F (TrackOperatorTest, SetCommentWithUndoRedo)
 {
@@ -185,10 +135,10 @@ TEST_F (TrackOperatorTest, SetTimebaseWithUndoRedo)
 }
 
 // ============================================================================
-// Rename dispatches through the operations registry (real track services)
+// Methods dispatching through the operations registry (real track services)
 // ============================================================================
 
-class TrackOperatorRenameTest : public ::testing::Test
+class TrackOperatorDispatchTest : public ::testing::Test
 {
 protected:
   void SetUp () override
@@ -246,7 +196,7 @@ protected:
 };
 
 // Test rename through the registry, with undo and redo
-TEST_F (TrackOperatorRenameTest, RenameAppliesUndoesAndRedoes)
+TEST_F (TrackOperatorDispatchTest, RenameAppliesUndoesAndRedoes)
 {
   track_operator_->rename ("New Track Name");
 
@@ -262,7 +212,7 @@ TEST_F (TrackOperatorRenameTest, RenameAppliesUndoesAndRedoes)
 }
 
 // Test the command text the rename leaves in the history
-TEST_F (TrackOperatorRenameTest, RenameCommandText)
+TEST_F (TrackOperatorDispatchTest, RenameCommandText)
 {
   track_operator_->rename ("Test Name");
 
@@ -271,7 +221,7 @@ TEST_F (TrackOperatorRenameTest, RenameCommandText)
 
 // An empty name is refused: the name stays unchanged and the history
 // stays empty
-TEST_F (TrackOperatorRenameTest, RenameRefusesEmptyName)
+TEST_F (TrackOperatorDispatchTest, RenameRefusesEmptyName)
 {
   track_operator_->rename ("");
 
@@ -280,13 +230,83 @@ TEST_F (TrackOperatorRenameTest, RenameRefusesEmptyName)
 }
 
 // Rename without a dispatcher wired does nothing
-TEST_F (TrackOperatorRenameTest, RenameWithoutDispatcherIsIgnored)
+TEST_F (TrackOperatorDispatchTest, RenameWithoutDispatcherIsIgnored)
 {
   track_operator_->setOperationDispatcher (nullptr);
 
   track_operator_->rename ("New Track Name");
 
   EXPECT_EQ (track_->name (), QString ("Original Track Name"));
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Set color through the registry, with undo and redo
+TEST_F (TrackOperatorDispatchTest, SetColorAppliesUndoesAndRedoes)
+{
+  track_->setColor (QColor ("#FF0000"));
+  track_operator_->setColor (QColor ("#00FF00"));
+
+  EXPECT_EQ (track_->color (), QColor ("#00FF00"));
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_->color (), QColor ("#FF0000"));
+
+  undo_stack_->redo ();
+  EXPECT_EQ (track_->color (), QColor ("#00FF00"));
+}
+
+// Test the command text a color change leaves in the history
+TEST_F (TrackOperatorDispatchTest, SetColorCommandText)
+{
+  track_operator_->setColor (QColor ("#123456"));
+
+  EXPECT_EQ (undo_stack_->text (0), QString ("Change Track Color"));
+}
+
+// Resetting the color clears the stored color and undo restores it
+TEST_F (TrackOperatorDispatchTest, UnsetColorClearsStoredColorAndUndoes)
+{
+  track_->setColor (QColor ("#FF0000"));
+  track_operator_->unsetColor ();
+
+  EXPECT_FALSE (track_->useColor ());
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->text (0), QString ("Reset Track Color"));
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (track_->useColor ());
+  EXPECT_EQ (track_->color (), QColor ("#FF0000"));
+}
+
+// A track without a stored color has nothing to reset
+TEST_F (TrackOperatorDispatchTest, UnsetColorWithoutStoredColorPushesNothing)
+{
+  ASSERT_FALSE (track_->useColor ());
+
+  track_operator_->unsetColor ();
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Setting the color a track already stores is not a change
+TEST_F (TrackOperatorDispatchTest, SetColorToStoredColorPushesNothing)
+{
+  track_->setColor (QColor ("#00FF00"));
+  track_operator_->setColor (QColor ("#00FF00"));
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Color changes without a dispatcher wired do nothing
+TEST_F (TrackOperatorDispatchTest, ColorChangesWithoutDispatcherAreIgnored)
+{
+  track_operator_->setOperationDispatcher (nullptr);
+
+  track_operator_->setColor (QColor ("#00FF00"));
+  track_operator_->unsetColor ();
+
+  EXPECT_FALSE (track_->useColor ());
   EXPECT_EQ (undo_stack_->count (), 0);
 }
 

@@ -12,6 +12,7 @@ make_track_operations ()
   return {
     Operation{ track_set_name_operation () },
     Operation{ track_set_color_operation () },
+    Operation{ track_unset_color_operation () },
     Operation{ track_add_operation () },
     Operation{ track_list_operation () },
   };

@@ -80,6 +80,31 @@ track_set_color_operation ()
 }
 
 /**
+ * Resets a track's color to its type-derived default. Edit; takes the
+ * track.
+ */
+inline const auto &
+track_unset_color_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.unset_color",
+    "Reset a track's color to its type-derived default",
+    std::array<ParamSpec, 1>{ { { "track", "UUID of the track" } } },
+    [] (OperationContext &ctx, TrackParam track) -> OperationReport {
+      if (!track.value ()->useColor ())
+        {
+          return ctx.applied ();
+        }
+      ctx.push_command (
+        std::make_unique<commands::ChangeTrackColorCommand> (
+          *track.value (), std::nullopt));
+      ctx.note_affected (track.uuid_string (), "track");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
  * Adds a new empty track. Edit; takes the track type. Returns the new
  * track's UUID and name.
  */

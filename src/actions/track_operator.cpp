@@ -41,33 +41,38 @@ TrackOperator::rename (const QString &newName)
 void
 TrackOperator::setColor (const QColor &color)
 {
+  if (track_ == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning ("Track color changes need a track and an operation dispatcher");
+      return;
+    }
   if (!color.isValid ())
     {
       z_warning ("cannot set an invalid track color");
       return;
     }
-
-  if (track_->useColor () && track_->color () == color)
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_set_color_operation (), track_, utils::Color (color));
+  if (!report.applied ())
     {
-      return;
+      z_warning ("Track color change refused: {}", report.message);
     }
-
-  auto cmd = std::make_unique<commands::ChangeTrackColorCommand> (
-    *track_, structure::tracks::Track::Color (color));
-  undo_stack_->push (std::move (cmd));
 }
 
 void
 TrackOperator::unsetColor ()
 {
-  if (!track_->useColor ())
+  if (track_ == nullptr || operation_dispatcher_ == nullptr)
     {
+      z_warning ("Track color changes need a track and an operation dispatcher");
       return;
     }
-
-  auto cmd =
-    std::make_unique<commands::ChangeTrackColorCommand> (*track_, std::nullopt);
-  undo_stack_->push (std::move (cmd));
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_unset_color_operation (), track_);
+  if (!report.applied ())
+    {
+      z_warning ("Track color reset refused: {}", report.message);
+    }
 }
 
 void

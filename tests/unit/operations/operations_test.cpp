@@ -162,8 +162,8 @@ protected:
 TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
 {
   const auto expected = std::vector<std::string>{
-    "track.set_name", "track.set_color",          "track.add",
-    "track.list",     "transport.set_play_state",
+    "track.set_name", "track.set_color", "track.unset_color",
+    "track.add",      "track.list",      "transport.set_play_state",
   };
   for (const auto &name : expected)
     {
@@ -393,6 +393,53 @@ TEST_F (OperationsTest, TrackSetColorRefusesInvalidColor)
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("color"), std::string::npos);
   EXPECT_FALSE (track->useColor ());
+}
+
+// ============================================================================
+// track.unset_color
+// ============================================================================
+
+TEST_F (OperationsTest, TrackUnsetColorAppliesAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+  dispatch (
+    "track.set_color",
+    {
+      { "track", uuid_of (*track) },
+      { "color", "#00ff88"        }
+  });
+  ASSERT_TRUE (track->useColor ());
+
+  auto report = dispatch (
+    "track.unset_color",
+    {
+      { "track", uuid_of (*track) }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_FALSE (track->useColor ());
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (track->useColor ());
+  EXPECT_EQ (track->color (), QColor ("#00ff88"));
+}
+
+TEST_F (OperationsTest, TrackUnsetColorIsIdempotentForDefaultColor)
+{
+  auto * track = add_audio_track_directly ();
+  ASSERT_FALSE (track->useColor ());
+
+  auto report = dispatch (
+    "track.unset_color",
+    {
+      { "track", uuid_of (*track) }
+  });
+
+  ASSERT_TRUE (report.applied ());
+  EXPECT_TRUE (report.command_texts.empty ());
+  // no command was pushed, so the revision did not move
+  EXPECT_EQ (report.revision_after, report.revision_before);
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 // ============================================================================
