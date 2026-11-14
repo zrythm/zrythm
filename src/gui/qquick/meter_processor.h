@@ -44,6 +44,9 @@ class MeterProcessor : public QObject
     float currentAmplitude READ currentAmplitude NOTIFY currentAmplitudeChanged)
   Q_PROPERTY (float peakAmplitude READ peakAmplitude NOTIFY peakAmplitudeChanged)
   Q_PROPERTY (
+    float peakHoldAmplitude READ peakHoldAmplitude NOTIFY
+      peakHoldAmplitudeChanged)
+  Q_PROPERTY (
     MeterAlgorithm algorithm READ algorithm WRITE setAlgorithm NOTIFY
       algorithmChanged)
 
@@ -103,11 +106,22 @@ public:
   Q_SIGNAL void peakAmplitudeChanged (float value);
 
   /**
+   * @brief Maximum peak level observed since the last resetPeakHold().
+   *
+   * Unlike @ref peakAmplitude, which falls back with the meter ballistics,
+   * this value only rises, so numeric readouts stay stable while the bar
+   * marker decays.
+   */
+  float         peakHoldAmplitude () const;
+  Q_SIGNAL void peakHoldAmplitudeChanged (float value);
+
+  /**
    * @brief Performs a single meter update.
    *
    * Reads the port observation cache, applies the meter algorithm and
-   * falloff, and updates @ref currentAmplitude and @ref peakAmplitude,
-   * emitting the corresponding change signals if the values changed.
+   * falloff, and updates @ref currentAmplitude, @ref peakAmplitude and
+   * @ref peakHoldAmplitude, emitting the corresponding change signals if
+   * the values changed.
    *
    * Called by an internal timer while a port is set.
    */
@@ -115,6 +129,7 @@ public:
 
   Q_INVOKABLE float toDBFS (float amp) const;
   Q_INVOKABLE float toFader (float amp) const;
+  Q_INVOKABLE void  resetPeakHold ();
 
 private:
   void get_value (AudioValueFormat format, float &val, float &max);

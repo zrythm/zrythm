@@ -105,4 +105,36 @@ TEST_F (MeterProcessorTest, ValidChannelReadsData)
   EXPECT_GT (meter->currentAmplitude (), 0.5f);
 }
 
+// The held peak only rises while audio plays and persists after the
+// display peak falls back; resetting it clears the held maximum.
+TEST_F (MeterProcessorTest, PeakHoldTracksMaximumUntilReset)
+{
+  auto * port = make_mono_port ();
+  auto   meter = make_meter (port, 0);
+
+  push_mono_audio (port, 0.5f);
+  meter->processValues ();
+  EXPECT_FLOAT_EQ (meter->peakHoldAmplitude (), 0.5f);
+
+  push_mono_audio (port, 1.0f);
+  meter->processValues ();
+  EXPECT_FLOAT_EQ (meter->peakHoldAmplitude (), 1.0f);
+
+  // The display peak decays towards the quieter level; the held maximum
+  // must not follow it
+  push_mono_audio (port, 0.25f);
+  meter->processValues ();
+  EXPECT_FLOAT_EQ (meter->peakHoldAmplitude (), 1.0f);
+
+  meter->resetPeakHold ();
+  EXPECT_FLOAT_EQ (meter->peakHoldAmplitude (), 0.f);
+
+  // Quiet audio after the reset must show the new level as the held
+  // maximum, not the ghost of the old peak still decaying in the
+  // display value
+  push_mono_audio (port, 0.25f);
+  meter->processValues ();
+  EXPECT_FLOAT_EQ (meter->peakHoldAmplitude (), 0.25f);
+}
+
 }

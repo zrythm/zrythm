@@ -47,6 +47,13 @@ struct MeterProcessor::Impl
 
   float current_amp_ = 0.f;
   float peak_amp_ = 0.f;
+  float peak_hold_ = 0.f;
+  // Whether peak_hold_ carries a value; reset clears both. Kept as a
+  // flag so clearing never depends on how the float compares to zero
+  // (denormal-avoidance offsets and FTZ builds make "silence" not
+  // exactly 0.0f)
+  bool  peak_hold_active_ = false;
+  float last_raw_peak_ = 0.f;
 
   int channel_{};
   int sample_rate_{};
@@ -140,6 +147,23 @@ MeterProcessor::peakAmplitude () const
   return impl_->peak_amp_;
 }
 
+float
+MeterProcessor::peakHoldAmplitude () const
+{
+  return impl_->peak_hold_;
+}
+
+void
+MeterProcessor::resetPeakHold ()
+{
+  if (!impl_->peak_hold_active_)
+    return;
+
+  impl_->peak_hold_ = 0.f;
+  impl_->peak_hold_active_ = false;
+  Q_EMIT peakHoldAmplitudeChanged (0.f);
+}
+
 void
 MeterProcessor::setChannel (int channel)
 {
@@ -230,6 +254,15 @@ MeterProcessor::processValues ()
       impl_->peak_amp_ = max;
       Q_EMIT peakAmplitudeChanged (max);
     }
+
+  /* the held maximum only rises, so numeric peak readouts stay stable
+   * while the bar marker decays */
+  if (impl_->last_raw_peak_ > impl_->peak_hold_)
+    {
+      impl_->peak_hold_ = impl_->last_raw_peak_;
+      impl_->peak_hold_active_ = true;
+      Q_EMIT peakHoldAmplitudeChanged (impl_->peak_hold_);
+    }
 }
 
 float
@@ -251,6 +284,7 @@ MeterProcessor::get_value (AudioValueFormat format, float &val, float &max)
     {
       val = 1e-20f;
       max = 1e-20f;
+      impl_->last_raw_peak_ = 0.f;
       z_warning ("port not set");
       return;
     }
@@ -262,6 +296,7 @@ MeterProcessor::get_value (AudioValueFormat format, float &val, float &max)
     {
       val = 1e-20f;
       max = 1e-20f;
+      impl_->last_raw_peak_ = 0.f;
       return;
     }
 
@@ -350,25 +385,37 @@ MeterProcessor::get_value (AudioValueFormat format, float &val, float &max)
       cache.clear_midi ();
     }
 
+  /* the held peak tracks the raw level; the falloff below only shapes
+   * the display values */
+  impl_->last_raw_peak_ = amp;
+
   /* adjust falloff */
-  auto now = SteadyClock::now ();
+  auto        now = SteadyClock::now ();
+  const float elapsed_sec =
+    static_cast<float> (
+      std::chrono::duration_cast<std::chrono::milliseconds> (
+        now - impl_->last_draw_time_)
+        .count ())
+    / 1000.f;
+
+  /* rgareus says 13.3 is the standard */
+  constexpr float falloff_rate_db_per_sec = 13.3f;
+  const float     falloff_db = elapsed_sec * falloff_rate_db_per_sec;
+
   if (amp < impl_->last_amp_)
     {
-      float falloff =
-        (static_cast<float> (
-           std::chrono::duration_cast<std::chrono::milliseconds> (
-             now - impl_->last_draw_time_)
-             .count ())
-         / 1000.f)
-        *
-        /* rgareus says 13.3 is the standard */
-        13.3f;
-
       /* use prev val plus falloff if higher than current val */
-
-      float prev_val_after_falloff = utils::math::dbfs_to_amp (
-        utils::math::amp_to_dbfs (impl_->last_amp_) - falloff);
+      const float prev_val_after_falloff = utils::math::dbfs_to_amp (
+        utils::math::amp_to_dbfs (impl_->last_amp_) - falloff_db);
       amp = std::max (prev_val_after_falloff, amp);
+    }
+
+  /* the peak marker decays at the same falloff rate as the level bar */
+  if (max_amp < impl_->prev_max_)
+    {
+      const float prev_peak_after_falloff = utils::math::dbfs_to_amp (
+        utils::math::amp_to_dbfs (impl_->prev_max_) - falloff_db);
+      max_amp = std::max (prev_peak_after_falloff, max_amp);
     }
 
   /* if this is a peak value, set to current falloff if peak is lower */
