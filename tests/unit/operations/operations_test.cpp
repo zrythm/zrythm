@@ -15,8 +15,10 @@
 
 #include "operations/builtin_operations.h"
 #include "operations/operation.h"
+#include "operations/operation_dispatcher.h"
 #include "operations/operation_environment.h"
 #include "operations/operation_registry.h"
+#include "operations/track_operations.h"
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
@@ -836,6 +838,36 @@ TEST_F (OperationsTest, PartiallyRefusedEditReportsErrorWithTheCommandsThatRan)
   drop_push_requests_from_ = 0;
   undo_stack_->undo ();
   EXPECT_EQ (track_collection_->track_count (), count_before);
+}
+
+// ============================================================================
+// Typed dispatch (C++ callers)
+// ============================================================================
+
+TEST_F (OperationsTest, TypedDispatchAppliesAndRefuses)
+{
+  auto * track = add_audio_track_directly ();
+  track->setName ("Original");
+
+  operations::OperationDispatcher dispatcher (
+    operation_registry_, *environment_);
+  auto applied = dispatcher.invoke (
+    operations::track_set_name_operation (), track,
+    utils::Utf8String (u8"Intro"));
+  ASSERT_TRUE (applied.applied ()) << applied.message;
+  EXPECT_EQ (track->name (), QString ("Intro"));
+  EXPECT_GT (applied.revision_after, applied.revision_before);
+
+  // the typed path validates like the JSON path
+  auto refused = dispatcher.invoke (
+    operations::track_set_name_operation (), track, utils::Utf8String (u8""));
+  EXPECT_TRUE (refused.refused ());
+  EXPECT_NE (refused.message.find ("new_name"), std::string::npos);
+  EXPECT_EQ (track->name (), QString ("Intro"));
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track->name (), QString ("Original"));
 }
 
 // ============================================================================

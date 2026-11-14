@@ -424,6 +424,7 @@ qt_add_qml_module(zrythm_qml_lib
     TARGET zrythm_undo_lib
     TARGET zrythm_controllers_lib
     TARGET zrythm_actions_lib
+    TARGET zrythm_operations_lib
     TARGET zrythm_gui_lib
     TARGET zrythm_docking
     TARGET zrythm_style

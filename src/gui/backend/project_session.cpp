@@ -21,6 +21,7 @@
 #include <QQmlEngine>
 
 #include "operations/builtin_operations.h"
+#include "operations/operation_dispatcher.h"
 #include "operations/operation_environment.h"
 #include "operations/operation_registry.h"
 
@@ -212,7 +213,12 @@ ProjectSession::ProjectSession (
           *project_->tracklist ()->trackRouting (),
           *project_->tracklist ()->singletonTracks (),
           project_->getTransport ())),
-      operation_registry_ (std::make_unique<operations::OperationRegistry> ())
+      operation_registry_ (std::make_unique<operations::OperationRegistry> ()),
+      operation_dispatcher_ (
+        utils::make_qobject_unique<operations::OperationDispatcher> (
+          *operation_registry_,
+          *operation_environment_,
+          this))
 {
   project_->setParent (this);
 
@@ -586,6 +592,12 @@ undo::UndoStack *
 ProjectSession::undoStack () const
 {
   return undo_stack_.get ();
+}
+
+operations::OperationDispatcher *
+ProjectSession::operationDispatcher () const
+{
+  return operation_dispatcher_.get ();
 }
 
 TimelineArrangerObjectsModel *

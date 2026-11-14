@@ -6,6 +6,7 @@ qt_add_library(zrythm_operations_lib STATIC)
 target_sources(zrythm_operations_lib
   PRIVATE
     builtin_operations.cpp
+    operation_dispatcher.cpp
     operation_environment.cpp
     track_operations.cpp
     transport_operations.cpp
@@ -16,6 +17,7 @@ target_sources(zrythm_operations_lib
       builtin_operations.h
       operation.h
       operation_context.h
+      operation_dispatcher.h
       operation_environment.h
       operation_registry.h
       param_types.h
@@ -41,3 +43,10 @@ target_link_libraries(zrythm_operations_lib
     zrythm::include_dirs
     zrythm::all_compile_options
 )
+
+qt_add_qml_module(zrythm_operations_lib
+  URI ZrythmOperations
+  VERSION 1.0
+  OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmOperations
+)
+set_target_properties(zrythm_operations_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

@@ -11,8 +11,8 @@ add_subdirectory(structure)
 add_subdirectory(commands)
 add_subdirectory(undo)
 add_subdirectory(controllers)
-add_subdirectory(actions)
 add_subdirectory(operations)
+add_subdirectory(actions)
 
 target_include_directories(zrythm_gui_lib
   PUBLIC
@@ -43,6 +43,7 @@ qt_add_qml_module(zrythm_gui_lib
     TARGET zrythm_commands_lib
     TARGET zrythm_undo_lib
     TARGET zrythm_controllers_lib
+    TARGET zrythm_operations_lib
     TARGET zrythm_actions_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmGui
 )

@@ -37,6 +37,7 @@ ScrollView {
 
       track: root.track
       undoStack: root.undoStack
+      operationDispatcher: root.session.operationDispatcher
     }
 
     ExpanderBox {

@@ -30,6 +30,8 @@
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include "operations/operation_dispatcher.h"
+
 namespace zrythm::gui::old_dsp
 {
 class QuantizeOptions;
@@ -66,6 +68,9 @@ class ProjectSession : public QObject
     zrythm::structure::project::ProjectUiState * uiState READ uiState CONSTANT
       FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::operations::OperationDispatcher * operationDispatcher READ
+      operationDispatcher CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::gui::TimelineArrangerObjectsModel * timelineArrangerObjects READ
       timelineArrangerObjects CONSTANT FINAL)
@@ -135,8 +140,11 @@ public:
   QString                       projectDirectory () const;
   void                          setProjectDirectory (const QString &directory);
   structure::project::Project * project () const;
-  structure::project::ProjectUiState *       uiState () const;
-  undo::UndoStack *                          undoStack () const;
+  structure::project::ProjectUiState * uiState () const;
+  undo::UndoStack *                    undoStack () const;
+
+  /** The session's operation dispatcher. */
+  operations::OperationDispatcher *          operationDispatcher () const;
   TimelineArrangerObjectsModel *             timelineArrangerObjects () const;
   EditorArrangerObjectsModel *               editorArrangerObjects () const;
   EditorFunctionRegistry *                   editorFunctions () const;
@@ -290,6 +298,7 @@ private:
   // against, and the available operations
   std::unique_ptr<operations::OperationEnvironment> operation_environment_;
   std::unique_ptr<operations::OperationRegistry>    operation_registry_;
+  utils::QObjectUniquePtr<operations::OperationDispatcher> operation_dispatcher_;
 };
 
 } // namespace zrythm::gui

@@ -14,14 +14,28 @@
 #include "commands/route_track_command.h"
 #include "structure/project/project_graph_builder.h"
 #include "utils/logger.h"
+#include "utils/utf8_string.h"
+
+#include "operations/operation_dispatcher.h"
+#include "operations/track_operations.h"
 
 namespace zrythm::actions
 {
 void
 TrackOperator::rename (const QString &newName)
 {
-  auto cmd = std::make_unique<commands::RenameTrackCommand> (*track_, newName);
-  undo_stack_->push (std::move (cmd));
+  if (track_ == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning ("Track rename needs a track and an operation dispatcher");
+      return;
+    }
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_set_name_operation (), track_,
+    utils::Utf8String::from_qstring (newName));
+  if (!report.applied ())
+    {
+      z_warning ("Track rename refused: {}", report.message);
+    }
 }
 
 void

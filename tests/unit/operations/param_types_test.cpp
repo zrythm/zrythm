@@ -81,6 +81,37 @@ TEST_F (ParamTypesTest, StringParamRefusesInvalidUtf8)
   EXPECT_NE (parsed.error ().reason.find ("UTF-8"), std::string::npos);
 }
 
+TEST_F (ParamTypesTest, FromValueValidatesLikeParse)
+{
+  const auto ok =
+    StringParam<1, 128>::from_value (utils::Utf8String (u8"Intro"));
+  ASSERT_TRUE (ok.has_value ());
+  EXPECT_EQ (ok->value ().view (), "Intro");
+  EXPECT_FALSE (
+    (StringParam<1, 128>::from_value (utils::Utf8String (u8"")).has_value ()));
+
+  EXPECT_TRUE ((LimitParam::from_value (10).has_value ()));
+  EXPECT_FALSE ((LimitParam::from_value (LimitParam::maximum + 1).has_value ()));
+
+  using structure::tracks::Track;
+  EXPECT_TRUE (
+    (EnumParam<Track::Type>::from_value (Track::Type::Audio).has_value ()));
+  EXPECT_FALSE ((
+    EnumParam<Track::Type>::from_value (static_cast<Track::Type> (999))
+      .has_value ()));
+
+  EXPECT_FALSE ((TrackParam::from_value (nullptr).has_value ()));
+}
+
+TEST_F (ParamTypesTest, FromValueTakesATrackAndDerivesItsUuid)
+{
+  auto ref = track_factory_.create_empty_track<structure::tracks::AudioTrack> ();
+  const auto parsed = TrackParam::from_value (ref.get ());
+  ASSERT_TRUE (parsed.has_value ());
+  EXPECT_EQ (parsed->value (), ref.get ());
+  EXPECT_FALSE (parsed->uuid_string ().empty ());
+}
+
 TEST_F (ParamTypesTest, HexColorParamAcceptsSixAndEightDigitHex)
 {
   ASSERT_TRUE ((

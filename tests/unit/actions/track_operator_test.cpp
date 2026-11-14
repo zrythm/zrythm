@@ -2,11 +2,18 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/track_operator.h"
+#include "structure/tracks/singleton_tracks.h"
+#include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_routing.h"
 #include "undo/undo_stack.h"
 #include "utils/object_registry.h"
+#include "utils/utf8_string.h"
 
+#include "operations/builtin_operations.h"
+#include "operations/operation_dispatcher.h"
+#include "operations/operation_environment.h"
+#include "operations/operation_registry.h"
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/dsp/graph_helpers.h"
 #include "unit/structure/tracks/mock_track.h"
@@ -90,99 +97,6 @@ TEST_F (TrackOperatorTest, InitialState)
   EXPECT_EQ (undo_stack->index (), 0);
 }
 
-// Test basic rename operation
-TEST_F (TrackOperatorTest, BasicRename)
-{
-  track_operator->rename ("New Track Name");
-
-  EXPECT_EQ (track->name (), QString ("New Track Name"));
-  EXPECT_EQ (undo_stack->count (), 1);
-  EXPECT_EQ (undo_stack->index (), 1);
-  EXPECT_TRUE (undo_stack->canUndo ());
-  EXPECT_FALSE (undo_stack->canRedo ());
-}
-
-// Test undo after rename
-TEST_F (TrackOperatorTest, UndoAfterRename)
-{
-  track_operator->rename ("New Track Name");
-  undo_stack->undo ();
-
-  EXPECT_EQ (track->name (), QString ("Original Track Name"));
-  EXPECT_EQ (undo_stack->count (), 1);
-  EXPECT_EQ (undo_stack->index (), 0);
-  EXPECT_FALSE (undo_stack->canUndo ());
-  EXPECT_TRUE (undo_stack->canRedo ());
-}
-
-// Test redo after undo
-TEST_F (TrackOperatorTest, RedoAfterUndo)
-{
-  track_operator->rename ("New Track Name");
-  undo_stack->undo ();
-  undo_stack->redo ();
-
-  EXPECT_EQ (track->name (), QString ("New Track Name"));
-  EXPECT_EQ (undo_stack->count (), 1);
-  EXPECT_EQ (undo_stack->index (), 1);
-  EXPECT_TRUE (undo_stack->canUndo ());
-  EXPECT_FALSE (undo_stack->canRedo ());
-}
-
-// Test multiple consecutive renames
-TEST_F (TrackOperatorTest, MultipleConsecutiveRenames)
-{
-  track_operator->rename ("First New Name");
-  EXPECT_EQ (track->name (), QString ("First New Name"));
-  EXPECT_EQ (undo_stack->count (), 1);
-
-  track_operator->rename ("Second New Name");
-  EXPECT_EQ (track->name (), QString ("Second New Name"));
-  EXPECT_EQ (undo_stack->count (), 2);
-
-  track_operator->rename ("Third New Name");
-  EXPECT_EQ (track->name (), QString ("Third New Name"));
-  EXPECT_EQ (undo_stack->count (), 3);
-
-  // Undo all changes
-  undo_stack->undo ();
-  EXPECT_EQ (track->name (), QString ("Second New Name"));
-
-  undo_stack->undo ();
-  EXPECT_EQ (track->name (), QString ("First New Name"));
-
-  undo_stack->undo ();
-  EXPECT_EQ (track->name (), QString ("Original Track Name"));
-}
-
-// Test undo/redo cycles
-TEST_F (TrackOperatorTest, UndoRedoCycles)
-{
-  track_operator->rename ("New Name");
-
-  // First cycle
-  undo_stack->undo ();
-  EXPECT_EQ (track->name (), QString ("Original Track Name"));
-
-  undo_stack->redo ();
-  EXPECT_EQ (track->name (), QString ("New Name"));
-
-  // Second cycle
-  undo_stack->undo ();
-  EXPECT_EQ (track->name (), QString ("Original Track Name"));
-
-  undo_stack->redo ();
-  EXPECT_EQ (track->name (), QString ("New Name"));
-}
-
-// Test command text in undo stack
-TEST_F (TrackOperatorTest, CommandTextInUndoStack)
-{
-  track_operator->rename ("Test Name");
-
-  EXPECT_EQ (undo_stack->text (0), QString ("Rename Track"));
-}
-
 // Test basic setColor operation
 TEST_F (TrackOperatorTest, BasicSetColor)
 {
@@ -233,27 +147,6 @@ TEST_F (TrackOperatorTest, CommandTextInUndoStackSetColor)
   EXPECT_EQ (undo_stack->text (0), QString ("Change Track Color"));
 }
 
-// Test mixed operations (rename and setColor)
-TEST_F (TrackOperatorTest, MixedOperations)
-{
-  track_operator->rename ("New Track Name");
-  track_operator->setColor (QColor ("#00FF00"));
-
-  EXPECT_EQ (track->name (), QString ("New Track Name"));
-  EXPECT_EQ (track->color (), QColor ("#00FF00"));
-  EXPECT_EQ (undo_stack->count (), 2);
-
-  // Undo color change
-  undo_stack->undo ();
-  EXPECT_EQ (track->name (), QString ("New Track Name"));
-  EXPECT_EQ (track->color (), QColor ("red"));
-
-  // Undo rename
-  undo_stack->undo ();
-  EXPECT_EQ (track->name (), QString ("Original Track Name"));
-  EXPECT_EQ (track->color (), QColor ("red"));
-}
-
 // Test basic setComment operation with undo/redo
 TEST_F (TrackOperatorTest, SetCommentWithUndoRedo)
 {
@@ -289,6 +182,112 @@ TEST_F (TrackOperatorTest, SetTimebaseWithUndoRedo)
   undo_stack->redo ();
   EXPECT_EQ (
     track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+}
+
+// ============================================================================
+// Rename dispatches through the operations registry (real track services)
+// ============================================================================
+
+class TrackOperatorRenameTest : public ::testing::Test
+{
+protected:
+  void SetUp () override
+  {
+    structure::tracks::FinalTrackDependencies factory_deps{
+      tempo_map_wrapper_, object_registry_, soloed_tracks_exist_getter_, {}
+    };
+    track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
+      [factory_deps] { return factory_deps; });
+    track_collection_ =
+      std::make_unique<structure::tracks::TrackCollection> (object_registry_);
+    track_routing_ =
+      std::make_unique<structure::tracks::TrackRouting> (object_registry_);
+
+    undo_stack_ = std::make_unique<undo::UndoStack> ([] (auto callback, bool) {
+      callback ();
+    });
+
+    auto track_ref =
+      track_factory_->create_empty_track<structure::tracks::AudioTrack> ();
+    track_ = track_ref.get ();
+    track_->setName ("Original Track Name");
+    track_collection_->add_track (track_ref);
+
+    operations::register_builtin_operations (registry_);
+    environment_ = std::make_unique<operations::OperationEnvironment> (
+      object_registry_, *undo_stack_, *track_collection_, *track_factory_,
+      *track_routing_, singleton_tracks_);
+    dispatcher_ = std::make_unique<operations::OperationDispatcher> (
+      registry_, *environment_);
+
+    track_operator_ = std::make_unique<TrackOperator> ();
+    track_operator_->setTrack (track_);
+    track_operator_->setUndoStack (undo_stack_.get ());
+    track_operator_->setOperationDispatcher (dispatcher_.get ());
+  }
+
+  dsp::TempoMap         tempo_map_{ units::sample_rate (44100.0) };
+  dsp::TempoMapWrapper  tempo_map_wrapper_{ tempo_map_ };
+  utils::ObjectRegistry object_registry_;
+  structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
+    return false;
+  } };
+  structure::tracks::SingletonTracks singleton_tracks_;
+
+  std::unique_ptr<structure::tracks::TrackFactory>    track_factory_;
+  std::unique_ptr<structure::tracks::TrackCollection> track_collection_;
+  std::unique_ptr<structure::tracks::TrackRouting>    track_routing_;
+  std::unique_ptr<undo::UndoStack>                    undo_stack_;
+  operations::OperationRegistry                       registry_;
+  std::unique_ptr<operations::OperationEnvironment>   environment_;
+  std::unique_ptr<operations::OperationDispatcher>    dispatcher_;
+  std::unique_ptr<TrackOperator>                      track_operator_;
+  structure::tracks::Track *                          track_{};
+};
+
+// Test rename through the registry, with undo and redo
+TEST_F (TrackOperatorRenameTest, RenameAppliesUndoesAndRedoes)
+{
+  track_operator_->rename ("New Track Name");
+
+  EXPECT_EQ (track_->name (), QString ("New Track Name"));
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_TRUE (undo_stack_->canUndo ());
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_->name (), QString ("Original Track Name"));
+
+  undo_stack_->redo ();
+  EXPECT_EQ (track_->name (), QString ("New Track Name"));
+}
+
+// Test the command text the rename leaves in the history
+TEST_F (TrackOperatorRenameTest, RenameCommandText)
+{
+  track_operator_->rename ("Test Name");
+
+  EXPECT_EQ (undo_stack_->text (0), QString ("Rename Track"));
+}
+
+// An empty name is refused: the name stays unchanged and the history
+// stays empty
+TEST_F (TrackOperatorRenameTest, RenameRefusesEmptyName)
+{
+  track_operator_->rename ("");
+
+  EXPECT_EQ (track_->name (), QString ("Original Track Name"));
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Rename without a dispatcher wired does nothing
+TEST_F (TrackOperatorRenameTest, RenameWithoutDispatcherIsIgnored)
+{
+  track_operator_->setOperationDispatcher (nullptr);
+
+  track_operator_->rename ("New Track Name");
+
+  EXPECT_EQ (track_->name (), QString ("Original Track Name"));
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 // ============================================================================

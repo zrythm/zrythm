@@ -10,7 +10,9 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
+#include "structure/tracks/track.h"
 #include "utils/color.h"
 #include "utils/enum_utils.h"
 #include "utils/utf8_string.h"
@@ -21,6 +23,7 @@
 #include "operations/operation.h"
 #include "operations/operation_environment.h"
 #include <nlohmann/json.hpp>
+#include <type_safe/strong_typedef.hpp>
 
 namespace zrythm::structure::tracks
 {
@@ -34,9 +37,11 @@ namespace zrythm::operations
  * A parameter type usable in an operation handler signature.
  *
  * A parameter type describes itself as a JSON Schema fragment (describe),
- * states whether callers must supply it (is_required), and turns a JSON
- * value into its own value form, refusing input it cannot accept (parse).
- * The JSON value is null when the caller did not supply the parameter.
+ * states whether callers must supply it (is_required), turns a JSON value
+ * into its own value form (parse), and validates a value given directly
+ * by C++ callers (from_value). Both entry points refuse input they
+ * cannot accept; the JSON value is null when the caller did not supply
+ * the parameter.
  */
 template <typename P>
 concept ParamType =
@@ -44,6 +49,9 @@ concept ParamType =
     { P::is_required () } -> std::convertible_to<bool>;
     { P::describe () } -> std::same_as<nlohmann::json>;
     { P::parse (value, env) } -> std::same_as<std::expected<P, Refusal>>;
+    {
+      P::from_value (std::declval<typename P::ValueType> ())
+    } -> std::same_as<std::expected<P, Refusal>>;
   };
 
 /**
@@ -98,16 +106,21 @@ public:
       {
         return std::unexpected (Refusal{ "not valid UTF-8" });
       }
-    const auto length = str.size ();
+    return from_value (utils::Utf8String::from_utf8_encoded_string (str));
+  }
+
+  /** Validates a value directly, with the same bounds as parse(). */
+  static std::expected<StringParam, Refusal>
+  from_value (utils::Utf8String value)
+  {
+    const auto length = value.view ().size ();
     if (length < MinLength || length > MaxLength)
       {
         return std::unexpected (
           Refusal{ fmt::format (
             "length must be between {} and {} bytes", MinLength, MaxLength) });
       }
-    return StringParam{
-      utils::Utf8String::from_utf8_encoded_string (str),
-    };
+    return StringParam{ std::move (value) };
   }
 
   const utils::Utf8String &value () const { return value_; }
@@ -164,6 +177,12 @@ public:
             "invalid color '{}': expected \"#rrggbb\" or \"#rrggbbaa\"", str) });
       }
     return HexColorParam{ utils::Color (std::string_view{ str }) };
+  }
+
+  /** A constructed color is always valid, so this never refuses. */
+  static std::expected<HexColorParam, Refusal> from_value (utils::Color value)
+  {
+    return HexColorParam{ value };
   }
 
   const utils::Color &value () const { return value_; }
@@ -253,6 +272,16 @@ public:
         "expected a name (one of: {}) or an integer value", allowed_names) });
   }
 
+  /** Rejects enumerator values that are not part of the enumeration. */
+  static std::expected<EnumParam, Refusal> from_value (Enum value)
+  {
+    if (magic_enum::enum_contains (value))
+      {
+        return EnumParam{ value };
+      }
+    return std::unexpected (Refusal{ "not one of this enumeration's values" });
+  }
+
   Enum value () const { return value_; }
 
 private:
@@ -299,12 +328,18 @@ public:
             "expected an integer between {} and {}", minimum, maximum) });
       }
     const auto number = value.get<std::int64_t> ();
-    if (number < minimum || number > maximum)
+    return from_value (static_cast<int> (number));
+  }
+
+  /** Validates a value directly, with the same range as parse(). */
+  static std::expected<LimitParam, Refusal> from_value (int value)
+  {
+    if (value < minimum || value > maximum)
       {
         return std::unexpected (
           Refusal{ fmt::format ("must be between {} and {}", minimum, maximum) });
       }
-    return LimitParam{ static_cast<int> (number) };
+    return LimitParam{ value };
   }
 
   int value () const { return value_; }
@@ -362,6 +397,30 @@ public:
           Refusal{ fmt::format ("no track with UUID {}", str) });
       }
     return TrackParam{ track, str };
+  }
+
+  /** Returns the UUID in the string form used in reports. */
+  static std::string uuid_to_string (const QUuid &uuid)
+  {
+    return std::string (
+      utils::Utf8String::from_qstring (uuid.toString (QUuid::WithoutBraces))
+        .view ());
+  }
+
+  /**
+   * Takes a live track; the UUID string reported in results is derived
+   * from the track itself.
+   */
+  static std::expected<TrackParam, Refusal>
+  from_value (structure::tracks::Track * track)
+  {
+    if (track == nullptr)
+      {
+        return std::unexpected (Refusal{ "the track is required" });
+      }
+    return TrackParam{
+      track, uuid_to_string (type_safe::get (track->get_uuid ()))
+    };
   }
 
   structure::tracks::Track * value () const { return track_; }

@@ -110,34 +110,29 @@ public:
     OperationContext ctx (env);
     OperationReport  report =
       invoke_with (args, ctx, std::make_index_sequence<NumParams>{});
-    report.command_texts = ctx.take_command_texts ();
-    report.affected_objects = ctx.take_affected_objects ();
-    report.revision_before = revision_before;
-    report.revision_after = env.undo_stack ().revision ();
-    // a refusal promises the project is unchanged, so a handler that
-    // pushed a command and then refused is a bug
-    assert (
-      report.status != OperationStatus::Refused
-      || report.revision_after == report.revision_before);
-    // a push the stack refused never ran, so an applied report would
-    // claim changes that did not happen
-    if (
-      report.status == OperationStatus::Applied && ctx.failed_push_count () > 0)
-      {
-        report.status = OperationStatus::Error;
-        report.message = fmt::format (
-          "the undo stack refused {} of the pushed commands; those "
-          "commands were not applied, and command_texts lists the ones "
-          "that ran",
-          ctx.failed_push_count ());
-        report.result = nullptr;
-        // nothing ran, so no object changed
-        if (report.command_texts.empty ())
-          {
-            report.affected_objects.clear ();
-          }
-      }
-    return report;
+    return finish_invocation (ctx, env, revision_before, std::move (report));
+  }
+
+  /**
+   * Validates the given values and runs the handler, without JSON.
+   *
+   * Each argument must be the corresponding parameter type's ValueType,
+   * in declaration order; anything else is a compile error. A value a
+   * parameter type rejects is refused before the handler runs.
+   */
+  template <typename... Values>
+  OperationReport
+  invoke_typed (OperationEnvironment &env, Values &&... values) const
+  {
+    static_assert (
+      sizeof...(Values) == NumParams,
+      "the handler takes exactly one value per parameter spec");
+    const auto       revision_before = env.undo_stack ().revision ();
+    OperationContext ctx (env);
+    OperationReport  report = invoke_typed_with (
+      ctx, std::index_sequence_for<Values...>{},
+      std::forward<Values> (values)...);
+    return finish_invocation (ctx, env, revision_before, std::move (report));
   }
 
   /**
@@ -205,6 +200,27 @@ private:
     return parsed;
   }
 
+  template <typename Param>
+  static std::expected<Param, Refusal> from_value_one (
+    typename Param::ValueType value,
+    const ParamSpec          &spec,
+    std::optional<Refusal>   &failure)
+  {
+    if (failure.has_value ())
+      {
+        return std::unexpected (*failure);
+      }
+    auto parsed = Param::from_value (std::move (value));
+    if (!parsed.has_value ())
+      {
+        failure = Refusal{
+          fmt::format ("parameter '{}': {}", spec.name, parsed.error ().reason)
+        };
+        return std::unexpected (*failure);
+      }
+    return parsed;
+  }
+
   template <std::size_t... I>
   OperationReport invoke_with (
     const nlohmann::json &args,
@@ -224,6 +240,71 @@ private:
       std::tuple_cat (
         std::forward_as_tuple (ctx),
         std::tuple{ std::move (*std::get<I> (parsed))... }));
+  }
+
+  template <std::size_t... I, typename... Values>
+  OperationReport invoke_typed_with (
+    OperationContext &ctx,
+    std::index_sequence<I...>,
+    Values... values) const
+  {
+    static_assert (
+      (std::is_same_v<Values, typename param_at<I>::ValueType> && ...),
+      "each argument must be its parameter's ValueType, in declaration "
+      "order");
+    std::optional<Refusal> failure = std::nullopt;
+    auto                   parsed = std::tuple{
+      from_value_one<param_at<I>> (std::move (values), specs_[I], failure)...
+    };
+    if (failure.has_value ())
+      {
+        return ctx.refused (std::move (failure->reason));
+      }
+    return std::apply (
+      handler_,
+      std::tuple_cat (
+        std::forward_as_tuple (ctx),
+        std::tuple{ std::move (*std::get<I> (parsed))... }));
+  }
+
+  /**
+   * Fills the report with what the invocation did to the history and
+   * turns failed pushes into an error report.
+   */
+  OperationReport finish_invocation (
+    OperationContext     &ctx,
+    OperationEnvironment &env,
+    std::uint64_t         revision_before,
+    OperationReport       report) const
+  {
+    report.command_texts = ctx.take_command_texts ();
+    report.affected_objects = ctx.take_affected_objects ();
+    report.revision_before = revision_before;
+    report.revision_after = env.undo_stack ().revision ();
+    // a refusal promises the project is unchanged, so a handler that
+    // pushed a command and then refused is a bug
+    assert (
+      report.status != OperationStatus::Refused
+      || report.revision_after == report.revision_before);
+    // a push the stack refused never ran, so an applied report would
+    // claim changes that did not happen
+    if (
+      report.status == OperationStatus::Applied && ctx.failed_push_count () > 0)
+      {
+        report.status = OperationStatus::Error;
+        report.message = fmt::format (
+          "the undo stack refused {} of the pushed commands; those "
+          "commands were not applied, and command_texts lists the ones "
+          "that ran",
+          ctx.failed_push_count ());
+        report.result = nullptr;
+        // nothing ran, so no object changed
+        if (report.command_texts.empty ())
+          {
+            report.affected_objects.clear ();
+          }
+      }
+    return report;
   }
 
   OperationKind                    kind_;

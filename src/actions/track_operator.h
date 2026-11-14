@@ -10,6 +10,8 @@
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include "operations/operation_dispatcher.h"
+
 namespace zrythm::actions
 {
 class TrackOperator : public QObject
@@ -21,6 +23,10 @@ class TrackOperator : public QObject
   Q_PROPERTY (
     zrythm::undo::UndoStack * undoStack READ undoStack WRITE setUndoStack NOTIFY
       undoStackChanged)
+  Q_PROPERTY (
+    zrythm::operations::OperationDispatcher * operationDispatcher READ
+      operationDispatcher WRITE setOperationDispatcher NOTIFY
+        operationDispatcherChanged)
   Q_PROPERTY (
     zrythm::structure::tracks::TrackRouting * trackRouting READ trackRouting
       WRITE setTrackRouting NOTIFY trackRoutingChanged)
@@ -97,6 +103,20 @@ public:
   }
   Q_SIGNAL void projectChanged ();
 
+  operations::OperationDispatcher * operationDispatcher () const
+  {
+    return operation_dispatcher_;
+  }
+  void setOperationDispatcher (operations::OperationDispatcher * dispatcher)
+  {
+    if (operation_dispatcher_ != dispatcher)
+      {
+        operation_dispatcher_ = dispatcher;
+        Q_EMIT operationDispatcherChanged ();
+      }
+  }
+  Q_SIGNAL void operationDispatcherChanged ();
+
   Q_INVOKABLE void rename (const QString &newName);
   Q_INVOKABLE void setColor (const QColor &color);
   Q_INVOKABLE void unsetColor ();
@@ -143,6 +163,7 @@ private:
 
   structure::tracks::Track *              track_{};
   undo::UndoStack *                       undo_stack_{};
+  operations::OperationDispatcher *       operation_dispatcher_{};
   structure::tracks::TrackRouting *       track_routing_{};
   structure::tracks::ChannelSendRouting * channel_send_routing_{};
   structure::project::Project *           project_{};
