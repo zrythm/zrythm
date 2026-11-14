@@ -8,6 +8,90 @@ All notable changes to this project will be documented in this file.
 
 For changes prior to v2.0.0, see [CHANGELOG-old.v1.md](CHANGELOG-old.v1.md).
 
+## [v2.0.0-alpha.8] - 2026-11-14
+
+### Added
+- Modulators on every track and on the project: built-in LFO, ADSR,
+  Envelope Follower, MIDI to CV, Math and Macro devices plus any
+  plugin with CV outputs, added from the Modular panel's Add
+  Modulator menu; dragging a CV output onto a parameter modulates it
+- A routing graph in the Modular panel: tracks, plugins, modulators
+  and hardware inputs are nodes, ports connect by dragging, every
+  edit is undoable, and automatic routing stays read-only
+- Channel sends with a draggable amount, a destination picker listing
+  tracks and plugin sidechain inputs, and a pre- or post-fader
+  switch, in the mixer strip and the track inspector
+- Plugins can be dropped onto tracks in the tracklist or the
+  timeline: they land in the matching section (MIDI FX, instrument,
+  inserts or modulators), and a drop below the last track creates a
+  new track with the plugin
+- Dockable panels: panels can be dragged by their tab into other
+  frames, detached with Move to New Window and returned with Return
+  to Dock; the View menu shows and hides panels and saves or resets
+  the layout
+- A searchable Preferences dialog (Edit → Preferences…) with the
+  theme, accent color, language, playback, editing and plugin
+  settings; theme and language choices now persist across sessions
+- An activity dot on MIDI and instrument tracks that lights up while
+  notes play
+- The arranger auto-scrolls when a drag is held near the view edge,
+  and the drag follows the content
+- Official Windows installers and the binaries inside them are
+  digitally signed
+
+### Changed
+- Projects saved by earlier alphas no longer load: the internal
+  modulator track was removed and channel sends are stored per
+  channel
+- Mixer channel strips redesigned: wider strips with the master
+  pinned at the right, sections aligned across channels, a
+  center-detent balance knob, dB scales on faders and meters, and
+  peak readings that hold until clicked, mirrored in the track
+  inspector
+- The Monitor Section panel works now: monitor volume and meters,
+  mono, dim and mute toggles, solo/mute/listen counters with reset
+  buttons, calibration sliders and a Device Settings button
+- Plugin scanning is done by Zrythm's own scanners instead of JUCE's;
+  the plugin cache moved to a new format, so the first start after
+  updating rescans all plugins once
+- Plugin search paths expand `$VAR` and, on Windows, `%VAR%` as
+  well as `${VAR}`, and unknown variables stay as typed
+- Building Zrythm now requires Qt 6.12 (previously 6.11)
+- Collapsible section headers rotate their chevron when folded open
+
+### Fixed
+- LV2 state values were matched to ports by symbol alone, so plugins
+  with CV or audio ports could get values applied to the wrong port
+  or crash while loading or saving state
+- VST3 plugins that create their editor while it attaches (Kontakt,
+  Massive, Battery) could not open their editor window; they now
+  open at a fallback size and resize once the plugin reports one
+  (#5302)
+- Resizing the window of a fixed-size plugin (Diva, Dexed, Vital)
+  could abort Zrythm through the plugin's fatal error report;
+  fixed-size views now keep their size and CLAP errors are logged
+  instead (#5331)
+- A second audio export started while one was running could corrupt
+  both; it is now refused with an error
+- On GNU/Linux, Zrythm falls back to PipeWire's ALSA device when the
+  default device is held by the audio server, so systems that
+  started without audio get sound
+- The monitor's dim and listen levels were applied as fader
+  positions, making dimming about 10 dB too weak and listened tracks
+  about 2 dB too quiet
+- The Default Object Length controls in the Snap/Grid Settings
+  dialog did nothing; they now work, and triplet and dotted lengths
+  affect new objects
+- The arranger cursor could stay stuck after hover changes, for
+  example showing a resize cursor after leaving the object
+- Creating a clip by double-click could leave a second undo entry
+  when snapping shifted it; creating and dragging a clip now undo as
+  one step
+- Packaging the macOS app without a codesign identity failed; ad-hoc
+  signing is now the default
+- The Clear Recent Projects dialog printed a binding-loop warning
+  when it opened
+
 ## [v2.0.0-alpha.7] - 2026-10-25
 
 ### Added
