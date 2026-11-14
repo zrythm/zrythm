@@ -335,9 +335,8 @@ TEST_F (PluginImporterTest, ImportModulatorPluginToChannelTrackRack)
   EXPECT_TRUE (instantiation_finished_called_);
 }
 
-// A modulator imported with a track target that owns no rack lands in the
-// project's global rack
-TEST_F (PluginImporterTest, ImportModulatorPluginToRacklessTrackFallsBackToGlobal)
+// A modulator imported with a track target that owns no rack is refused
+TEST_F (PluginImporterTest, ImportModulatorPluginToRacklessTrackRefused)
 {
   auto marker_track_ref =
     track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
@@ -352,8 +351,8 @@ TEST_F (PluginImporterTest, ImportModulatorPluginToRacklessTrackFallsBackToGloba
   plugin_importer_->importPluginToTrack (descriptor.get (), marker_track);
   QCoreApplication::processEvents ();
 
-  EXPECT_EQ (global_modulators_->get_plugins (false).size (), 1u);
-  EXPECT_TRUE (instantiation_finished_called_);
+  EXPECT_TRUE (global_modulators_->get_plugins (false).empty ());
+  EXPECT_FALSE (instantiation_finished_called_);
 }
 
 // Test importing multiple plugins of different types

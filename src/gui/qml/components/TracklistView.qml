@@ -19,6 +19,7 @@ ListView {
   property Track draggedTrack: null
   property Track dropTargetFolder: null
   property int dropTargetIndex: -1
+  required property PluginImporter pluginImporter
   required property PortObservationManager portObservationManager
   required property bool pinned
   required property TrackCollectionOperator trackCollectionOperator
@@ -101,6 +102,7 @@ ListView {
     listViewDropTargetFolder: root.dropTargetFolder
     listViewDropTargetIndex: root.dropTargetIndex
     listViewIsLast: index === ListView.view.count - 1
+    pluginImporter: root.pluginImporter
     portObservationManager: root.portObservationManager
     trackCollectionOperator: root.trackCollectionOperator
     trackSelectionModel: root.trackSelectionModel

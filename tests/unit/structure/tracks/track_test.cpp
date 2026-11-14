@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/timebase.h"
+#include "plugins/plugin_descriptor.h"
 #include "structure/tracks/track.h"
 
 #include <QSignalSpy>
@@ -351,52 +352,70 @@ TEST_F (TrackTest, FullVisibleHeightChangesWhenLanesVisibilityToggles)
   EXPECT_LT (track->fullVisibleHeight (), visible_height);
 }
 
-// TODO
-#if 0
-TEST_F (TrackTest, PluginDescriptorValidation)
+// A track hosts a plugin matching its signal flow: instruments only on
+// instrument tracks, MIDI modifiers on channels with MIDI input, audio
+// effects on channels with audio output, modulators on tracks with a rack
+TEST_F (TrackTest, CanHostPluginByDescriptorCategory)
 {
-  // Test plugin descriptor validation for different slot types
-  plugins::PluginDescriptor descriptor;
+  const auto with_rack =
+    MockTrack::TrackFeatures::Automation | MockTrack::TrackFeatures::Modulators;
 
-  // Audio plugin
-  descriptor.num_audio_outs_ = 2;
-  descriptor.num_midi_outs_ = 0;
-  descriptor.num_midi_ins_ = 0;
+  plugins::PluginDescriptor instrument_descriptor;
+  instrument_descriptor.category_ = plugins::PluginCategory::Instrument;
 
-  EXPECT_TRUE (
-    Track::is_plugin_descriptor_valid_for_slot_type (
-      descriptor, plugins::PluginSlotType::Insert, Track::Type::Audio));
-  EXPECT_FALSE (
-    Track::is_plugin_descriptor_valid_for_slot_type (
-      descriptor, plugins::PluginSlotType::MidiFx, Track::Type::Audio));
+  plugins::PluginDescriptor midi_fx_descriptor;
+  midi_fx_descriptor.num_midi_outs_ = 1;
 
-  // MIDI plugin
-  descriptor.num_audio_outs_ = 0;
-  descriptor.num_midi_outs_ = 1;
-  descriptor.num_midi_ins_ = 1;
-  descriptor.category_ = plugins::PluginCategory::MIDI;
+  plugins::PluginDescriptor modulator_descriptor;
+  modulator_descriptor.num_cv_outs_ = 1;
 
-  EXPECT_TRUE (
-    Track::is_plugin_descriptor_valid_for_slot_type (
-      descriptor, plugins::PluginSlotType::MidiFx, Track::Type::Midi));
-  EXPECT_TRUE (
-    Track::is_plugin_descriptor_valid_for_slot_type (
-      descriptor, plugins::PluginSlotType::Insert, Track::Type::Midi));
+  plugins::PluginDescriptor audio_fx_descriptor;
+  audio_fx_descriptor.num_audio_ins_ = 2;
+  audio_fx_descriptor.num_audio_outs_ = 2;
 
-  // Instrument plugin
-  descriptor.num_audio_outs_ = 2;
-  descriptor.num_midi_outs_ = 0;
-  descriptor.num_midi_ins_ = 1;
-  descriptor.category_ = plugins::PluginCategory::Instrument;
+  // Instrument track: MIDI in, audio out, modulator rack - hosts every
+  // category
+  auto instrument_track = createMockTrack (
+    Track::Type::Instrument, dsp::PortType::Midi, dsp::PortType::Audio,
+    with_rack);
+  EXPECT_TRUE (instrument_track->canHostPlugin (&instrument_descriptor));
+  EXPECT_TRUE (instrument_track->canHostPlugin (&midi_fx_descriptor));
+  EXPECT_TRUE (instrument_track->canHostPlugin (&audio_fx_descriptor));
+  EXPECT_TRUE (instrument_track->canHostPlugin (&modulator_descriptor));
+  EXPECT_FALSE (instrument_track->canHostPlugin (nullptr));
 
-  EXPECT_TRUE (
-    Track::is_plugin_descriptor_valid_for_slot_type (
-      descriptor, plugins::PluginSlotType::Instrument, Track::Type::Instrument));
-  EXPECT_FALSE (
-    Track::is_plugin_descriptor_valid_for_slot_type (
-      descriptor, plugins::PluginSlotType::Instrument, Track::Type::Audio));
+  // MIDI track: MIDI in and out - hosts MIDI modifiers and modulators only
+  auto midi_track = createMockTrack (
+    Track::Type::Midi, dsp::PortType::Midi, dsp::PortType::Midi, with_rack);
+  EXPECT_FALSE (midi_track->canHostPlugin (&instrument_descriptor));
+  EXPECT_TRUE (midi_track->canHostPlugin (&midi_fx_descriptor));
+  EXPECT_FALSE (midi_track->canHostPlugin (&audio_fx_descriptor));
+  EXPECT_TRUE (midi_track->canHostPlugin (&modulator_descriptor));
+
+  // Audio track: audio in and out - hosts audio effects and modulators only
+  auto audio_track = createMockTrack (
+    Track::Type::Audio, dsp::PortType::Audio, dsp::PortType::Audio, with_rack);
+  EXPECT_FALSE (audio_track->canHostPlugin (&instrument_descriptor));
+  EXPECT_FALSE (audio_track->canHostPlugin (&midi_fx_descriptor));
+  EXPECT_TRUE (audio_track->canHostPlugin (&audio_fx_descriptor));
+  EXPECT_TRUE (audio_track->canHostPlugin (&modulator_descriptor));
+
+  // Audio track without a modulator rack
+  auto track_without_rack = createMockTrack (
+    Track::Type::Audio, dsp::PortType::Audio, dsp::PortType::Audio,
+    MockTrack::TrackFeatures::Automation);
+  EXPECT_FALSE (track_without_rack->canHostPlugin (&modulator_descriptor));
+  EXPECT_TRUE (track_without_rack->canHostPlugin (&audio_fx_descriptor));
+
+  // Track without a channel or modulator rack hosts nothing
+  auto marker_track = createMockTrack (
+    Track::Type::Marker, dsp::PortType::Audio, dsp::PortType::CV,
+    MockTrack::TrackFeatures::Automation);
+  EXPECT_FALSE (marker_track->canHostPlugin (&instrument_descriptor));
+  EXPECT_FALSE (marker_track->canHostPlugin (&midi_fx_descriptor));
+  EXPECT_FALSE (marker_track->canHostPlugin (&audio_fx_descriptor));
+  EXPECT_FALSE (marker_track->canHostPlugin (&modulator_descriptor));
 }
-#endif
 
 TEST_F (TrackTest, TimebaseProviderDefaultsToMusical)
 {

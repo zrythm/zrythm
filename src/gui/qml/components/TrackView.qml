@@ -27,6 +27,7 @@ Control {
   property int listViewDropTargetIndex: -1
   property bool listViewIsLast: false
   required property PortObservationManager portObservationManager
+  required property PluginImporter pluginImporter
   required property Track track // connected automatically when used as a delegate for a Tracklist model
   required property TrackCollectionOperator trackCollectionOperator
   required property TrackSelectionModel trackSelectionModel
@@ -491,6 +492,46 @@ Control {
       right: parent.right
       top: parent.top
       topMargin: 1
+    }
+  }
+
+  // Accepts plugin descriptor drags: dropping adds the plugin to the
+  // track's group matching its category (MIDI FX, instrument, inserts or
+  // modulators)
+  DropArea {
+    id: pluginDropArea
+
+    property bool compatibleDrop: false
+
+    anchors.fill: parent
+    keys: ["application/x-plugin-descriptor"]
+
+    onDropped: drop => {
+      pluginDropArea.compatibleDrop = false;
+      const descSrc = drop.source as DescriptorDragItem;
+      if (descSrc && descSrc.descriptor)
+        root.pluginImporter.importPluginToTrack(descSrc.descriptor, root.track);
+    }
+    onEntered: drag => {
+      const descSrc = drag.source as DescriptorDragItem;
+      pluginDropArea.compatibleDrop = descSrc !== null && descSrc.descriptor !== null && root.track.canHostPlugin(descSrc.descriptor);
+      drag.accepted = pluginDropArea.compatibleDrop;
+    }
+    onExited: pluginDropArea.compatibleDrop = false
+  }
+
+  Rectangle {
+    id: pluginDropIndicator
+
+    color: Qt.alpha(palette.highlight, 0.25)
+    visible: pluginDropArea.compatibleDrop
+    z: 98
+
+    anchors {
+      bottom: parent.bottom
+      left: parent.left
+      right: parent.right
+      top: parent.top
     }
   }
 

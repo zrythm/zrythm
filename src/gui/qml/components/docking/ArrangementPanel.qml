@@ -86,6 +86,7 @@ SplitView {
       Layout.preferredHeight: contentHeight
       audioEngine: root.project.engine
       pinned: true
+      pluginImporter: root.session.pluginImporter
       portObservationManager: root.project.portObservationManager
       trackCollectionOperator: root.trackCollectionOperator
       trackSelectionModel: root.trackSelectionModel
@@ -100,6 +101,7 @@ SplitView {
       Layout.fillWidth: true
       audioEngine: root.project.engine
       pinned: false
+      pluginImporter: root.session.pluginImporter
       portObservationManager: root.project.portObservationManager
       trackCollectionOperator: root.trackCollectionOperator
       trackSelectionModel: root.trackSelectionModel
@@ -223,6 +225,7 @@ SplitView {
         fileImporter: root.session.fileImporter
         objectCreator: root.session.arrangerObjectCreator
         pinned: true
+        pluginImporter: root.session.pluginImporter
         ruler: timelineRuler
         selectionOperator: timelinePane.selectionOperator
         snapGrid: root.session.uiState.snapGridTimeline
@@ -277,6 +280,7 @@ SplitView {
         fileImporter: root.session.fileImporter
         objectCreator: root.session.arrangerObjectCreator
         pinned: false
+        pluginImporter: root.session.pluginImporter
         ruler: timelineRuler
         selectionOperator: timelinePane.selectionOperator
         snapGrid: root.session.uiState.snapGridTimeline

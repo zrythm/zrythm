@@ -463,6 +463,18 @@ public:
   plugins::PluginGroup * modulators () const { return modulators_.get (); }
 
   /**
+   * @brief Returns whether a plugin matching @p descriptor can be added
+   * directly to this track.
+   *
+   * Instruments are only hosted by instrument tracks, MIDI modifiers by
+   * channels with MIDI input, audio effects by channels with audio output,
+   * and modulators by tracks that own a modulator rack. Returns false for a
+   * null descriptor.
+   */
+  Q_INVOKABLE bool
+  canHostPlugin (const plugins::PluginDescriptor * descriptor) const;
+
+  /**
    * @brief Returns the plugin groups holding the track's plugins: the
    * channel's groups (MIDI FX, instruments, inserts) followed by the
    * modulator rack.
@@ -574,18 +586,6 @@ public:
    */
   void
   collect_plugins (std::vector<plugins::PluginUuidReference> &plugins) const;
-
-// TODO
-#if 0
-  /**
-   * Returns if @p descr can be dropped at @p slot_type in a track of type @p
-   * track_type.
-   */
-  static bool is_plugin_descriptor_valid_for_slot_type (
-    const plugins::PluginDescriptor &descr,
-    zrythm::plugins::PluginSlotType  slot_type,
-    Track::Type                      track_type);
-#endif
 
   utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 

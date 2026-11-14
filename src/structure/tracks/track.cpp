@@ -643,36 +643,28 @@ Track::plugin_groups () const
   return groups;
 }
 
-#if 0
 bool
-Track::is_plugin_descriptor_valid_for_slot_type (
-  const plugins::PluginDescriptor &descr,
-  zrythm::plugins::PluginSlotType  slot_type,
-  Track::Type                      track_type)
+Track::canHostPlugin (const plugins::PluginDescriptor * descriptor) const
 {
-  switch (slot_type)
+  if (descriptor == nullptr)
     {
-    case zrythm::plugins::PluginSlotType::Insert:
-      if (track_type == Track::Type::Midi)
-        {
-          return descr.num_midi_outs_ > 0;
-        }
-      else
-        {
-          return descr.num_audio_outs_ > 0;
-        }
-    case zrythm::plugins::PluginSlotType::MidiFx:
-      return descr.num_midi_outs_ > 0;
-      break;
-    case zrythm::plugins::PluginSlotType::Instrument:
-      return track_type == Track::Type::Instrument && descr.isInstrument ();
-    default:
-      break;
+      z_warning ("Cannot check plugin hosting for a null descriptor");
+      return false;
     }
 
-  z_return_val_if_reached (false);
+  switch (plugins::PluginGroup::group_type_for_descriptor (*descriptor))
+    {
+    case plugins::PluginGroup::DeviceGroupType::Instrument:
+      return type_ == Type::Instrument;
+    case plugins::PluginGroup::DeviceGroupType::MIDI:
+      return channel_ != nullptr && channel_->has_midi_input ();
+    case plugins::PluginGroup::DeviceGroupType::CV:
+      return modulators_ != nullptr;
+    case plugins::PluginGroup::DeviceGroupType::Audio:
+      return channel_ != nullptr && channel_->is_audio ();
+    }
+  return false;
 }
-#endif
 
 void
 Track::set_default_name ()

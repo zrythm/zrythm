@@ -66,6 +66,24 @@ PluginImporter::import (
 
   z_debug ("Importing plugin: {}", descriptor->name ());
 
+  // Refuse track targets that have no matching plugin group (e.g. an
+  // instrument on an audio track, or any channel plugin on a channel-less
+  // track like the marker track) before instantiating anything
+  const auto * track_target =
+    track_or_group.has_value ()
+      ? std::get_if<structure::tracks::Track *> (&track_or_group.value ())
+      : nullptr;
+  if (
+    track_target != nullptr && *track_target != nullptr
+    && !(*track_target)->canHostPlugin (descriptor))
+    {
+      z_warning (
+        "Cannot import plugin {} into track {}: the track has no plugin "
+        "group matching the plugin category",
+        descriptor->name (), (*track_target)->get_name ());
+      return;
+    }
+
   // Create plugin configuration from descriptor
   auto config =
     plugins::PluginConfiguration::create_new_for_descriptor (*descriptor);
@@ -159,8 +177,8 @@ PluginImporter::import (
                   {
                     // Modulators belong to the given track's rack, or
                     // the project's global rack when no target was
-                    // given or the track has no rack
-                    if (track != nullptr && track->modulators () != nullptr)
+                    // given
+                    if (track != nullptr)
                       return track->modulators ();
                     return &global_modulators_;
                   }

@@ -15,6 +15,7 @@ Arranger {
 
   required property bool pinned
   required property FileImporter fileImporter
+  required property PluginImporter pluginImporter
   required property TempoObjectManager tempoObjectManager
   required property var timeline
   required property Tracklist tracklist
@@ -237,22 +238,65 @@ Arranger {
     return getTrackItemAtY(y)?.track ?? null;
   }
 
+  // Drop-target geometry at viewport Y @p y, mapped into @p target's
+  // coordinate space: the hovered track's bounds, or the area below the
+  // last track where a new track would be created. The height is 0 when
+  // the corresponding delegate is not instantiated.
+  function dropTargetGeometryAtY(y: real, target: Item): var {
+    const trackItem = getTrackItemAtY(y);
+    if (trackItem) {
+      return {
+        "track": trackItem.track,
+        "y": trackItem.mapToItem(target, 0, 0).y,
+        "height": trackItem.track.height
+      };
+    }
+    const lastTrackItem = getLastTrackItem();
+    return {
+      "track": null,
+      "y": lastTrackItem ? lastTrackItem.mapToItem(target, 0, lastTrackItem.height).y : 0,
+      "height": lastTrackItem ? lastTrackItem.height : 0
+    };
+  }
+
   onCanvasDrop: drop => {
     const filePaths = DragUtils.getUniqueFilePaths(drop);
-    if (filePaths.length === 0)
+    if (filePaths.length > 0) {
+      fileDropFeedback.updateForDrag(drop);
+      if (!fileDropFeedback.dropTargetTrack) {
+        root.fileImporter.importFiles(filePaths, fileDropFeedback.dropTicks, null);
+      } else {
+        root.fileImporter.importFilesToLane(filePaths, fileDropFeedback.dropTicks, fileDropFeedback.dropTargetTrack, fileDropFeedback.dropTargetLane);
+      }
+      drop.accept(Qt.CopyAction);
+      // The drop area does not emit exited() after a drop
+      fileDropFeedback.reset();
       return;
-    fileDropFeedback.updateForDrag(drop);
-    if (!fileDropFeedback.dropTargetTrack) {
-      root.fileImporter.importFiles(filePaths, fileDropFeedback.dropTicks, null);
-    } else {
-      root.fileImporter.importFilesToLane(filePaths, fileDropFeedback.dropTicks, fileDropFeedback.dropTargetTrack, fileDropFeedback.dropTargetLane);
     }
-    drop.accept(Qt.CopyAction);
-    // The drop area does not emit exited() after a drop
-    fileDropFeedback.reset();
+    const descSrc = drop.source as DescriptorDragItem;
+    if (descSrc && descSrc.descriptor) {
+      pluginDropFeedback.updateForDrag(drop);
+      if (!pluginDropFeedback.dropTargetTrack) {
+        root.pluginImporter.importPluginToNewTrack(descSrc.descriptor);
+        drop.accept(Qt.CopyAction);
+      } else if (pluginDropFeedback.accepted) {
+        root.pluginImporter.importPluginToTrack(descSrc.descriptor, pluginDropFeedback.dropTargetTrack);
+        drop.accept(Qt.CopyAction);
+      } else {
+        drop.accepted = false;
+      }
+      // The drop area does not emit exited() after a drop
+      pluginDropFeedback.reset();
+    }
   }
-  onCanvasDragMoved: drag => fileDropFeedback.updateForDrag(drag)
-  onCanvasDragExited: fileDropFeedback.reset()
+  onCanvasDragMoved: drag => {
+    fileDropFeedback.updateForDrag(drag);
+    pluginDropFeedback.updateForDrag(drag);
+  }
+  onCanvasDragExited: {
+    fileDropFeedback.reset();
+    pluginDropFeedback.reset();
+  }
 
   // Find the track that contains this object
   function getTrackForObject(obj: ArrangerObject): Track {
@@ -409,6 +453,13 @@ Arranger {
       anchors.fill: parent
       arranger: root
       fileImporter: root.fileImporter
+    }
+
+    PluginDropFeedback {
+      id: pluginDropFeedback
+
+      anchors.fill: parent
+      arranger: root
     }
   }
 

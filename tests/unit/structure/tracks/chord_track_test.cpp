@@ -174,6 +174,14 @@ protected:
   std::unique_ptr<arrangement::ArrangerObjectFactory>    factory_;
 };
 
+// The chord track processes MIDI through a channel, so it owns a channel
+// and a local modulator rack like the other MIDI-processing tracks
+TEST_F (ChordTrackCacheTest, TrackOwnsChannelAndModulatorRack)
+{
+  EXPECT_NE (chord_track_->channel (), nullptr);
+  EXPECT_NE (chord_track_->modulators (), nullptr);
+}
+
 TEST_F (ChordTrackCacheTest, EmptyTrackCacheIsNoOp)
 {
   chord_track_->regeneratePlaybackCaches ({});

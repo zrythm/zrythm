@@ -70,7 +70,8 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
         Track::Type::Chord,
         PortType::Midi,
         PortType::Midi,
-        TrackFeatures::Automation | TrackFeatures::Recording,
+        TrackFeatures::Automation | TrackFeatures::Recording
+          | TrackFeatures::Modulators,
         dependencies.to_base_dependencies ()),
       arrangement::ArrangerObjectOwner<ChordClip> (dependencies.registry_, *this),
       arrangement::ArrangerObjectOwner<ScaleObject> (dependencies.registry_, *this)

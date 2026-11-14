@@ -256,6 +256,7 @@ set(rel_qml_file_paths
   components/arranger/MidiClipContent.qml
   components/arranger/MidiClipView.qml
   components/arranger/ClipBaseView.qml
+  components/arranger/PluginDropFeedback.qml
   components/arranger/ScaleObjectView.qml
   components/arranger/TempoMapArranger.qml
   components/arranger/TempoObjectView.qml

@@ -59,33 +59,22 @@ Item {
     feedback.fileName = filePath.substring(separatorIndex + 1);
 
     const timeline = feedback.arranger as Timeline;
-    const track = timeline.getTrackAtY(drag.y);
+    const geometry = timeline.dropTargetGeometryAtY(drag.y, feedback);
+    const track = geometry.track;
     const trackLane = track ? timeline.getTrackLaneAtY(drag.y) : null;
     feedback.dropTargetTrack = track;
     feedback.dropTargetLane = trackLane;
-    feedback.targetY = 0;
-    feedback.targetHeight = 0;
-    if (track) {
-      // Map the hovered delegate's bounds into this item's coordinate
-      // space, so the preview aligns with the track regardless of scrolling
+    feedback.targetY = geometry.y;
+    feedback.targetHeight = geometry.height;
+    if (track && trackLane) {
+      // Refine to the hovered lane's bounds when lanes are visible
       const trackItem = timeline.getTrackItemAtY(drag.y);
       if (trackItem) {
-        feedback.targetY = trackItem.mapToItem(feedback, 0, 0).y;
-        feedback.targetHeight = track.height;
-        if (trackLane) {
-          const trackLaneItem = timeline.getTrackLaneItem(trackLane, trackItem);
-          if (trackLaneItem) {
-            feedback.targetY = trackLaneItem.mapToItem(feedback, 0, 0).y;
-            feedback.targetHeight = trackLane.height;
-          }
+        const trackLaneItem = timeline.getTrackLaneItem(trackLane, trackItem);
+        if (trackLaneItem) {
+          feedback.targetY = trackLaneItem.mapToItem(feedback, 0, 0).y;
+          feedback.targetHeight = trackLane.height;
         }
-      }
-    } else {
-      // Below all tracks: preview where a new track would be created
-      const lastTrackItem = timeline.getLastTrackItem();
-      if (lastTrackItem) {
-        feedback.targetY = lastTrackItem.mapToItem(feedback, 0, lastTrackItem.height).y;
-        feedback.targetHeight = lastTrackItem.height;
       }
     }
 
