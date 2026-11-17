@@ -27,7 +27,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="137"/>
         <source>Third-Party Licenses</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Licences tierces</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="144"/>
@@ -54,7 +54,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="16"/>
         <source>Third-Party Licenses</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Licences tierces</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="41"/>
@@ -70,7 +70,7 @@
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="132"/>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="228"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Retour</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="164"/>
