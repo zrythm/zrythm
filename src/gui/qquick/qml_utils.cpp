@@ -30,7 +30,10 @@ namespace zrythm::gui::qquick
 QString
 QmlUtils::toPathString (const QUrl &url)
 {
-  return utils::Utf8String::from_qurl (url).to_qstring ();
+  const auto path = utils::Utf8String::from_qurl (url).to_path ();
+  return utils::Utf8String::
+    from_path (utils::io::path_strip_trailing_separators (path))
+      .to_qstring ();
 }
 
 QUrl

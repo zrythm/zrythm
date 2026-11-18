@@ -67,6 +67,35 @@ TEST (IoTest, PathManipulation)
   EXPECT_EQ (zrythm::utils::io::path_get_basename (test_path), "file.txt");
   EXPECT_EQ (
     zrythm::utils::io::path_get_basename_without_ext (test_path), "file");
+
+  // Paths ending in a directory separator still name their last component
+  EXPECT_EQ (zrythm::utils::io::path_get_basename ("/a/b/test1/"), "test1");
+  EXPECT_EQ (
+    zrythm::utils::io::path_get_basename_without_ext ("/a/b/test1/"), "test1");
+  EXPECT_EQ (
+    zrythm::utils::io::path_get_basename_without_ext ("/a/b/test1//"), "test1");
+}
+
+TEST (IoTest, StripTrailingSeparators)
+{
+  EXPECT_EQ (
+    utils::io::path_strip_trailing_separators ("/a/b/test1/"),
+    std::filesystem::path ("/a/b/test1"));
+  EXPECT_EQ (
+    utils::io::path_strip_trailing_separators ("/a/b/test1//"),
+    std::filesystem::path ("/a/b/test1"));
+  EXPECT_EQ (
+    utils::io::path_strip_trailing_separators ("/a/b/test1"),
+    std::filesystem::path ("/a/b/test1"));
+  EXPECT_EQ (
+    utils::io::path_strip_trailing_separators ("a/b/"),
+    std::filesystem::path ("a/b"));
+  // A filesystem root keeps its separator; an empty path stays empty
+  EXPECT_EQ (
+    utils::io::path_strip_trailing_separators ("/"),
+    std::filesystem::path ("/"));
+  EXPECT_EQ (
+    utils::io::path_strip_trailing_separators (""), std::filesystem::path (""));
 }
 
 TEST (IoTest, DirectoryListing)

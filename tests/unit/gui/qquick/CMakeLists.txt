@@ -7,6 +7,7 @@ add_executable(zrythm_gui_qquick_unit_tests
   generic_plugin_ui_controller_test.cpp
   meter_processor_test.cpp
   qfuture_qml_wrapper_test.cpp
+  qml_utils_test.cpp
   timeline_position_tracker_test.cpp
   track_colors_test.cpp
   track_event_activity_provider_test.cpp

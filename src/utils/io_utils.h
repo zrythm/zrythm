@@ -79,6 +79,18 @@ std::filesystem::path
 file_get_ext (const std::filesystem::path &file);
 
 /**
+ * @brief Returns the path without trailing directory separators.
+ *
+ * A filesystem root keeps its single separator, and a path without a
+ * trailing separator is returned unchanged.
+ *
+ * @param path The path to strip.
+ * @return The path without trailing directory separators.
+ */
+std::filesystem::path
+path_strip_trailing_separators (const std::filesystem::path &path);
+
+/**
  * @brief Get the base name of a file path with the file extension.
  *
  * This function takes a file path as input and returns the base name of the

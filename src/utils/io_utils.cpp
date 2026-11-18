@@ -164,20 +164,32 @@ touch_file (const std::filesystem::path &file_path)
 }
 
 std::filesystem::path
+path_strip_trailing_separators (const std::filesystem::path &path)
+{
+  auto stripped = path;
+  while (stripped.filename ().empty () && stripped != stripped.root_path ())
+    {
+      stripped = stripped.parent_path ();
+    }
+  return stripped;
+}
+
+std::filesystem::path
 file_strip_ext (const std::filesystem::path &filename)
 {
-  return filename.parent_path () / filename.stem ();
+  const auto stripped = path_strip_trailing_separators (filename);
+  return stripped.parent_path () / stripped.stem ();
 }
 std::filesystem::path
 path_get_basename (const std::filesystem::path &filename)
 {
-  return filename.filename ();
+  return path_strip_trailing_separators (filename).filename ();
 }
 
 std::filesystem::path
 path_get_basename_without_ext (const std::filesystem::path &filename)
 {
-  return filename.stem ();
+  return path_strip_trailing_separators (filename).stem ();
 }
 
 qint64

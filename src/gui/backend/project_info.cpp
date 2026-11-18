@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "project_info.h"
+#include "utils/io_utils.h"
 #include "utils/utf8_string.h"
 
 using namespace zrythm::gui;
@@ -13,7 +14,9 @@ ProjectInfo::ProjectInfo (const std::filesystem::path &path, QObject * parent)
 {
   // Display name derived from the path; entries are shown even when the
   // project file no longer exists, so the name does not depend on existence
-  name_ = utils::Utf8String::from_path (path.stem ()).to_qstring ();
+  name_ =
+    utils::Utf8String::from_path (utils::io::path_get_basename_without_ext (path))
+      .to_qstring ();
   if (exists ())
     {
       const auto time_since_epoch =
