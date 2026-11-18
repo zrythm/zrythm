@@ -12,6 +12,7 @@ add_executable(zrythm_structure_project_unit_tests
   port_connection_test.cpp
   port_connections_manager_test.cpp
   project_graph_builder_test.cpp
+  project_directory_test.cpp
   project_registry_test.cpp
   project_test.cpp
   project_ui_state_test.cpp

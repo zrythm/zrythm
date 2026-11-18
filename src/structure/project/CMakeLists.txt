@@ -89,6 +89,7 @@ target_sources(zrythm_structure_project_lib
     port_connection.cpp
     port_connections_manager.cpp
     project.cpp
+    project_directory.cpp
     project_graph_builder.cpp
     project_path_provider.cpp
     project_registry.cpp
@@ -111,6 +112,7 @@ target_sources(zrythm_structure_project_lib
       port_connection.h
       port_connections_manager.h
       project.h
+      project_directory.h
       project_graph_builder.h
       project_path_provider.h
       project_registry.h
