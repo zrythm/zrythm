@@ -17,6 +17,7 @@ add_executable(zrythm_utils_unit_tests
   expandable_tick_range_test.cpp
   exceptions_test.cpp
   float_ranges_test.cpp
+  format_qt_test.cpp
   hash_test.cpp
   icloneable_test.cpp
   inplace_function_test.cpp

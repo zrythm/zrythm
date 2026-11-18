@@ -85,6 +85,12 @@ template <> struct fmt::formatter<QVariant> : fmt::formatter<std::string_view>
   auto format (const QVariant &v, fmt::format_context &ctx) const
     -> format_context::iterator
   {
+    // QVariant::toString () returns an empty string for list types, so
+    // string lists are formatted through their own formatter
+    if (v.typeId () == QMetaType::QStringList)
+      {
+        return fmt::formatter<QStringList>{}.format (v.toStringList (), ctx);
+      }
     return fmt::formatter<std::string_view>::format (
       v.toString ().toUtf8 (), ctx);
   }
