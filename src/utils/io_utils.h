@@ -290,20 +290,20 @@ std::filesystem::path
 get_next_available_filepath (const std::filesystem::path &filepath);
 
 /**
- * Returns the given file name with any illegal characters removed.
+ * @brief Returns whether the given text works as a file name.
  *
- * @note This will remove path separators like slashes.
- *
- * @see io_get_legal_path_name().
+ * A file name must be usable as a single path segment on every
+ * supported platform. It must contain at least one non-whitespace
+ * character, no path separators, no control characters, and none of
+ * the characters reserved on Windows (<>:"|?*). It must not be "." or
+ * "..", must not end with a period or space (both are stripped by
+ * Windows), must be at most 255 bytes long when encoded as UTF-8, and
+ * the part before its first period must not be one of the device names
+ * reserved by Windows (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9),
+ * matched without regard to case.
  */
-Utf8String
-get_legal_file_name (const Utf8String &file_name);
-
-/**
- * Returns the given path with any illegal characters removed.
- */
-Utf8String
-get_legal_path_name (const Utf8String &path);
+[[nodiscard]] bool
+is_valid_file_name (std::string_view name);
 
 #ifdef _WIN32
 /**

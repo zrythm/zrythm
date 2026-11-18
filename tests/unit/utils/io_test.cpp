@@ -58,6 +58,74 @@ TEST (IoTest, FileOperations)
   EXPECT_EQ (read_data, QByteArray::fromStdString (test_data.str ()));
 }
 
+TEST (IoTest, AcceptsOrdinaryFileNames)
+{
+  EXPECT_TRUE (utils::io::is_valid_file_name ("My Song"));
+  EXPECT_TRUE (utils::io::is_valid_file_name ("Untitled Project 2"));
+  EXPECT_TRUE (utils::io::is_valid_file_name ("song(final).mix"));
+  EXPECT_TRUE (utils::io::is_valid_file_name ("100% dub"));
+  EXPECT_TRUE (
+    utils::io::is_valid_file_name (utils::Utf8String (u8"Ünïcødé").view ()));
+}
+
+TEST (IoTest, RejectsBlankAndDotFileNames)
+{
+  EXPECT_FALSE (utils::io::is_valid_file_name (""));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("   "));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("."));
+  EXPECT_FALSE (utils::io::is_valid_file_name (".."));
+}
+
+TEST (IoTest, RejectsPathSeparatorsInFileNames)
+{
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My/Song"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My\\Song"));
+}
+
+TEST (IoTest, RejectsControlCharactersInFileNames)
+{
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My\nSong"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My\x01Song"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My\x7fSong"));
+}
+
+TEST (IoTest, RejectsWindowsReservedCharactersInFileNames)
+{
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My:Song"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My<Song>"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My\"Song"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My|Song"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My?Song"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("My*Song"));
+}
+
+TEST (IoTest, RejectsWindowsReservedDeviceNames)
+{
+  EXPECT_FALSE (utils::io::is_valid_file_name ("con"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("Aux"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("COM1"));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("lpt1.backup"));
+  EXPECT_TRUE (utils::io::is_valid_file_name ("console"));
+  EXPECT_TRUE (utils::io::is_valid_file_name ("Concerto"));
+}
+
+TEST (IoTest, RejectsWindowsStrippedEndingsInFileNames)
+{
+  EXPECT_FALSE (utils::io::is_valid_file_name ("name."));
+  EXPECT_FALSE (utils::io::is_valid_file_name ("name "));
+}
+
+TEST (IoTest, AcceptsMaximumLengthFileName)
+{
+  // 255 bytes is the documented maximum
+  EXPECT_TRUE (utils::io::is_valid_file_name (std::string (255, 'a')));
+}
+
+TEST (IoTest, RejectsOversizedFileNames)
+{
+  EXPECT_FALSE (utils::io::is_valid_file_name (std::string (256, 'a')));
+}
+
 TEST (IoTest, PathManipulation)
 {
   // Test path components

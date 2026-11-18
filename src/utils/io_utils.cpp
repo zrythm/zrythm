@@ -29,6 +29,7 @@
 
 #include "zrythm-config.h"
 
+#include <algorithm>
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
@@ -38,6 +39,8 @@
 
 #include "utils/exceptions.h"
 #include "utils/logger.h"
+
+#include <QStringList>
 
 using zrythm::utils::ZrythmException;
 
@@ -486,18 +489,49 @@ make_tmp_file (std::optional<utils::Utf8String> template_path, bool in_temp_dir)
   return ret;
 }
 
-Utf8String
-get_legal_file_name (const Utf8String &file_name)
+bool
+is_valid_file_name (std::string_view name)
 {
-  return Utf8String::from_juce_string (
-    juce::File::createLegalFileName (file_name.to_juce_string ()));
-}
+  // Path separators and the characters Windows forbids in file names
+  if (name.find_first_of ("/\\<>:\"|?*") != std::string_view::npos)
+    return false;
 
-Utf8String
-get_legal_path_name (const Utf8String &path)
-{
-  return Utf8String::from_juce_string (
-    juce::File::createLegalPathName (path.to_juce_string ()));
+  // Control characters
+  const auto is_control_char = [] (char c) {
+    return static_cast<unsigned char> (c) < 0x20 || c == '\x7f';
+  };
+  if (std::ranges::any_of (name, is_control_char))
+    return false;
+
+  const auto qname = Utf8String::from_utf8_encoded_string (name).to_qstring ();
+  if (qname.trimmed ().isEmpty () || qname == "." || qname == "..")
+    return false;
+
+  // 255 bytes is the longest single name on the filesystems Zrythm
+  // supports (NAME_MAX on GNU/Linux and macOS, 255 characters on Windows)
+  if (qname.toUtf8 ().size () > 255)
+    return false;
+
+  // Windows also reserves these names as the part before the first
+  // period
+  static const QStringList windows_device_names = {
+    QStringLiteral ("con"),  QStringLiteral ("prn"),  QStringLiteral ("aux"),
+    QStringLiteral ("nul"),  QStringLiteral ("com1"), QStringLiteral ("com2"),
+    QStringLiteral ("com3"), QStringLiteral ("com4"), QStringLiteral ("com5"),
+    QStringLiteral ("com6"), QStringLiteral ("com7"), QStringLiteral ("com8"),
+    QStringLiteral ("com9"), QStringLiteral ("lpt1"), QStringLiteral ("lpt2"),
+    QStringLiteral ("lpt3"), QStringLiteral ("lpt4"), QStringLiteral ("lpt5"),
+    QStringLiteral ("lpt6"), QStringLiteral ("lpt7"), QStringLiteral ("lpt8"),
+    QStringLiteral ("lpt9"),
+  };
+  if (
+    windows_device_names.contains (
+      qname.section (u'.', 0, 0), Qt::CaseInsensitive))
+    return false;
+
+  // Windows strips a trailing period or space, which makes two names
+  // collide
+  return !qname.endsWith (u'.') && !qname.endsWith (u' ');
 }
 
 #ifdef _WIN32
