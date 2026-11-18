@@ -6,6 +6,7 @@
 #include "dsp/curve.h"
 #include "utils/debug.h"
 #include "utils/math_utils.h"
+#include "utils/serialization.h"
 
 #include <nlohmann/json.hpp>
 

@@ -78,6 +78,7 @@ target_compile_definitions(zrythm_test_helpers_lib
   INTERFACE
     TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"
     TEST_MIDI_FILES_DIR="${CMAKE_SOURCE_DIR}/tests"
+    ZRYTHM_SCHEMAS_DIR="${CMAKE_SOURCE_DIR}/data/schemas"
 )
 
 target_precompile_headers(zrythm_test_helpers_lib

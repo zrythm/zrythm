@@ -328,8 +328,7 @@ track_list_operation ()
               { "name",
                std::string (
                   utils::Utf8String::from_qstring (track->name ()).view ())  },
-              // Enums serialize as integers in this project
-              { "type", ENUM_VALUE_TO_INT (track->type ())                   },
+              { "type", track->type ()                                       },
           });
         }
       return ctx.applied (

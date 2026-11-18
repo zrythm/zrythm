@@ -4,6 +4,7 @@
 #include "dsp/chord_descriptor.h"
 #include "dsp/musical_scale.h"
 #include "utils/enum_utils.h"
+#include "utils/serialization.h"
 #include "utils/utf8_string.h"
 
 #include <nlohmann/json.hpp>

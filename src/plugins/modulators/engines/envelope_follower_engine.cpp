@@ -19,7 +19,7 @@ EnvelopeFollowerEngine::make_descriptor ()
   auto descriptor = std::make_unique<PluginDescriptor> ();
   descriptor->name_ = u8"Envelope Follower";
   descriptor->author_ = u8"Zrythm";
-  descriptor->category_ = PluginCategory::MODULATOR;
+  descriptor->category_ = PluginCategory::Modulator;
   descriptor->category_str_ =
     PluginDescriptor::category_to_string (descriptor->category_);
   descriptor->protocol_ = Protocol::ProtocolType::Internal;

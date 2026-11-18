@@ -10,6 +10,7 @@
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
+#include "utils/serialization.h"
 
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>

@@ -5,36 +5,13 @@
 #include <type_traits>
 
 #include "dsp/speaker_arrangement.h"
+#include "utils/serialization.h"
 
 #include <fmt/format.h>
 #include <magic_enum/magic_enum_format.hpp>
-#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {
-
-NLOHMANN_JSON_SERIALIZE_ENUM (
-  SpeakerArrangement::Kind,
-  {
-    { SpeakerArrangement::Kind::Speakers,   "speakers"   },
-    { SpeakerArrangement::Kind::Ambisonics, "ambisonics" },
-    { SpeakerArrangement::Kind::Discrete,   "discrete"   }
-})
-
-NLOHMANN_JSON_SERIALIZE_ENUM (
-  SpeakerArrangement::AmbisonicOrdering,
-  {
-    { SpeakerArrangement::AmbisonicOrdering::Acn,  "acn"  },
-    { SpeakerArrangement::AmbisonicOrdering::FuMa, "fuma" }
-})
-
-NLOHMANN_JSON_SERIALIZE_ENUM (
-  SpeakerArrangement::AmbisonicNormalization,
-  {
-    { SpeakerArrangement::AmbisonicNormalization::Sn3d, "sn3d" },
-    { SpeakerArrangement::AmbisonicNormalization::N3d,  "n3d"  },
-    { SpeakerArrangement::AmbisonicNormalization::MaxN, "maxn" }
-})
 
 std::string
 format_as (const SpeakerArrangement &arrangement)

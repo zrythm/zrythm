@@ -1,18 +1,37 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_protocol.h"
-#include "utils/bidirectional_map.h"
 #include "utils/enum_utils.h"
 
 #include <juce_core/juce_core.h>
 
 using namespace zrythm::plugins;
 
-constexpr std::array<std::string_view, 11> plugin_protocol_strings = {
-  "Internal",  "LV2", "DSSI", "LADSPA", "VST",  "VST3",
-  "AudioUnit", "SFZ", "SF2",  "CLAP",   "JSFX",
-};
+namespace
+{
+/**
+ * @brief Protocols a JUCE plugin description can round-trip; their JUCE
+ * format names equal the enumerator names.
+ */
+constexpr bool
+juce_hosts (Protocol::ProtocolType protocol)
+{
+  switch (protocol)
+    {
+    case Protocol::ProtocolType::Internal:
+    case Protocol::ProtocolType::LV2:
+    case Protocol::ProtocolType::LADSPA:
+    case Protocol::ProtocolType::VST:
+    case Protocol::ProtocolType::VST3:
+    case Protocol::ProtocolType::AudioUnit:
+    case Protocol::ProtocolType::CLAP:
+      return true;
+    default:
+      return false;
+    }
+}
+} // namespace
 
 std::string
 Protocol::get_icon_name (ProtocolType prot)
@@ -47,22 +66,18 @@ Protocol::get_icon_name (ProtocolType prot)
 std::string
 Protocol::to_string (ProtocolType prot)
 {
-  return std::string{ plugin_protocol_strings.at (ENUM_VALUE_TO_INT (prot)) };
+  return std::string{ magic_enum::enum_name (prot) };
 }
 
 Protocol::ProtocolType
 Protocol::from_string (const std::string &str)
 {
-  size_t i = 0;
-  for (const auto &cur_str : plugin_protocol_strings)
+  const auto parsed = magic_enum::enum_cast<ProtocolType> (str);
+  if (!parsed.has_value ())
     {
-      if (cur_str == str)
-        {
-          return (ProtocolType) i;
-        }
-      ++i;
+      throw std::runtime_error ("Invalid protocol type: " + str);
     }
-  throw std::runtime_error ("Invalid protocol type: " + str);
+  return *parsed;
 }
 
 bool
@@ -80,35 +95,24 @@ Protocol::is_supported (ProtocolType protocol)
   return true;
 }
 
-namespace
-{
-const zrythm::utils::ConstBidirectionalMap<Protocol::ProtocolType, juce::String>
-  juce_format_mappings = {
-    { Protocol::ProtocolType::Internal,  "Internal"  },
-    { Protocol::ProtocolType::LV2,       "LV2"       },
-    { Protocol::ProtocolType::LADSPA,    "LADSPA"    },
-    { Protocol::ProtocolType::VST,       "VST"       },
-    { Protocol::ProtocolType::VST3,      "VST3"      },
-    { Protocol::ProtocolType::AudioUnit, "AudioUnit" },
-    { Protocol::ProtocolType::CLAP,      "CLAP"      },
-};
-}
-
 Protocol::ProtocolType
 Protocol::from_juce_format_name (const juce::String &str)
 {
-  const auto ret = juce_format_mappings.find_by_value (str);
-  if (ret)
-    return *ret;
-  throw std::runtime_error ("Unknown protocol type: " + str.toStdString ());
+  const auto parsed = magic_enum::enum_cast<ProtocolType> (str.toStdString ());
+  if (!parsed.has_value () || !juce_hosts (*parsed))
+    {
+      throw std::runtime_error ("Unknown protocol type: " + str.toStdString ());
+    }
+  return *parsed;
 }
 
 juce::String
 Protocol::to_juce_format_name (ProtocolType type)
 {
-  const auto ret = juce_format_mappings.find_by_key (type);
-  if (ret)
-    return *ret;
-  throw std::runtime_error (
-    fmt::format ("Unknown protocol type: {}", ENUM_NAME (type)));
+  if (!juce_hosts (type))
+    {
+      throw std::runtime_error (
+        fmt::format ("Unknown protocol type: {}", ENUM_NAME (type)));
+    }
+  return juce::String{ std::string{ magic_enum::enum_name (type) } };
 }

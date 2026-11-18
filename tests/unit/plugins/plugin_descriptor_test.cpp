@@ -80,7 +80,7 @@ TEST (PluginDescriptorTest, TypeDetection)
 
 TEST (PluginDescriptorTest, ModulatorDetectionRequiresCvOutputs)
 {
-  auto without_cv_outputs = create_test_descriptor (PluginCategory::MODULATOR);
+  auto without_cv_outputs = create_test_descriptor (PluginCategory::Modulator);
   without_cv_outputs->num_audio_ins_ = 0;
   without_cv_outputs->num_audio_outs_ = 0;
   EXPECT_FALSE (without_cv_outputs->isModulator ());
@@ -94,7 +94,7 @@ TEST (PluginDescriptorTest, ModulatorDetectionRequiresCvOutputs)
 
 TEST (PluginDescriptorTest, MidiDetectionRequiresMidiOutputs)
 {
-  auto without_midi_outputs = create_test_descriptor (PluginCategory::MIDI);
+  auto without_midi_outputs = create_test_descriptor (PluginCategory::Midi);
   without_midi_outputs->num_audio_ins_ = 0;
   without_midi_outputs->num_audio_outs_ = 0;
   without_midi_outputs->num_midi_ins_ = 1;
@@ -141,12 +141,12 @@ TEST (PluginDescriptorTest, CategoryConversion)
     PluginDescriptor::string_to_category (u8"Equalizer"), PluginCategory::EQ);
 
   EXPECT_EQ (
-    PluginDescriptor::category_to_string (PluginCategory::REVERB), u8"Reverb");
+    PluginDescriptor::category_to_string (PluginCategory::Reverb), u8"Reverb");
 }
 
 TEST (PluginDescriptorTest, CloneAndEquality)
 {
-  auto original = create_test_descriptor (PluginCategory::COMPRESSOR);
+  auto original = create_test_descriptor (PluginCategory::Compressor);
   auto clone = utils::clone_unique (*original);
 
   EXPECT_TRUE (original->is_same_plugin (*clone));

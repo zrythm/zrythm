@@ -7,6 +7,7 @@
 #include "dsp/snap_grid.h"
 #include "utils/algorithms.h"
 #include "utils/enum_utils.h"
+#include "utils/serialization.h"
 
 #include <nlohmann/json.hpp>
 

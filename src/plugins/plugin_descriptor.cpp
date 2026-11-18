@@ -112,9 +112,11 @@ PluginDescriptor::format () const
   // The Internal protocol is Zrythm's own plugin family; its user-facing
   // format label reads "Built-in"
   if (protocol_ == Protocol::ProtocolType::Internal)
-    return QStringLiteral ("Built-in");
+    {
+      return QStringLiteral ("Built-in");
+    }
   return utils::Utf8String::
-    from_juce_string (to_juce_description ()->pluginFormatName)
+    from_juce_string (Protocol::to_juce_format_name (protocol_))
       .to_qstring ();
 }
 
@@ -214,47 +216,11 @@ PluginDescriptor::isInstrument () const
 bool
 PluginDescriptor::isEffect () const
 {
-  constexpr std::array<PluginCategory, 37> effect_categories = {
-    PluginCategory::Delay,
-    PluginCategory::REVERB,
-    PluginCategory::DISTORTION,
-    PluginCategory::WAVESHAPER,
-    PluginCategory::DYNAMICS,
-    PluginCategory::AMPLIFIER,
-    PluginCategory::COMPRESSOR,
-    PluginCategory::ENVELOPE,
-    PluginCategory::EXPANDER,
-    PluginCategory::GATE,
-    PluginCategory::LIMITER,
-    PluginCategory::FILTER,
-    PluginCategory::ALLPASS_FILTER,
-    PluginCategory::BANDPASS_FILTER,
-    PluginCategory::COMB_FILTER,
-    PluginCategory::EQ,
-    PluginCategory::MULTI_EQ,
-    PluginCategory::PARA_EQ,
-    PluginCategory::HIGHPASS_FILTER,
-    PluginCategory::LOWPASS_FILTER,
-    PluginCategory::GENERATOR,
-    PluginCategory::CONSTANT,
-    PluginCategory::OSCILLATOR,
-    PluginCategory::MODULATOR,
-    PluginCategory::CHORUS,
-    PluginCategory::FLANGER,
-    PluginCategory::PHASER,
-    PluginCategory::SIMULATOR,
-    PluginCategory::SIMULATOR_REVERB,
-    PluginCategory::SPATIAL,
-    PluginCategory::SPECTRAL,
-    PluginCategory::PITCH,
-    PluginCategory::UTILITY,
-    PluginCategory::ANALYZER,
-    PluginCategory::CONVERTER,
-    PluginCategory::FUNCTION,
-    PluginCategory::MIXER
-  };
-  return (category_ > PluginCategory::None
-          && std::ranges::contains (effect_categories, category_))
+  // every category except these three describes an audio effect
+  const bool categorized_as_effect =
+    category_ != PluginCategory::None && category_ != PluginCategory::Instrument
+    && category_ != PluginCategory::Midi;
+  return categorized_as_effect
          || (category_ == PluginCategory::None && num_audio_ins_ > 0 && num_audio_outs_ > 0);
 }
 
@@ -272,60 +238,36 @@ PluginDescriptor::isMidiModifier () const
 
 namespace
 {
-const utils::ConstBidirectionalMap<PluginCategory, std::string_view> category_map = {
-  { PluginCategory::Delay,            "Delay"           },
-  { PluginCategory::REVERB,           "Reverb"          },
-  { PluginCategory::DISTORTION,       "Distortion"      },
-  { PluginCategory::WAVESHAPER,       "Waveshaper"      },
-  { PluginCategory::DYNAMICS,         "Dynamics"        },
-  { PluginCategory::AMPLIFIER,        "Amplifier"       },
-  { PluginCategory::COMPRESSOR,       "Compressor"      },
-  { PluginCategory::ENVELOPE,         "Envelope"        },
-  { PluginCategory::EXPANDER,         "Expander"        },
-  { PluginCategory::GATE,             "Gate"            },
-  { PluginCategory::LIMITER,          "Limiter"         },
-  { PluginCategory::FILTER,           "Filter"          },
-  { PluginCategory::ALLPASS_FILTER,   "Allpass"         },
-  { PluginCategory::BANDPASS_FILTER,  "Bandpass"        },
-  { PluginCategory::COMB_FILTER,      "Comb"            },
-  { PluginCategory::EQ,               "Equaliser"       },
-  { PluginCategory::MULTI_EQ,         "Multiband"       },
-  { PluginCategory::PARA_EQ,          "Para"            },
-  { PluginCategory::HIGHPASS_FILTER,  "Highpass"        },
-  { PluginCategory::LOWPASS_FILTER,   "Lowpass"         },
-  { PluginCategory::GENERATOR,        "Generator"       },
-  { PluginCategory::CONSTANT,         "Constant"        },
-  { PluginCategory::Instrument,       "Instrument"      },
-  { PluginCategory::OSCILLATOR,       "Oscillator"      },
-  { PluginCategory::MIDI,             "MIDI"            },
-  { PluginCategory::MODULATOR,        "Modulator"       },
-  { PluginCategory::CHORUS,           "Chorus"          },
-  { PluginCategory::FLANGER,          "Flanger"         },
-  { PluginCategory::PHASER,           "Phaser"          },
-  { PluginCategory::SIMULATOR,        "Simulator"       },
-  { PluginCategory::SIMULATOR_REVERB, "SimulatorReverb" },
-  { PluginCategory::SPATIAL,          "Spatial"         },
-  { PluginCategory::SPECTRAL,         "Spectral"        },
-  { PluginCategory::PITCH,            "Pitch"           },
-  { PluginCategory::UTILITY,          "Utility"         },
-  { PluginCategory::ANALYZER,         "Analyzer"        },
-  { PluginCategory::CONVERTER,        "Converter"       },
-  { PluginCategory::FUNCTION,         "Function"        },
-  { PluginCategory::MIXER,            "Mixer"           }
+/** Categories whose user-facing name differs from the enumerator name. */
+const utils::ConstBidirectionalMap<PluginCategory, std::string_view>
+  category_name_overrides = {
+    { PluginCategory::None,           "Plugin"    },
+    { PluginCategory::AllpassFilter,  "Allpass"   },
+    { PluginCategory::BandpassFilter, "Bandpass"  },
+    { PluginCategory::CombFilter,     "Comb"      },
+    { PluginCategory::EQ,             "Equaliser" },
+    { PluginCategory::MultiEQ,        "Multiband" },
+    { PluginCategory::ParaEQ,         "Para"      },
+    { PluginCategory::HighpassFilter, "Highpass"  },
+    { PluginCategory::LowpassFilter,  "Lowpass"   },
+    { PluginCategory::Midi,           "MIDI"      },
 };
 }
 
 PluginCategory
 PluginDescriptor::string_to_category (const utils::Utf8String &str)
 {
-  // Search through category_map
-  const auto res = category_map.find_by_value (str.str ());
-  if (res)
+  if (const auto res = category_name_overrides.find_by_value (str.str ()))
     {
       return *res;
     }
+  const auto parsed = magic_enum::enum_cast<PluginCategory> (str.str ());
+  if (parsed.has_value ())
+    {
+      return *parsed;
+    }
 
-  // Special case for "Equalizer" spelling variant
+  // "Equalizer" spelling variant
   if (str.str ().find ("Equalizer") != std::string::npos)
     {
       return PluginCategory::EQ;
@@ -337,34 +279,12 @@ PluginDescriptor::string_to_category (const utils::Utf8String &str)
 utils::Utf8String
 PluginDescriptor::category_to_string (PluginCategory category)
 {
-  const auto res = category_map.find_by_key (category);
-  if (res)
+  if (const auto res = category_name_overrides.find_by_key (category))
     {
       return utils::Utf8String::from_utf8_encoded_string (std::string{ *res });
     }
-
-  return u8"Plugin";
-}
-
-bool
-PluginDescriptor::has_custom_ui () const
-{
-  switch (protocol_)
-    {
-    case Protocol::ProtocolType::LV2:
-    case Protocol::ProtocolType::VST:
-    case Protocol::ProtocolType::VST3:
-    case Protocol::ProtocolType::AudioUnit:
-    case Protocol::ProtocolType::CLAP:
-    case Protocol::ProtocolType::JSFX:
-      return false;
-      break;
-    default:
-      return false;
-      break;
-    }
-
-  z_return_val_if_reached (false);
+  return utils::Utf8String::from_utf8_encoded_string (
+    std::string{ magic_enum::enum_name (category) });
 }
 
 utils::Utf8String
@@ -453,8 +373,8 @@ from_json (const nlohmann::json &j, PluginDescriptor &p)
   j.at (PluginDescriptor::kUniqueIdKey).get_to (p.unique_id_);
   p.juce_compat_deprecated_unique_id_ =
     j.value (PluginDescriptor::kDeprecatedUniqueIdKey, 0);
-  p.arch_ = j.value (
-    PluginDescriptor::kArchitectureKey, PluginArchitecture::ARCH_64_BIT);
+  p.arch_ =
+    j.value (PluginDescriptor::kArchitectureKey, PluginArchitecture::Arch64Bit);
   j.at (PluginDescriptor::kProtocolKey).get_to (p.protocol_);
   {
     const auto &val = j.at (PluginDescriptor::kPathOrIdKey);

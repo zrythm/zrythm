@@ -5,6 +5,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/clip.h"
 #include "structure/tracks/automation_track.h"
+#include "utils/serialization.h"
 
 #include <magic_enum/magic_enum.hpp>
 

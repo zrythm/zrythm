@@ -3,6 +3,7 @@
 
 #include "dsp/graph.h"
 #include "dsp/port_all.h"
+#include "utils/serialization.h"
 
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>

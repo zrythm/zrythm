@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <variant>
 
+#include "utils/enum_json.h"
 #include "utils/exceptions.h"
 #include "utils/qt.h"
 #include "utils/traits.h"
@@ -19,6 +20,16 @@
 #include <au/au.hh>
 #include <boost/unordered/concurrent_flat_map_fwd.hpp>
 #include <nlohmann/json.hpp>
+
+/* magic_enum's templates trip -Wshadow under the project's warning flags */
+#if defined(__GNUC__) || defined(__clang__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wshadow"
+#endif
+#include <magic_enum/magic_enum.hpp>
+#if defined(__GNUC__) || defined(__clang__)
+#  pragma GCC diagnostic pop
+#endif
 
 using zrythm::utils::ZrythmException;
 using namespace std::string_view_literals;
@@ -204,6 +215,60 @@ variant_from_json_with_builder (
   variant_deserialize_data (j, var);
 }
 
+/**
+ * @brief True for enums marked as flag sets with ENUM_ENABLE_BITSET().
+ *
+ * Flag enums serialize as an array of the names of their set bits.
+ */
+template <typename T>
+concept FlagEnum =
+  EnumType<T>
+  && std::same_as<
+    bool,
+    std::remove_cvref_t<decltype (magic_enum::customize::enum_range<T>::is_flags)>>;
+
+/**
+ * @brief True for enums that the central enum serializer handles.
+ *
+ * This is every enum except flag enums (ENUM_ENABLE_BITSET()) and enums
+ * marked with ENUM_CUSTOM_JSON() (see utils/enum_json.h).
+ */
+template <typename T>
+concept NameSerializableEnum =
+  EnumType<T> && !FlagEnum<T>
+  && !zrythm::utils::serialization::use_custom_enum_json<T>::value;
+
+/**
+ * @brief True for flag enums the central flag serializer handles.
+ *
+ * This is every enum marked with ENUM_ENABLE_BITSET() except enums marked
+ * with ENUM_CUSTOM_JSON() (see utils/enum_json.h).
+ */
+template <typename T>
+concept FlagSerializableEnum =
+  FlagEnum<T> && !zrythm::utils::serialization::use_custom_enum_json<T>::value;
+
+/**
+ * @brief Error message for a JSON value that matches no enumerator of @p E,
+ * listing the accepted names.
+ */
+template <EnumType E>
+std::string
+invalid_enum_value_message (const nlohmann::json &json_value)
+{
+  std::string allowed;
+  for (const auto name : magic_enum::enum_names<E> ())
+    {
+      if (!allowed.empty ())
+        {
+          allowed += ", ";
+        }
+      allowed += std::string (name);
+    }
+  return "invalid " + std::string (magic_enum::enum_type_name<E> ()) + " value "
+         + json_value.dump () + ": expected one of: " + allowed;
+}
+
 }; // namespace zrythm::utils::serialization
 
 namespace nlohmann
@@ -332,6 +397,129 @@ template <zrythm::utils::StrongTypedef T> struct adl_serializer<T>
   static void from_json (const json &json_value, T &strong_type)
   {
     json_value.get_to (type_safe::get (strong_type));
+  }
+};
+
+/**
+ * @brief Enum specialization: enums serialize as their enumerator names.
+ *
+ * Values that match no enumerator name throw when written or read, with an
+ * error naming the accepted names.
+ *
+ * Enums marked as flags with ENUM_ENABLE_BITSET() serialize through the
+ * flag serializer below; enums marked with ENUM_CUSTOM_JSON() serialize
+ * through their own to_json/from_json.
+ */
+template <zrythm::utils::serialization::NameSerializableEnum E>
+struct adl_serializer<E>
+{
+  static void to_json (json &json_value, E value)
+  {
+    const auto name = magic_enum::enum_name (value);
+    if (name.empty ())
+      {
+        throw json::out_of_range::create (
+          401,
+          std::string (magic_enum::enum_type_name<E> ()) + " value "
+            + std::to_string (magic_enum::enum_integer (value))
+            + " matches no enumerator name",
+          nullptr);
+      }
+    json_value = std::string (name);
+  }
+
+  static void from_json (const json &json_value, E &value)
+  {
+    if (!json_value.is_string ())
+      {
+        throw json::type_error::create (
+          302,
+          zrythm::utils::serialization::invalid_enum_value_message<E> (
+            json_value),
+          nullptr);
+      }
+    const auto parsed =
+      magic_enum::enum_cast<E> (json_value.get<std::string> ());
+    if (!parsed.has_value ())
+      {
+        throw json::out_of_range::create (
+          401,
+          zrythm::utils::serialization::invalid_enum_value_message<E> (
+            json_value),
+          nullptr);
+      }
+    value = *parsed;
+  }
+};
+
+/**
+ * @brief Flag enum specialization: enums marked with ENUM_ENABLE_BITSET()
+ * serialize as an array of the names of their set bits.
+ *
+ * Writing throws when a set bit matches no enumerator name. Reading accepts
+ * an array of flag names and throws on any unknown name.
+ */
+template <zrythm::utils::serialization::FlagSerializableEnum E>
+struct adl_serializer<E>
+{
+  using Unsigned = std::make_unsigned_t<std::underlying_type_t<E>>;
+
+  static void to_json (json &json_value, E value)
+  {
+    auto remaining = static_cast<Unsigned> (magic_enum::enum_underlying (value));
+    json_value = json::array ();
+    for (const auto flag : magic_enum::enum_values<E> ())
+      {
+        const auto bits =
+          static_cast<Unsigned> (magic_enum::enum_underlying (flag));
+        if ((remaining & bits) != 0)
+          {
+            json_value.push_back (std::string (magic_enum::enum_name (flag)));
+            remaining &= static_cast<Unsigned> (~bits);
+          }
+      }
+    if (remaining != 0)
+      {
+        throw json::out_of_range::create (
+          401,
+          std::string (magic_enum::enum_type_name<E> ()) + " value "
+            + std::to_string (magic_enum::enum_underlying (value))
+            + " contains bits matching no enumerator name",
+          nullptr);
+      }
+  }
+
+  static void from_json (const json &json_value, E &value)
+  {
+    if (!json_value.is_array ())
+      {
+        throw json::type_error::create (
+          302,
+          zrythm::utils::serialization::invalid_enum_value_message<E> (
+            json_value),
+          nullptr);
+      }
+    auto bits = Unsigned{ 0 };
+    for (const auto &item : json_value)
+      {
+        if (!item.is_string ())
+          {
+            throw json::type_error::create (
+              302,
+              zrythm::utils::serialization::invalid_enum_value_message<E> (item),
+              nullptr);
+          }
+        const auto parsed = magic_enum::enum_cast<E> (item.get<std::string> ());
+        if (!parsed.has_value ())
+          {
+            throw json::out_of_range::create (
+              401,
+              zrythm::utils::serialization::invalid_enum_value_message<E> (item),
+              nullptr);
+          }
+        bits |= static_cast<Unsigned> (magic_enum::enum_underlying (*parsed));
+      }
+    value = static_cast<E> (bits);
   }
 };
 

@@ -7,6 +7,7 @@
 #include "utils/enum_utils.h"
 #include "utils/logger.h"
 #include "utils/midi.h"
+#include "utils/serialization.h"
 #include "utils/utf8_string.h"
 
 #include <boost/container/static_vector.hpp>
@@ -339,23 +340,14 @@ from_json (const nlohmann::json &j, ChordDescriptor &c)
   // which would cause excessive iteration / UB in getMidiPitches().
   c.inversion_ = std::clamp (c.inversion_, c.minInversion (), c.maxInversion ());
 
-  // Validate enum fields from untrusted JSON. Invalid values are reset to
-  // safe defaults to prevent out-of-bounds access in string lookup tables.
-  if (!magic_enum::enum_contains (c.root_note_))
-    c.root_note_ = MusicalNote::C;
-  if (!magic_enum::enum_contains (c.type_))
-    c.type_ = ChordType::None;
-  if (!magic_enum::enum_contains (c.accent_))
-    c.accent_ = ChordAccent::None;
-
   if (j.contains ("bassNote"))
     {
-      auto bass = j.at ("bassNote").get<MusicalNote> ();
-      c.bass_note_ =
-        magic_enum::enum_contains (bass) ? std::optional (bass) : std::nullopt;
+      c.bass_note_ = j.at ("bassNote").get<MusicalNote> ();
     }
   else
-    c.bass_note_ = std::nullopt;
+    {
+      c.bass_note_ = std::nullopt;
+    }
 }
 
 } // namespace zrythm::dsp

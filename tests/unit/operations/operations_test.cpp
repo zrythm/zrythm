@@ -717,7 +717,7 @@ TEST_F (OperationsTest, TrackAddRefusesUnknownType)
   EXPECT_NE (report.message.find ("'audio'"), std::string::npos);
 }
 
-TEST_F (OperationsTest, TrackAddAcceptsIntegerEnumValue)
+TEST_F (OperationsTest, TrackAddRefusesNumericType)
 {
   auto report = dispatch (
     "track.add",
@@ -725,9 +725,9 @@ TEST_F (OperationsTest, TrackAddAcceptsIntegerEnumValue)
       { "type", ENUM_VALUE_TO_INT (structure::tracks::Track::Type::Midi) }
   });
 
-  ASSERT_TRUE (report.applied ()) << report.message;
-  EXPECT_EQ (undo_stack_->count (), 1);
-  undo_stack_->undo ();
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("expected a name"), std::string::npos);
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 TEST_F (OperationsTest, TrackAddRefusesWhenNoMasterTrack)
@@ -766,10 +766,10 @@ TEST_F (OperationsTest, TrackListReturnsSummaries)
   const auto &tracks = report.result.at ("tracks");
   ASSERT_EQ (tracks.size (), 4);
   EXPECT_EQ (tracks.at (3).at ("name").get<std::string> (), "Drums");
-  // Enums serialize as integers in this project
+  // Enums serialize as their enumerator names
   EXPECT_EQ (
-    tracks.at (3).at ("type").get<int> (),
-    ENUM_VALUE_TO_INT (structure::tracks::Track::Type::Audio));
+    tracks.at (3).at ("type").get<std::string> (),
+    std::string (ENUM_NAME (structure::tracks::Track::Type::Audio)));
   EXPECT_EQ (report.result.at ("total").get<int> (), 4);
   EXPECT_EQ (report.revision_after, report.revision_before);
 }

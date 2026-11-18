@@ -28,7 +28,7 @@ Schema for Zrythm project files (`.zpj`).
 {
   "documentType": "ZrythmProject",
   "formatMajor": 2,
-  "formatMinor": 1,
+  "formatMinor": 2,
   "appVersion": "2.0.0",
   "datetime": "2026-01-28T12:00:00Z",
   "title": "Project Name",
@@ -44,7 +44,14 @@ Schema for Zrythm project files (`.zpj`).
 ### Key Concepts
 
 - **Registries**: UUID-indexed objects deserialized first, then referenced
-- **Format versioning**: `formatMajor` for breaking changes, `formatMinor` for additions
+- **Format versioning**: `formatMajor` for breaking changes, `formatMinor`
+  for additions; the loader refuses any file older than the current format
+  instead of migrating it
+- **Enum encoding**: enums serialize as their enumerator names; flag enums
+  (marked with `ENUM_ENABLE_BITSET()`) serialize as an array of the names of
+  their set bits. Enum fields list the accepted names, and the
+  `SchemaEnumLists` integration test compares every list against the C++
+  enum reflection
 - **Validation**: Embedded at compile-time, enforced on save and load
 
 ### Migration

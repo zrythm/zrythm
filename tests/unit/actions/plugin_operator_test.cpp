@@ -139,8 +139,8 @@ protected:
       is_instrument
         ? plugins::PluginCategory::Instrument
         : (is_midi_modifier
-             ? plugins::PluginCategory::MIDI
-             : plugins::PluginCategory::REVERB);
+             ? plugins::PluginCategory::Midi
+             : plugins::PluginCategory::Reverb);
 
     auto config = std::make_unique<plugins::PluginConfiguration> ();
     config->descr_ = std::move (descriptor);

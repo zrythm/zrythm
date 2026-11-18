@@ -7,6 +7,7 @@
 
 #include "structure/arrangement/clip.h"
 #include "structure/arrangement/loop_segment_iterator.h"
+#include "utils/serialization.h"
 
 #include <au/math.hh>
 #include <nlohmann/json.hpp>

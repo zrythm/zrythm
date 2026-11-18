@@ -39,7 +39,7 @@ class ProjectJsonSerializer
 {
 public:
   static constexpr utils::Version
-                        SCHEMA_VERSION{ .major = 2, .minor = 1, .patch = {} };
+                        SCHEMA_VERSION{ .major = 2, .minor = 2, .patch = {} };
   static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
   static constexpr auto kProjectData = "projectData"sv;
   static constexpr auto kUiState = "uiState"sv;

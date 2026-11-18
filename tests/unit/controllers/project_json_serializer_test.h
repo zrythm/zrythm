@@ -43,8 +43,8 @@ create_minimal_valid_project_json ()
   // Top-level required fields
   j["documentType"] = "ZrythmProject";
   j["schemaVersion"] = nlohmann::json::object ();
-  j["schemaVersion"]["major"] = 2;
-  j["schemaVersion"]["minor"] = 1;
+  j["schemaVersion"]["major"] = ProjectJsonSerializer::SCHEMA_VERSION.major;
+  j["schemaVersion"]["minor"] = ProjectJsonSerializer::SCHEMA_VERSION.minor;
   j["appVersion"] = nlohmann::json::object ();
   j["appVersion"]["major"] = 2;
   j["appVersion"]["minor"] = 0;

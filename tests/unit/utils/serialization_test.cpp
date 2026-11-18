@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cstdint>
 #include <numbers>
+#include <utility>
 
+#include "utils/enum_utils.h"
 #include "utils/serialization.h"
 #include "utils/units.h"
 
@@ -372,4 +375,162 @@ TEST (SerializationTest, AuQuantity)
   auto deserialized_complex = json4.get<decltype (complex_quantity)> ();
   EXPECT_DOUBLE_EQ (
     deserialized_complex.in (ticks), complex_quantity.in (ticks));
+}
+
+// ============================================================================
+// Enum serialization
+// ============================================================================
+
+enum class TestColor
+{
+  Red,
+  Green,
+  Blue
+};
+
+enum TestFruit
+{
+  Apple,
+  Banana,
+  Cherry
+};
+
+enum class TestPermission : std::uint32_t
+{
+  None = 0,
+  Read = 1 << 0,
+  Write = 1 << 1,
+};
+ENUM_ENABLE_BITSET (TestPermission);
+
+/* keeps its custom lowercase names: the central enum serializer must not
+ * take over enums that declare their own to_json */
+enum class TestTransport
+{
+  Car,
+  Train
+};
+NLOHMANN_JSON_SERIALIZE_ENUM (
+  TestTransport,
+  {
+    { TestTransport::Car,   "automobile" },
+    { TestTransport::Train, "railway"    }
+})
+ENUM_CUSTOM_JSON (TestTransport);
+
+TEST (SerializationTest, EnumSerializesAsName)
+{
+  const nlohmann::json json = TestColor::Green;
+  EXPECT_TRUE (json.is_string ());
+  EXPECT_EQ (json.get<std::string> (), "Green");
+}
+
+TEST (SerializationTest, UnscopedEnumSerializesAsName)
+{
+  const nlohmann::json json = Banana;
+  EXPECT_EQ (json.get<std::string> (), "Banana");
+}
+
+TEST (SerializationTest, EnumRoundTrip)
+{
+  for (const auto color : magic_enum::enum_values<TestColor> ())
+    {
+      const nlohmann::json json = color;
+      EXPECT_EQ (json.get<TestColor> (), color)
+        << "round trip failed for " << json;
+    }
+}
+
+TEST (SerializationTest, EnumIntegerValueThrows)
+{
+  const nlohmann::json json = 1;
+  EXPECT_THROW (json.get<TestColor> (), nlohmann::json::exception);
+}
+
+TEST (SerializationTest, EnumUnknownNameThrowsWithAllowedNames)
+{
+  const nlohmann::json json = "Sparkly";
+  try
+    {
+      const auto color = json.get<TestColor> ();
+      FAIL () << "expected throw, got " << static_cast<int> (color);
+    }
+  catch (const nlohmann::json::exception &e)
+    {
+      const auto what = std::string (e.what ());
+      EXPECT_NE (what.find ("Sparkly"), std::string::npos);
+      EXPECT_NE (what.find ("Red, Green, Blue"), std::string::npos);
+    }
+}
+
+TEST (SerializationTest, EnumNonStringValueThrows)
+{
+  const nlohmann::json float_json = 1.5;
+  EXPECT_THROW (float_json.get<TestColor> (), nlohmann::json::exception);
+
+  const nlohmann::json null_json = nullptr;
+  EXPECT_THROW (null_json.get<TestColor> (), nlohmann::json::exception);
+}
+
+TEST (SerializationTest, EnumValueWithoutNameThrowsWhenWritten)
+{
+  const auto unnamed = static_cast<TestColor> (100);
+  EXPECT_THROW (
+    [&] { (void) nlohmann::json (unnamed); }(), nlohmann::json::exception);
+}
+
+TEST (SerializationTest, FlagEnumSerializesAsNameArray)
+{
+  const auto permissions = TestPermission::Read | TestPermission::Write;
+  const nlohmann::json json = permissions;
+  ASSERT_TRUE (json.is_array ());
+  ASSERT_EQ (json.size (), 2);
+  EXPECT_EQ (json[0].get<std::string> (), "Read");
+  EXPECT_EQ (json[1].get<std::string> (), "Write");
+  EXPECT_EQ (json.get<TestPermission> (), permissions);
+
+  const nlohmann::json single_json = TestPermission::Write;
+  ASSERT_TRUE (single_json.is_array ());
+  ASSERT_EQ (single_json.size (), 1);
+  EXPECT_EQ (single_json[0].get<std::string> (), "Write");
+  EXPECT_EQ (single_json.get<TestPermission> (), TestPermission::Write);
+
+  // a zero value round-trips through an empty array
+  const nlohmann::json none_json = TestPermission::None;
+  EXPECT_TRUE (none_json.empty ());
+  EXPECT_EQ (none_json.get<TestPermission> (), TestPermission::None);
+}
+
+TEST (SerializationTest, FlagEnumUnknownNameThrows)
+{
+  const nlohmann::json json = nlohmann::json::array ({ "Read", "Fly" });
+  EXPECT_THROW (json.get<TestPermission> (), nlohmann::json::exception);
+}
+
+TEST (SerializationTest, FlagEnumNonArrayThrows)
+{
+  const nlohmann::json string_json = "Read";
+  EXPECT_THROW (string_json.get<TestPermission> (), nlohmann::json::exception);
+
+  const nlohmann::json int_json = 3;
+  EXPECT_THROW (int_json.get<TestPermission> (), nlohmann::json::exception);
+}
+
+TEST (SerializationTest, FlagEnumUnnamedBitThrowsWhenWritten)
+{
+  const auto unnamed_bit = static_cast<TestPermission> (
+    std::to_underlying (TestPermission::Read) << 5);
+  EXPECT_THROW (
+    [&] { (void) nlohmann::json (unnamed_bit); }(), nlohmann::json::exception);
+}
+
+TEST (SerializationTest, EnumWithCustomToJsonKeepsItsMapping)
+{
+  const nlohmann::json json = TestTransport::Car;
+  EXPECT_EQ (json.get<std::string> (), "automobile");
+
+  EXPECT_EQ (
+    nlohmann::json ("railway").get<TestTransport> (), TestTransport::Train);
+  EXPECT_EQ (
+    nlohmann::json ("automobile").get<TestTransport> (), TestTransport::Car);
 }

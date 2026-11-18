@@ -208,20 +208,13 @@ public:
   static nlohmann::json describe ()
   {
     auto names = nlohmann::json::array ();
-    auto values = nlohmann::json::array ();
     for (auto entry : magic_enum::enum_entries<Enum> ())
       {
         names.push_back (std::string (entry.second));
-        values.push_back (magic_enum::enum_integer (entry.first));
       }
-    // Enums serialize as integers in this project; the names are accepted as
-    // input alongside the integers.
     return {
-      { "oneOf",
-       nlohmann::json::array (
-          { nlohmann::json{ { "type", "string" }, { "enum", std::move (names) } },
-            nlohmann::json{
-              { "type", "integer" }, { "enum", std::move (values) } } }) },
+      { "type", "string"          },
+      { "enum", std::move (names) },
     };
   }
 
@@ -244,32 +237,21 @@ public:
       {
         return std::unexpected (Refusal{ "this parameter is required" });
       }
-    if (value.is_string ())
+    if (!value.is_string ())
       {
-        const auto str = value.get<std::string> ();
-        const auto parsed = magic_enum::enum_cast<Enum> (str);
-        if (parsed.has_value ())
-          {
-            return EnumParam{ *parsed };
-          }
-        return std::unexpected (
-          Refusal{ fmt::format ("'{}' is not one of: {}", str, allowed_names) });
-      }
-    if (value.is_number_integer ())
-      {
-        const auto number = value.get<int> ();
-        const auto parsed = magic_enum::enum_cast<Enum> (number);
-        if (parsed.has_value ())
-          {
-            return EnumParam{ *parsed };
-          }
         return std::unexpected (
           Refusal{ fmt::format (
-            "{} is not a valid value (allowed: {})", number, allowed_names) });
+            "expected a name (one of: {}), got {}", allowed_names,
+            value.dump ()) });
+      }
+    const auto str = value.get<std::string> ();
+    const auto parsed = magic_enum::enum_cast<Enum> (str);
+    if (parsed.has_value ())
+      {
+        return EnumParam{ *parsed };
       }
     return std::unexpected (
-      Refusal{ fmt::format (
-        "expected a name (one of: {}) or an integer value", allowed_names) });
+      Refusal{ fmt::format ("'{}' is not one of: {}", str, allowed_names) });
   }
 
   /** Rejects enumerator values that are not part of the enumeration. */

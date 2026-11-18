@@ -78,8 +78,7 @@ ParameterRange::convertTo0To1 (float real_val) const
 void
 to_json (nlohmann::json &j, const ParameterRange &p)
 {
-  j["type"] =
-    static_cast<std::underlying_type_t<ParameterRange::Type>> (p.type_);
+  j["type"] = p.type_;
   j["min"] = p.minf_;
   j["max"] = p.maxf_;
   j["def"] = p.deff_;
@@ -93,8 +92,7 @@ to_json (nlohmann::json &j, const ParameterRange &p)
 void
 from_json (const nlohmann::json &j, ParameterRange &p)
 {
-  p.type_ = static_cast<ParameterRange::Type> (
-    j.at ("type").get<std::underlying_type_t<ParameterRange::Type>> ());
+  j.at ("type").get_to (p.type_);
   j.at ("min").get_to (p.minf_);
   j.at ("max").get_to (p.maxf_);
   j.at ("def").get_to (p.deff_);

@@ -150,11 +150,11 @@ protected:
       }
     else if (is_midi_modifier)
       {
-        descriptor->category_ = plugins::PluginCategory::MIDI;
+        descriptor->category_ = plugins::PluginCategory::Midi;
       }
     else
       {
-        descriptor->category_ = plugins::PluginCategory::REVERB;
+        descriptor->category_ = plugins::PluginCategory::Reverb;
       }
 
     return descriptor;

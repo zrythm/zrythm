@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/midi_control_event.h"
-
-#include <nlohmann/json.hpp>
+#include "utils/serialization.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -126,7 +125,7 @@ void
 to_json (nlohmann::json &j, const MidiControlEvent &ev)
 {
   to_json (j, static_cast<const ArrangerObject &> (ev));
-  j[MidiControlEvent::kControlTypeKey] = static_cast<int> (ev.type_);
+  j[MidiControlEvent::kControlTypeKey] = ev.type_;
   j[MidiControlEvent::kChannelKey] = ev.channel_;
   j[MidiControlEvent::kControllerKey] = ev.controller_;
   j[MidiControlEvent::kValueKey] = ev.value_;
@@ -136,17 +135,7 @@ void
 from_json (const nlohmann::json &j, MidiControlEvent &ev)
 {
   from_json (j, static_cast<ArrangerObject &> (ev));
-  const auto type_int = j.at (MidiControlEvent::kControlTypeKey).get<int> ();
-  if (
-    type_int < 0
-    || type_int > static_cast<int> (MidiControlEvent::EventType::ProgramChange))
-    {
-      throw std::out_of_range (
-        fmt::format (
-          "Invalid MidiControlEvent type: {}. Expected 0-{}.", type_int,
-          static_cast<int> (MidiControlEvent::EventType::ProgramChange)));
-    }
-  ev.type_ = static_cast<MidiControlEvent::EventType> (type_int);
+  j.at (MidiControlEvent::kControlTypeKey).get_to (ev.type_);
   ev.channel_ = j.at (MidiControlEvent::kChannelKey).get<std::uint8_t> ();
   ev.controller_ = j.at (MidiControlEvent::kControllerKey).get<std::uint8_t> ();
   ev.value_ = j.at (MidiControlEvent::kValueKey).get<std::uint16_t> ();

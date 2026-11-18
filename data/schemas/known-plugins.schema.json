@@ -51,10 +51,50 @@
             "description": "Plugin website URI, when reported"
           },
           "category": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 39,
-            "description": "PluginCategory enum value"
+            "description": "PluginCategory enumerator name",
+            "type": "string",
+            "enum": [
+              "None",
+              "Delay",
+              "Reverb",
+              "Distortion",
+              "Waveshaper",
+              "Dynamics",
+              "Amplifier",
+              "Compressor",
+              "Envelope",
+              "Expander",
+              "Gate",
+              "Limiter",
+              "Filter",
+              "AllpassFilter",
+              "BandpassFilter",
+              "CombFilter",
+              "EQ",
+              "MultiEQ",
+              "ParaEQ",
+              "HighpassFilter",
+              "LowpassFilter",
+              "Generator",
+              "Constant",
+              "Instrument",
+              "Oscillator",
+              "Midi",
+              "Modulator",
+              "Chorus",
+              "Flanger",
+              "Phaser",
+              "Simulator",
+              "SimulatorReverb",
+              "Spatial",
+              "Spectral",
+              "Pitch",
+              "Utility",
+              "Analyzer",
+              "Converter",
+              "Function",
+              "Mixer"
+            ]
           },
           "categoryString": {
             "type": "string",
@@ -109,16 +149,29 @@
             "description": "Legacy JUCE identifier retained for instantiation"
           },
           "architecture": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 1,
-            "description": "PluginArchitecture enum value"
+            "description": "PluginArchitecture enumerator name (Arch32Bit, Arch64Bit)",
+            "type": "string",
+            "enum": [
+              "Arch32Bit",
+              "Arch64Bit"
+            ]
           },
           "protocol": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 10,
-            "description": "ProtocolType enum value"
+            "description": "ProtocolType enumerator name (Internal, LV2, DSSI, LADSPA, VST, VST3, AudioUnit, SFZ, SF2, CLAP, JSFX)",
+            "type": "string",
+            "enum": [
+              "Internal",
+              "LV2",
+              "DSSI",
+              "LADSPA",
+              "VST",
+              "VST3",
+              "AudioUnit",
+              "SFZ",
+              "SF2",
+              "CLAP",
+              "JSFX"
+            ]
           },
           "pathOrId": {
             "type": "object",
@@ -171,10 +224,21 @@
         ],
         "properties": {
           "protocol": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 10,
-            "description": "ProtocolType enum value of the scanned format"
+            "description": "ProtocolType enumerator name",
+            "type": "string",
+            "enum": [
+              "Internal",
+              "LV2",
+              "DSSI",
+              "LADSPA",
+              "VST",
+              "VST3",
+              "AudioUnit",
+              "SFZ",
+              "SF2",
+              "CLAP",
+              "JSFX"
+            ]
           },
           "identifier": {
             "type": "string",

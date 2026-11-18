@@ -6,6 +6,7 @@
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track.h"
 #include "utils/logger.h"
+#include "utils/serialization.h"
 #include "utils/tracy.h"
 #include "utils/views.h"
 

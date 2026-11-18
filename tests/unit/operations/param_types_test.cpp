@@ -164,38 +164,28 @@ TEST_F (ParamTypesTest, EnumParamAcceptsKnownNamesAndRefusesUnknown)
   const auto reason = lowercase.error ().reason;
   EXPECT_NE (reason.find ("'audio'"), std::string::npos);
   EXPECT_NE (reason.find ("Audio"), std::string::npos);
+
+  const auto numeric =
+    EnumParam<Track::Type>::parse (nlohmann::json (0), environment_);
+  ASSERT_FALSE (numeric.has_value ());
+  EXPECT_NE (
+    numeric.error ().reason.find ("expected a name"), std::string::npos);
 }
 
-TEST_F (ParamTypesTest, EnumParamSchemaListsAllValues)
+TEST_F (ParamTypesTest, EnumParamSchemaListsAllNames)
 {
   using structure::tracks::Track;
   const auto schema = EnumParam<Track::Type>::describe ();
-  ASSERT_TRUE (schema.contains ("oneOf"));
-  const auto &branches = schema.at ("oneOf");
-  ASSERT_EQ (branches.size (), 2);
+  EXPECT_EQ (schema.at ("type").get<std::string> (), "string");
 
-  const auto &by_name = branches.at (0);
-  EXPECT_EQ (by_name.at ("type").get<std::string> (), "string");
-  const auto &names = by_name.at ("enum");
-  EXPECT_EQ (names.size (), magic_enum::enum_count<Track::Type> ());
+  const auto &names = schema.at ("enum");
+  ASSERT_EQ (names.size (), magic_enum::enum_count<Track::Type> ());
   bool found_audio = false;
   for (const auto &name : names)
     {
       found_audio |= name.get<std::string> () == "Audio";
     }
   EXPECT_TRUE (found_audio);
-
-  const auto &by_value = branches.at (1);
-  EXPECT_EQ (by_value.at ("type").get<std::string> (), "integer");
-  const auto &values = by_value.at ("enum");
-  EXPECT_EQ (values.size (), magic_enum::enum_count<Track::Type> ());
-  bool found_audio_value = false;
-  for (const auto &value : values)
-    {
-      found_audio_value |=
-        value.get<int> () == ENUM_VALUE_TO_INT (Track::Type::Audio);
-    }
-  EXPECT_TRUE (found_audio_value);
 }
 
 TEST_F (ParamTypesTest, TrackParamRefusesNonUuidInput)

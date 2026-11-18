@@ -180,31 +180,31 @@ TEST_F (SpeakerArrangementTest, JsonFormat)
 {
   nlohmann::json j;
   to_json (j, SpeakerArrangement::stereo ());
-  EXPECT_EQ (j.at ("kind").get<std::string> (), "speakers");
+  EXPECT_EQ (j.at ("kind").get<std::string> (), "Speakers");
   EXPECT_EQ (
     j.at ("speakers").get<uint64_t> (),
     speaker_bits (Speaker::Left, Speaker::Right));
 
   nlohmann::json j_ambi;
   to_json (j_ambi, SpeakerArrangement::ambisonics (2));
-  EXPECT_EQ (j_ambi.at ("kind").get<std::string> (), "ambisonics");
+  EXPECT_EQ (j_ambi.at ("kind").get<std::string> (), "Ambisonics");
   EXPECT_EQ (j_ambi.at ("ambisonicOrder").get<uint64_t> (), 2);
-  EXPECT_EQ (j_ambi.at ("ambisonicOrdering").get<std::string> (), "acn");
-  EXPECT_EQ (j_ambi.at ("ambisonicNormalization").get<std::string> (), "sn3d");
+  EXPECT_EQ (j_ambi.at ("ambisonicOrdering").get<std::string> (), "Acn");
+  EXPECT_EQ (j_ambi.at ("ambisonicNormalization").get<std::string> (), "Sn3d");
 
   nlohmann::json j_discrete;
   to_json (j_discrete, SpeakerArrangement::discrete_channels (5));
-  EXPECT_EQ (j_discrete.at ("kind").get<std::string> (), "discrete");
+  EXPECT_EQ (j_discrete.at ("kind").get<std::string> (), "Discrete");
   EXPECT_EQ (j_discrete.at ("channels").get<uint64_t> (), 5);
 }
 
 TEST_F (SpeakerArrangementTest, JsonRejectsOutOfRangeAmbisonicOrder)
 {
   const auto j = nlohmann::json{
-    { "kind",                   "ambisonics" },
+    { "kind",                   "Ambisonics" },
     { "ambisonicOrder",         20           },
-    { "ambisonicOrdering",      "acn"        },
-    { "ambisonicNormalization", "sn3d"       }
+    { "ambisonicOrdering",      "Acn"        },
+    { "ambisonicNormalization", "Sn3d"       }
   };
   SpeakerArrangement arrangement;
   EXPECT_THROW (from_json (j, arrangement), std::out_of_range);
@@ -213,10 +213,10 @@ TEST_F (SpeakerArrangementTest, JsonRejectsOutOfRangeAmbisonicOrder)
 TEST_F (SpeakerArrangementTest, JsonRejectsFuMaOrderBeyondThird)
 {
   const auto j = nlohmann::json{
-    { "kind",                   "ambisonics" },
+    { "kind",                   "Ambisonics" },
     { "ambisonicOrder",         5            },
-    { "ambisonicOrdering",      "fuma"       },
-    { "ambisonicNormalization", "maxn"       }
+    { "ambisonicOrdering",      "FuMa"       },
+    { "ambisonicNormalization", "MaxN"       }
   };
   SpeakerArrangement arrangement;
   EXPECT_THROW (from_json (j, arrangement), std::out_of_range);

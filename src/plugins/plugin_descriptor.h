@@ -27,53 +27,53 @@ enum class PluginCategory : std::uint8_t
   /** None specified. */
   None,
   Delay,
-  REVERB,
-  DISTORTION,
-  WAVESHAPER,
-  DYNAMICS,
-  AMPLIFIER,
-  COMPRESSOR,
-  ENVELOPE,
-  EXPANDER,
-  GATE,
-  LIMITER,
-  FILTER,
-  ALLPASS_FILTER,
-  BANDPASS_FILTER,
-  COMB_FILTER,
+  Reverb,
+  Distortion,
+  Waveshaper,
+  Dynamics,
+  Amplifier,
+  Compressor,
+  Envelope,
+  Expander,
+  Gate,
+  Limiter,
+  Filter,
+  AllpassFilter,
+  BandpassFilter,
+  CombFilter,
   EQ,
-  MULTI_EQ,
-  PARA_EQ,
-  HIGHPASS_FILTER,
-  LOWPASS_FILTER,
-  GENERATOR,
-  CONSTANT,
+  MultiEQ,
+  ParaEQ,
+  HighpassFilter,
+  LowpassFilter,
+  Generator,
+  Constant,
   Instrument,
-  OSCILLATOR,
-  MIDI,
-  MODULATOR,
-  CHORUS,
-  FLANGER,
-  PHASER,
-  SIMULATOR,
-  SIMULATOR_REVERB,
-  SPATIAL,
-  SPECTRAL,
-  PITCH,
-  UTILITY,
-  ANALYZER,
-  CONVERTER,
-  FUNCTION,
-  MIXER,
+  Oscillator,
+  Midi,
+  Modulator,
+  Chorus,
+  Flanger,
+  Phaser,
+  Simulator,
+  SimulatorReverb,
+  Spatial,
+  Spectral,
+  Pitch,
+  Utility,
+  Analyzer,
+  Converter,
+  Function,
+  Mixer,
 };
 
 /**
- * 32 or 64 bit.
+ * @brief 32 or 64 bit.
  */
 enum class PluginArchitecture : std::uint8_t
 {
-  ARCH_32_BIT,
-  ARCH_64_BIT
+  Arch32Bit,
+  Arch64Bit
 };
 
 /**
@@ -86,10 +86,10 @@ enum class PluginArchitecture : std::uint8_t
  * plugin-related enumerations and strings, as well as to determine if a plugin
  * protocol is supported.
  *
- * The member functions provide information about the plugin, such as whether it
- * is an instrument, effect, modulator, or MIDI modifier, whether it is valid
- * for a given slot type and track type, whether it has a custom UI, the minimum
- * required bridge mode, and whether it is whitelisted.
+ * The member functions provide information about the plugin, such as
+ * whether it is an instrument, effect, modulator, or MIDI modifier,
+ * whether it is valid for a given slot type and track type, and the
+ * minimum required bridge mode.
  *
  * The PluginDescriptor also contains various fields that store the plugin's
  * metadata, such as its author, name, website, category, port counts,
@@ -159,11 +159,6 @@ public:
    * irrelevant fields.
    */
   bool is_same_plugin (const PluginDescriptor &other) const;
-
-  /**
-   * Returns if the Plugin has a supported custom UI.
-   */
-  bool has_custom_ui () const;
 
   /**
    * Gets an appropriate icon name.
@@ -248,7 +243,7 @@ public:
   /** Number of output CV ports. */
   int num_cv_outs_ = 0;
   /** Architecture (32/64bit). */
-  PluginArchitecture arch_ = PluginArchitecture::ARCH_64_BIT;
+  PluginArchitecture arch_ = PluginArchitecture::Arch64Bit;
   /** Plugin protocol (Lv2/DSSI/LADSPA/VST/etc.). */
   Protocol::ProtocolType protocol_ = Protocol::ProtocolType::Internal;
 

@@ -7,6 +7,7 @@ add_executable(zrythm_integration_tests
   port_observer_graph_test.cpp
   project_serialization_roundtrip_test.cpp
   recording_pipeline_test.cpp
+  schema_enum_lists_test.cpp
 )
 
 set_target_properties(zrythm_integration_tests PROPERTIES

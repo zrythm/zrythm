@@ -88,11 +88,11 @@ ProjectJsonSerializer::deserialize (
   structure::project::ProjectUiState &ui_state,
   undo::UndoStack                    &undo_stack)
 {
-  validate_json (j);
-
   try
     {
-      // Check schema version compatibility
+      // Read the format version before validating: files older than this
+      // format are refused with a clear message instead of a schema
+      // validation error about whichever fields changed representation.
       utils::Version schema_version;
       from_json (j.at (utils::serialization::kSchemaVersionKey), schema_version);
 
@@ -105,17 +105,19 @@ ProjectJsonSerializer::deserialize (
               schema_version.major));
         }
 
-      // Warn about older major versions (may need migration in the future)
-      if (schema_version.major < SCHEMA_VERSION.major)
+      // Older formats are not migrated; refuse them with a clear message
+      if (schema_version < SCHEMA_VERSION)
         {
-          z_warning (
-            "Project file is from an older format version ({}.{}) - migration may be needed",
-            schema_version.major, schema_version.minor);
-          // In the future, add migration logic here:
-          // auto migrated_json = migrate_to_current_version(j);
-          // from_json (migrated_json.at (kProjectData), project);
-          // return;
+          throw ZrythmException (
+            fmt::format (
+              "Project file uses format {}.{} but this build reads format "
+              "{}.{}; older format files are not migrated - re-save the "
+              "project with a build that reads it",
+              schema_version.major, schema_version.minor, SCHEMA_VERSION.major,
+              SCHEMA_VERSION.minor));
         }
+
+      validate_json (j);
 
       // Deserialize core project data
       from_json (j.at (kProjectData), project);

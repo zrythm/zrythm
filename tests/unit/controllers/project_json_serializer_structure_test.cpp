@@ -23,7 +23,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TopLevelFields)
 
   EXPECT_EQ (j["documentType"].get<std::string> (), "ZrythmProject");
   EXPECT_EQ (j["schemaVersion"]["major"].get<int> (), 2);
-  EXPECT_EQ (j["schemaVersion"]["minor"].get<int> (), 1);
+  EXPECT_EQ (j["schemaVersion"]["minor"].get<int> (), 2);
   EXPECT_EQ (j["appVersion"]["major"].get<int> (), 2);
   EXPECT_EQ (j["appVersion"]["minor"].get<int> (), 0);
   EXPECT_EQ (j["title"].get<std::string> (), test_title);
@@ -265,7 +265,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_PortRegistryStructure)
       EXPECT_TRUE (port.contains ("variantType"));
       EXPECT_TRUE (port["variantType"].is_number ());
       EXPECT_TRUE (port.contains ("flow"));
-      EXPECT_TRUE (port["flow"].is_number ());
+      EXPECT_TRUE (port["flow"].is_string ());
     }
 }
 
@@ -335,10 +335,9 @@ TEST_F (ProjectSerializationTest, SerializeProject_PluginRegistryStructure)
       EXPECT_TRUE (plugin.contains ("id"));
       assert_valid_uuid (plugin["id"].get<std::string> ());
       EXPECT_TRUE (plugin.contains ("protocol"));
-      EXPECT_TRUE (plugin["protocol"].is_number ());
-      auto protocol = plugin["protocol"].get<int> ();
-      EXPECT_GE (protocol, 0);
-      EXPECT_LE (protocol, 10);
+      EXPECT_TRUE (plugin["protocol"].is_string ());
+      const auto protocol = plugin["protocol"].get<std::string> ();
+      EXPECT_FALSE (protocol.empty ());
       EXPECT_TRUE (plugin.contains ("inputPorts"));
       EXPECT_TRUE (plugin["inputPorts"].is_array ());
       EXPECT_TRUE (plugin.contains ("outputPorts"));
@@ -582,7 +581,7 @@ TEST_F (ProjectSerializationTest, DeserializeProject_FutureMajorVersion_Rejected
     utils::ZrythmException);
 }
 
-TEST_F (ProjectSerializationTest, Deserialize_OlderMajorVersionSucceeds)
+TEST_F (ProjectSerializationTest, Deserialize_OlderFormatVersionRejected)
 {
   auto j = create_minimal_valid_project_json ();
   j["schemaVersion"]["major"] = 1;
@@ -591,9 +590,11 @@ TEST_F (ProjectSerializationTest, Deserialize_OlderMajorVersionSucceeds)
   ASSERT_NE (project, nullptr);
   create_ui_state_and_undo_stack (*project);
 
-  EXPECT_NO_THROW ({
-    ProjectJsonSerializer::deserialize (j, *project, *ui_state, *undo_stack);
-  });
+  EXPECT_THROW (
+    {
+      ProjectJsonSerializer::deserialize (j, *project, *ui_state, *undo_stack);
+    },
+    utils::ZrythmException);
 }
 
 TEST_F (ProjectSerializationTest, Deserialize_InvalidRegistryDataRejected)

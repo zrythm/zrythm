@@ -4,6 +4,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/audio_function.h"
 #include "utils/logger.h"
+#include "utils/serialization.h"
 
 #include <fmt/format.h>
 

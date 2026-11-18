@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/marker.h"
+#include "utils/serialization.h"
 
 #include <nlohmann/json.hpp>
 

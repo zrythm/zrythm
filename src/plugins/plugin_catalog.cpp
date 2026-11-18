@@ -32,7 +32,7 @@ constexpr auto kBlacklistedIdentifiersKey = "blacklistedIdentifiers"sv;
 constexpr auto kProtocolKey = "protocol"sv;
 constexpr auto kIdentifierKey = "identifier"sv;
 constexpr int  kMajorSchemaVersion = 1;
-constexpr int  kMinorSchemaVersion = 0;
+constexpr int  kMinorSchemaVersion = 1;
 
 /** Lazily-initialized validator for the embedded known-plugins schema. */
 class CatalogSchemaValidator
@@ -517,8 +517,8 @@ PluginCatalog::serialize () const
     {
       json[kBlacklistedIdentifiersKey].push_back (
         nlohmann::json{
-          { kProtocolKey,   static_cast<int> (entry.protocol_) },
-          { kIdentifierKey, entry.identifier_                  }
+          { kProtocolKey,   entry.protocol_   },
+          { kIdentifierKey, entry.identifier_ }
       });
     }
   return json;
@@ -557,8 +557,7 @@ PluginCatalog::deserialize (const nlohmann::json &json)
     {
       blacklist.push_back (
         BlacklistEntry{
-          static_cast<Protocol::ProtocolType> (
-            entry_json.at (kProtocolKey).get<int> ()),
+          entry_json.at (kProtocolKey).get<Protocol::ProtocolType> (),
           entry_json.at (kIdentifierKey).get<utils::Utf8String> (),
         });
     }
