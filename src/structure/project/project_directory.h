@@ -5,6 +5,8 @@
 
 #include <filesystem>
 
+#include "utils/utf8_string.h"
+
 namespace zrythm::structure::project
 {
 
@@ -38,5 +40,21 @@ enum class DirectoryContent
  */
 [[nodiscard]] DirectoryContent
 classify_directory (const std::filesystem::path &dir);
+
+/**
+ * @brief Classifies the project directory that parent-directory/name
+ * names.
+ *
+ * A trailing separator on the parent directory is ignored.
+ *
+ * @param parent_directory Directory the project directory would be
+ * created in.
+ * @param name Project name, used as the project directory's name.
+ * @return The content class of the target directory.
+ */
+[[nodiscard]] DirectoryContent
+classify_save_target (
+  const std::filesystem::path &parent_directory,
+  const utils::Utf8String     &name);
 
 } // namespace zrythm::structure::project

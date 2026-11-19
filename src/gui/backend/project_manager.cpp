@@ -13,6 +13,7 @@
 #include "gui/backend/x11_plugin_host_window.h"
 #include "gui/backend/zrythm_application.h"
 #include "plugins/plugin.h"
+#include "structure/project/project_directory.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/directory_manager.h"
@@ -130,6 +131,44 @@ ProjectManager::getNextAvailableProjectName (
   auto ret = utils::Utf8String::from_path (dir.filename ()).to_qstring ();
   z_debug ("Next available untitled project name for '{}': {}", tmp, ret);
   return ret;
+}
+
+bool
+ProjectManager::isValidProjectName (const QString &name)
+{
+  return utils::io::is_valid_file_name (
+    utils::Utf8String::from_qstring (name).view ());
+}
+
+ProjectManager::SaveTargetState
+ProjectManager::classifySaveTarget (
+  const QUrl    &parent_directory,
+  const QString &name)
+{
+  if (!isValidProjectName (name))
+    return InvalidName;
+
+  const auto parent_path =
+    utils::Utf8String::from_qurl (parent_directory).to_path ();
+  if (parent_path.empty () || parent_path.is_relative ())
+    return Unknown;
+
+  using structure::project::DirectoryContent;
+  switch (structure::project::classify_save_target (
+    parent_path, utils::Utf8String::from_qstring (name)))
+    {
+    case DirectoryContent::NonExistent:
+      return NonExistent;
+    case DirectoryContent::Empty:
+      return Empty;
+    case DirectoryContent::ContainsProjectFile:
+      return ContainsProjectFile;
+    case DirectoryContent::OtherContent:
+      return OtherContent;
+    case DirectoryContent::Unknown:
+      break;
+    }
+  return Unknown;
 }
 
 RecentProjectsModel *
@@ -272,13 +311,52 @@ ProjectManager::create_default (
   return project_session;
 }
 
-void
+bool
 ProjectManager::createNewProject (
   const QUrl    &directory,
   const QString &name,
   const QUrl    &templateUrl)
 {
   const auto directory_file = directory.toLocalFile ();
+  switch (classifySaveTarget (directory, name))
+    {
+    case NonExistent:
+    case Empty:
+      break;
+    case InvalidName:
+      z_warning ("project name '{}' cannot be used as a folder name", name);
+      Q_EMIT projectLoadingFailed (
+        tr (
+          "'%1' cannot be used as a project name. Use a name that works as "
+          "a folder name on all systems.")
+          .arg (name));
+      return false;
+    case ContainsProjectFile:
+      z_warning ("a project already exists at '{}/{}'", directory_file, name);
+      Q_EMIT projectLoadingFailed (
+        tr (
+          "A project with the name '%1' already exists in this location. "
+          "Choose another name or location.")
+          .arg (name));
+      return false;
+    case OtherContent:
+      z_warning (
+        "folder '{}/{}' already exists and holds other files", directory_file,
+        name);
+      Q_EMIT projectLoadingFailed (
+        tr (
+          "The folder for '%1' already exists and holds other files. "
+          "Choose another name or location.")
+          .arg (name));
+      return false;
+    case Unknown:
+      z_warning (
+        "could not check the target folder '{}/{}'", directory_file, name);
+      Q_EMIT projectLoadingFailed (
+        tr ("Zrythm could not check the folder for '%1'.").arg (name));
+      return false;
+    }
+
   const auto template_file = templateUrl.toLocalFile ();
   z_debug (
     "Creating new project in {} (template {})", directory_file, template_file);
@@ -343,6 +421,8 @@ ProjectManager::createNewProject (
       z_warning ("Failed to create project: {}", e.what ());
       Q_EMIT projectLoadingFailed (e.what_string ());
     });
+
+  return true;
 }
 
 gui::qquick::QFutureQmlWrapper *

@@ -271,6 +271,7 @@ set(rel_qml_file_paths
   components/dialogs/ProgressDialogWithFuture.qml
   components/dialogs/FunctionDialog.qml
   components/dialogs/FunctionParameterControl.qml
+  components/dialogs/SaveAsDialog.qml
   components/editors/AudioEditorPane.qml
   components/editors/AudioTransformStackPanel.qml
   components/editors/AutomationEditorPane.qml

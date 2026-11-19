@@ -9,6 +9,7 @@
 #include "gui/dsp/quantize_options.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
 #include "plugins/modulators/modulator.h"
+#include "structure/project/project_directory.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/app_settings.h"
@@ -797,30 +798,71 @@ ProjectSession::save ()
 }
 
 gui::qquick::QFutureQmlWrapper *
-ProjectSession::saveAs (const QString &path)
+ProjectSession::saveAs (
+  const QUrl    &parent_directory,
+  const QString &name,
+  bool           overwrite_existing_project)
 {
+  // The wrapper emits outcomes on a later event-loop pass than its
+  // construction, so a ready future is enough for a refusal
+  const auto refuse = [] {
+    auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (
+      QtFuture::makeReadyValueFuture (QString ()));
+    QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
+    return wrapper;
+  };
+
   if (save_as_in_flight_)
     {
       z_warning ("A Save As is already in progress; refusing this one");
-      // Complete on the next event-loop pass: finishing an
-      // already-complete future inside the wrapper would emit finished
-      // before QML attaches to the wrapper
-      QPromise<QString> promise;
-      auto              future = promise.future ();
-      auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
-      QMetaObject::invokeMethod (
-        this,
-        [inner_promise = std::move (promise)] () mutable {
-          inner_promise.addResult (QString ());
-          inner_promise.finish ();
-        },
-        Qt::QueuedConnection);
-      QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
-      return wrapper;
+      return refuse ();
     }
-  save_as_in_flight_ = true;
 
-  auto new_path = utils::Utf8String::from_qstring (path).to_path ();
+  if (!utils::io::is_valid_file_name (
+        utils::Utf8String::from_qstring (name).view ()))
+    {
+      z_warning (
+        "Save As refused: '{}' cannot be used as a project name",
+        utils::Utf8String::from_qstring (name));
+      return refuse ();
+    }
+
+  const auto parent_path = utils::io::path_strip_trailing_separators (
+    utils::Utf8String::from_qurl (parent_directory).to_path ());
+  if (parent_path.empty () || parent_path.is_relative ())
+    {
+      z_warning (
+        "Save As refused: '{}' is not an absolute directory path", parent_path);
+      return refuse ();
+    }
+
+  const auto new_path =
+    parent_path / utils::Utf8String::from_qstring (name).to_path ();
+
+  using structure::project::DirectoryContent;
+  switch (structure::project::classify_save_target (
+    parent_path, utils::Utf8String::from_qstring (name)))
+    {
+    case DirectoryContent::OtherContent:
+      z_warning ("Save As refused: {} holds unrelated files", new_path);
+      return refuse ();
+    case DirectoryContent::Unknown:
+      z_warning ("Save As refused: {} cannot be inspected", new_path);
+      return refuse ();
+    case DirectoryContent::ContainsProjectFile:
+      if (!overwrite_existing_project)
+        {
+          z_warning (
+            "Save As refused: a project already exists at {}", new_path);
+          return refuse ();
+        }
+      break;
+    case DirectoryContent::NonExistent:
+    case DirectoryContent::Empty:
+      break;
+    }
+
+  save_as_in_flight_ = true;
 
   // The saved copy starts a separate project lineage: assign it a fresh
   // identity before the new file is written. On failure, the original

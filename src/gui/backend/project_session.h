@@ -198,15 +198,27 @@ public:
   Q_INVOKABLE qquick::QFutureQmlWrapper * save ();
 
   /**
-   * @brief Saves the project to a new directory.
+   * @brief Saves the project to a new directory created inside the given
+   * parent directory and named after the project name.
    *
-   * Updates projectDirectory and title on success.
+   * Updates projectDirectory and title on success. The call is refused,
+   * resolving to an empty result, when the name is invalid, the parent
+   * is not an absolute path, the target holds unrelated files, the
+   * target cannot be inspected, or the target holds a project and
+   * @p overwrite_existing_project is false.
    *
-   * @param path The new directory path to save to.
+   * @param parent_directory Directory to create the project directory in.
+   * @param name Project name, used as the new directory's name.
+   * @param overwrite_existing_project Whether to replace an existing
+   * project at the target. The replaced project's file is overwritten;
+   * its other files stay on disk.
    * @return A QFutureQmlWrapper that resolves to the saved project path on
    * success.
    */
-  Q_INVOKABLE qquick::QFutureQmlWrapper * saveAs (const QString &path);
+  Q_INVOKABLE qquick::QFutureQmlWrapper * saveAs (
+    const QUrl    &parent_directory,
+    const QString &name,
+    bool           overwrite_existing_project);
 
   /**
    * @brief Finds a backup directory newer than the main project file.

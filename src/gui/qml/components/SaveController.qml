@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Dialogs
 import QtQuick.Controls
 import Zrythm
 
@@ -26,17 +25,20 @@ Item {
     text: qsTr("Save As…")
 
     onTriggered: {
-      root.saveAsFolderDialog.open();
+      root.saveAsDialog.open();
     }
   }
-  property FolderDialog saveAsFolderDialog: FolderDialog {
-    currentFolder: QmlUtils.localFileToQUrl(GlobalState.application.appSettings.newProjectDirectory)
-    title: qsTr("Save Project As")
+  property SaveAsDialog saveAsDialog: SaveAsDialog {
+    initialLocation: root.session && root.session.projectDirectory !== ""
+      ? QmlUtils.parentFolder(QmlUtils.localFileToQUrl(root.session.projectDirectory))
+      : QmlUtils.localFileToQUrl(GlobalState.application.appSettings.newProjectDirectory)
+    initialName: root.session ? root.session.title : ""
+    projectManager: GlobalState.application.projectManager
 
-    onAccepted: {
+    onSaveAccepted: (parentFolder, name, overwrite) => {
       root.saveProgressDialog.resetValues();
       root.saveProgressDialog.open();
-      root.saveFuture = root.session.saveAs(QmlUtils.toPathString(selectedFolder));
+      root.saveFuture = root.session.saveAs(parentFolder, name, overwrite);
     }
   }
   property QFutureQmlWrapper saveFuture

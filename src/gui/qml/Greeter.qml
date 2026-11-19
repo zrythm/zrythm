@@ -507,7 +507,7 @@ ApplicationWindow {
             id: createProjectButton
 
             DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
-            enabled: projectNameField.text.length > 0 && projectDirectoryField.selectedUrl.toString().length > 0
+            enabled: (root.projectManager?.isValidProjectName(projectNameField.text) ?? false) && projectDirectoryField.selectedUrl.toString().length > 0
             text: qsTr("Create Project")
 
             onClicked: {
@@ -515,9 +515,11 @@ ApplicationWindow {
               if (root.appSettings !== null)
                 root.appSettings.newProjectDirectory = QmlUtils.toPathString(projectDirectoryField.selectedUrl);
 
-              // start the project creation process asynchronously
-              root.projectManager.createNewProject(projectDirectoryField.selectedUrl, projectNameField.text, projectTemplateField.currentValue);
-              stack.push(projectCreationProgressPage);
+              // start the project creation process asynchronously; a
+              // synchronous refusal emits projectLoadingFailed and must
+              // not leave the progress page on the stack
+              if (root.projectManager.createNewProject(projectDirectoryField.selectedUrl, projectNameField.text, projectTemplateField.currentValue))
+                stack.push(projectCreationProgressPage);
             }
           }
         }

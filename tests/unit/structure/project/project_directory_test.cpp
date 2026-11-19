@@ -92,4 +92,21 @@ TEST_F (ProjectDirectoryTest, ClassifiesNonDirectoryPathAsOtherContent)
   EXPECT_EQ (classify_directory (file), DirectoryContent::OtherContent);
 }
 
+TEST_F (ProjectDirectoryTest, SaveTargetIgnoresTrailingSeparatorOnParent)
+{
+  const auto parent = tmp_path_ / "songs";
+  utils::io::mkdir (parent / "My Song");
+  utils::io::set_file_contents (
+    parent / "My Song"
+      / ProjectPathProvider::get_path (
+        ProjectPathProvider::ProjectPath::ProjectFile),
+    utils::Utf8String ());
+  EXPECT_EQ (
+    classify_save_target (parent / "", u8"My Song"),
+    DirectoryContent::ContainsProjectFile);
+  EXPECT_EQ (
+    classify_save_target (tmp_path_ / "nope" / "", u8"My Song"),
+    DirectoryContent::NonExistent);
+}
+
 } // namespace zrythm::structure::project

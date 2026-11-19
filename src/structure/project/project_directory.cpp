@@ -5,6 +5,7 @@
 
 #include "structure/project/project_directory.h"
 #include "structure/project/project_path_provider.h"
+#include "utils/io_utils.h"
 #include "utils/utf8_string.h"
 
 #include <QDir>
@@ -42,6 +43,17 @@ classify_directory (const std::filesystem::path &dir)
   return QDir (dir_path).isEmpty ()
            ? DirectoryContent::Empty
            : DirectoryContent::OtherContent;
+}
+
+DirectoryContent
+classify_save_target (
+  const std::filesystem::path &parent_directory,
+  const utils::Utf8String     &name)
+{
+  const auto target =
+    utils::io::path_strip_trailing_separators (parent_directory)
+    / name.to_path ();
+  return classify_directory (target);
 }
 
 } // namespace zrythm::structure::project

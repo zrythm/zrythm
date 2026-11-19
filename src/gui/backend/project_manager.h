@@ -40,6 +40,26 @@ class ProjectManager : public QObject
 public:
   ProjectManager (utils::AppSettings &app_settings, QObject * parent = nullptr);
 
+  /**
+   * @brief What the directory parent-directory/name contains on disk.
+   */
+  enum SaveTargetState
+  {
+    /** The name is rejected by file name validation. */
+    InvalidName,
+    /** The directory does not exist. */
+    NonExistent,
+    /** The directory exists and is empty. */
+    Empty,
+    /** The directory holds a project file. */
+    ContainsProjectFile,
+    /** The directory holds unrelated files, or is not a directory. */
+    OtherContent,
+    /** The directory could not be inspected. */
+    Unknown,
+  };
+  Q_ENUM (SaveTargetState)
+
   using Template = std::filesystem::path;
   using TemplateList = std::vector<Template>;
   using ProjectLoadResult =
@@ -60,7 +80,36 @@ public:
   Q_INVOKABLE static QString
   getNextAvailableProjectName (const QUrl &directory, const QString &name);
 
-  Q_INVOKABLE void createNewProject (
+  /**
+   * @brief Returns whether the given text works as a project name.
+   *
+   * @see utils::io::is_valid_file_name
+   */
+  Q_INVOKABLE static bool isValidProjectName (const QString &name);
+
+  /**
+   * @brief Reports what the directory parent-directory/name contains.
+   *
+   * @param parent_directory Directory the project directory would be
+   * created in.
+   * @param name Project name.
+   * @return The target directory's SaveTargetState. A parent that is
+   * not an absolute local path reports Unknown.
+   */
+  Q_INVOKABLE static SaveTargetState
+  classifySaveTarget (const QUrl &parent_directory, const QString &name);
+
+  /**
+   * @brief Creates a new project in a directory named after the project
+   * name, inside the given parent directory.
+   *
+   * On a refusal (invalid name, unusable parent, or a target the project
+   * must not write to), projectLoadingFailed is emitted synchronously.
+   *
+   * @return True when project creation started, false when the call was
+   * refused.
+   */
+  Q_INVOKABLE bool createNewProject (
     const QUrl    &directory,
     const QString &name,
     const QUrl    &templateUrl = QUrl{});
