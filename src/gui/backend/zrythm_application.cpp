@@ -174,6 +174,28 @@ ZrythmApplication::initialize ()
   setOrganizationDomain (u"zrythm.org"_s);
   setApplicationDisplayName (u"Zrythm"_s);
 
+  // Some text resolves against the application font instead of the style
+  // template fonts, for example labels that override only the size or the
+  // weight. Set the bundled Noto Sans as the application font so such text
+  // does not depend on the platform default font being installed. The
+  // platform font size is kept.
+  const int noto_sans_id = QFontDatabase::addApplicationFont (QStringLiteral (
+    ":/qt/qml/Zrythm/fonts/NotoSans-VariableFont_wdth_wght.ttf"));
+  const QStringList noto_sans_families =
+    noto_sans_id != -1
+      ? QFontDatabase::applicationFontFamilies (noto_sans_id)
+      : QStringList{};
+  if (noto_sans_families.isEmpty ())
+    {
+      z_warning ("failed to load the bundled Noto Sans font");
+    }
+  else
+    {
+      QFont application_font = font ();
+      application_font.setFamilies (noto_sans_families);
+      setFont (application_font);
+    }
+
   // Baked PNG sizes serve the sizes title bars and task bars request; the
   // SVG covers any other size
   QIcon app_icon;
