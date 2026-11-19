@@ -10,6 +10,7 @@ add_executable(zrythm_gui_backend_unit_tests
   notification_center_test.cpp
   project_session_operations_test.cpp
   timeline_arranger_objects_model_test.cpp
+  xdg_desktop_portal_test.cpp
 )
 
 set_target_properties(zrythm_gui_backend_unit_tests PROPERTIES

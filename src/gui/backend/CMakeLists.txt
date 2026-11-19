@@ -56,6 +56,8 @@ target_sources(zrythm_gui_lib
     translation_manager.cpp
     ui.h
     ui.cpp
+    xdg_desktop_portal.h
+    xdg_desktop_portal.cpp
     unified_proxy_model.h
     unified_proxy_model.cpp
     editor_arranger_objects_model.h
