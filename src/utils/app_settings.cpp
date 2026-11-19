@@ -32,6 +32,7 @@ AppSettings::reset_preference_settings ()
   reset_uiLocale ();
   reset_transportReturnToCue ();
   reset_startPlaybackOnMidiInput ();
+  reset_pinCursorWhileDragging ();
   reset_undoStackLength ();
   reset_openPluginsOnInstantiation ();
   reset_showCacheActivity ();

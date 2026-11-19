@@ -9,6 +9,7 @@ import Zrythm
  *
  * While dragging and pinCursor is set, the cursor is hidden and warped back to
  * the drag start position after each move event, allowing unbounded adjustment.
+ * pinCursor defaults to the pinCursorWhileDragging application setting.
  * Drag mechanics (axis locking, Shift+drag fine adjustment, wheel steps and
  * double-click reset) are shared so all value controls feel the same.
  *
@@ -35,8 +36,9 @@ MouseArea {
   /// Cursor shape while hovering and not dragging (-1 leaves the existing cursor untouched)
   property int hoverCursorShape: -1
 
-  /// Hide and pin the cursor while dragging
-  property bool pinCursor: true
+  /// Hide and pin the cursor while dragging (defaults to the application
+  /// setting)
+  property bool pinCursor: GlobalState.application?.appSettings?.pinCursorWhileDragging ?? false
 
   /// Drag distance in px corresponding to a full-range change
   property real pixelsForFullRange: 250

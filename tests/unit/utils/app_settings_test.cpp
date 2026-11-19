@@ -244,6 +244,7 @@ TEST_F (AppSettingsTest, ResetPreferenceSettingsRestoresOnlyPreferenceRows)
   settings.set_autoSelectTracks (false);
   settings.set_openPluginsOnInstantiation (false);
   settings.set_showCacheActivity (true);
+  settings.set_pinCursorWhileDragging (true);
   settings.set_lv2SearchPaths ({ u"/tmp/lv2"_s });
   settings.set_vst3SearchPaths ({ u"/tmp/vst3"_s });
   settings.set_clapSearchPaths ({ u"/tmp/clap"_s });
@@ -265,6 +266,7 @@ TEST_F (AppSettingsTest, ResetPreferenceSettingsRestoresOnlyPreferenceRows)
   EXPECT_EQ (settings.undoStackLength (), 128);
   EXPECT_TRUE (settings.openPluginsOnInstantiation ());
   EXPECT_FALSE (settings.showCacheActivity ());
+  EXPECT_FALSE (settings.pinCursorWhileDragging ());
   EXPECT_TRUE (settings.lv2SearchPaths ().isEmpty ());
   EXPECT_TRUE (settings.vst3SearchPaths ().isEmpty ());
   EXPECT_TRUE (settings.clapSearchPaths ().isEmpty ());

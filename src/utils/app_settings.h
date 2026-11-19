@@ -116,6 +116,8 @@ public:
   DEFINE_SETTING_PROPERTY (bool, bottomPanelVisible, true)
   DEFINE_SETTING_PROPERTY (QString, dockLayout, QString ())
   DEFINE_SETTING_PROPERTY (bool, trackAutoArm, true)
+  // hide the cursor and pin it during value drags
+  DEFINE_SETTING_PROPERTY (bool, pinCursorWhileDragging, false)
   DEFINE_SETTING_PROPERTY (int, panLaw, 1)
   DEFINE_SETTING_PROPERTY (int, panAlgorithm, 2)
   DEFINE_SETTING_PROPERTY (QStringList, midiControllers, QStringList ())
