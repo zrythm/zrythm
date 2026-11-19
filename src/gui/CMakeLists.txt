@@ -457,6 +457,40 @@ qt_add_resources(zrythm_qml_lib "qtquickcontrols2_conf"
   FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf"
 )
 
+# Window icon PNG sizes, rendered from the SVG at build time. Window
+# managers pick one of the rasters a QIcon provides, so serving the
+# common sizes directly gives them ready images instead of an
+# on-the-spot rasterization of the 800x800 artwork.
+add_subdirectory(render-icon)
+set(_rendered_icon_dir "${CMAKE_CURRENT_BINARY_DIR}/rendered-icons/zrythm-dark/png")
+set(_rendered_icon_sizes 16 22 24 32 48 64 128 256)
+set(_rendered_icon_files)
+foreach(_size ${_rendered_icon_sizes})
+  list(APPEND _rendered_icon_files "${_rendered_icon_dir}/zrythm-${_size}.png")
+endforeach()
+add_custom_command(
+  OUTPUT ${_rendered_icon_files}
+  COMMAND $<TARGET_FILE:render-icon>
+          "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/zrythm-dark/scalable/apps/zrythm.svg"
+          "${_rendered_icon_dir}"
+          ${_rendered_icon_sizes}
+  DEPENDS render-icon
+          "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/zrythm-dark/scalable/apps/zrythm.svg"
+  COMMENT "Rendering window icon PNG sizes"
+  VERBATIM
+)
+foreach(_rendered_icon ${_rendered_icon_files})
+  get_filename_component(_rendered_icon_name ${_rendered_icon} NAME)
+  set_source_files_properties(${_rendered_icon}
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTIES QT_RESOURCE_ALIAS "icons/zrythm-dark/png/${_rendered_icon_name}"
+  )
+endforeach()
+qt_add_resources(zrythm_qml_lib "rendered_window_icons"
+  PREFIX "/qt/qml/Zrythm"
+  FILES ${_rendered_icon_files}
+)
+
 target_link_libraries(zrythm_qml_lib
   PUBLIC
     zrythm_utils_lib

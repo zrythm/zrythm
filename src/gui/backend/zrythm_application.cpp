@@ -174,8 +174,18 @@ ZrythmApplication::initialize ()
   setOrganizationDomain (u"zrythm.org"_s);
   setApplicationDisplayName (u"Zrythm"_s);
 
-  // doesn't work for some reason but the path is correct
-  setWindowIcon (QIcon (":/qt/qml/Zrythm/icons/zrythm-dark/zrythm.svg"));
+  // Baked PNG sizes serve the sizes title bars and task bars request; the
+  // SVG covers any other size
+  QIcon app_icon;
+  for (const int size : { 16, 22, 24, 32, 48, 64, 128, 256 })
+    {
+      app_icon.addFile (
+        QStringLiteral (":/qt/qml/Zrythm/icons/zrythm-dark/png/zrythm-%1.png")
+          .arg (size));
+    }
+  app_icon.addFile (
+    QStringLiteral (":/qt/qml/Zrythm/icons/zrythm-dark/zrythm.svg"));
+  setWindowIcon (app_icon);
 
   // # https://github.com/FFTW/fftw3/issues/16
   ThreadSafeFFTW ();
