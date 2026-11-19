@@ -406,9 +406,6 @@ ProjectSaver::save (
       size_t compressed_size{};
 
       const auto json_str = json.dump (2);
-      utils::io::set_file_contents (
-        temp_project_file_path.parent_path () / "project-debug.json",
-        utils::Utf8String::from_utf8_encoded_string (json_str));
 
       /* compress */
       // warning: this byte array depends on json_str being alive while it's used
