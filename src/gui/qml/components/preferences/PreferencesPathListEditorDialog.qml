@@ -36,9 +36,9 @@ Dialog {
       (path, pathIndex) => pathIndex !== index);
   }
 
+  // The dialog renders in the scene of the window that opens it
   height: 380
   modal: true
-  popupType: Popup.Window
   title: qsTr("Edit Paths")
   width: 520
 

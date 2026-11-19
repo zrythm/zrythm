@@ -56,9 +56,11 @@ ZrythmPreferencesPage {
   Dialog {
     id: resetDialog
 
+    // The confirmation renders inside the preferences window
+    closePolicy: Popup.CloseOnEscape
     modal: true
     objectName: "resetPreferencesDialog"
-    popupType: Popup.Window
+    parent: root
     title: qsTr("Reset Preferences?")
     width: 360
 
