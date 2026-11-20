@@ -132,6 +132,10 @@ TEST_F (XdgDesktopPortalTest, InterfacesOutsidePortalGroupIgnored)
   EXPECT_FALSE (file_chooser_backend_installed (std::vector{ data_dir_ }));
 }
 
+// QStandardPaths consults XDG_DATA_HOME/XDG_DATA_DIRS only on Linux; on
+// other platforms GenericDataLocation comes from OS-specific locations, so
+// the environment variables below never reach the lookup.
+#if defined(Q_OS_LINUX)
 TEST_F (XdgDesktopPortalTest, AvailabilityFollowsXdgDataEnvironment)
 {
   const auto isolated_dir = data_dir_ / "isolated-data";
@@ -162,5 +166,6 @@ TEST_F (XdgDesktopPortalTest, AvailabilityFollowsXdgDataEnvironment)
   restore ("XDG_DATA_HOME", previous_data_home);
   restore ("XDG_DATA_DIRS", previous_data_dirs);
 }
+#endif
 
 } // namespace zrythm::gui
