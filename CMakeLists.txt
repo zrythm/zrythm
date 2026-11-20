@@ -1240,6 +1240,20 @@ else()
       COMPONENT Runtime
     )
   endif()
+  # The QML deploy script installs each module's qmldir and plugin only.
+  # QML modules also load QML documents as loose files from their module
+  # directory (dialog fallbacks, style implementations, effects), so
+  # install the documents and type info from the Qt installation.
+  if(EXISTS "${QT6_INSTALL_PREFIX}/${QT6_INSTALL_QML}")
+    install(
+      DIRECTORY "${QT6_INSTALL_PREFIX}/${QT6_INSTALL_QML}"
+      DESTINATION .
+      COMPONENT Runtime
+      FILES_MATCHING
+        PATTERN "*.qml"
+        PATTERN "plugins.qmltypes"
+    )
+  endif()
   if(compiler_is_gcc)
     # bundle libstdc++
     execute_process(
