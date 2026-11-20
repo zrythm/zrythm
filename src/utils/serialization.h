@@ -230,12 +230,28 @@ concept FlagEnum =
 /**
  * @brief True for enums that the central enum serializer handles.
  *
- * This is every enum except flag enums (ENUM_ENABLE_BITSET()) and enums
- * marked with ENUM_CUSTOM_JSON() (see utils/enum_json.h).
+ * This is every enum except flag enums (ENUM_ENABLE_BITSET()), enums
+ * marked with ENUM_CUSTOM_JSON() (see utils/enum_json.h), and nlohmann's
+ * own enums.
+ */
+/**
+ * @brief True for enums declared by the nlohmann library itself.
+ *
+ * nlohmann::json serializes its own enums through its default serializer.
+ * The enum specializations below must not match them: nlohmann's own headers
+ * instantiate adl_serializer for these enums while being included, and a
+ * matching partial specialization declared afterwards is ill-formed.
  */
 template <typename T>
+concept NlohmannInternalEnum =
+  std::same_as<T, nlohmann::detail::value_t>
+  || std::same_as<T, nlohmann::detail::error_handler_t>
+  || std::same_as<T, nlohmann::detail::input_format_t>
+  || std::same_as<T, nlohmann::detail::cbor_tag_handler_t>;
+
+template <typename T>
 concept NameSerializableEnum =
-  EnumType<T> && !FlagEnum<T>
+  EnumType<T> && !FlagEnum<T> && !NlohmannInternalEnum<T>
   && !zrythm::utils::serialization::use_custom_enum_json<T>::value;
 
 /**
@@ -246,7 +262,8 @@ concept NameSerializableEnum =
  */
 template <typename T>
 concept FlagSerializableEnum =
-  FlagEnum<T> && !zrythm::utils::serialization::use_custom_enum_json<T>::value;
+  FlagEnum<T> && !NlohmannInternalEnum<T>
+  && !zrythm::utils::serialization::use_custom_enum_json<T>::value;
 
 /**
  * @brief Error message for a JSON value that matches no enumerator of @p E,
