@@ -91,7 +91,6 @@ SplitView {
       trackCollectionOperator: root.trackCollectionOperator
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.project.tracklist
-      undoStack: root.session.undoStack
     }
 
     TracklistView {
@@ -106,7 +105,6 @@ SplitView {
       trackCollectionOperator: root.trackCollectionOperator
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.project.tracklist
-      undoStack: root.session.undoStack
 
       footer: TracklistDropArea {
         id: tracklistDropArea

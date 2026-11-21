@@ -32,7 +32,6 @@ Control {
   required property TrackCollectionOperator trackCollectionOperator
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
-  required property UndoStack undoStack
   required property ViewContext viewContext
 
   signal dropTargetChanged(int index)

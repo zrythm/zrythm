@@ -121,7 +121,6 @@ Item {
         pluginOperator: root.session.pluginOperator
         session: root.session
         trackSelectionModel: root.trackSelectionModel
-        undoStack: root.session.undoStack
 
         onPluginClicked: plugin => root.selectedPlugin = plugin
       }
@@ -218,7 +217,6 @@ Item {
         project: root.project
         trackSelectionModel: root.trackSelectionModel
         tracklist: root.project.tracklist
-        undoStack: root.session.undoStack
 
         onPluginClicked: plugin => root.showPluginInspector(plugin)
       }

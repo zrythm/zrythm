@@ -25,7 +25,6 @@ ColumnLayout {
   required property Track track
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
-  required property UndoStack undoStack
 
   signal pluginClicked(Plugin plugin)
 
@@ -327,7 +326,6 @@ ColumnLayout {
 
               operationDispatcher: root.operationDispatcher
               track: root.track
-              undoStack: root.undoStack
             }
 
             Repeater {
@@ -339,7 +337,6 @@ ColumnLayout {
                 operationDispatcher: root.operationDispatcher
                 parameterOperator: root.parameterOperator
                 track: root.track
-                undoStack: root.undoStack
               }
             }
           }
@@ -429,7 +426,6 @@ ColumnLayout {
         operationDispatcher: root.operationDispatcher
         track: root.track
         tracklist: root.tracklist
-        undoStack: root.undoStack
       }
     }
   }

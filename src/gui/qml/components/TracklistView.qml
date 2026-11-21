@@ -25,7 +25,6 @@ ListView {
   required property TrackCollectionOperator trackCollectionOperator
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
-  required property UndoStack undoStack
 
   readonly property ViewContext viewContext: ViewContext {
     canCopy: root.trackSelectionModel.hasSelection
@@ -107,7 +106,6 @@ ListView {
     trackCollectionOperator: root.trackCollectionOperator
     trackSelectionModel: root.trackSelectionModel
     tracklist: root.tracklist
-    undoStack: root.undoStack
     width: ListView.view.width
 
     Binding on height {

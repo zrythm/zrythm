@@ -5,7 +5,6 @@
 
 #include "dsp/audio_port.h"
 #include "structure/tracks/track_all.h"
-#include "undo/undo_stack.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -19,9 +18,6 @@ class TrackOperator : public QObject
   Q_PROPERTY (
     zrythm::structure::tracks::Track * track READ track WRITE setTrack NOTIFY
       trackChanged)
-  Q_PROPERTY (
-    zrythm::undo::UndoStack * undoStack READ undoStack WRITE setUndoStack NOTIFY
-      undoStackChanged)
   Q_PROPERTY (
     zrythm::operations::OperationDispatcher * operationDispatcher READ
       operationDispatcher WRITE setOperationDispatcher NOTIFY
@@ -41,17 +37,6 @@ public:
       }
   }
   Q_SIGNAL void trackChanged ();
-
-  undo::UndoStack * undoStack () const { return undo_stack_; }
-  void              setUndoStack (undo::UndoStack * undoStack)
-  {
-    if (undo_stack_ != undoStack)
-      {
-        undo_stack_ = undoStack;
-        Q_EMIT undoStackChanged ();
-      }
-  }
-  Q_SIGNAL void undoStackChanged ();
 
   operations::OperationDispatcher * operationDispatcher () const
   {
@@ -101,7 +86,6 @@ public:
 
 private:
   structure::tracks::Track *        track_{};
-  undo::UndoStack *                 undo_stack_{};
   operations::OperationDispatcher * operation_dispatcher_{};
 };
 }

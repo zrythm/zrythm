@@ -18,7 +18,6 @@ Loader {
   required property OperationDispatcher operationDispatcher
   required property Track track
   required property Tracklist tracklist
-  required property UndoStack undoStack
 
   Layout.fillWidth: true
   sourceComponent: root.track.type === Track.Master ? preroutedLabel : routingControls
@@ -27,7 +26,6 @@ Loader {
     id: trackOp
 
     track: root.track
-    undoStack: root.undoStack
     operationDispatcher: root.operationDispatcher
   }
 

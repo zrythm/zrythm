@@ -15,7 +15,6 @@ Item {
   required property ProjectSession session
   property Track track: null
   required property TrackSelectionModel trackSelectionModel
-  required property UndoStack undoStack
 
   signal pluginClicked(Plugin plugin)
 
@@ -47,7 +46,6 @@ Item {
       session: root.session
       track: root.track
       trackSelectionModel: root.trackSelectionModel
-      undoStack: root.undoStack
 
       onPluginClicked: function (plugin: Plugin) {
         root.pluginClicked(plugin);

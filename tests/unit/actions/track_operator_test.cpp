@@ -39,7 +39,6 @@ protected:
     undo_stack = create_mock_undo_stack ();
     track_operator = std::make_unique<TrackOperator> ();
     track_operator->setTrack (track.get ());
-    track_operator->setUndoStack (undo_stack.get ());
   }
 
   structure::tracks::MockTrackFactory           mock_track_factory;
@@ -100,7 +99,6 @@ protected:
 
     track_operator_ = std::make_unique<TrackOperator> ();
     track_operator_->setTrack (track_);
-    track_operator_->setUndoStack (undo_stack_.get ());
     track_operator_->setOperationDispatcher (dispatcher_.get ());
   }
 

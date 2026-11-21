@@ -19,7 +19,6 @@ ScrollView {
   required property ProjectSession session
   required property Track track
   required property TrackSelectionModel trackSelectionModel
-  required property UndoStack undoStack
 
   signal pluginClicked(Plugin plugin)
 
@@ -36,7 +35,6 @@ ScrollView {
       id: trackOperator
 
       track: root.track
-      undoStack: root.undoStack
       operationDispatcher: root.session.operationDispatcher
     }
 
@@ -501,7 +499,6 @@ ScrollView {
         parameterOperator: root.session.processorParameterOperator
         sends: root.track.channel.sends
         track: root.track
-        undoStack: root.undoStack
       }
     }
 

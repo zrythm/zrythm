@@ -23,7 +23,6 @@ RowLayout {
   required property ProcessorParameterOperator parameterOperator
   required property ChannelSend send
   required property Track track
-  required property UndoStack undoStack
 
   property var targetEntries: [noneEntry()]
   property int currentEntryIndex: -1
@@ -56,7 +55,6 @@ RowLayout {
 
     operationDispatcher: root.operationDispatcher
     track: root.track
-    undoStack: root.undoStack
   }
 
   function noneEntry(): var {

@@ -23,7 +23,6 @@ ExpanderBox {
   required property ProcessorParameterOperator parameterOperator
   required property ChannelSendGroup sends
   required property Track track
-  required property UndoStack undoStack
 
   icon.source: root.headerIconName !== "" ? ResourceManager.getIconUrl("zrythm-dark", root.headerIconName) : ""
   title: qsTr("Sends")
@@ -63,7 +62,6 @@ ExpanderBox {
 
       operationDispatcher: root.operationDispatcher
       track: root.track
-      undoStack: root.undoStack
     }
 
     Repeater {
@@ -75,7 +73,6 @@ ExpanderBox {
         operationDispatcher: root.operationDispatcher
         parameterOperator: root.parameterOperator
         track: root.track
-        undoStack: root.undoStack
       }
     }
   }
