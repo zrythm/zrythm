@@ -27,9 +27,13 @@ main (int argc, char ** argv)
 #if defined(Q_OS_LINUX)
   // Use the XDG desktop portal for native file dialogs. This is the only
   // theme plugin shipped with the bundled Qt; the portal frontend accepts
-  // requests even when no file chooser backend is installed, so activate
-  // the theme only when one is installed.
-  if (zrythm::gui::portal_file_dialogs_available ())
+  // requests even when no backend can serve them (not installed, or
+  // installed but unable to start), so activate the theme only when a
+  // file chooser backend is installed and the daemon serves a Settings
+  // request.
+  if (
+    zrythm::gui::portal_file_dialogs_available ()
+    && zrythm::gui::portal_daemon_responsive ())
     {
       qputenv ("QT_QPA_PLATFORMTHEME", "xdgdesktopportal");
     }

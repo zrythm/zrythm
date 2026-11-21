@@ -87,6 +87,13 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   target_link_libraries(zrythm_gui_lib PRIVATE X11::X11)
 endif ()
 
+# QtDBus for the portal daemon probe (xdg_desktop_portal.cpp); the Qt
+# package is built without DBus outside GNU/Linux
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  find_package(Qt6 6.12 REQUIRED COMPONENTS DBus)
+  target_link_libraries(zrythm_gui_lib PRIVATE Qt6::DBus)
+endif ()
+
 # add resource file with icon
 if(WIN32)
   set(_rc_file "${CMAKE_CURRENT_BINARY_DIR}/app_icon.rc")

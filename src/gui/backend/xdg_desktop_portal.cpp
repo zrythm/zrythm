@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <chrono>
 #include <ranges>
 
 #include "gui/backend/xdg_desktop_portal.h"
@@ -9,6 +10,11 @@
 
 #include <QFile>
 #include <QStandardPaths>
+#if defined(Q_OS_LINUX)
+#  include <QDBusConnection>
+#  include <QDBusMessage>
+#  include <QVariant>
+#endif
 
 using namespace Qt::StringLiterals;
 
@@ -90,5 +96,34 @@ portal_file_dialogs_available ()
     | std::ranges::to<std::vector> ();
   return file_chooser_backend_installed (data_dirs);
 }
+
+#if defined(Q_OS_LINUX)
+
+/// Time the portal probe waits for a reply before giving up
+constexpr std::chrono::milliseconds portal_probe_timeout{ 1500 };
+
+bool
+portal_daemon_responsive ()
+{
+  const auto connection = QDBusConnection::sessionBus ();
+  if (!connection.isConnected ())
+    return false;
+
+  auto message = QDBusMessage::createMethodCall (
+    QStringLiteral ("org.freedesktop.portal.Desktop"),
+    QStringLiteral ("/org/freedesktop/portal/desktop"),
+    QStringLiteral ("org.freedesktop.portal.Settings"), QStringLiteral ("Read"));
+  message.setArguments (
+    {
+      QVariant (QStringLiteral ("org.freedesktop.appearance")),
+      QVariant (QStringLiteral ("color-scheme")),
+    });
+
+  const auto reply = connection.call (
+    message, QDBus::Block, static_cast<int> (portal_probe_timeout.count ()));
+  return reply.type () == QDBusMessage::ReplyMessage;
+}
+
+#endif
 
 }
