@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "structure/project/project.h"
-#include "structure/tracks/channel_send_routing.h"
+#include "dsp/audio_port.h"
 #include "structure/tracks/track_all.h"
 #include "undo/undo_stack.h"
 
@@ -27,13 +26,6 @@ class TrackOperator : public QObject
     zrythm::operations::OperationDispatcher * operationDispatcher READ
       operationDispatcher WRITE setOperationDispatcher NOTIFY
         operationDispatcherChanged)
-  Q_PROPERTY (
-    zrythm::structure::tracks::ChannelSendRouting * channelSendRouting READ
-      channelSendRouting WRITE setChannelSendRouting NOTIFY
-        channelSendRoutingChanged)
-  Q_PROPERTY (
-    zrythm::structure::project::Project * project READ project WRITE setProject
-      NOTIFY projectChanged)
   QML_ELEMENT
 
 public:
@@ -60,31 +52,6 @@ public:
       }
   }
   Q_SIGNAL void undoStackChanged ();
-
-  structure::tracks::ChannelSendRouting * channelSendRouting () const
-  {
-    return channel_send_routing_;
-  }
-  void setChannelSendRouting (structure::tracks::ChannelSendRouting * routing)
-  {
-    if (channel_send_routing_ != routing)
-      {
-        channel_send_routing_ = routing;
-        Q_EMIT channelSendRoutingChanged ();
-      }
-  }
-  Q_SIGNAL void channelSendRoutingChanged ();
-
-  structure::project::Project * project () const { return project_; }
-  void setProject (structure::project::Project * project)
-  {
-    if (project_ != project)
-      {
-        project_ = project;
-        Q_EMIT projectChanged ();
-      }
-  }
-  Q_SIGNAL void projectChanged ();
 
   operations::OperationDispatcher * operationDispatcher () const
   {
@@ -133,21 +100,8 @@ public:
     dsp::AudioPort *                 destination);
 
 private:
-  /**
-   * @brief Returns whether the send's output port can be wired to
-   * @p destination without closing a signal loop.
-   *
-   * Validates against the actual processing graph (the single source of
-   * truth for connectivity). Always true when no project is set.
-   */
-  bool send_destination_is_connectable (
-    const structure::tracks::ChannelSend &send,
-    const dsp::Port                      &destination) const;
-
-  structure::tracks::Track *              track_{};
-  undo::UndoStack *                       undo_stack_{};
-  operations::OperationDispatcher *       operation_dispatcher_{};
-  structure::tracks::ChannelSendRouting * channel_send_routing_{};
-  structure::project::Project *           project_{};
+  structure::tracks::Track *        track_{};
+  undo::UndoStack *                 undo_stack_{};
+  operations::OperationDispatcher * operation_dispatcher_{};
 };
 }

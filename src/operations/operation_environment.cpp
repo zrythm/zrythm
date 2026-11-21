@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/port.h"
+#include "structure/tracks/channel_send.h"
+#include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
@@ -15,17 +18,21 @@ namespace zrythm::operations
 {
 
 OperationEnvironment::OperationEnvironment (
-  utils::IObjectRegistry             &object_registry,
-  undo::UndoStack                    &undo_stack,
-  structure::tracks::TrackCollection &track_collection,
-  structure::tracks::TrackFactory    &track_factory,
-  structure::tracks::TrackRouting    &track_routing,
-  structure::tracks::SingletonTracks &singleton_tracks,
-  dsp::Transport *                    transport)
+  utils::IObjectRegistry                &object_registry,
+  undo::UndoStack                       &undo_stack,
+  structure::tracks::TrackCollection    &track_collection,
+  structure::tracks::TrackFactory       &track_factory,
+  structure::tracks::TrackRouting       &track_routing,
+  structure::tracks::ChannelSendRouting &channel_send_routing,
+  structure::tracks::SingletonTracks    &singleton_tracks,
+  dsp::Transport *                       transport,
+  SendConnectivityQuery                  send_connectivity_query)
     : object_registry_ (object_registry), undo_stack_ (undo_stack),
       track_collection_ (track_collection), track_factory_ (track_factory),
-      track_routing_ (track_routing), singleton_tracks_ (singleton_tracks),
-      transport_ (transport)
+      track_routing_ (track_routing),
+      channel_send_routing_ (channel_send_routing),
+      singleton_tracks_ (singleton_tracks), transport_ (transport),
+      send_connectivity_query_ (std::move (send_connectivity_query))
 {
 }
 
@@ -59,6 +66,12 @@ OperationEnvironment::track_routing () const
   return track_routing_;
 }
 
+structure::tracks::ChannelSendRouting &
+OperationEnvironment::channel_send_routing () const
+{
+  return channel_send_routing_;
+}
+
 structure::tracks::SingletonTracks &
 OperationEnvironment::singleton_tracks () const
 {
@@ -69,6 +82,18 @@ dsp::Transport *
 OperationEnvironment::transport () const
 {
   return transport_;
+}
+
+bool
+OperationEnvironment::can_connect_send_destination (
+  const structure::tracks::ChannelSend &send,
+  const dsp::Port                      &destination) const
+{
+  if (!send_connectivity_query_)
+    {
+      return true;
+    }
+  return send_connectivity_query_ (send, destination);
 }
 
 structure::tracks::Track *

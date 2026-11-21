@@ -468,6 +468,86 @@ private:
 };
 
 /**
+ * A required parameter identifying an audio port by its UUID.
+ *
+ * Parses the UUID and resolves it against the object registry; a UUID
+ * that does not name a registered audio port is refused.
+ */
+class AudioPortParam
+{
+public:
+  using ValueType = dsp::AudioPort *;
+
+  static constexpr bool is_required () { return true; }
+
+  static nlohmann::json describe ()
+  {
+    return {
+      { "type",   "string" },
+      { "format", "uuid"   },
+    };
+  }
+
+  static std::expected<AudioPortParam, Refusal>
+  parse (const nlohmann::json &value, const OperationEnvironment &env)
+  {
+    if (value.is_null ())
+      {
+        return std::unexpected (Refusal{ "this parameter is required" });
+      }
+    if (!value.is_string ())
+      {
+        return std::unexpected (Refusal{ "expected the port UUID as a string" });
+      }
+    const auto str = value.get<std::string> ();
+    const auto uuid =
+      QUuid (utils::Utf8String::from_utf8_encoded_string (str).to_qstring ());
+    if (uuid.isNull ())
+      {
+        return std::unexpected (
+          Refusal{ fmt::format ("'{}' is not a UUID", str) });
+      }
+    auto * port = qobject_cast<dsp::AudioPort *> (
+      env.object_registry ().find_by_raw_uuid (uuid));
+    if (port == nullptr)
+      {
+        return std::unexpected (
+          Refusal{ fmt::format ("no audio port with UUID {}", str) });
+      }
+    return AudioPortParam{ port, str };
+  }
+
+  /**
+   * Takes a live port; the UUID string reported in results is derived
+   * from the port itself.
+   */
+  static std::expected<AudioPortParam, Refusal>
+  from_value (dsp::AudioPort * port)
+  {
+    if (port == nullptr)
+      {
+        return std::unexpected (Refusal{ "the audio port is required" });
+      }
+    return AudioPortParam{
+      port, uuid_to_string (type_safe::get (port->get_uuid ()))
+    };
+  }
+
+  dsp::AudioPort * value () const { return port_; }
+
+  /** The UUID string identifying the port in reports. */
+  const std::string &uuid_string () const { return uuid_; }
+
+private:
+  explicit AudioPortParam (dsp::AudioPort * port, std::string uuid)
+      : port_ (port), uuid_ (std::move (uuid))
+  {
+  }
+  dsp::AudioPort * port_;
+  std::string      uuid_;
+};
+
+/**
  * A required parameter identifying a track by its project UUID.
  *
  * Parses the UUID and resolves it against the project's track collection;

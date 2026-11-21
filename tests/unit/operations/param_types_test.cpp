@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/channel_send.h"
+#include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
@@ -31,9 +32,12 @@ protected:
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };
-  structure::tracks::SingletonTracks        singleton_tracks_;
-  structure::tracks::TrackCollection        track_collection_{ registry_ };
-  structure::tracks::TrackRouting           track_routing_{ registry_ };
+  structure::tracks::SingletonTracks    singleton_tracks_;
+  structure::tracks::TrackCollection    track_collection_{ registry_ };
+  structure::tracks::TrackRouting       track_routing_{ registry_ };
+  structure::tracks::ChannelSendRouting channel_send_routing_{
+    track_collection_
+  };
   structure::tracks::FinalTrackDependencies factory_deps_{
     tempo_map_wrapper_,
     registry_,
@@ -47,8 +51,8 @@ protected:
   };
   undo::UndoStack      undo_stack_{ [] (auto callback, bool) { callback (); } };
   OperationEnvironment environment_{
-    registry_,      undo_stack_,    track_collection_,
-    track_factory_, track_routing_, singleton_tracks_
+    registry_,      undo_stack_,           track_collection_, track_factory_,
+    track_routing_, channel_send_routing_, singleton_tracks_
   };
 };
 
@@ -152,6 +156,31 @@ TEST_F (ParamTypesTest, BoolParamAcceptsOnlyBooleans)
   EXPECT_FALSE (
     (BoolParam::parse (nlohmann::json ("yes"), environment_).has_value ()));
   EXPECT_TRUE ((BoolParam::from_value (false).has_value ()));
+}
+
+TEST_F (ParamTypesTest, AudioPortParamResolvesRegistryObjects)
+{
+  auto ref = track_factory_.create_empty_track<structure::tracks::AudioTrack> ();
+  auto * port = &ref.get ()->get_track_processor ()->get_stereo_in_port ();
+
+  const auto by_value = AudioPortParam::from_value (port);
+  ASSERT_TRUE (by_value.has_value ());
+  EXPECT_EQ (by_value->value (), port);
+  EXPECT_EQ (
+    by_value->uuid_string (),
+    uuid_to_string (type_safe::get (port->get_uuid ())));
+
+  const auto parsed = AudioPortParam::parse (
+    nlohmann::json (by_value->uuid_string ()), environment_);
+  ASSERT_TRUE (parsed.has_value ());
+  EXPECT_EQ (parsed->value (), port);
+
+  const auto unknown = AudioPortParam::parse (
+    nlohmann::json ("11111111-1111-1111-1111-111111111111"), environment_);
+  ASSERT_FALSE (unknown.has_value ());
+  EXPECT_NE (unknown.error ().reason.find ("no audio port"), std::string::npos);
+
+  EXPECT_FALSE ((AudioPortParam::from_value (nullptr).has_value ()));
 }
 
 TEST_F (ParamTypesTest, HexColorParamAcceptsSixAndEightDigitHex)

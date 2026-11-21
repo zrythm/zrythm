@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/transport.h"
+#include "structure/tracks/audio_group_track.h"
+#include "structure/tracks/channel_send_routing.h"
+#include "structure/tracks/midi_group_track.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
@@ -9,9 +12,11 @@
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
 #include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
 
 #include "helpers/scoped_qcoreapplication.h"
+#include "helpers/sidechain_test_plugin.h"
 
 #include "operations/builtin_operations.h"
 #include "operations/operation.h"
@@ -37,6 +42,8 @@ protected:
       std::make_unique<structure::tracks::TrackCollection> (registry_);
     track_routing_ =
       std::make_unique<structure::tracks::TrackRouting> (registry_);
+    channel_send_routing_ = std::make_unique<
+      structure::tracks::ChannelSendRouting> (*track_collection_);
 
     structure::tracks::FinalTrackDependencies factory_deps{
       tempo_map_wrapper_,
@@ -97,7 +104,8 @@ protected:
 
     environment_ = std::make_unique<OperationEnvironment> (
       registry_, *undo_stack_, *track_collection_, *track_factory_,
-      *track_routing_, *singleton_tracks_, transport_.get ());
+      *track_routing_, *channel_send_routing_, *singleton_tracks_,
+      transport_.get ());
 
     register_builtin_operations (operation_registry_);
   }
@@ -135,15 +143,16 @@ protected:
     return false;
   } };
 
-  std::unique_ptr<structure::tracks::SingletonTracks> singleton_tracks_;
-  std::unique_ptr<structure::tracks::TrackCollection> track_collection_;
-  std::unique_ptr<structure::tracks::TrackRouting>    track_routing_;
-  std::unique_ptr<structure::tracks::TrackFactory>    track_factory_;
-  std::unique_ptr<undo::UndoStack>                    undo_stack_;
-  dsp::Transport::ConfigProvider                      transport_config_;
-  std::unique_ptr<dsp::Transport>                     transport_;
-  std::unique_ptr<OperationEnvironment>               environment_;
-  OperationRegistry                                   operation_registry_;
+  std::unique_ptr<structure::tracks::SingletonTracks>    singleton_tracks_;
+  std::unique_ptr<structure::tracks::TrackCollection>    track_collection_;
+  std::unique_ptr<structure::tracks::TrackRouting>       track_routing_;
+  std::unique_ptr<structure::tracks::ChannelSendRouting> channel_send_routing_;
+  std::unique_ptr<structure::tracks::TrackFactory>       track_factory_;
+  std::unique_ptr<undo::UndoStack>                       undo_stack_;
+  dsp::Transport::ConfigProvider                         transport_config_;
+  std::unique_ptr<dsp::Transport>                        transport_;
+  std::unique_ptr<OperationEnvironment>                  environment_;
+  OperationRegistry                                      operation_registry_;
 
   /**
    * The fixture's undo stack drops engine requests from this request
@@ -172,6 +181,9 @@ TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
     "track.add_send",
     "track.remove_send",
     "track.set_send_prefader",
+    "track.set_send_target_track",
+    "track.set_send_target_port",
+    "track.clear_send_target",
     "track.add",
     "track.list",
     "transport.set_play_state",
@@ -779,6 +791,257 @@ TEST_F (OperationsTest, TrackRemoveSendRefusesForeignSend)
 }
 
 // ============================================================================
+// track.set_send_target_track / track.set_send_target_port /
+// track.clear_send_target
+// ============================================================================
+
+TEST_F (OperationsTest, TrackSetSendTargetTrackRoutesAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  auto * group = group_ref.get ();
+  track_collection_->add_track (group_ref);
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track) },
+      { "is_prefader", false            }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
+  auto * send = track->channel ()->sends ()->get_sends ().front ().get ();
+
+  auto report = dispatch (
+    "track.set_send_target_track",
+    {
+      { "track",        uuid_of (*track) },
+      { "send",         send_uuid        },
+      { "target_track", uuid_of (*group) }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  ASSERT_TRUE (send->destination_port ().has_value ());
+  EXPECT_EQ (
+    send->destination_port ()->id (),
+    group->get_track_processor ()->get_stereo_in_port ().get_uuid ());
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (send->has_destination ());
+}
+
+TEST_F (OperationsTest, TrackSetSendTargetTrackRefusesSignalMismatch)
+{
+  auto * track = add_audio_track_directly ();
+  auto   midi_group_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiGroupTrack> ();
+  track_collection_->add_track (midi_group_ref);
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track) },
+      { "is_prefader", false            }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
+
+  auto report = dispatch (
+    "track.set_send_target_track",
+    {
+      { "track",        uuid_of (*track)                 },
+      { "send",         send_uuid                        },
+      { "target_track", uuid_of (*midi_group_ref.get ()) }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("outputs Audio but"), std::string::npos);
+}
+
+TEST_F (OperationsTest, TrackSetSendTargetTrackElidesSameDestination)
+{
+  auto * track = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track) },
+      { "is_prefader", false            }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
+  dispatch (
+    "track.set_send_target_track",
+    {
+      { "track",        uuid_of (*track)            },
+      { "send",         send_uuid                   },
+      { "target_track", uuid_of (*group_ref.get ()) }
+  });
+  ASSERT_EQ (undo_stack_->count (), 2);
+
+  auto report = dispatch (
+    "track.set_send_target_track",
+    {
+      { "track",        uuid_of (*track)            },
+      { "send",         send_uuid                   },
+      { "target_track", uuid_of (*group_ref.get ()) }
+  });
+
+  ASSERT_TRUE (report.applied ());
+  EXPECT_TRUE (report.command_texts.empty ());
+  EXPECT_EQ (report.revision_after, report.revision_before);
+}
+
+TEST_F (OperationsTest, TrackSetSendTargetTrackRefusesForeignSend)
+{
+  auto * track_a = add_audio_track_directly ();
+  auto * track_b = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track_b) },
+      { "is_prefader", false              }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track_b->channel ()->sends ()->get_sends ().front ().id ()));
+
+  auto report = dispatch (
+    "track.set_send_target_track",
+    {
+      { "track",        uuid_of (*track_a)          },
+      { "send",         send_uuid                   },
+      { "target_track", uuid_of (*group_ref.get ()) }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("belong"), std::string::npos);
+}
+
+TEST_F (OperationsTest, TrackClearSendTargetClearsAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track) },
+      { "is_prefader", false            }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
+  auto * send = track->channel ()->sends ()->get_sends ().front ().get ();
+  dispatch (
+    "track.set_send_target_track",
+    {
+      { "track",        uuid_of (*track)            },
+      { "send",         send_uuid                   },
+      { "target_track", uuid_of (*group_ref.get ()) }
+  });
+  ASSERT_TRUE (send->has_destination ());
+
+  auto report = dispatch (
+    "track.clear_send_target",
+    {
+      { "track", uuid_of (*track) },
+      { "send",  send_uuid        }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_FALSE (send->has_destination ());
+
+  // clearing a send with no destination elides
+  report = dispatch (
+    "track.clear_send_target",
+    {
+      { "track", uuid_of (*track) },
+      { "send",  send_uuid        }
+  });
+  ASSERT_TRUE (report.applied ());
+  EXPECT_TRUE (report.command_texts.empty ());
+  EXPECT_EQ (report.revision_after, report.revision_before);
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (send->has_destination ());
+}
+
+TEST_F (OperationsTest, TrackSetSendTargetPortRoutesSidechainAndUndoes)
+{
+  auto * source = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  auto * group = group_ref.get ();
+  track_collection_->add_track (group_ref);
+  auto plugin_ref =
+    utils::create_object<plugins::SidechainTestPlugin> (registry_, registry_);
+  group->channel ()->inserts ()->append_plugin (plugin_ref);
+  auto * sidechain_in =
+    plugin_ref->get_all_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*source) },
+      { "is_prefader", false             }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (source->channel ()->sends ()->get_sends ().front ().id ()));
+  auto * send = source->channel ()->sends ()->get_sends ().front ().get ();
+
+  auto report = dispatch (
+    "track.set_send_target_port",
+    {
+      { "track",       uuid_of (*source)                           },
+      { "send",        send_uuid                                   },
+      { "target_port",
+       uuid_to_string (type_safe::get (sidechain_in->get_uuid ())) }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  ASSERT_TRUE (send->destination_port ().has_value ());
+  EXPECT_EQ (send->destination_port ()->id (), sidechain_in->get_uuid ());
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (send->has_destination ());
+}
+
+TEST_F (OperationsTest, TrackSetSendTargetPortRefusesNonSidechainPort)
+{
+  auto * source = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  auto * group = group_ref.get ();
+  track_collection_->add_track (group_ref);
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*source) },
+      { "is_prefader", false             }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (source->channel ()->sends ()->get_sends ().front ().id ()));
+
+  // the group's own input is an audio input port, but not a sidechain
+  auto report = dispatch (
+    "track.set_send_target_port",
+    {
+      { "track",       uuid_of (*source)                                       },
+      { "send",        send_uuid                                               },
+      { "target_port",
+       uuid_to_string (
+          type_safe::get (
+            group->get_track_processor ()->get_stereo_in_port ().get_uuid ())) }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("not a sidechain input"), std::string::npos);
+}
+
+// ============================================================================
 // track.add
 // ============================================================================
 
@@ -861,7 +1124,8 @@ TEST_F (OperationsTest, TrackAddRefusesWhenNoMasterTrack)
   singleton_tracks_ = std::make_unique<structure::tracks::SingletonTracks> ();
   environment_ = std::make_unique<OperationEnvironment> (
     registry_, *undo_stack_, *track_collection_, *track_factory_,
-    *track_routing_, *singleton_tracks_, transport_.get ());
+    *track_routing_, *channel_send_routing_, *singleton_tracks_,
+    transport_.get ());
 
   const auto count_before = track_collection_->track_count ();
   auto       report = dispatch (

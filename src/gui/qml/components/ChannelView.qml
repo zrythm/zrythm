@@ -338,7 +338,6 @@ ColumnLayout {
                 channelSendRouting: root.tracklist.channelSendRouting
                 operationDispatcher: root.operationDispatcher
                 parameterOperator: root.parameterOperator
-                project: root.project
                 track: root.track
                 undoStack: root.undoStack
               }

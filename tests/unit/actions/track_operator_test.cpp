@@ -2,13 +2,18 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/track_operator.h"
+#include "structure/tracks/audio_group_track.h"
+#include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/singleton_tracks.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_routing.h"
 #include "undo/undo_stack.h"
 #include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
+
+#include "helpers/sidechain_test_plugin.h"
 
 #include "operations/builtin_operations.h"
 #include "operations/operation_dispatcher.h"
@@ -73,6 +78,8 @@ protected:
       std::make_unique<structure::tracks::TrackCollection> (object_registry_);
     track_routing_ =
       std::make_unique<structure::tracks::TrackRouting> (object_registry_);
+    channel_send_routing_ = std::make_unique<
+      structure::tracks::ChannelSendRouting> (*track_collection_);
 
     undo_stack_ = std::make_unique<undo::UndoStack> ([] (auto callback, bool) {
       callback ();
@@ -87,7 +94,7 @@ protected:
     operations::register_builtin_operations (registry_);
     environment_ = std::make_unique<operations::OperationEnvironment> (
       object_registry_, *undo_stack_, *track_collection_, *track_factory_,
-      *track_routing_, singleton_tracks_);
+      *track_routing_, *channel_send_routing_, singleton_tracks_);
     dispatcher_ = std::make_unique<operations::OperationDispatcher> (
       registry_, *environment_);
 
@@ -105,15 +112,16 @@ protected:
   } };
   structure::tracks::SingletonTracks singleton_tracks_;
 
-  std::unique_ptr<structure::tracks::TrackFactory>    track_factory_;
-  std::unique_ptr<structure::tracks::TrackCollection> track_collection_;
-  std::unique_ptr<structure::tracks::TrackRouting>    track_routing_;
-  std::unique_ptr<undo::UndoStack>                    undo_stack_;
-  operations::OperationRegistry                       registry_;
-  std::unique_ptr<operations::OperationEnvironment>   environment_;
-  std::unique_ptr<operations::OperationDispatcher>    dispatcher_;
-  std::unique_ptr<TrackOperator>                      track_operator_;
-  structure::tracks::Track *                          track_{};
+  std::unique_ptr<structure::tracks::TrackFactory>       track_factory_;
+  std::unique_ptr<structure::tracks::TrackCollection>    track_collection_;
+  std::unique_ptr<structure::tracks::TrackRouting>       track_routing_;
+  std::unique_ptr<structure::tracks::ChannelSendRouting> channel_send_routing_;
+  std::unique_ptr<undo::UndoStack>                       undo_stack_;
+  operations::OperationRegistry                          registry_;
+  std::unique_ptr<operations::OperationEnvironment>      environment_;
+  std::unique_ptr<operations::OperationDispatcher>       dispatcher_;
+  std::unique_ptr<TrackOperator>                         track_operator_;
+  structure::tracks::Track *                             track_{};
 };
 
 // Test rename through the registry, with undo and redo
@@ -544,6 +552,114 @@ TEST_F (TrackOperatorDispatchTest, SendChangesWithoutDispatcherAreIgnored)
 
   EXPECT_EQ (track_->channel ()->sends ()->get_sends ().size (), 0);
   EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Point a send at a track through the registry, with undo and redo
+TEST_F (TrackOperatorDispatchTest, SetSendTargetTrackRoutesAndUndoes)
+{
+  auto group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  auto * group = group_ref.get ();
+  track_collection_->add_track (group_ref);
+  track_operator_->addSend (false);
+  auto * send = track_->channel ()->sends ()->get_sends ().back ().get ();
+  ASSERT_EQ (undo_stack_->count (), 1);
+
+  track_operator_->setSendTargetTrack (send, group);
+
+  EXPECT_EQ (undo_stack_->count (), 2);
+  ASSERT_TRUE (send->destination_port ().has_value ());
+  EXPECT_EQ (
+    send->destination_port ()->id (),
+    group->get_track_processor ()->get_stereo_in_port ().get_uuid ());
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (send->has_destination ());
+
+  undo_stack_->redo ();
+  EXPECT_TRUE (send->has_destination ());
+}
+
+// A null destination clears the send's target, with undo
+TEST_F (TrackOperatorDispatchTest, ClearSendTargetClearsAndUndoes)
+{
+  auto group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+  track_operator_->addSend (false);
+  auto * send = track_->channel ()->sends ()->get_sends ().back ().get ();
+  track_operator_->setSendTargetTrack (send, group_ref.get ());
+  ASSERT_TRUE (send->has_destination ());
+
+  track_operator_->setSendTargetTrack (send, nullptr);
+
+  EXPECT_FALSE (send->has_destination ());
+  EXPECT_EQ (undo_stack_->count (), 3);
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (send->has_destination ());
+}
+
+// A send that belongs to another track is refused and left unchanged
+TEST_F (TrackOperatorDispatchTest, SendTargetChangesForForeignSendAreRefused)
+{
+  auto group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+  auto other_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioTrack> ();
+  auto * other = other_ref.get ();
+  track_collection_->add_track (other_ref);
+  other->channel ()->sends ()->append_send (false);
+  auto * foreign_send =
+    other->channel ()->sends ()->get_sends ().front ().get ();
+
+  track_operator_->setSendTargetTrack (foreign_send, group_ref.get ());
+
+  EXPECT_FALSE (foreign_send->has_destination ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Send routing without a dispatcher wired does nothing
+TEST_F (TrackOperatorDispatchTest, SendTargetChangesWithoutDispatcherAreIgnored)
+{
+  auto group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+  track_operator_->addSend (false);
+  auto * send = track_->channel ()->sends ()->get_sends ().back ().get ();
+  track_operator_->setOperationDispatcher (nullptr);
+
+  track_operator_->setSendTargetTrack (send, group_ref.get ());
+  track_operator_->setSendTargetTrack (send, nullptr);
+
+  EXPECT_FALSE (send->has_destination ());
+  EXPECT_EQ (undo_stack_->count (), 1);
+}
+
+// Point a send at a plugin sidechain input through the registry, with undo
+TEST_F (TrackOperatorDispatchTest, SetSendTargetPortRoutesSidechainAndUndoes)
+{
+  auto group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  auto * group = group_ref.get ();
+  track_collection_->add_track (group_ref);
+  auto plugin_ref = utils::create_object<plugins::SidechainTestPlugin> (
+    object_registry_, object_registry_);
+  group->channel ()->inserts ()->append_plugin (plugin_ref);
+  auto * sidechain_in =
+    plugin_ref->get_all_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
+  track_operator_->addSend (false);
+  auto * send = track_->channel ()->sends ()->get_sends ().back ().get ();
+
+  track_operator_->setSendTargetPort (send, sidechain_in);
+
+  EXPECT_EQ (undo_stack_->count (), 2);
+  ASSERT_TRUE (send->destination_port ().has_value ());
+  EXPECT_EQ (send->destination_port ()->id (), sidechain_in->get_uuid ());
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (send->has_destination ());
 }
 
 } // namespace zrythm::actions

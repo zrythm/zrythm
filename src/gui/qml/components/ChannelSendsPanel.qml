@@ -21,7 +21,6 @@ ExpanderBox {
   property string headerIconName: "audio-send.svg"
   required property OperationDispatcher operationDispatcher
   required property ProcessorParameterOperator parameterOperator
-  required property Project project
   required property ChannelSendGroup sends
   required property Track track
   required property UndoStack undoStack
@@ -62,9 +61,7 @@ ExpanderBox {
     TrackOperator {
       id: panelAddSendOp
 
-      channelSendRouting: root.channelSendRouting
       operationDispatcher: root.operationDispatcher
-      project: root.project
       track: root.track
       undoStack: root.undoStack
     }
@@ -77,7 +74,6 @@ ExpanderBox {
         channelSendRouting: root.channelSendRouting
         operationDispatcher: root.operationDispatcher
         parameterOperator: root.parameterOperator
-        project: root.project
         track: root.track
         undoStack: root.undoStack
       }

@@ -20,6 +20,9 @@ make_track_operations ()
     Operation{ track_add_send_operation () },
     Operation{ track_remove_send_operation () },
     Operation{ track_set_send_prefader_operation () },
+    Operation{ track_set_send_target_track_operation () },
+    Operation{ track_set_send_target_port_operation () },
+    Operation{ track_clear_send_target_operation () },
     Operation{ track_add_operation () },
     Operation{ track_list_operation () },
   };

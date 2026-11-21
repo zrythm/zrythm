@@ -4,8 +4,6 @@
 #include "utils/format_qt.h"
 
 #include "actions/track_operator.h"
-#include "commands/route_channel_send_command.h"
-#include "structure/project/project_graph_builder.h"
 #include "utils/logger.h"
 #include "utils/utf8_string.h"
 
@@ -185,38 +183,28 @@ TrackOperator::setSendTargetTrack (
   structure::tracks::ChannelSend * send,
   structure::tracks::Track *       destination)
 {
-  if (
-    track_ == nullptr || channel_send_routing_ == nullptr
-    || undo_stack_ == nullptr || send == nullptr)
-    return;
-
-  std::optional<dsp::PortUuid> target_port_id;
+  if (track_ == nullptr || send == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning ("Send routing needs a track, a send and a dispatcher");
+      return;
+    }
   if (destination != nullptr)
     {
-      if (!channel_send_routing_->can_send_to_track (*track_, *destination))
+      const auto report = operation_dispatcher_->invoke (
+        operations::track_set_send_target_track_operation (), track_, send,
+        destination);
+      if (!report.applied ())
         {
-          z_warning (
-            "cannot send from track '{}' to track '{}'", track_->name (),
-            destination->name ());
-          return;
+          z_warning ("Pointing a send at a track refused: {}", report.message);
         }
-      const auto port =
-        channel_send_routing_->destination_port_for_track (*destination);
-      if (!port.has_value ())
-        return;
-      target_port_id = port->id ();
-
-      if (!send_destination_is_connectable (*send, *port->get ()))
-        return;
+      return;
     }
-
-  const auto send_ref = structure::tracks::ChannelSendUuidReference{
-    send->get_uuid (), send->registry ()
-  };
-
-  undo_stack_->push (
-    std::make_unique<commands::RouteChannelSendCommand> (
-      send_ref, target_port_id));
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_clear_send_target_operation (), track_, send);
+  if (!report.applied ())
+    {
+      z_warning ("Clearing a send destination refused: {}", report.message);
+    }
 }
 
 void
@@ -224,59 +212,27 @@ TrackOperator::setSendTargetPort (
   structure::tracks::ChannelSend * send,
   dsp::AudioPort *                 destination)
 {
-  if (
-    track_ == nullptr || channel_send_routing_ == nullptr
-    || undo_stack_ == nullptr || send == nullptr)
-    return;
-
-  std::optional<dsp::PortUuid> target_port_id;
+  if (track_ == nullptr || send == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning ("Send routing needs a track, a send and a dispatcher");
+      return;
+    }
   if (destination != nullptr)
     {
-      if (!channel_send_routing_->can_send_to_port (*track_, *destination))
+      const auto report = operation_dispatcher_->invoke (
+        operations::track_set_send_target_port_operation (), track_, send,
+        destination);
+      if (!report.applied ())
         {
-          z_warning (
-            "cannot send from track '{}' to the given sidechain port",
-            track_->name ());
-          return;
+          z_warning ("Pointing a send at a port refused: {}", report.message);
         }
-      target_port_id = destination->get_uuid ();
-
-      if (!send_destination_is_connectable (*send, *destination))
-        return;
+      return;
     }
-
-  const auto send_ref = structure::tracks::ChannelSendUuidReference{
-    send->get_uuid (), send->registry ()
-  };
-
-  undo_stack_->push (
-    std::make_unique<commands::RouteChannelSendCommand> (
-      send_ref, target_port_id));
-}
-
-bool
-TrackOperator::send_destination_is_connectable (
-  const structure::tracks::ChannelSend &send,
-  const dsp::Port                      &destination) const
-{
-  if (project_ == nullptr)
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_clear_send_target_operation (), track_, send);
+  if (!report.applied ())
     {
-      // Without a project there is no processing graph to validate against
-      return true;
+      z_warning ("Clearing a send destination refused: {}", report.message);
     }
-
-  auto &out_port =
-    send.is_audio ()
-      ? static_cast<const dsp::Port &> (send.get_stereo_out_port ())
-      : static_cast<const dsp::Port &> (send.get_midi_out_port ());
-  if (!structure::project::ProjectGraphBuilder::can_ports_be_connected (
-        *project_, out_port, destination))
-    {
-      z_warning (
-        "refusing send routing that would close a signal loop or cannot be wired");
-      return false;
-    }
-
-  return true;
 }
 }

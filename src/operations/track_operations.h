@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include <algorithm>
+#include <expected>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "commands/add_track_command.h"
@@ -12,9 +16,11 @@
 #include "commands/change_uuid_identifiable_object_property_command.h"
 #include "commands/channel_send_commands.h"
 #include "commands/rename_track_command.h"
+#include "commands/route_channel_send_command.h"
 #include "commands/route_track_command.h"
 #include "dsp/port_fwd.h"
 #include "dsp/timebase.h"
+#include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
@@ -241,6 +247,30 @@ track_unroute_operation ()
 }
 
 /**
+ * Returns the send group of the track's channel when the send belongs
+ * to it, or the refusal reason otherwise.
+ */
+inline std::expected<structure::tracks::ChannelSendGroup *, std::string>
+send_group_owning (TrackParam track, SendParam send)
+{
+  if (track.value ()->channel () == nullptr)
+    {
+      return std::unexpected (std::string{ "this track has no channel" });
+    }
+  auto       &group = *track.value ()->channel ()->sends ();
+  const auto &sends = group.get_sends ();
+  const auto  owned = std::ranges::find (
+    sends, send.value ()->get_uuid (),
+    &structure::tracks::ChannelSendUuidReference::id);
+  if (owned == sends.end ())
+    {
+      return std::unexpected (
+        std::string{ "the send does not belong to this track" });
+    }
+  return &group;
+}
+
+/**
  * Appends a send to a track's channel. Edit; takes the track and
  * whether the send taps before the fader. Returns the new send's
  * UUID.
@@ -297,22 +327,14 @@ track_remove_send_operation ()
   },
     [] (OperationContext &ctx, TrackParam track, SendParam send)
       -> OperationReport {
-      if (track.value ()->channel () == nullptr)
+      const auto group = send_group_owning (track, send);
+      if (!group.has_value ())
         {
-          return ctx.refused ("this track has no channel");
-        }
-      auto       &group = *track.value ()->channel ()->sends ();
-      const auto &sends = group.get_sends ();
-      const auto  owned = std::ranges::find (
-        sends, send.value ()->get_uuid (),
-        &structure::tracks::ChannelSendUuidReference::id);
-      if (owned == sends.end ())
-        {
-          return ctx.refused ("the send does not belong to this track");
+          return ctx.refused (group.error ());
         }
       ctx.push_command (
         std::make_unique<commands::RemoveChannelSendCommand> (
-          group, send.value ()->get_uuid ()));
+          *group.value (), send.value ()->get_uuid ()));
       ctx.note_affected (track.uuid_string (), "track");
       ctx.note_affected (send.uuid_string (), "send");
       return ctx.applied ();
@@ -345,6 +367,161 @@ track_set_send_prefader_operation ()
           *send.value (), send.value ()->registry (),
           QStringLiteral ("isPrefader"), is_prefader.value (),
           commands::Command::EngineRequirement::RecalculateGraph));
+      ctx.note_affected (send.uuid_string (), "send");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
+ * Points a send at a track's input. Edit; takes the track that owns
+ * the send, the send and the target track. Refuses a target that
+ * takes a different signal type; pointing at the destination the send
+ * already has elides.
+ */
+inline const auto &
+track_set_send_target_track_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.set_send_target_track",
+    "Point a channel send at a track",
+    std::array<ParamSpec, 3>{
+      { { "track", "UUID of the track that owns the send" },
+       { "send", "UUID of the send" },
+       { "target_track", "UUID of the destination track" } }
+  },
+    [] (
+      OperationContext &ctx, TrackParam track, SendParam send,
+      TrackParam target_track) -> OperationReport {
+      const auto group = send_group_owning (track, send);
+      if (!group.has_value ())
+        {
+          return ctx.refused (group.error ());
+        }
+      auto      &routing = ctx.environment ().channel_send_routing ();
+      const auto refusal = routing.send_to_track_refusal_reason (
+        *track.value (), *target_track.value ());
+      if (refusal.has_value ())
+        {
+          return ctx.refused (std::string (refusal->view ()));
+        }
+      const auto dest_port =
+        routing.destination_port_for_track (*target_track.value ());
+      if (!dest_port.has_value ())
+        {
+          return ctx.refused (
+            "the destination track has no input port to send to");
+        }
+      const auto current = send.value ()->destination_port ();
+      if (current.has_value () && current->id () == dest_port->id ())
+        {
+          return ctx.applied ();
+        }
+      if (!ctx.environment ().can_connect_send_destination (
+            *send.value (), *dest_port->get ()))
+        {
+          return ctx.refused (
+            "that destination would close a signal loop or cannot be wired");
+        }
+      ctx.push_command (
+        std::make_unique<commands::RouteChannelSendCommand> (
+          structure::tracks::ChannelSendUuidReference{
+            send.value ()->get_uuid (), send.value ()->registry () },
+          dest_port->id ()));
+      ctx.note_affected (track.uuid_string (), "track");
+      ctx.note_affected (send.uuid_string (), "send");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
+ * Points a send at a plugin sidechain input. Edit; takes the track
+ * that owns the send, the send and the target port. Pointing at the
+ * destination the send already has elides.
+ */
+inline const auto &
+track_set_send_target_port_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.set_send_target_port",
+    "Point a channel send at a plugin sidechain input",
+    std::array<ParamSpec, 3>{
+      { { "track", "UUID of the track that owns the send" },
+       { "send", "UUID of the send" },
+       { "target_port", "UUID of the destination sidechain port" } }
+  },
+    [] (
+      OperationContext &ctx, TrackParam track, SendParam send,
+      AudioPortParam target_port) -> OperationReport {
+      const auto group = send_group_owning (track, send);
+      if (!group.has_value ())
+        {
+          return ctx.refused (group.error ());
+        }
+      auto      &routing = ctx.environment ().channel_send_routing ();
+      const auto refusal = routing.send_to_port_refusal_reason (
+        *track.value (), *target_port.value ());
+      if (refusal.has_value ())
+        {
+          return ctx.refused (std::string (refusal->view ()));
+        }
+      const auto current = send.value ()->destination_port ();
+      if (
+        current.has_value ()
+        && current->id () == target_port.value ()->get_uuid ())
+        {
+          return ctx.applied ();
+        }
+      if (!ctx.environment ().can_connect_send_destination (
+            *send.value (), *target_port.value ()))
+        {
+          return ctx.refused (
+            "that destination would close a signal loop or cannot be wired");
+        }
+      ctx.push_command (
+        std::make_unique<commands::RouteChannelSendCommand> (
+          structure::tracks::ChannelSendUuidReference{
+            send.value ()->get_uuid (), send.value ()->registry () },
+          target_port.value ()->get_uuid ()));
+      ctx.note_affected (track.uuid_string (), "track");
+      ctx.note_affected (send.uuid_string (), "send");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
+ * Clears a send's destination. Edit; takes the track that owns the
+ * send and the send. Clearing a send with no destination elides.
+ */
+inline const auto &
+track_clear_send_target_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.clear_send_target",
+    "Clear a channel send's destination",
+    std::array<ParamSpec, 2>{
+      { { "track", "UUID of the track that owns the send" },
+       { "send", "UUID of the send" } }
+  },
+    [] (OperationContext &ctx, TrackParam track, SendParam send)
+      -> OperationReport {
+      const auto group = send_group_owning (track, send);
+      if (!group.has_value ())
+        {
+          return ctx.refused (group.error ());
+        }
+      if (!send.value ()->has_destination ())
+        {
+          return ctx.applied ();
+        }
+      ctx.push_command (
+        std::make_unique<commands::RouteChannelSendCommand> (
+          structure::tracks::ChannelSendUuidReference{
+            send.value ()->get_uuid (), send.value ()->registry () },
+          std::nullopt));
+      ctx.note_affected (track.uuid_string (), "track");
       ctx.note_affected (send.uuid_string (), "send");
       return ctx.applied ();
     });

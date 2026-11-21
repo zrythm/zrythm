@@ -10,6 +10,7 @@
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/utf8_string.h"
 
 #include <QObject>
 #include <QString>
@@ -79,6 +80,22 @@ public:
    */
   bool can_send_to_port (const Track &source, const dsp::AudioPort &destination)
     const;
+
+  /**
+   * @brief Returns why @p source's channel may not send to @p
+   * destination, or nullopt when it may.
+   */
+  std::optional<utils::Utf8String>
+  send_to_track_refusal_reason (const Track &source, const Track &destination)
+    const;
+
+  /**
+   * @brief Returns why @p source's channel may not send to the sidechain
+   * input @p destination, or nullopt when it may.
+   */
+  std::optional<utils::Utf8String> send_to_port_refusal_reason (
+    const Track          &source,
+    const dsp::AudioPort &destination) const;
 
   /**
    * @brief Returns the input port a send into @p destination feeds.

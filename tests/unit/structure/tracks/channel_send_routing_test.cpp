@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <string_view>
+
 #include "plugins/internal_plugin_base.h"
 #include "structure/tracks/audio_bus_track.h"
 #include "structure/tracks/audio_group_track.h"
@@ -227,6 +229,53 @@ TEST_F (ChannelSendRoutingTest, SendDestinationKeyTracksTrackTargets)
   EXPECT_EQ (
     routing_->sendDestinationKey (send),
     type_safe::get (group.id ()).toString (QUuid::WithoutBraces));
+}
+
+TEST_F (ChannelSendRoutingTest, RefusalReasonsNameTheCheckThatFailed)
+{
+  auto source = add_track (Track::Type::Audio);
+  auto audio_group = add_track (Track::Type::AudioGroup);
+  auto midi_group = add_track (Track::Type::MidiGroup);
+
+  const auto self =
+    routing_->send_to_track_refusal_reason (*source.get (), *source.get ());
+  ASSERT_TRUE (self.has_value ());
+  EXPECT_NE (
+    self->view ().find ("cannot send to itself"), std::string_view::npos);
+
+  const auto mismatch =
+    routing_->send_to_track_refusal_reason (*source.get (), *midi_group.get ());
+  ASSERT_TRUE (mismatch.has_value ());
+  EXPECT_NE (
+    mismatch->view ().find ("outputs Audio but"), std::string_view::npos);
+
+  auto plugin_ref =
+    utils::create_object<plugins::SidechainTestPlugin> (registry_, registry_);
+  audio_group->channel ()->inserts ()->append_plugin (plugin_ref);
+  const auto * main_in =
+    plugin_ref->get_all_input_ports ().front ().get_object_as<dsp::AudioPort> ();
+  const auto * sidechain_in =
+    plugin_ref->get_all_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
+
+  const auto not_sidechain =
+    routing_->send_to_port_refusal_reason (*source.get (), *main_in);
+  ASSERT_TRUE (not_sidechain.has_value ());
+  EXPECT_NE (
+    not_sidechain->view ().find ("not a sidechain input"),
+    std::string_view::npos);
+
+  const auto own_plugin =
+    routing_->send_to_port_refusal_reason (*audio_group.get (), *sidechain_in);
+  ASSERT_TRUE (own_plugin.has_value ());
+  EXPECT_NE (own_plugin->view ().find ("own plugins"), std::string_view::npos);
+
+  // allowed pairings carry no reason
+  EXPECT_FALSE (
+    routing_->send_to_track_refusal_reason (*source.get (), *audio_group.get ())
+      .has_value ());
+  EXPECT_FALSE (
+    routing_->send_to_port_refusal_reason (*source.get (), *sidechain_in)
+      .has_value ());
 }
 
 } // namespace zrythm::structure::tracks

@@ -10,7 +10,9 @@
 #include "gui/qquick/qfuture_qml_wrapper.h"
 #include "plugins/modulators/modulator.h"
 #include "structure/project/project_directory.h"
+#include "structure/project/project_graph_builder.h"
 #include "structure/project/project_path_provider.h"
+#include "structure/tracks/channel_send.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
@@ -212,8 +214,19 @@ ProjectSession::ProjectSession (
           *project_->tracklist ()->collection (),
           *project_->track_factory_,
           *project_->tracklist ()->trackRouting (),
+          *project_->tracklist ()->channelSendRouting (),
           *project_->tracklist ()->singletonTracks (),
-          project_->getTransport ())),
+          project_->getTransport (),
+          [this] (
+            const structure::tracks::ChannelSend &send,
+            const dsp::Port                      &destination) {
+            const auto &out_port =
+              send.is_audio ()
+                ? static_cast<const dsp::Port &> (send.get_stereo_out_port ())
+                : static_cast<const dsp::Port &> (send.get_midi_out_port ());
+            return structure::project::ProjectGraphBuilder::
+              can_ports_be_connected (*project_, out_port, destination);
+          })),
       operation_registry_ (std::make_unique<operations::OperationRegistry> ()),
       operation_dispatcher_ (
         utils::make_qobject_unique<operations::OperationDispatcher> (

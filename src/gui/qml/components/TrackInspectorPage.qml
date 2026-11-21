@@ -499,7 +499,6 @@ ScrollView {
         channelSendRouting: root.session.project.tracklist.channelSendRouting
         operationDispatcher: root.session.operationDispatcher
         parameterOperator: root.session.processorParameterOperator
-        project: root.session.project
         sends: root.track.channel.sends
         track: root.track
         undoStack: root.undoStack
