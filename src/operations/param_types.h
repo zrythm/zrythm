@@ -12,10 +12,12 @@
 #include <type_traits>
 #include <utility>
 
+#include "dsp/port.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/track.h"
 #include "utils/color.h"
 #include "utils/enum_utils.h"
+#include "utils/iobject_registry.h"
 #include "utils/utf8_string.h"
 
 #include <QStringDecoder>
@@ -81,6 +83,36 @@ uuid_to_string (const QUuid &uuid)
   return std::string (
     utils::Utf8String::from_qstring (uuid.toString (QUuid::WithoutBraces))
       .view ());
+}
+
+/**
+ * Resolves a UUID string against the object registry and returns the
+ * registered object cast to T.
+ *
+ * Refuses values that are not UUIDs or that name no registered object
+ * of that type.
+ */
+template <typename T>
+std::expected<T *, Refusal>
+resolve_registry_object (
+  const utils::IObjectRegistry &registry,
+  std::string_view              uuid_string,
+  std::string_view              type_label)
+{
+  const auto uuid = QUuid (
+    utils::Utf8String::from_utf8_encoded_string (uuid_string).to_qstring ());
+  if (uuid.isNull ())
+    {
+      return std::unexpected (
+        Refusal{ fmt::format ("'{}' is not a UUID", uuid_string) });
+    }
+  auto * object = qobject_cast<T *> (registry.find_by_raw_uuid (uuid));
+  if (object == nullptr)
+    {
+      return std::unexpected (
+        Refusal{ fmt::format ("no {} with UUID {}", type_label, uuid_string) });
+    }
+  return object;
 }
 
 /**
@@ -388,6 +420,57 @@ private:
 };
 
 /**
+ * A required floating-point parameter with inclusive bounds.
+ */
+template <double Min, double Max> class BoundedFloatParam
+{
+public:
+  using ValueType = double;
+
+  static constexpr bool is_required () { return true; }
+
+  static nlohmann::json describe ()
+  {
+    return {
+      { "type",    "number" },
+      { "minimum", Min      },
+      { "maximum", Max      },
+    };
+  }
+
+  static std::expected<BoundedFloatParam, Refusal>
+  parse (const nlohmann::json &value, const OperationEnvironment &)
+  {
+    if (value.is_null ())
+      {
+        return std::unexpected (Refusal{ "this parameter is required" });
+      }
+    if (!value.is_number ())
+      {
+        return std::unexpected (Refusal{ "expected a number" });
+      }
+    return from_value (value.get<double> ());
+  }
+
+  /** Validates a value directly, with the same bounds as parse(). */
+  static std::expected<BoundedFloatParam, Refusal> from_value (double value)
+  {
+    if (value < Min || value > Max)
+      {
+        return std::unexpected (
+          Refusal{ fmt::format ("must be between {} and {}", Min, Max) });
+      }
+    return BoundedFloatParam{ value };
+  }
+
+  double value () const { return value_; }
+
+private:
+  explicit BoundedFloatParam (double value) : value_ (value) { }
+  double value_;
+};
+
+/**
  * A required parameter identifying a channel send by its UUID.
  *
  * Parses the UUID and resolves it against the object registry; a UUID
@@ -420,21 +503,13 @@ public:
         return std::unexpected (Refusal{ "expected the send UUID as a string" });
       }
     const auto str = value.get<std::string> ();
-    const auto uuid =
-      QUuid (utils::Utf8String::from_utf8_encoded_string (str).to_qstring ());
-    if (uuid.isNull ())
+    auto       send = resolve_registry_object<structure::tracks::ChannelSend> (
+      env.object_registry (), str, "channel send");
+    if (!send.has_value ())
       {
-        return std::unexpected (
-          Refusal{ fmt::format ("'{}' is not a UUID", str) });
+        return std::unexpected (send.error ());
       }
-    auto * send = qobject_cast<structure::tracks::ChannelSend *> (
-      env.object_registry ().find_by_raw_uuid (uuid));
-    if (send == nullptr)
-      {
-        return std::unexpected (
-          Refusal{ fmt::format ("no channel send with UUID {}", str) });
-      }
-    return SendParam{ send, str };
+    return SendParam{ send.value (), str };
   }
 
   /**
@@ -500,21 +575,13 @@ public:
         return std::unexpected (Refusal{ "expected the port UUID as a string" });
       }
     const auto str = value.get<std::string> ();
-    const auto uuid =
-      QUuid (utils::Utf8String::from_utf8_encoded_string (str).to_qstring ());
-    if (uuid.isNull ())
+    auto       port = resolve_registry_object<dsp::AudioPort> (
+      env.object_registry (), str, "audio port");
+    if (!port.has_value ())
       {
-        return std::unexpected (
-          Refusal{ fmt::format ("'{}' is not a UUID", str) });
+        return std::unexpected (port.error ());
       }
-    auto * port = qobject_cast<dsp::AudioPort *> (
-      env.object_registry ().find_by_raw_uuid (uuid));
-    if (port == nullptr)
-      {
-        return std::unexpected (
-          Refusal{ fmt::format ("no audio port with UUID {}", str) });
-      }
-    return AudioPortParam{ port, str };
+    return AudioPortParam{ port.value (), str };
   }
 
   /**
@@ -545,6 +612,77 @@ private:
   }
   dsp::AudioPort * port_;
   std::string      uuid_;
+};
+
+/**
+ * A required parameter identifying a port of any type by its UUID.
+ *
+ * Parses the UUID and resolves it against the object registry; a UUID
+ * that does not name a registered port is refused.
+ */
+class PortParam
+{
+public:
+  using ValueType = dsp::Port *;
+
+  static constexpr bool is_required () { return true; }
+
+  static nlohmann::json describe ()
+  {
+    return {
+      { "type",   "string" },
+      { "format", "uuid"   },
+    };
+  }
+
+  static std::expected<PortParam, Refusal>
+  parse (const nlohmann::json &value, const OperationEnvironment &env)
+  {
+    if (value.is_null ())
+      {
+        return std::unexpected (Refusal{ "this parameter is required" });
+      }
+    if (!value.is_string ())
+      {
+        return std::unexpected (Refusal{ "expected the port UUID as a string" });
+      }
+    const auto str = value.get<std::string> ();
+    auto       port =
+      resolve_registry_object<dsp::Port> (env.object_registry (), str, "port");
+    if (!port.has_value ())
+      {
+        return std::unexpected (port.error ());
+      }
+    return PortParam{ port.value (), str };
+  }
+
+  /**
+   * Takes a live port; the UUID string reported in results is derived
+   * from the port itself.
+   */
+  static std::expected<PortParam, Refusal> from_value (dsp::Port * port)
+  {
+    if (port == nullptr)
+      {
+        return std::unexpected (Refusal{ "the port is required" });
+      }
+    return PortParam{
+      port, uuid_to_string (type_safe::get (port->get_uuid ()))
+    };
+  }
+
+  dsp::Port * value () const { return port_; }
+
+  /** The UUID string identifying the port in reports. */
+  const std::string &uuid_string () const { return uuid_; }
+
+private:
+  explicit PortParam (dsp::Port * port, std::string uuid)
+      : port_ (port), uuid_ (std::move (uuid))
+  {
+  }
+  dsp::Port * port_;
+  std::string uuid_;
 };
 
 /**

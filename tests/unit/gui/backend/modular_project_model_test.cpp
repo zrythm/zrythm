@@ -11,6 +11,7 @@
 #include "plugins/modulators/modulator.h"
 #include "plugins/plugin_configuration.h"
 #include "structure/project/project.h"
+#include "structure/project/project_graph_builder.h"
 #include "structure/project/project_ui_state.h"
 #include "structure/tracks/audio_bus_track.h"
 #include "structure/tracks/channel.h"
@@ -26,6 +27,10 @@
 
 #include "helpers/project_fixture.h"
 
+#include "operations/builtin_operations.h"
+#include "operations/operation_dispatcher.h"
+#include "operations/operation_environment.h"
+#include "operations/operation_registry.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::gui
@@ -1084,7 +1089,20 @@ TEST_F (ModularProjectModelTest, ConnectPortsOperatorRoundTripProducesEdge)
     project->engine ()->with_paused_processing (
       std::move (action), recalculate_graph);
   });
-  actions::PortConnectionOperator connection_operator (undo_stack, *project);
+  operations::OperationRegistry op_registry;
+  operations::register_builtin_operations (op_registry);
+  operations::OperationEnvironment environment (
+    project->get_registry (), undo_stack, *project->tracklist ()->collection (),
+    *project->track_factory_, *project->tracklist ()->trackRouting (),
+    *project->tracklist ()->channelSendRouting (),
+    *project->tracklist ()->singletonTracks (),
+    *project->port_connections_manager_, project->getTransport (), {},
+    [&project] (const dsp::Port &src, const dsp::Port &dest) {
+      return structure::project::ProjectGraphBuilder::can_ports_be_connected (
+        *project, src, dest);
+    });
+  operations::OperationDispatcher dispatcher (op_registry, environment);
+  actions::PortConnectionOperator connection_operator (dispatcher);
 
   const auto error =
     connection_operator.connectPorts (uuid_of (*cv_out), uuid_of (*mod_port));

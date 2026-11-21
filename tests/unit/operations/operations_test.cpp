@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/cv_port.h"
+#include "dsp/midi_port.h"
 #include "dsp/transport.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/tracks/audio_group_track.h"
 #include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/midi_group_track.h"
@@ -14,6 +17,7 @@
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
+#include "utils/uuid_reference.h"
 
 #include "helpers/scoped_qcoreapplication.h"
 #include "helpers/sidechain_test_plugin.h"
@@ -23,6 +27,7 @@
 #include "operations/operation_dispatcher.h"
 #include "operations/operation_environment.h"
 #include "operations/operation_registry.h"
+#include "operations/port_connection_operations.h"
 #include "operations/track_operations.h"
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
@@ -102,10 +107,12 @@ protected:
     transport_ =
       std::make_unique<dsp::Transport> (tempo_map_wrapper_, transport_config_);
 
+    port_connections_manager_ =
+      std::make_unique<structure::project::PortConnectionsManager> ();
     environment_ = std::make_unique<OperationEnvironment> (
       registry_, *undo_stack_, *track_collection_, *track_factory_,
       *track_routing_, *channel_send_routing_, *singleton_tracks_,
-      transport_.get ());
+      *port_connections_manager_, transport_.get ());
 
     register_builtin_operations (operation_registry_);
   }
@@ -120,11 +127,30 @@ protected:
     return track;
   }
 
+  /** Registers a standalone CV port owned by the fixture registry. */
+  dsp::CVPort * add_cv_port (utils::Utf8String label, dsp::PortFlow flow)
+  {
+    auto ref =
+      utils::create_object<dsp::CVPort> (registry_, std::move (label), flow);
+    // the fixture holds the registry reference so the port outlives the
+    // test body
+    port_refs_.push_back (ref.as_untyped ());
+    return ref.get ();
+  }
+
   std::string uuid_of (const structure::tracks::Track &track) const
   {
     return std::string (
       utils::Utf8String::from_qstring (
         type_safe::get (track.get_uuid ()).toString (QUuid::WithoutBraces))
+        .view ());
+  }
+
+  std::string uuid_of (const dsp::Port &port) const
+  {
+    return std::string (
+      utils::Utf8String::from_qstring (
+        port.raw_uuid ().toString (QUuid::WithoutBraces))
         .view ());
   }
 
@@ -148,11 +174,14 @@ protected:
   std::unique_ptr<structure::tracks::TrackRouting>       track_routing_;
   std::unique_ptr<structure::tracks::ChannelSendRouting> channel_send_routing_;
   std::unique_ptr<structure::tracks::TrackFactory>       track_factory_;
-  std::unique_ptr<undo::UndoStack>                       undo_stack_;
-  dsp::Transport::ConfigProvider                         transport_config_;
-  std::unique_ptr<dsp::Transport>                        transport_;
-  std::unique_ptr<OperationEnvironment>                  environment_;
-  OperationRegistry                                      operation_registry_;
+  std::unique_ptr<structure::project::PortConnectionsManager>
+                                        port_connections_manager_;
+  std::unique_ptr<undo::UndoStack>      undo_stack_;
+  dsp::Transport::ConfigProvider        transport_config_;
+  std::unique_ptr<dsp::Transport>       transport_;
+  std::unique_ptr<OperationEnvironment> environment_;
+  OperationRegistry                     operation_registry_;
+  std::vector<utils::UuidReference>     port_refs_;
 
   /**
    * The fixture's undo stack drops engine requests from this request
@@ -187,6 +216,10 @@ TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
     "track.add",
     "track.list",
     "transport.set_play_state",
+    "port.connect",
+    "port.disconnect",
+    "port.set_connection_multiplier",
+    "port.set_connection_enabled",
   };
   for (const auto &name : expected)
     {
@@ -1125,7 +1158,7 @@ TEST_F (OperationsTest, TrackAddRefusesWhenNoMasterTrack)
   environment_ = std::make_unique<OperationEnvironment> (
     registry_, *undo_stack_, *track_collection_, *track_factory_,
     *track_routing_, *channel_send_routing_, *singleton_tracks_,
-    transport_.get ());
+    *port_connections_manager_, transport_.get ());
 
   const auto count_before = track_collection_->track_count ();
   auto       report = dispatch (
@@ -1488,6 +1521,333 @@ TEST_F (OperationsTest, PartiallyRefusedEditReportsErrorWithTheCommandsThatRan)
 }
 
 // ============================================================================
+// port.connect
+// ============================================================================
+
+TEST_F (OperationsTest, PortConnectAddsUndoableConnection)
+{
+  auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+
+  auto report = dispatch (
+    "port.connect",
+    {
+      { "source",      uuid_of (*src)  },
+      { "destination", uuid_of (*dest) }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_TRUE (port_connections_manager_->connection_exists (
+    src->get_uuid (), dest->get_uuid ()));
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_GT (report.revision_after, report.revision_before);
+  ASSERT_EQ (report.affected_objects.size (), 2);
+  EXPECT_EQ (report.affected_objects[0].kind, "port");
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (port_connections_manager_->connection_exists (
+    src->get_uuid (), dest->get_uuid ()));
+}
+
+TEST_F (OperationsTest, PortConnectRefusesInvalidPairings)
+{
+  auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+
+  const auto self = dispatch (
+    "port.connect",
+    {
+      { "source",      uuid_of (*src) },
+      { "destination", uuid_of (*src) }
+  });
+  ASSERT_TRUE (self.refused ());
+  EXPECT_NE (self.message.find ("itself"), std::string::npos);
+
+  const auto direction = dispatch (
+    "port.connect",
+    {
+      { "source",      uuid_of (*dest) },
+      { "destination", uuid_of (*src)  }
+  });
+  ASSERT_TRUE (direction.refused ());
+  EXPECT_NE (direction.message.find ("input port"), std::string::npos);
+
+  const auto unknown_port = dispatch (
+    "port.connect",
+    {
+      { "source",      uuid_of (*src)                                      },
+      { "destination",
+       QUuid::createUuid ().toString (QUuid::WithoutBraces).toStdString () }
+  });
+  ASSERT_TRUE (unknown_port.refused ());
+  EXPECT_NE (unknown_port.message.find ("no port with UUID"), std::string::npos);
+
+  port_connections_manager_->add_default_connection (
+    src->get_uuid (), dest->get_uuid (), false);
+  const auto duplicate = dispatch (
+    "port.connect",
+    {
+      { "source",      uuid_of (*src)  },
+      { "destination", uuid_of (*dest) }
+  });
+  ASSERT_TRUE (duplicate.refused ());
+  EXPECT_NE (duplicate.message.find ("already connected"), std::string::npos);
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (OperationsTest, PortConnectRefusesWhenGraphRejects)
+{
+  auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+
+  environment_ = std::make_unique<OperationEnvironment> (
+    registry_, *undo_stack_, *track_collection_, *track_factory_,
+    *track_routing_, *channel_send_routing_, *singleton_tracks_,
+    *port_connections_manager_, transport_.get (), SendConnectivityQuery{},
+    [] (const dsp::Port &, const dsp::Port &) { return false; });
+
+  auto report = dispatch (
+    "port.connect",
+    {
+      { "source",      uuid_of (*src)  },
+      { "destination", uuid_of (*dest) }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("signal loop"), std::string::npos);
+  EXPECT_FALSE (port_connections_manager_->connection_exists (
+    src->get_uuid (), dest->get_uuid ()));
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// ============================================================================
+// port.disconnect
+// ============================================================================
+
+TEST_F (OperationsTest, PortDisconnectRemovesAndUndoRestores)
+{
+  auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+  ASSERT_TRUE (
+    dispatch (
+      "port.connect",
+      {
+        { "source",      uuid_of (*src)  },
+        { "destination", uuid_of (*dest) }
+  })
+      .applied ());
+
+  auto report = dispatch (
+    "port.disconnect",
+    {
+      { "source",      uuid_of (*src)  },
+      { "destination", uuid_of (*dest) }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_FALSE (port_connections_manager_->connection_exists (
+    src->get_uuid (), dest->get_uuid ()));
+  EXPECT_EQ (undo_stack_->count (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (port_connections_manager_->connection_exists (
+    src->get_uuid (), dest->get_uuid ()));
+}
+
+TEST_F (OperationsTest, PortDisconnectRefusesMissingAndLocked)
+{
+  auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+  auto * locked_dest = add_cv_port (u8"Locked in", dsp::PortFlow::Input);
+  port_connections_manager_->add_default_connection (
+    src->get_uuid (), locked_dest->get_uuid (), true);
+
+  const auto missing = dispatch (
+    "port.disconnect",
+    {
+      { "source",      uuid_of (*src)  },
+      { "destination", uuid_of (*dest) }
+  });
+  ASSERT_TRUE (missing.refused ());
+  EXPECT_NE (missing.message.find ("no connection"), std::string::npos);
+
+  const auto locked = dispatch (
+    "port.disconnect",
+    {
+      { "source",      uuid_of (*src)         },
+      { "destination", uuid_of (*locked_dest) }
+  });
+  ASSERT_TRUE (locked.refused ());
+  EXPECT_NE (locked.message.find ("locked"), std::string::npos);
+  EXPECT_TRUE (port_connections_manager_->connection_exists (
+    src->get_uuid (), locked_dest->get_uuid ()));
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// ============================================================================
+// port.set_connection_multiplier
+// ============================================================================
+
+TEST_F (OperationsTest, PortMultiplierUpdatesMergeAndElide)
+{
+  auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+  ASSERT_TRUE (
+    dispatch (
+      "port.connect",
+      {
+        { "source",      uuid_of (*src)  },
+        { "destination", uuid_of (*dest) }
+  })
+      .applied ());
+  const auto * conn = port_connections_manager_->get_connection (
+    src->get_uuid (), dest->get_uuid ());
+  ASSERT_NE (conn, nullptr);
+
+  const auto set_multiplier = [&] (double value) {
+    return dispatch (
+      "port.set_connection_multiplier",
+      {
+        { "source",      uuid_of (*src)  },
+        { "destination", uuid_of (*dest) },
+        { "multiplier",  value           }
+    });
+  };
+
+  auto first = set_multiplier (0.5);
+  ASSERT_TRUE (first.applied ()) << first.message;
+  EXPECT_FLOAT_EQ (conn->multiplier_, 0.5f);
+  EXPECT_EQ (undo_stack_->count (), 2);
+
+  // consecutive changes within the merge window undo as one step
+  auto second = set_multiplier (0.7);
+  ASSERT_TRUE (second.applied ()) << second.message;
+  EXPECT_FLOAT_EQ (conn->multiplier_, 0.7f);
+  EXPECT_EQ (undo_stack_->count (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_FLOAT_EQ (conn->multiplier_, 1.f);
+  undo_stack_->redo ();
+  EXPECT_FLOAT_EQ (conn->multiplier_, 0.7f);
+
+  auto elided = set_multiplier (0.7);
+  ASSERT_TRUE (elided.applied ());
+  EXPECT_EQ (undo_stack_->count (), 2);
+  EXPECT_EQ (elided.revision_after, elided.revision_before);
+}
+
+TEST_F (OperationsTest, PortMultiplierRefusesInvalidInput)
+{
+  auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+  auto   midi_dest_ref = utils::create_object<dsp::MidiPort> (
+    registry_, u8"MIDI in", dsp::PortFlow::Input);
+  port_refs_.push_back (midi_dest_ref.as_untyped ());
+  auto * midi_dest = midi_dest_ref.get ();
+  ASSERT_TRUE (
+    dispatch (
+      "port.connect",
+      {
+        { "source",      uuid_of (*src)  },
+        { "destination", uuid_of (*dest) }
+  })
+      .applied ());
+  port_connections_manager_->add_default_connection (
+    src->get_uuid (), midi_dest->get_uuid (), false);
+
+  const auto set_multiplier = [&] (const dsp::Port &port, double value) {
+    return dispatch (
+      "port.set_connection_multiplier",
+      {
+        { "source",      uuid_of (*src) },
+        { "destination", uuid_of (port) },
+        { "multiplier",  value          }
+    });
+  };
+
+  const auto wire_range = set_multiplier (*dest, 2.5);
+  ASSERT_TRUE (wire_range.refused ());
+  EXPECT_NE (wire_range.message.find ("between -2 and 2"), std::string::npos);
+
+  const auto cv_range = set_multiplier (*dest, 1.5);
+  ASSERT_TRUE (cv_range.refused ());
+  EXPECT_NE (cv_range.message.find ("between -1 and 1"), std::string::npos);
+
+  const auto midi = set_multiplier (*midi_dest, 0.5);
+  ASSERT_TRUE (midi.refused ());
+  EXPECT_NE (midi.message.find ("MIDI"), std::string::npos);
+
+  const auto missing =
+    set_multiplier (*add_cv_port (u8"Other in", dsp::PortFlow::Input), 0.5);
+  ASSERT_TRUE (missing.refused ());
+  EXPECT_NE (missing.message.find ("no connection"), std::string::npos);
+
+  EXPECT_EQ (undo_stack_->count (), 1);
+}
+
+// ============================================================================
+// port.set_connection_enabled
+// ============================================================================
+
+TEST_F (OperationsTest, PortEnabledTogglesAndElides)
+{
+  auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+  ASSERT_TRUE (
+    dispatch (
+      "port.connect",
+      {
+        { "source",      uuid_of (*src)  },
+        { "destination", uuid_of (*dest) }
+  })
+      .applied ());
+  const auto * conn = port_connections_manager_->get_connection (
+    src->get_uuid (), dest->get_uuid ());
+  ASSERT_NE (conn, nullptr);
+  EXPECT_TRUE (conn->enabled_);
+
+  const auto set_enabled = [&] (bool enabled) {
+    return dispatch (
+      "port.set_connection_enabled",
+      {
+        { "source",      uuid_of (*src)  },
+        { "destination", uuid_of (*dest) },
+        { "enabled",     enabled         }
+    });
+  };
+
+  auto disabled = set_enabled (false);
+  ASSERT_TRUE (disabled.applied ()) << disabled.message;
+  EXPECT_FALSE (conn->enabled_);
+  EXPECT_EQ (undo_stack_->count (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (conn->enabled_);
+  undo_stack_->redo ();
+  EXPECT_FALSE (conn->enabled_);
+
+  auto elided = set_enabled (false);
+  ASSERT_TRUE (elided.applied ());
+  EXPECT_EQ (undo_stack_->count (), 2);
+  EXPECT_EQ (elided.revision_after, elided.revision_before);
+
+  auto * locked_dest = add_cv_port (u8"Locked in", dsp::PortFlow::Input);
+  port_connections_manager_->add_default_connection (
+    src->get_uuid (), locked_dest->get_uuid (), true);
+  const auto locked = dispatch (
+    "port.set_connection_enabled",
+    {
+      { "source",      uuid_of (*src)         },
+      { "destination", uuid_of (*locked_dest) },
+      { "enabled",     false                  }
+  });
+  ASSERT_TRUE (locked.refused ());
+  EXPECT_NE (locked.message.find ("locked"), std::string::npos);
+}
+
+// ============================================================================
 // Typed dispatch (C++ callers)
 // ============================================================================
 
@@ -1515,6 +1875,27 @@ TEST_F (OperationsTest, TypedDispatchAppliesAndRefuses)
 
   undo_stack_->undo ();
   EXPECT_EQ (track->name (), QString ("Original"));
+}
+
+TEST_F (OperationsTest, TypedPortDispatchAppliesAndRefuses)
+{
+  dsp::Port * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
+  dsp::Port * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
+
+  operations::OperationDispatcher dispatcher (
+    operation_registry_, *environment_);
+  auto applied =
+    dispatcher.invoke (operations::port_connect_operation (), src, dest);
+  ASSERT_TRUE (applied.applied ()) << applied.message;
+  EXPECT_TRUE (port_connections_manager_->connection_exists (
+    src->get_uuid (), dest->get_uuid ()));
+
+  // the typed path validates like the JSON path
+  auto refused =
+    dispatcher.invoke (operations::port_connect_operation (), src, src);
+  EXPECT_TRUE (refused.refused ());
+  EXPECT_NE (refused.message.find ("itself"), std::string::npos);
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 // ============================================================================

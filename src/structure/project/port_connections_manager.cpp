@@ -6,13 +6,16 @@
 
 #include <fmt/std.h>
 
+#include "dsp/port.h"
 #include "structure/project/port_connections_manager.h"
 #include "utils/format.h"
 #include "utils/format_boost.h"
 #include "utils/logger.h"
 #include "utils/serialization.h"
+#include "utils/utf8_string.h"
 
 #include <fmt/format.h>
+#include <magic_enum/magic_enum.hpp>
 
 namespace zrythm::structure::project
 {
@@ -234,6 +237,104 @@ PortConnectionsManager::get_connection (
     return conn->src_id_ == src && conn->dest_id_ == dest;
   });
   return it != connections_.end () ? it->get () : nullptr;
+}
+
+std::optional<utils::Utf8String>
+PortConnectionsManager::connect_refusal_reason (
+  const dsp::Port         &src,
+  dsp::Port               &dest,
+  const ConnectivityQuery &graph_query) const
+{
+  if (&src == &dest)
+    return utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("'{}' cannot be connected to itself", src.get_label ()));
+
+  if (!src.is_output () || !dest.is_input ())
+    return utils::Utf8String{
+      u8"connections must go from an output port to an input port"
+    };
+
+  if (src.type () != dest.type ())
+    {
+      return utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' outputs {} but '{}' takes {}", src.get_label (),
+          std::string (magic_enum::enum_name (src.type ())), dest.get_label (),
+          std::string (magic_enum::enum_name (dest.type ()))));
+    }
+
+  if (connection_exists (src.get_uuid (), dest.get_uuid ()))
+    return utils::Utf8String::from_utf8_encoded_string (
+      fmt::format (
+        "'{}' and '{}' are already connected", src.get_label (),
+        dest.get_label ()));
+
+  // Detached destination ports join the validation graph only; the
+  // undo command owns the lasting attachment state.
+  const bool destination_was_detached = dest.detached ();
+  if (destination_was_detached)
+    dest.set_detached (false);
+  const auto restore_detached = [&] {
+    if (destination_was_detached)
+      dest.set_detached (true);
+  };
+
+  const auto graph_refusal = [&] () -> std::optional<utils::Utf8String> {
+    try
+      {
+        if (graph_query (src, dest))
+          return std::nullopt;
+        return utils::Utf8String::from_utf8_encoded_string (
+          "that connection would close a signal loop or cannot be wired");
+      }
+    catch (const std::exception &error)
+      {
+        return utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "the connection could not be validated: {}", error.what ()));
+      }
+  }();
+  restore_detached ();
+
+  return graph_refusal;
+}
+
+std::optional<utils::Utf8String>
+PortConnectionsManager::edit_refusal_reason (
+  const dsp::Port &src,
+  const dsp::Port &dest) const
+{
+  const auto * conn = get_connection (src.get_uuid (), dest.get_uuid ());
+  if (conn == nullptr)
+    return utils::Utf8String{ u8"no connection exists between these ports" };
+  if (conn->locked_)
+    return utils::Utf8String{ u8"the connection is locked" };
+  return std::nullopt;
+}
+
+std::optional<utils::Utf8String>
+PortConnectionsManager::multiplier_refusal_reason (
+  const dsp::Port &src,
+  const dsp::Port &dest,
+  double           multiplier) const
+{
+  const auto edit_refusal = edit_refusal_reason (src, dest);
+  if (edit_refusal.has_value ())
+    return edit_refusal;
+
+  if (dest.type () == dsp::PortType::Midi)
+    return utils::Utf8String{ u8"MIDI connections carry no strength" };
+
+  const double max_abs_multiplier =
+    dest.type () == dsp::PortType::Audio ? 2.0 : 1.0;
+  if (multiplier < -max_abs_multiplier || multiplier > max_abs_multiplier)
+    {
+      return utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "the strength must be between {} and {}", -max_abs_multiplier,
+          max_abs_multiplier));
+    }
+  return std::nullopt;
 }
 
 const PortConnection *

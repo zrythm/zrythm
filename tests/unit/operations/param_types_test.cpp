@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/cv_port.h"
+#include "dsp/midi_port.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/track.h"
@@ -10,6 +13,7 @@
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
 #include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "operations/operation_environment.h"
 #include "operations/param_types.h"
@@ -49,10 +53,13 @@ protected:
       return factory_deps_;
     }
   };
-  undo::UndoStack      undo_stack_{ [] (auto callback, bool) { callback (); } };
-  OperationEnvironment environment_{
-    registry_,      undo_stack_,           track_collection_, track_factory_,
-    track_routing_, channel_send_routing_, singleton_tracks_
+  undo::UndoStack undo_stack_{ [] (auto callback, bool) { callback (); } };
+  structure::project::PortConnectionsManager port_connections_manager_;
+  OperationEnvironment                       environment_{
+    registry_,         undo_stack_,
+    track_collection_, track_factory_,
+    track_routing_,    channel_send_routing_,
+    singleton_tracks_, port_connections_manager_
   };
 };
 
@@ -181,6 +188,59 @@ TEST_F (ParamTypesTest, AudioPortParamResolvesRegistryObjects)
   EXPECT_NE (unknown.error ().reason.find ("no audio port"), std::string::npos);
 
   EXPECT_FALSE ((AudioPortParam::from_value (nullptr).has_value ()));
+}
+
+TEST_F (ParamTypesTest, PortParamResolvesRegistryObjects)
+{
+  auto ref = track_factory_.create_empty_track<structure::tracks::AudioTrack> ();
+  auto * port = &ref.get ()->get_track_processor ()->get_stereo_in_port ();
+
+  const auto by_value = PortParam::from_value (port);
+  ASSERT_TRUE (by_value.has_value ());
+  EXPECT_EQ (by_value->value (), port);
+  EXPECT_EQ (
+    by_value->uuid_string (),
+    uuid_to_string (type_safe::get (port->get_uuid ())));
+
+  const auto parsed =
+    PortParam::parse (nlohmann::json (by_value->uuid_string ()), environment_);
+  ASSERT_TRUE (parsed.has_value ());
+  EXPECT_EQ (parsed->value (), port);
+
+  const auto unknown_port = PortParam::parse (
+    nlohmann::json ("11111111-1111-1111-1111-111111111111"), environment_);
+  ASSERT_FALSE (unknown_port.has_value ());
+  EXPECT_NE (
+    unknown_port.error ().reason.find ("no port with UUID"), std::string::npos);
+
+  const auto not_a_uuid =
+    PortParam::parse (nlohmann::json ("not-a-uuid"), environment_);
+  ASSERT_FALSE (not_a_uuid.has_value ());
+  EXPECT_NE (not_a_uuid.error ().reason.find ("not a UUID"), std::string::npos);
+
+  EXPECT_FALSE ((PortParam::from_value (nullptr).has_value ()));
+}
+
+TEST_F (ParamTypesTest, BoundedFloatParamValidatesRange)
+{
+  using Param = BoundedFloatParam<-2.0, 2.0>;
+
+  const auto parsed = Param::parse (nlohmann::json (0.5), environment_);
+  ASSERT_TRUE (parsed.has_value ());
+  EXPECT_DOUBLE_EQ (parsed->value (), 0.5);
+
+  EXPECT_FALSE (
+    (Param::parse (nlohmann::json ("0.5"), environment_).has_value ()));
+  EXPECT_FALSE (
+    (Param::parse (nlohmann::json (2.5), environment_).has_value ()));
+  EXPECT_FALSE ((Param::from_value (-2.5).has_value ()));
+  EXPECT_TRUE ((Param::from_value (-2.0).has_value ()));
+  EXPECT_TRUE ((Param::from_value (2.0).has_value ()));
+
+  const auto schema = Param::describe ();
+  EXPECT_EQ (schema.at ("type").get<std::string> (), "number");
+  EXPECT_DOUBLE_EQ (schema.at ("minimum").get<double> (), -2.0);
+  EXPECT_DOUBLE_EQ (schema.at ("maximum").get<double> (), 2.0);
 }
 
 TEST_F (ParamTypesTest, HexColorParamAcceptsSixAndEightDigitHex)

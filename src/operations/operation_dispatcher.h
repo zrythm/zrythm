@@ -46,6 +46,11 @@ public:
     const DispatchOptions &options = {}) const;
 
   /**
+   * The session environment operations run against.
+   */
+  OperationEnvironment &environment () const { return environment_; }
+
+  /**
    * Runs the given typed operation against the environment.
    *
    * The values are checked against the operation's handler signature at

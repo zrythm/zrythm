@@ -216,6 +216,7 @@ ProjectSession::ProjectSession (
           *project_->tracklist ()->trackRouting (),
           *project_->tracklist ()->channelSendRouting (),
           *project_->tracklist ()->singletonTracks (),
+          *project_->port_connections_manager_,
           project_->getTransport (),
           [this] (
             const structure::tracks::ChannelSend &send,
@@ -226,6 +227,10 @@ ProjectSession::ProjectSession (
                 : static_cast<const dsp::Port &> (send.get_midi_out_port ());
             return structure::project::ProjectGraphBuilder::
               can_ports_be_connected (*project_, out_port, destination);
+          },
+          [this] (const dsp::Port &src, const dsp::Port &dest) {
+            return structure::project::ProjectGraphBuilder::
+              can_ports_be_connected (*project_, src, dest);
           })),
       operation_registry_ (std::make_unique<operations::OperationRegistry> ()),
       operation_dispatcher_ (
@@ -248,7 +253,7 @@ ProjectSession::ProjectSession (
     *project_, *ui_state_, this);
 
   port_connection_operator_ = utils::make_qobject_unique<
-    actions::PortConnectionOperator> (*undo_stack_, *project_, this);
+    actions::PortConnectionOperator> (*operation_dispatcher_, this);
 
   timeline_arranger_objects_ =
     utils::make_qobject_unique<TimelineArrangerObjectsModel> (this);

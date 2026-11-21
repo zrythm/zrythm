@@ -3,9 +3,13 @@
 
 #pragma once
 
+#include <functional>
+#include <optional>
+
 #include "structure/project/port_connection.h"
 #include "utils/icloneable.h"
 #include "utils/qt.h"
+#include "utils/utf8_string.h"
 
 #include <nlohmann/json_fwd.hpp>
 
@@ -136,6 +140,49 @@ public:
   {
     return get_connection (src, dest) != nullptr;
   }
+
+  /**
+   * Answers whether two ports may be wired together in the processing
+   * graph.
+   *
+   * Returns false when the wiring is invalid or would close a signal
+   * loop.
+   */
+  using ConnectivityQuery =
+    std::function<bool (const dsp::Port &, const dsp::Port &)>;
+
+  /**
+   * Returns the reason a connection between the given ports cannot be
+   * created, or nullopt when it can be created.
+   *
+   * Checks direction, signal type and duplicates, then asks
+   * @p graph_query about the processing graph. The destination
+   * temporarily joins the validation graph while it is detached,
+   * without changing its lasting attachment state.
+   */
+  std::optional<utils::Utf8String> connect_refusal_reason (
+    const dsp::Port         &src,
+    dsp::Port               &dest,
+    const ConnectivityQuery &graph_query) const;
+
+  /**
+   * Returns the reason the connection between the given ports cannot
+   * be edited or removed, or nullopt when it can.
+   */
+  std::optional<utils::Utf8String>
+  edit_refusal_reason (const dsp::Port &src, const dsp::Port &dest) const;
+
+  /**
+   * Returns the reason the given strength cannot be applied to the
+   * connection between the given ports, or nullopt when it can.
+   *
+   * MIDI connections carry no strength; audio connections accept
+   * -2.0 to 2.0 and connections of other types accept -1.0 to 1.0.
+   */
+  std::optional<utils::Utf8String> multiplier_refusal_reason (
+    const dsp::Port &src,
+    const dsp::Port &dest,
+    double           multiplier) const;
 
   /**
    * @brief Replaces the given @p before connection with @p after.

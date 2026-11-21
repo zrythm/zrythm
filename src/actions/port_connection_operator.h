@@ -3,10 +3,13 @@
 
 #pragma once
 
-#include "structure/project/project.h"
-#include "undo/undo_stack.h"
+#include <expected>
+
+#include "dsp/port_fwd.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
+
+#include "operations/operation_dispatcher.h"
 
 namespace zrythm::actions
 {
@@ -14,8 +17,8 @@ namespace zrythm::actions
 /**
  * @brief Semantic operations on user port connections.
  *
- * All mutations are undoable and applied to the project's
- * PortConnectionsManager.
+ * All mutations are dispatched through the operations layer and are
+ * undoable.
  */
 class PortConnectionOperator : public QObject
 {
@@ -25,17 +28,13 @@ class PortConnectionOperator : public QObject
 
 public:
   explicit PortConnectionOperator (
-    undo::UndoStack             &undo_stack,
-    structure::project::Project &project,
-    QObject *                    parent = nullptr);
+    operations::OperationDispatcher &operation_dispatcher,
+    QObject *                        parent = nullptr);
 
   /**
    * @brief Creates an undoable connection between two ports.
    *
-   * Validates port existence, direction, signal types, duplicates and whether
-   * the connection would introduce a cycle in the processing graph.
-   *
-   * @return Empty string on success, otherwise a translated error message.
+   * @return Empty string on success, otherwise the refusal reason.
    */
   Q_INVOKABLE QString connectPorts (
     const QString &sourcePortUuid,
@@ -44,7 +43,7 @@ public:
   /**
    * @brief Removes an unlocked connection between two ports, undoably.
    *
-   * @return Empty string on success, otherwise a translated error message.
+   * @return Empty string on success, otherwise the refusal reason.
    */
   Q_INVOKABLE QString disconnectPorts (
     const QString &sourcePortUuid,
@@ -62,7 +61,7 @@ public:
    * @param multiplier New multiplier: -1.0…1.0 for CV connections,
    * -2.0…2.0 for audio connections. Callers must pass a finite value;
    * non-finite values are not validated.
-   * @return Empty string on success, otherwise a translated error message.
+   * @return Empty string on success, otherwise the refusal reason.
    */
   Q_INVOKABLE QString setConnectionMultiplier (
     const QString &sourcePortUuid,
@@ -75,7 +74,7 @@ public:
    * Disabled connections stay in the project but are skipped during
    * processing.
    *
-   * @return Empty string on success, otherwise a translated error message.
+   * @return Empty string on success, otherwise the refusal reason.
    */
   Q_INVOKABLE QString setConnectionEnabled (
     const QString &sourcePortUuid,
@@ -83,8 +82,16 @@ public:
     bool           enabled);
 
 private:
-  undo::UndoStack             &undo_stack_;
-  structure::project::Project &project_;
+  /**
+   * @brief Resolves a port given its UUID string.
+   *
+   * @return The port, or the refusal text when the string is not a
+   * UUID or names no registered port.
+   */
+  std::expected<dsp::Port *, QString>
+  find_port (const QString &uuid_string) const;
+
+  operations::OperationDispatcher &operation_dispatcher_;
 };
 
 } // namespace zrythm::actions

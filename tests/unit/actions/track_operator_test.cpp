@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/track_operator.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/tracks/audio_group_track.h"
 #include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/singleton_tracks.h"
@@ -84,6 +85,9 @@ protected:
       callback ();
     });
 
+    port_connections_manager_ =
+      std::make_unique<structure::project::PortConnectionsManager> ();
+
     auto track_ref =
       track_factory_->create_empty_track<structure::tracks::AudioTrack> ();
     track_ = track_ref.get ();
@@ -93,7 +97,8 @@ protected:
     operations::register_builtin_operations (registry_);
     environment_ = std::make_unique<operations::OperationEnvironment> (
       object_registry_, *undo_stack_, *track_collection_, *track_factory_,
-      *track_routing_, *channel_send_routing_, singleton_tracks_);
+      *track_routing_, *channel_send_routing_, singleton_tracks_,
+      *port_connections_manager_);
     dispatcher_ = std::make_unique<operations::OperationDispatcher> (
       registry_, *environment_);
 
@@ -114,12 +119,14 @@ protected:
   std::unique_ptr<structure::tracks::TrackCollection>    track_collection_;
   std::unique_ptr<structure::tracks::TrackRouting>       track_routing_;
   std::unique_ptr<structure::tracks::ChannelSendRouting> channel_send_routing_;
-  std::unique_ptr<undo::UndoStack>                       undo_stack_;
-  operations::OperationRegistry                          registry_;
-  std::unique_ptr<operations::OperationEnvironment>      environment_;
-  std::unique_ptr<operations::OperationDispatcher>       dispatcher_;
-  std::unique_ptr<TrackOperator>                         track_operator_;
-  structure::tracks::Track *                             track_{};
+  std::unique_ptr<structure::project::PortConnectionsManager>
+                                                    port_connections_manager_;
+  std::unique_ptr<undo::UndoStack>                  undo_stack_;
+  operations::OperationRegistry                     registry_;
+  std::unique_ptr<operations::OperationEnvironment> environment_;
+  std::unique_ptr<operations::OperationDispatcher>  dispatcher_;
+  std::unique_ptr<TrackOperator>                    track_operator_;
+  structure::tracks::Track *                        track_{};
 };
 
 // Test rename through the registry, with undo and redo

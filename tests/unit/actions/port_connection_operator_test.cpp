@@ -11,6 +11,7 @@
 #include "plugins/modulators/modulator.h"
 #include "plugins/plugin_configuration.h"
 #include "structure/project/port_connections_manager.h"
+#include "structure/project/project_graph_builder.h"
 #include "structure/tracks/audio_bus_track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/tracklist.h"
@@ -18,6 +19,10 @@
 
 #include "helpers/project_fixture.h"
 
+#include "operations/builtin_operations.h"
+#include "operations/operation_dispatcher.h"
+#include "operations/operation_environment.h"
+#include "operations/operation_registry.h"
 #include "unit/actions/mock_undo_stack.h"
 #include <gtest/gtest.h>
 
@@ -94,8 +99,22 @@ protected:
     project_ = create_minimal_project ();
     project_->add_default_tracks ();
     undo_stack_ = create_mock_undo_stack ();
-    operator_ =
-      std::make_unique<PortConnectionOperator> (*undo_stack_, *project_);
+    operations::register_builtin_operations (registry_);
+    environment_ = std::make_unique<operations::OperationEnvironment> (
+      project_->get_registry (), *undo_stack_,
+      *project_->tracklist ()->collection (), *project_->track_factory_,
+      *project_->tracklist ()->trackRouting (),
+      *project_->tracklist ()->channelSendRouting (),
+      *project_->tracklist ()->singletonTracks (),
+      *project_->port_connections_manager_, project_->getTransport (),
+      operations::SendConnectivityQuery{},
+      [this] (const dsp::Port &src, const dsp::Port &dest) {
+        return structure::project::ProjectGraphBuilder::can_ports_be_connected (
+          *project_, src, dest);
+      });
+    dispatcher_ = std::make_unique<operations::OperationDispatcher> (
+      registry_, *environment_);
+    operator_ = std::make_unique<PortConnectionOperator> (*dispatcher_);
     bus1_ = add_audio_bus (u8"Bus 1");
     bus2_ = add_audio_bus (u8"Bus 2");
     ASSERT_NE (bus1_.out, nullptr);
@@ -107,6 +126,8 @@ protected:
   void TearDown () override
   {
     operator_.reset ();
+    dispatcher_.reset ();
+    environment_.reset ();
     undo_stack_.reset ();
     project_.reset ();
   }
@@ -122,11 +143,14 @@ protected:
       src.get_uuid (), dest.get_uuid ());
   }
 
-  std::unique_ptr<structure::project::Project> project_;
-  std::unique_ptr<undo::UndoStack>             undo_stack_;
-  std::unique_ptr<PortConnectionOperator>      operator_;
-  BusPorts                                     bus1_;
-  BusPorts                                     bus2_;
+  std::unique_ptr<structure::project::Project>      project_;
+  std::unique_ptr<undo::UndoStack>                  undo_stack_;
+  operations::OperationRegistry                     registry_;
+  std::unique_ptr<operations::OperationEnvironment> environment_;
+  std::unique_ptr<operations::OperationDispatcher>  dispatcher_;
+  std::unique_ptr<PortConnectionOperator>           operator_;
+  BusPorts                                          bus1_;
+  BusPorts                                          bus2_;
 };
 
 TEST_F (PortConnectionOperatorTest, ConnectDisconnectUndoRedo)

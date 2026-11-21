@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/channel_send_routing.h"
 #include "structure/tracks/track.h"
@@ -18,21 +19,26 @@ namespace zrythm::operations
 {
 
 OperationEnvironment::OperationEnvironment (
-  utils::IObjectRegistry                &object_registry,
-  undo::UndoStack                       &undo_stack,
-  structure::tracks::TrackCollection    &track_collection,
-  structure::tracks::TrackFactory       &track_factory,
-  structure::tracks::TrackRouting       &track_routing,
-  structure::tracks::ChannelSendRouting &channel_send_routing,
-  structure::tracks::SingletonTracks    &singleton_tracks,
-  dsp::Transport *                       transport,
-  SendConnectivityQuery                  send_connectivity_query)
+  utils::IObjectRegistry                     &object_registry,
+  undo::UndoStack                            &undo_stack,
+  structure::tracks::TrackCollection         &track_collection,
+  structure::tracks::TrackFactory            &track_factory,
+  structure::tracks::TrackRouting            &track_routing,
+  structure::tracks::ChannelSendRouting      &channel_send_routing,
+  structure::tracks::SingletonTracks         &singleton_tracks,
+  structure::project::PortConnectionsManager &port_connections_manager,
+  dsp::Transport *                            transport,
+  SendConnectivityQuery                       send_connectivity_query,
+  PortConnectivityQuery                       port_connectivity_query)
     : object_registry_ (object_registry), undo_stack_ (undo_stack),
       track_collection_ (track_collection), track_factory_ (track_factory),
       track_routing_ (track_routing),
       channel_send_routing_ (channel_send_routing),
-      singleton_tracks_ (singleton_tracks), transport_ (transport),
-      send_connectivity_query_ (std::move (send_connectivity_query))
+      singleton_tracks_ (singleton_tracks),
+      port_connections_manager_ (port_connections_manager),
+      transport_ (transport),
+      send_connectivity_query_ (std::move (send_connectivity_query)),
+      port_connectivity_query_ (std::move (port_connectivity_query))
 {
 }
 
@@ -78,6 +84,12 @@ OperationEnvironment::singleton_tracks () const
   return singleton_tracks_;
 }
 
+structure::project::PortConnectionsManager &
+OperationEnvironment::port_connections_manager () const
+{
+  return port_connections_manager_;
+}
+
 dsp::Transport *
 OperationEnvironment::transport () const
 {
@@ -94,6 +106,18 @@ OperationEnvironment::can_connect_send_destination (
       return true;
     }
   return send_connectivity_query_ (send, destination);
+}
+
+bool
+OperationEnvironment::can_connect_ports (
+  const dsp::Port &src,
+  const dsp::Port &dest) const
+{
+  if (!port_connectivity_query_)
+    {
+      return true;
+    }
+  return port_connectivity_query_ (src, dest);
 }
 
 structure::tracks::Track *

@@ -8,6 +8,7 @@ target_sources(zrythm_operations_lib
     builtin_operations.cpp
     operation_dispatcher.cpp
     operation_environment.cpp
+    port_connection_operations.cpp
     track_operations.cpp
     transport_operations.cpp
   PUBLIC
@@ -21,6 +22,7 @@ target_sources(zrythm_operations_lib
       operation_environment.h
       operation_registry.h
       param_types.h
+      port_connection_operations.h
       track_operations.h
       transport_operations.h
       typed_operation.h
@@ -38,6 +40,7 @@ target_link_libraries(zrythm_operations_lib
     ${zrythm_link_libs}
     zrythm_commands_lib
     zrythm_dsp_lib
+    zrythm_structure_project_lib
     zrythm_structure_tracks_lib
     zrythm_undo_lib
     zrythm::include_dirs

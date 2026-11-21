@@ -543,8 +543,6 @@ ProjectGraphBuilder::can_ports_be_connected (
       auto * node2 = graph.get_nodes ().find_node_for_processable (*destp);
       z_return_val_if_fail (node2, false);
       node->connect_to (*node2);
-      z_return_val_if_fail (!node->terminal_, false);
-      z_return_val_if_fail (!node2->initial_, false);
       return true;
     },
     convert_to_variant_qobj<dsp::PortPtrVariant> (&src),
@@ -554,6 +552,10 @@ ProjectGraphBuilder::can_ports_be_connected (
       z_info ("failed to connect {} to {}", src.get_label (), dest.get_label ());
       return false;
     }
+
+  // the trigger and terminal node sets must reflect the candidate edge,
+  // so recompute them before validating
+  graph.finalize_nodes ();
 
   bool valid = graph.is_valid ();
 
