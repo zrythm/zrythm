@@ -271,4 +271,20 @@ TEST_F (GraphTest, ErasedNodeEdgesAreSeveredIntoSurvivors)
   const auto nodes = std::move (graph).finalize ();
   EXPECT_EQ (nodes.trigger_nodes ().size (), 2); // a and c
 }
+
+// With several nodes sharing one processable, lookups return the first
+// node added; after it is erased, they return the next remaining node
+TEST_F (GraphTest, FindNodeForProcessableReturnsFirstNode)
+{
+  Graph graph;
+
+  auto * node1 = graph.add_node (std::make_unique<GraphNode> (1, *processable_));
+  auto * node2 = graph.add_node (std::make_unique<GraphNode> (2, *processable_));
+  EXPECT_EQ (graph.find_node_for_processable (*processable_), node1);
+
+  graph.erase_nodes_if ([node1] (const auto &node) {
+    return node.get () == node1;
+  });
+  EXPECT_EQ (graph.find_node_for_processable (*processable_), node2);
+}
 }

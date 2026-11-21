@@ -62,9 +62,7 @@ Graph::add_node_for_processable (IProcessable &processable)
       // don't allow duplicates
       return node_ptr;
     }
-  nodes_.emplace_back (
-    std::make_unique<GraphNode> (nodes_.size (), processable));
-  return nodes_.back ().get ();
+  return add_node (std::make_unique<GraphNode> (nodes_.size (), processable));
 }
 
 GraphNode *
@@ -72,7 +70,9 @@ Graph::add_node (std::unique_ptr<GraphNode> node)
 {
   assert (node != nullptr);
   nodes_.emplace_back (std::move (node));
-  return nodes_.back ().get ();
+  auto * added = nodes_.back ().get ();
+  processable_to_node_.emplace (&added->get_processable (), added);
+  return added;
 }
 
 GraphNode *
@@ -103,15 +103,23 @@ Graph::disconnect (GraphNode &from, GraphNode &to)
 GraphNode *
 Graph::find_node_for_processable (const IProcessable &processable) const
 {
-  auto it = std::ranges::find_if (nodes_, [&] (const auto &node) {
-    return std::addressof (node->get_processable ())
-           == std::addressof (processable);
-  });
-  if (it != nodes_.end ())
+  auto it = processable_to_node_.find (std::addressof (processable));
+  if (it != processable_to_node_.end ())
     {
-      return it->get ();
+      return it->second;
     }
   return nullptr;
+}
+
+void
+Graph::rebuild_processable_index ()
+{
+  processable_to_node_.clear ();
+  processable_to_node_.reserve (nodes_.size ());
+  for (const auto &node : nodes_)
+    {
+      processable_to_node_.emplace (&node->get_processable (), node.get ());
+    }
 }
 
 FinalizedGraph
@@ -121,6 +129,7 @@ Graph::finalize () &&
   FinalizedGraph collection;
   collection.graph_nodes_ = std::move (nodes_);
   collection.initial_processor_ = std::move (initial_processor_);
+  processable_to_node_.clear ();
   collection.set_initial_and_terminal_nodes ();
   return collection;
 }

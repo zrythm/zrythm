@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -96,9 +97,15 @@ public:
             depend.get ().remove_feed (*erased);
           }
       }
-    return std::erase_if (nodes_, [&to_erase] (const auto &node) {
-      return to_erase.contains (node.get ());
-    });
+    const auto num_erased =
+      std::erase_if (nodes_, [&to_erase] (const auto &node) {
+        return to_erase.contains (node.get ());
+      });
+    if (num_erased > 0)
+      {
+        rebuild_processable_index ();
+      }
+    return num_erased;
   }
 
   /**
@@ -111,7 +118,8 @@ public:
   bool is_valid () const;
 
   /**
-   * @brief Returns the node for @p processable, or null if there is none.
+   * @brief Returns the first node added for @p processable, or null if there
+   * is none.
    */
   GraphNode * find_node_for_processable (const IProcessable &processable) const;
 
@@ -132,8 +140,14 @@ public:
   FinalizedGraph finalize () &&;
 
 private:
+  /** Rebuilds the processable-to-node index from the current nodes. */
+  void rebuild_processable_index ();
+
   std::unique_ptr<InitialProcessor>       initial_processor_;
   std::vector<std::unique_ptr<GraphNode>> nodes_;
+
+  /** First node added for each processable. */
+  std::unordered_map<const IProcessable *, GraphNode *> processable_to_node_;
 };
 
 } // namespace zrythm::dsp::graph
