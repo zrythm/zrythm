@@ -101,10 +101,10 @@ GraphScheduler::trigger_node (GraphNode &node)
 }
 
 void
-GraphScheduler::rechain_from_node_collection (
-  GraphNodeCollection &&nodes,
-  units::sample_rate_t  sample_rate,
-  units::sample_u32_t   max_block_length)
+GraphScheduler::rechain_from_finalized_graph (
+  FinalizedGraph     &&graph,
+  units::sample_rate_t sample_rate,
+  units::sample_u32_t  max_block_length)
 {
   z_debug ("rechaining graph...");
 
@@ -140,15 +140,15 @@ GraphScheduler::rechain_from_node_collection (
   // cleanup previous graph nodes
   release_node_resources ();
 
-  /* --- swap setup nodes with graph nodes --- */
+  /* --- swap in the new finalized graph --- */
 
-  graph_nodes_ = std::move (nodes);
+  finalized_graph_ = std::move (graph);
 
   terminal_refcnt_.store (
-    static_cast<int> (graph_nodes_.terminal_nodes_.size ()));
+    static_cast<int> (finalized_graph_.terminal_nodes ().size ()));
 
   trigger_queue_.emplace (
-    std::max<size_t> (graph_nodes_.graph_nodes_.size (), 1));
+    std::max<size_t> (finalized_graph_.nodes ().size (), 1));
 
   /* the queue has been replaced - workers may touch it again */
   rechain_pending_.store (false, std::memory_order_release);
@@ -391,21 +391,21 @@ GraphScheduler::prepare_nodes_for_processing ()
     "preparing nodes for processing with sample rate {} and max block length {}",
     sample_rate_, max_block_length_);
   run_on_main_thread_func_ ([&] () {
-    for (auto &node : graph_nodes_.graph_nodes_)
+    for (const auto &node : finalized_graph_.nodes ())
       {
         node->get_processable ().prepare_for_processing (
           node.get (), sample_rate_, max_block_length_);
       }
   });
 
-  graph_nodes_.update_latencies ();
+  finalized_graph_.update_latencies ();
 }
 
 void
 GraphScheduler::release_node_resources ()
 {
   run_on_main_thread_func_ ([&] () {
-    for (auto &node : graph_nodes_.graph_nodes_)
+    for (const auto &node : finalized_graph_.nodes ())
       {
         node->get_processable ().release_resources ();
       }

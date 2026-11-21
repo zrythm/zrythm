@@ -1401,9 +1401,7 @@ ModularProjectModel::rebuild_projection ()
           const auto * port = dynamic_cast<const dsp::Port *> (processable);
           if (port == nullptr || port->detached ())
             continue;
-          if (
-            graph.get_nodes ().find_node_for_processable (*processable)
-            != nullptr)
+          if (graph.find_node_for_processable (*processable) != nullptr)
             continue;
           z_warning (
             "Projected port '{}' of node '{}' has no node in the processing graph",
@@ -1475,7 +1473,7 @@ ModularProjectModel::rebuild_projection ()
             }
         };
 
-      for (const auto &source_owner : graph.get_nodes ().graph_nodes_)
+      for (const auto &source_owner : graph.nodes ())
         {
           const auto  &source_node = *source_owner;
           const auto * source_processable = &source_node.get_processable ();

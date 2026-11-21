@@ -137,10 +137,10 @@ GraphThread::on_reached_terminal_node ()
 
       /* reset terminal reference count */
       scheduler_.terminal_refcnt_.store (
-        static_cast<int> (scheduler_.graph_nodes_.terminal_nodes_.size ()));
+        static_cast<int> (scheduler_.finalized_graph_.terminal_nodes ().size ()));
 
       /* and start the initial nodes */
-      for (auto node : scheduler_.graph_nodes_.trigger_nodes_)
+      for (auto node : scheduler_.finalized_graph_.trigger_nodes ())
         {
           const bool pushed [[maybe_unused]] =
             scheduler_.trigger_queue_->try_push (std::addressof (node.get ()));
@@ -294,7 +294,7 @@ GraphThread::run ()
 
       /* bootstrap trigger-list.
        * (later this is done by Graph.reached_terminal_node())*/
-      for (const auto node : graph->graph_nodes_.trigger_nodes_)
+      for (const auto node : graph->finalized_graph_.trigger_nodes ())
         {
           /*z_info ("[main] pushing back node {} during bootstrap", i);*/
           const bool pushed [[maybe_unused]] =

@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <memory>
 
 #include "dsp/graph_pruner.h"
@@ -45,11 +46,9 @@ protected:
     graph_node_d_ = graph_.add_node_for_processable (*node_d_);
 
     // Connect: A -> B -> C -> D
-    graph_node_a_->connect_to (*graph_node_b_);
-    graph_node_b_->connect_to (*graph_node_c_);
-    graph_node_c_->connect_to (*graph_node_d_);
-
-    graph_.finalize_nodes ();
+    graph_.connect (*graph_node_a_, *graph_node_b_);
+    graph_.connect (*graph_node_b_, *graph_node_c_);
+    graph_.connect (*graph_node_c_, *graph_node_d_);
   }
 
   Graph                            graph_;
@@ -61,13 +60,22 @@ protected:
   GraphNode *                      graph_node_b_;
   GraphNode *                      graph_node_c_;
   GraphNode *                      graph_node_d_;
+
+  /** Number of nodes with no outgoing edges, before finalization. */
+  static size_t count_nodes_without_feeds (const Graph &graph)
+  {
+    return static_cast<size_t> (
+      std::ranges::count_if (graph.nodes (), [] (const auto &node) {
+        return node->feeds ().empty ();
+      }));
+  }
 };
 
 TEST_F (GraphPrunerTest, PruneToSingleTerminal)
 {
   // Verify initial graph has 4 nodes and 1 terminal (D)
-  EXPECT_EQ (graph_.get_nodes ().graph_nodes_.size (), 4);
-  EXPECT_EQ (graph_.get_nodes ().terminal_nodes_.size (), 1);
+  EXPECT_EQ (graph_.nodes ().size (), 4);
+  EXPECT_EQ (count_nodes_without_feeds (graph_), 1);
 
   // Prune to only terminal D (should keep all nodes since D depends on all)
   std::vector<std::reference_wrapper<GraphNode>> terminals;
@@ -76,9 +84,11 @@ TEST_F (GraphPrunerTest, PruneToSingleTerminal)
   bool result = GraphPruner::prune_graph_to_terminals (graph_, terminals);
 
   EXPECT_TRUE (result);
-  EXPECT_EQ (graph_.get_nodes ().graph_nodes_.size (), 4);
-  EXPECT_EQ (graph_.get_nodes ().terminal_nodes_.size (), 1);
+  EXPECT_EQ (graph_.nodes ().size (), 4);
   EXPECT_TRUE (graph_.is_valid ());
+
+  const auto collection = std::move (graph_).finalize ();
+  EXPECT_EQ (collection.terminal_nodes ().size (), 1);
 }
 
 TEST_F (GraphPrunerTest, PruneToMiddleNodeAsTerminal)
@@ -86,12 +96,11 @@ TEST_F (GraphPrunerTest, PruneToMiddleNodeAsTerminal)
   // Add another branch: B -> E
   auto node_e = std::make_unique<MockProcessable> ("E");
   auto graph_node_e = graph_.add_node_for_processable (*node_e);
-  graph_node_b_->connect_to (*graph_node_e);
-  graph_.finalize_nodes ();
+  graph_.connect (*graph_node_b_, *graph_node_e);
 
   // Now we have 2 terminals: D and E
-  EXPECT_EQ (graph_.get_nodes ().graph_nodes_.size (), 5);
-  EXPECT_EQ (graph_.get_nodes ().terminal_nodes_.size (), 2);
+  EXPECT_EQ (graph_.nodes ().size (), 5);
+  EXPECT_EQ (count_nodes_without_feeds (graph_), 2);
 
   // Prune to only terminal E (should remove D and C)
   std::vector<std::reference_wrapper<GraphNode>> terminals;
@@ -100,13 +109,12 @@ TEST_F (GraphPrunerTest, PruneToMiddleNodeAsTerminal)
   bool result = GraphPruner::prune_graph_to_terminals (graph_, terminals);
 
   EXPECT_TRUE (result);
-  EXPECT_EQ (graph_.get_nodes ().graph_nodes_.size (), 3);    // A, B, E
-  EXPECT_EQ (graph_.get_nodes ().terminal_nodes_.size (), 1); // E only
+  EXPECT_EQ (graph_.nodes ().size (), 3); // A, B, E
   EXPECT_TRUE (graph_.is_valid ());
 
   // Verify remaining nodes are the correct ones
   bool found_a = false, found_b = false, found_e = false;
-  for (const auto &node : graph_.get_nodes ().graph_nodes_)
+  for (const auto &node : graph_.nodes ())
     {
       const auto name = node->get_processable ().get_node_name ().str ();
       if (name == "A")
@@ -119,6 +127,9 @@ TEST_F (GraphPrunerTest, PruneToMiddleNodeAsTerminal)
   EXPECT_TRUE (found_a);
   EXPECT_TRUE (found_b);
   EXPECT_TRUE (found_e);
+
+  const auto collection = std::move (graph_).finalize ();
+  EXPECT_EQ (collection.terminal_nodes ().size (), 1); // E only
 }
 
 TEST_F (GraphPrunerTest, PruneWithEmptyTerminals)
@@ -130,6 +141,6 @@ TEST_F (GraphPrunerTest, PruneWithEmptyTerminals)
 
   EXPECT_FALSE (result);
   // Graph should remain unchanged
-  EXPECT_EQ (graph_.get_nodes ().graph_nodes_.size (), 4);
+  EXPECT_EQ (graph_.nodes ().size (), 4);
 }
 }

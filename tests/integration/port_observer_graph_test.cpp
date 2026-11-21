@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/audio_port.h"
+#include "dsp/graph.h"
 #include "dsp/graph_node.h"
 #include "dsp/graph_scheduler.h"
 #include "dsp/itransport.h"
@@ -97,18 +98,17 @@ TEST_F (PortObserverIntegrationTest, ObserverCapturesDataThroughGraphCycle)
 
   auto observer = std::make_unique<PortObserver> (registry_, *port);
 
-  graph::GraphNodeCollection collection;
-  auto port_node = std::make_unique<graph::GraphNode> (1, *port);
-  auto obs_node = std::make_unique<graph::GraphNode> (2, *observer);
-  port_node->connect_to (*obs_node);
-  collection.graph_nodes_.push_back (std::move (port_node));
-  collection.graph_nodes_.push_back (std::move (obs_node));
-  collection.finalize_nodes ();
+  graph::Graph graph;
+  auto *       port_node =
+    graph.add_node (std::make_unique<graph::GraphNode> (1, *port));
+  auto * obs_node =
+    graph.add_node (std::make_unique<graph::GraphNode> (2, *observer));
+  graph.connect (*port_node, *obs_node);
 
   auto scheduler = std::make_unique<graph::GraphScheduler> (
     [] (std::function<void ()> f) { f (); }, sample_rate_, block_length_);
-  scheduler->rechain_from_node_collection (
-    std::move (collection), sample_rate_, block_length_);
+  scheduler->rechain_from_finalized_graph (
+    std::move (graph).finalize (), sample_rate_, block_length_);
   scheduler->start_threads (1);
 
   port->buffers ()->clear ();
@@ -137,18 +137,17 @@ TEST_F (PortObserverIntegrationTest, ObserverDrainPopulatesTokenCache)
   auto *                 observer = manager.get_observer (*port);
   ASSERT_NE (observer, nullptr);
 
-  graph::GraphNodeCollection collection;
-  auto port_node = std::make_unique<graph::GraphNode> (1, *port);
-  auto obs_node = std::make_unique<graph::GraphNode> (2, *observer);
-  port_node->connect_to (*obs_node);
-  collection.graph_nodes_.push_back (std::move (port_node));
-  collection.graph_nodes_.push_back (std::move (obs_node));
-  collection.finalize_nodes ();
+  graph::Graph graph;
+  auto *       port_node =
+    graph.add_node (std::make_unique<graph::GraphNode> (1, *port));
+  auto * obs_node =
+    graph.add_node (std::make_unique<graph::GraphNode> (2, *observer));
+  graph.connect (*port_node, *obs_node);
 
   auto scheduler = std::make_unique<graph::GraphScheduler> (
     [] (std::function<void ()> f) { f (); }, sample_rate_, block_length_);
-  scheduler->rechain_from_node_collection (
-    std::move (collection), sample_rate_, block_length_);
+  scheduler->rechain_from_finalized_graph (
+    std::move (graph).finalize (), sample_rate_, block_length_);
   scheduler->start_threads (1);
 
   port->buffers ()->clear ();

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <ranges>
@@ -35,8 +35,8 @@ protected:
     auto * node2 = graph.add_node_for_processable (*processables_[1]);
     auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-    node1->connect_to (*node2);
-    node2->connect_to (*node3);
+    graph.connect (*node1, *node2);
+    graph.connect (*node2, *node3);
   }
 
 private:
@@ -70,9 +70,11 @@ TEST_F (GraphBuilderTest, BuildsValidGraph)
   builder.build_graph (graph);
 
   EXPECT_TRUE (graph.is_valid ());
-  EXPECT_EQ (graph.get_nodes ().graph_nodes_.size (), 3);
-  EXPECT_EQ (graph.get_nodes ().trigger_nodes_.size (), 1);
-  EXPECT_EQ (graph.get_nodes ().terminal_nodes_.size (), 1);
+  EXPECT_EQ (graph.nodes ().size (), 3);
+
+  const auto nodes = std::move (graph).finalize ();
+  EXPECT_EQ (nodes.trigger_nodes ().size (), 1);
+  EXPECT_EQ (nodes.terminal_nodes ().size (), 1);
 }
 
 TEST_F (GraphBuilderTest, NodesProperlyConnected)
@@ -82,7 +84,7 @@ TEST_F (GraphBuilderTest, NodesProperlyConnected)
 
   builder.build_graph (graph);
 
-  const auto &nodes = graph.get_nodes ().graph_nodes_;
+  const auto &nodes = graph.nodes ();
   EXPECT_EQ (nodes.at (0)->feeds ().size (), 1);
   EXPECT_EQ (nodes.at (1)->feeds ().size (), 1);
   EXPECT_EQ (nodes.at (2)->feeds ().size (), 0);
@@ -100,9 +102,9 @@ TEST_F (GraphBuilderTest, LatenciesUpdated)
   Graph            graph;
 
   builder.build_graph (graph);
-  graph.get_nodes ().update_latencies ();
+  auto nodes = std::move (graph).finalize ();
+  nodes.update_latencies ();
 
-  EXPECT_EQ (
-    graph.get_nodes ().get_max_route_playback_latency (), units::samples (128));
+  EXPECT_EQ (nodes.get_max_route_playback_latency (), units::samples (128));
 }
 }

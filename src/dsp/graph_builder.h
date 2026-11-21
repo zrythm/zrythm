@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -20,15 +20,14 @@ public:
   virtual ~IGraphBuilder () = default;
 
   /**
-   * @brief Populates the graph.
+   * @brief Populates the graph with its nodes and connections.
+   *
+   * The graph is left unfinalized: callers prune it as needed and then
+   * finalize it (see Graph::finalize()).
    *
    * @param graph The graph to populate.
    */
-  void build_graph (Graph &graph)
-  {
-    build_graph_impl (graph);
-    graph.finalize_nodes ();
-  };
+  void build_graph (Graph &graph) { build_graph_impl (graph); }
 
 protected:
   /**

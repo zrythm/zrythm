@@ -1,7 +1,12 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
+
+#include <memory>
+#include <optional>
+#include <unordered_set>
+#include <vector>
 
 #include "dsp/graph_node.h"
 
@@ -9,20 +14,15 @@ namespace zrythm::dsp::graph
 {
 
 /**
- * @brief The Graph class represents a graph of DSP nodes.
+ * @brief A DSP graph under construction.
  *
- * The Graph class manages the lifecycle of DSP nodes and their connections,
- * allowing for efficient parallel processing of the graph. It provides
- * functionality to start and terminate the processing, add and remove nodes,
- * and manage the overall graph structure.
+ * Nodes and edges are added during construction; is_valid() checks the
+ * topology built so far for cycles. finalize() consumes the graph and
+ * produces the immutable FinalizedGraph used for processing.
  */
 class Graph final
 {
-  friend class GraphExport;
-
 public:
-  void print () const;
-
   /**
    * Creates a new node, adds it to the graph and returns it.
    *
@@ -32,41 +32,108 @@ public:
    */
   GraphNode * add_node_for_processable (IProcessable &node);
 
-  GraphNode * add_initial_processor ()
-  {
-    setup_nodes_.initial_processor_ = std::make_unique<InitialProcessor> ();
-    return add_node_for_processable (*setup_nodes_.initial_processor_);
-  };
+  /**
+   * @brief Adds an externally constructed node and returns it.
+   */
+  GraphNode * add_node (std::unique_ptr<GraphNode> node);
 
   /**
-   * @brief Checks for cycles in the graph.
+   * @brief Creates, adds and returns the initial processor node.
+   */
+  GraphNode * add_initial_processor ();
+
+  /**
+   * @brief Connects @p from to @p to (@p from feeds @p to).
+   *
+   * If the edge already exists it is not duplicated; a passed
+   * configuration still replaces any configuration previously stored for
+   * the edge.
+   *
+   * @param config Configuration carried by the edge; std::nullopt means the
+   * edge carries no configuration and consumers apply their defaults.
+   */
+  void connect (
+    GraphNode                      &from,
+    GraphNode                      &to,
+    std::optional<ConnectionConfig> config = std::nullopt);
+
+  /**
+   * @brief Removes the edge from @p from to @p to, if any.
+   *
+   * Severs both endpoints of the edge and drops the configuration it
+   * carried.
+   *
+   * @return Whether an edge was removed.
+   */
+  bool disconnect (GraphNode &from, GraphNode &to);
+
+  /**
+   * @brief Erases the nodes matching @p predicate.
+   *
+   * Edges between erased and remaining nodes (and the connection
+   * configurations they carry) are severed first.
+   *
+   * @return Number of nodes erased.
+   */
+  size_t erase_nodes_if (auto &&predicate)
+  {
+    std::unordered_set<GraphNode *> to_erase;
+    for (const auto &node : nodes_)
+      {
+        if (predicate (node))
+          {
+            to_erase.insert (node.get ());
+          }
+      }
+    for (const auto * erased : to_erase)
+      {
+        for (const auto &feed : erased->feeds ())
+          {
+            feed.get ().remove_depend (*erased);
+          }
+        for (const auto &depend : erased->depends ())
+          {
+            depend.get ().remove_feed (*erased);
+          }
+      }
+    return std::erase_if (nodes_, [&to_erase] (const auto &node) {
+      return to_erase.contains (node.get ());
+    });
+  }
+
+  /**
+   * @brief Checks the topology built so far for cycles.
+   *
+   * Holds for the graph in its current state; no finalization required.
    *
    * @return Whether valid.
    */
   bool is_valid () const;
 
   /**
-   * @brief Steals the nodes in the graph.
-   *
-   * After this function is called, the graph will be empty.
+   * @brief Returns the node for @p processable, or null if there is none.
    */
-  auto &&steal_nodes () { return std::move (setup_nodes_); }
+  GraphNode * find_node_for_processable (const IProcessable &processable) const;
 
-  auto &get_nodes () { return setup_nodes_; }
+  /**
+   * @brief All nodes added so far.
+   */
+  const std::vector<std::unique_ptr<GraphNode>> &nodes () const
+  {
+    return nodes_;
+  }
 
-  auto &get_nodes () const { return setup_nodes_; }
-
-  void finalize_nodes () { setup_nodes_.finalize_nodes (); }
+  /**
+   * @brief Computes the derived trigger/terminal node sets and returns the
+   * finalized collection.
+   *
+   * The graph is consumed: it owns no nodes afterwards.
+   */
+  FinalizedGraph finalize () &&;
 
 private:
-  /**
-   * @brief Nodes in this graph.
-   *
-   * These are "setup nodes", in that they are not used during actual
-   * processing. They just hold the initial (setup) topology of the graph that
-   * can be used to generate a "live" collection.
-   */
-  GraphNodeCollection setup_nodes_;
+  std::unique_ptr<InitialProcessor>       initial_processor_;
+  std::vector<std::unique_ptr<GraphNode>> nodes_;
 };
 
 } // namespace zrythm::dsp::graph

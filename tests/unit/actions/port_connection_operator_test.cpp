@@ -315,7 +315,7 @@ TEST_F (PortConnectionOperatorTest, CvToParameterConnection)
   const auto modulation_input_has_graph_node = [&fader, mod_port] {
     dsp::graph::Graph graph;
     dsp::ProcessorGraphBuilder::add_nodes (graph, *fader);
-    return graph.get_nodes ().find_node_for_processable (*mod_port) != nullptr;
+    return graph.find_node_for_processable (*mod_port) != nullptr;
   };
   EXPECT_TRUE (modulation_input_has_graph_node ());
 

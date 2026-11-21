@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/graph.h"
 #include "dsp/graph_node.h"
 #include "dsp/graph_scheduler.h"
 #include "dsp/graph_thread.h"
@@ -106,9 +107,9 @@ protected:
     return proc;
   }
 
-  GraphNodeCollection create_linear_chain (size_t num_nodes)
+  FinalizedGraph create_linear_chain (size_t num_nodes)
   {
-    GraphNodeCollection                     collection;
+    Graph                                   graph;
     std::vector<std::unique_ptr<GraphNode>> nodes;
 
     for (size_t i = 0; i < num_nodes; i++)
@@ -117,7 +118,7 @@ protected:
         nodes.push_back (std::make_unique<GraphNode> (i, *proc));
         if (i > 0)
           {
-            nodes[i - 1]->connect_to (*nodes[i]);
+            graph.connect (*nodes[i - 1], *nodes[i]);
           }
         // Keep processable alive
         processables_.push_back (std::move (proc));
@@ -125,21 +126,18 @@ protected:
 
     for (auto &node : nodes)
       {
-        collection.graph_nodes_.push_back (std::move (node));
+        graph.add_node (std::move (node));
       }
-    collection.finalize_nodes ();
-    return collection;
+    return std::move (graph).finalize ();
   }
 
-  GraphNodeCollection
-  create_split_chain (size_t branches, size_t nodes_per_branch)
+  FinalizedGraph create_split_chain (size_t branches, size_t nodes_per_branch)
   {
-    GraphNodeCollection collection;
+    Graph graph;
 
     auto   root_proc = create_processable ();
-    auto   root = std::make_unique<GraphNode> (0, *root_proc);
-    auto * root_ptr = root.get ();
-    collection.graph_nodes_.push_back (std::move (root));
+    auto * root_ptr =
+      graph.add_node (std::make_unique<GraphNode> (0, *root_proc));
     processables_.push_back (std::move (root_proc));
 
     for (size_t b = 0; b < branches; b++)
@@ -147,31 +145,28 @@ protected:
         GraphNode * prev = root_ptr;
         for (size_t n = 0; n < nodes_per_branch; n++)
           {
-            auto proc = create_processable ();
-            auto node = std::make_unique<GraphNode> (
-              collection.graph_nodes_.size (), *proc);
-            prev->connect_to (*node);
-            prev = node.get ();
-            collection.graph_nodes_.push_back (std::move (node));
+            auto   proc = create_processable ();
+            auto * node = graph.add_node (
+              std::make_unique<GraphNode> (graph.nodes ().size (), *proc));
+            graph.connect (*prev, *node);
+            prev = node;
             processables_.push_back (std::move (proc));
           }
       }
 
-    collection.finalize_nodes ();
-    return collection;
+    return std::move (graph).finalize ();
   }
 
-  GraphNodeCollection
+  FinalizedGraph
   create_complex_graph (size_t num_nodes, float connectivity_factor)
   {
-    GraphNodeCollection collection;
+    Graph graph;
 
     // Create nodes
     for (size_t i = 0; i < num_nodes; i++)
       {
         auto proc = create_processable ();
-        collection.graph_nodes_.push_back (
-          std::make_unique<GraphNode> (i, *proc));
+        graph.add_node (std::make_unique<GraphNode> (i, *proc));
         processables_.push_back (std::move (proc));
       }
 
@@ -195,13 +190,11 @@ protected:
 
             size_t target =
               next_layer_start + (rand () % (next_layer_end - next_layer_start));
-            collection.graph_nodes_[i]->connect_to (
-              *collection.graph_nodes_[target]);
+            graph.connect (*graph.nodes ()[i], *graph.nodes ()[target]);
           }
       }
 
-    collection.finalize_nodes ();
-    return collection;
+    return std::move (graph).finalize ();
   }
 
   units::sample_rate_t            sample_rate_{ units::sample_rate (48000) };
@@ -219,7 +212,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, LinearChain)
   const auto block_size = state.range (1);
   const auto num_threads = state.range (2);
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     create_linear_chain (num_nodes), sample_rate_, max_block_length_);
   scheduler_->start_threads (num_threads);
 
@@ -244,7 +237,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, SplitChain)
   const auto block_size = state.range (2);
   const auto num_threads = state.range (3);
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     create_split_chain (num_branches, nodes_per_branch), sample_rate_,
     max_block_length_);
   scheduler_->start_threads (num_threads);
@@ -270,7 +263,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, ComplexGraph)
   const auto  num_threads = state.range (2);
   const float connectivity = state.range (3) / 100.0f;
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     create_complex_graph (num_nodes, connectivity), sample_rate_,
     max_block_length_);
   scheduler_->start_threads (num_threads);

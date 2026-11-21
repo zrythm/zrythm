@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
 #include <numbers>
 
+#include "dsp/graph.h"
 #include "dsp/graph_renderer.h"
 #include "dsp/port_all.h"
 #include "utils/utf8_string.h"
@@ -135,27 +136,25 @@ protected:
     tempo_map_ = std::make_unique<TempoMap> (options_.sample_rate_);
   }
 
-  graph::GraphNodeCollection create_simple_test_collection ()
+  graph::FinalizedGraph create_simple_test_collection ()
   {
-    graph::GraphNodeCollection collection;
+    graph::Graph graph;
 
-    // Create a graph with mock processable as first node connected to audio port
-    auto mock_node = std::make_unique<graph::GraphNode> (1, *processable_);
-    auto audio_port_node = std::make_unique<graph::GraphNode> (2, *audio_port_);
+    // Create a graph with mock processable as first node connected to audio
+    // port
+    auto * mock_node =
+      graph.add_node (std::make_unique<graph::GraphNode> (1, *processable_));
+    auto * audio_port_node =
+      graph.add_node (std::make_unique<graph::GraphNode> (2, *audio_port_));
 
-    // Connect mock node to audio port
-    mock_node->connect_to (*audio_port_node);
+    graph.connect (*mock_node, *audio_port_node);
 
-    collection.graph_nodes_.push_back (std::move (mock_node));
-    collection.graph_nodes_.push_back (std::move (audio_port_node));
-
-    collection.finalize_nodes ();
-    return collection;
+    return std::move (graph).finalize ();
   }
 
   auto create_mixed_latency_test_collection (const auto latency)
   {
-    graph::GraphNodeCollection collection;
+    graph::Graph graph;
 
     // Create two mock processables - one with latency, one without
     auto processable_no_latency = std::make_unique<MockProcessable> ();
@@ -200,36 +199,29 @@ protected:
         });
 
     // Create graph nodes
-    auto no_latency_node =
-      std::make_unique<graph::GraphNode> (1, *processable_no_latency);
-    auto latency_node =
-      std::make_unique<graph::GraphNode> (2, *processable_with_latency);
-    auto no_latency_audio_port_node =
-      std::make_unique<graph::GraphNode> (3, *audio_port_);
-    auto latency_audio_port_node =
-      std::make_unique<graph::GraphNode> (4, *extra_audio_port_);
-    auto dummy_final_node =
-      std::make_unique<graph::GraphNode> (5, *extra_audio_port_for_summing_);
+    auto * no_latency_node = graph.add_node (
+      std::make_unique<graph::GraphNode> (1, *processable_no_latency));
+    auto * latency_node = graph.add_node (
+      std::make_unique<graph::GraphNode> (2, *processable_with_latency));
+    auto * no_latency_audio_port_node =
+      graph.add_node (std::make_unique<graph::GraphNode> (3, *audio_port_));
+    auto * latency_audio_port_node = graph.add_node (
+      std::make_unique<graph::GraphNode> (4, *extra_audio_port_));
+    auto * dummy_final_node = graph.add_node (
+      std::make_unique<graph::GraphNode> (5, *extra_audio_port_for_summing_));
 
     // Create the connections
-    no_latency_node->connect_to (*no_latency_audio_port_node);
-    latency_node->connect_to (*latency_audio_port_node);
-    no_latency_audio_port_node->connect_to (*dummy_final_node);
-    latency_audio_port_node->connect_to (*dummy_final_node);
-
-    collection.graph_nodes_.push_back (std::move (no_latency_node));
-    collection.graph_nodes_.push_back (std::move (latency_node));
-    collection.graph_nodes_.push_back (std::move (no_latency_audio_port_node));
-    collection.graph_nodes_.push_back (std::move (latency_audio_port_node));
-    collection.graph_nodes_.push_back (std::move (dummy_final_node));
+    graph.connect (*no_latency_node, *no_latency_audio_port_node);
+    graph.connect (*latency_node, *latency_audio_port_node);
+    graph.connect (*no_latency_audio_port_node, *dummy_final_node);
+    graph.connect (*latency_audio_port_node, *dummy_final_node);
 
     // Store the mock processables so they don't get destroyed
     mixed_latency_processables_.push_back (std::move (processable_no_latency));
     mixed_latency_processables_.push_back (std::move (processable_with_latency));
 
-    collection.finalize_nodes ();
     return std::make_tuple (
-      std::move (collection), std::move (no_latency_generator),
+      std::move (graph).finalize (), std::move (no_latency_generator),
       std::move (latency_generator));
   }
 

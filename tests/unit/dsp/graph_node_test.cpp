@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "dsp/fork_join_executor.h"
+#include "dsp/graph.h"
 #include "dsp/graph_node.h"
 #include "dsp/itransport.h"
 #include "utils/utf8_string.h"
@@ -94,10 +95,11 @@ TEST_F (GraphNodeTest, LatencyHandling)
 
 TEST_F (GraphNodeTest, NodeConnections)
 {
-  auto node1 = create_test_node ();
-  auto node2 = create_test_node ();
+  Graph graph;
+  auto  node1 = create_test_node ();
+  auto  node2 = create_test_node ();
 
-  node1.connect_to (node2);
+  graph.connect (node1, node2);
 
   EXPECT_EQ (node1.feeds ().size (), 1);
   EXPECT_FALSE (node1.terminal_);
@@ -108,13 +110,14 @@ TEST_F (GraphNodeTest, NodeConnections)
 
 TEST_F (GraphNodeTest, ConnectionConfigStoredOnTargetNode)
 {
-  auto node1 = create_test_node ();
-  auto node2 = create_test_node ();
-  auto node3 = create_test_node ();
+  Graph graph;
+  auto  node1 = create_test_node ();
+  auto  node2 = create_test_node ();
+  auto  node3 = create_test_node ();
 
   const ConnectionConfig config{ .multiplier_ = 0.5f };
-  node1.connect_to (node2, config);
-  node3.connect_to (node2);
+  graph.connect (node1, node2, config);
+  graph.connect (node3, node2);
 
   const auto stored = node2.connection_for_dependency (node1);
   ASSERT_TRUE (stored.has_value ());
@@ -126,31 +129,33 @@ TEST_F (GraphNodeTest, ConnectionConfigStoredOnTargetNode)
 
 TEST_F (GraphNodeTest, RemoveDependClearsConnectionConfig)
 {
-  auto node1 = create_test_node ();
-  auto node2 = create_test_node ();
+  Graph graph;
+  auto  node1 = create_test_node ();
+  auto  node2 = create_test_node ();
 
-  node1.connect_to (node2, ConnectionConfig{ .multiplier_ = 0.5f });
+  graph.connect (node1, node2, ConnectionConfig{ .multiplier_ = 0.5f });
   ASSERT_TRUE (node2.connection_for_dependency (node1).has_value ());
 
-  node2.remove_depend (node1);
+  graph.disconnect (node1, node2);
   EXPECT_FALSE (node2.connection_for_dependency (node1).has_value ());
 }
 
 TEST_F (GraphNodeTest, ConnectionConfigReplacedOnDuplicateEdge)
 {
-  auto node1 = create_test_node ();
-  auto node2 = create_test_node ();
+  Graph graph;
+  auto  node1 = create_test_node ();
+  auto  node2 = create_test_node ();
 
   // edge created without a configuration, then re-connected with one
-  node1.connect_to (node2);
-  node1.connect_to (node2, ConnectionConfig{ .multiplier_ = 0.5f });
+  graph.connect (node1, node2);
+  graph.connect (node1, node2, ConnectionConfig{ .multiplier_ = 0.5f });
 
   const auto stored = node2.connection_for_dependency (node1);
   ASSERT_TRUE (stored.has_value ());
   EXPECT_FLOAT_EQ (stored->multiplier_, 0.5f);
 
   // a later configuration replaces the previous one
-  node1.connect_to (node2, ConnectionConfig{ .multiplier_ = 0.25f });
+  graph.connect (node1, node2, ConnectionConfig{ .multiplier_ = 0.25f });
   const auto replaced = node2.connection_for_dependency (node1);
   ASSERT_TRUE (replaced.has_value ());
   EXPECT_FLOAT_EQ (replaced->multiplier_, 0.25f);
@@ -234,13 +239,14 @@ TEST_F (GraphNodeTest, LoopPointSplittingPreservesForkJoinExecutor)
 // New test for multiple node connections
 TEST_F (GraphNodeTest, MultipleNodeConnections)
 {
-  auto node1 = create_test_node ();
-  auto node2 = create_test_node ();
-  auto node3 = create_test_node ();
+  Graph graph;
+  auto  node1 = create_test_node ();
+  auto  node2 = create_test_node ();
+  auto  node3 = create_test_node ();
 
-  node1.connect_to (node2);
-  node1.connect_to (node3);
-  node2.connect_to (node3);
+  graph.connect (node1, node2);
+  graph.connect (node1, node3);
+  graph.connect (node2, node3);
 
   EXPECT_EQ (node1.feeds ().size (), 2);
   EXPECT_EQ (node2.feeds ().size (), 1);
@@ -251,12 +257,13 @@ TEST_F (GraphNodeTest, MultipleNodeConnections)
 // New test for latency propagation
 TEST_F (GraphNodeTest, LatencyPropagation)
 {
-  auto node1 = create_test_node ();
-  auto node2 = create_test_node ();
-  auto node3 = create_test_node ();
+  Graph graph;
+  auto  node1 = create_test_node ();
+  auto  node2 = create_test_node ();
+  auto  node3 = create_test_node ();
 
-  node1.connect_to (node2);
-  node2.connect_to (node3);
+  graph.connect (node1, node2);
+  graph.connect (node2, node3);
 
   node3.set_route_playback_latency (units::samples (1000));
 
@@ -401,16 +408,17 @@ TEST_F (GraphNodeTest, NonRollingTransportPositionIncludesBufferOffset)
 
 TEST_F (GraphNodeTest, ComplexGraphTopology)
 {
-  auto node1 = create_test_node ();
-  auto node2 = create_test_node ();
-  auto node3 = create_test_node ();
-  auto node4 = create_test_node ();
+  Graph graph;
+  auto  node1 = create_test_node ();
+  auto  node2 = create_test_node ();
+  auto  node3 = create_test_node ();
+  auto  node4 = create_test_node ();
 
   // Create diamond pattern
-  node1.connect_to (node2);
-  node1.connect_to (node3);
-  node2.connect_to (node4);
-  node3.connect_to (node4);
+  graph.connect (node1, node2);
+  graph.connect (node1, node3);
+  graph.connect (node2, node4);
+  graph.connect (node3, node4);
 
   // Verify graph structure
   EXPECT_EQ (node1.feeds ().size (), 2);
@@ -427,40 +435,33 @@ TEST_F (GraphNodeTest, ComplexGraphTopology)
 
 TEST_F (GraphNodeTest, NodeCollection)
 {
-  GraphNodeCollection collection;
+  Graph graph;
 
-  auto node1 = std::make_unique<GraphNode> (1, *processable_);
-  auto node2 = std::make_unique<GraphNode> (2, *processable_);
-  auto node3 = std::make_unique<GraphNode> (3, *processable_);
+  auto * node1 = graph.add_node (std::make_unique<GraphNode> (1, *processable_));
+  auto * node2 = graph.add_node (std::make_unique<GraphNode> (2, *processable_));
+  auto * node3 = graph.add_node (std::make_unique<GraphNode> (3, *processable_));
 
-  node1->connect_to (*node2);
-  node2->connect_to (*node3);
+  graph.connect (*node1, *node2);
+  graph.connect (*node2, *node3);
 
-  collection.graph_nodes_.push_back (std::move (node1));
-  collection.graph_nodes_.push_back (std::move (node2));
-  collection.graph_nodes_.push_back (std::move (node3));
+  const auto collection = std::move (graph).finalize ();
 
-  collection.set_initial_and_terminal_nodes ();
-
-  EXPECT_EQ (collection.trigger_nodes_.size (), 1);
-  EXPECT_EQ (collection.terminal_nodes_.size (), 1);
+  EXPECT_EQ (collection.trigger_nodes ().size (), 1);
+  EXPECT_EQ (collection.terminal_nodes ().size (), 1);
 }
 
 TEST_F (GraphNodeTest, LatencyPropagationInCollection)
 {
-  GraphNodeCollection collection;
+  Graph graph;
 
   EXPECT_CALL (*processable_, get_single_playback_latency ())
     .WillRepeatedly (Return (units::samples (128)));
 
-  auto node1 = std::make_unique<GraphNode> (1, *processable_);
-  auto node2 = std::make_unique<GraphNode> (2, *processable_);
+  graph.add_node (std::make_unique<GraphNode> (1, *processable_));
+  auto * node2 = graph.add_node (std::make_unique<GraphNode> (2, *processable_));
+  graph.connect (*graph.nodes ().front ().get (), *node2);
 
-  node1->connect_to (*node2);
-  collection.graph_nodes_.push_back (std::move (node1));
-  collection.graph_nodes_.push_back (std::move (node2));
-
-  collection.finalize_nodes ();
+  auto collection = std::move (graph).finalize ();
   collection.update_latencies ();
 
   EXPECT_EQ (collection.get_max_route_playback_latency (), units::samples (128));
@@ -468,17 +469,15 @@ TEST_F (GraphNodeTest, LatencyPropagationInCollection)
 
 TEST_F (GraphNodeTest, ProcessableSearch)
 {
-  GraphNodeCollection collection;
+  Graph graph;
 
-  auto  node = std::make_unique<GraphNode> (1, *processable_);
-  auto &node_ref = *node;
-  collection.graph_nodes_.push_back (std::move (node));
+  auto * node = graph.add_node (std::make_unique<GraphNode> (1, *processable_));
 
-  auto * found = collection.find_node_for_processable (*processable_);
-  EXPECT_EQ (found, &node_ref);
+  auto * found = graph.find_node_for_processable (*processable_);
+  EXPECT_EQ (found, node);
 
   MockProcessable other_processable;
-  auto * not_found = collection.find_node_for_processable (other_processable);
+  auto * not_found = graph.find_node_for_processable (other_processable);
   EXPECT_EQ (not_found, nullptr);
 }
 

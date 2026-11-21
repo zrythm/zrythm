@@ -227,6 +227,11 @@ GraphNode::remove_depend (const GraphNode &depend)
     std::erase_if (parentnodes_, [&] (const auto &parent_node) {
       return std::addressof (parent_node.get ()) == std::addressof (depend);
     });
+  if (erased_elements > 0)
+    {
+      --init_refcount_;
+      refcount_ = init_refcount_;
+    }
   return erased_elements > 0;
 }
 
@@ -325,7 +330,7 @@ GraphNode::store_config_for_dependency (
 }
 
 units::sample_u32_t
-GraphNodeCollection::get_max_route_playback_latency () const
+FinalizedGraph::get_max_route_playback_latency () const
 {
   if (graph_nodes_.empty ()) [[unlikely]]
     {
@@ -341,7 +346,7 @@ GraphNodeCollection::get_max_route_playback_latency () const
 }
 
 void
-GraphNodeCollection::update_latencies ()
+FinalizedGraph::update_latencies ()
 {
   z_info ("updating graph latencies...");
 
@@ -378,7 +383,7 @@ GraphNodeCollection::update_latencies ()
 }
 
 void
-GraphNodeCollection::set_initial_and_terminal_nodes ()
+FinalizedGraph::set_initial_and_terminal_nodes ()
 {
   terminal_nodes_.clear ();
   trigger_nodes_.clear ();
@@ -397,21 +402,6 @@ GraphNodeCollection::set_initial_and_terminal_nodes ()
           trigger_nodes_.emplace_back (*node);
         }
     }
-}
-
-GraphNode *
-GraphNodeCollection::find_node_for_processable (
-  const IProcessable &processable) const
-{
-  auto it = std::ranges::find_if (graph_nodes_, [&] (const auto &node) {
-    return std::addressof (node->get_processable ())
-           == std::addressof (processable);
-  });
-  if (it != graph_nodes_.end ())
-    {
-      return it->get ();
-    }
-  return nullptr;
 }
 
 void

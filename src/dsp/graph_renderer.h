@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -38,11 +38,11 @@ public:
    * @param tempo_map Tempo map for timing calculations during rendering.
    */
   static QFuture<juce::AudioSampleBuffer> render_async (
-    RenderOptions                options,
-    graph::GraphNodeCollection &&nodes,
-    RunOnMainThread              run_on_main_thread,
-    SampleRange                  range,
-    const dsp::TempoMap         &tempo_map);
+    RenderOptions           options,
+    graph::FinalizedGraph &&nodes,
+    RunOnMainThread         run_on_main_thread,
+    SampleRange             range,
+    const dsp::TempoMap    &tempo_map);
 
 private:
   /**
@@ -55,7 +55,7 @@ private:
   static void render (
     QPromise<juce::AudioSampleBuffer> &promise,
     RenderOptions                      options,
-    graph::GraphNodeCollection       &&nodes,
+    graph::FinalizedGraph            &&nodes,
     RunOnMainThread                    run_on_main_thread,
     SampleRange                        range,
     const dsp::TempoMap               &tempo_map);

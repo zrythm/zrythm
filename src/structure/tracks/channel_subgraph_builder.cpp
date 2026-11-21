@@ -45,8 +45,7 @@ ChannelSubgraphBuilder::add_connections (
   const dsp::PortUuidReference track_processor_output)
 {
   if (
-    graph.get_nodes ().find_node_for_processable (*track_processor_output.get ())
-    == nullptr)
+    graph.find_node_for_processable (*track_processor_output.get ()) == nullptr)
     {
       throw std::invalid_argument (
         "Track processor outputs must be added to the graph before calling this");
@@ -108,10 +107,9 @@ ChannelSubgraphBuilder::add_connections (
         {
           for (const auto &pl_midi_out : pl_midi_outs)
             {
-              graph.get_nodes ()
-                .find_node_for_processable (*pl_midi_out)
-                ->connect_to (
-                  *graph.get_nodes ().find_node_for_processable (dest));
+              graph.connect (
+                *graph.find_node_for_processable (*pl_midi_out),
+                *graph.find_node_for_processable (dest));
             }
         }
     };
@@ -146,8 +144,9 @@ ChannelSubgraphBuilder::add_connections (
         }
       if (!connections_made)
         {
-          graph.get_nodes ().find_node_for_processable (src_out)->connect_to (
-            *graph.get_nodes ().find_node_for_processable (pl));
+          graph.connect (
+            *graph.find_node_for_processable (src_out),
+            *graph.find_node_for_processable (pl));
         }
     };
 
@@ -197,10 +196,9 @@ ChannelSubgraphBuilder::add_connections (
           // the track processor outputs directly to the plugin processor
           if (!connection_made)
             {
-              graph.get_nodes ()
-                .find_node_for_processable (*track_processor_output.get ())
-                ->connect_to (
-                  *graph.get_nodes ().find_node_for_processable (*pl));
+              graph.connect (
+                *graph.find_node_for_processable (*track_processor_output.get ()),
+                *graph.find_node_for_processable (*pl));
             }
         }
       else // else if last processed plugin exists

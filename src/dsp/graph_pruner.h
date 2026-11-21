@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -16,12 +16,12 @@ class GraphPruner
 {
 public:
   /**
-   * @brief Prunes an existing graph to only include nodes that lead to
+   * @brief Prunes an unfinalized graph to only include nodes that lead to
    * specified terminals.
    *
-   * This is a utility method that can be called on any graph after it's built.
-   * It performs a backward traversal from the specified terminal nodes and
-   * removes all nodes that are not in the dependency chain.
+   * This is a utility method that can be called on any graph after it's
+   * built. It performs a backward traversal from the specified terminal
+   * nodes and removes all nodes that are not in the dependency chain.
    *
    * @param graph The graph to prune (will be modified in-place)
    * @param terminal_nodes The terminal nodes to preserve in pruned graph

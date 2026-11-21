@@ -58,7 +58,7 @@ ProjectExporter::exportAudio (
       // Prune graph to master output
       {
         std::vector<std::reference_wrapper<dsp::graph::GraphNode>> terminals;
-        auto * node = graph.get_nodes ().find_node_for_processable (
+        auto * node = graph.find_node_for_processable (
           *project->tracklist ()
              ->singletonTracks ()
              ->masterTrack ()
@@ -71,7 +71,7 @@ ProjectExporter::exportAudio (
       const auto * marker_track =
         project->tracklist ()->singletonTracks ()->markerTrack ();
       auto graph_render_future = dsp::GraphRenderer::render_async (
-        options, graph.steal_nodes (),
+        options, std::move (graph).finalize (),
         [context = project] (std::function<void ()> func) {
           QMetaObject::invokeMethod (
             context, func, Qt::BlockingQueuedConnection);

@@ -186,8 +186,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
         std::vector<std::reference_wrapper<graph::GraphNode>> terminals;
         for (const auto &processable : terminal_processables_provider_ ())
           {
-            auto * node =
-              graph.get_nodes ().find_node_for_processable (*processable);
+            auto * node = graph.find_node_for_processable (*processable);
             terminals.emplace_back (*node);
           }
         graph::GraphPruner::prune_graph_to_terminals (graph, terminals);
@@ -196,8 +195,8 @@ DspGraphDispatcher::recalc_graph (bool soft)
           graph::GraphExport::export_to_dot (graph, true));
       }
 
-      scheduler_->rechain_from_node_collection (
-        graph.steal_nodes (), sample_rate, buffer_size);
+      scheduler_->rechain_from_finalized_graph (
+        std::move (graph).finalize (), sample_rate, buffer_size);
     };
 
     if (!scheduler_ && !soft)
@@ -241,8 +240,8 @@ DspGraphDispatcher::clear_graph ()
   const auto device_info = hw_interface_.get_device_info ();
 
   run_function_with_engine_lock_ ([&] () {
-    scheduler_->rechain_from_node_collection (
-      graph::GraphNodeCollection{}, device_info.sample_rate,
+    scheduler_->rechain_from_finalized_graph (
+      graph::FinalizedGraph{}, device_info.sample_rate,
       device_info.block_length);
   });
 }

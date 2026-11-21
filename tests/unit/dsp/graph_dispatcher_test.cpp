@@ -142,8 +142,8 @@ TEST_F (DspGraphDispatcherTest, RecalcGraphWithSoftFalse)
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   create_dispatcher ();
@@ -185,8 +185,8 @@ TEST_F (DspGraphDispatcherTest, RecalcGraphWithSoftTrue)
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   create_dispatcher ();
@@ -214,8 +214,9 @@ TEST_F (DspGraphDispatcherTest, ReentrantSoftRecalcIsSubsumedByInProgressRecalc)
       ++build_count;
       auto * node1 = graph.add_node_for_processable (*processables_[0]);
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
-      node2->connect_to (*graph.add_node_for_processable (*processables_[2]));
-      node1->connect_to (*node2);
+      graph.connect (
+        *node2, *graph.add_node_for_processable (*processables_[2]));
+      graph.connect (*node1, *node2);
       if (trigger_reentrant_soft_recalc_)
         {
           trigger_reentrant_soft_recalc_ = false;
@@ -258,8 +259,9 @@ TEST_F (DspGraphDispatcherTest, ReentrantHardRecalcIsSkipped)
       ++build_count;
       auto * node1 = graph.add_node_for_processable (*processables_[0]);
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
-      node2->connect_to (*graph.add_node_for_processable (*processables_[2]));
-      node1->connect_to (*node2);
+      graph.connect (
+        *node2, *graph.add_node_for_processable (*processables_[2]));
+      graph.connect (*node1, *node2);
       if (trigger_reentrant_hard_recalc_)
         {
           trigger_reentrant_hard_recalc_ = false;
@@ -301,8 +303,9 @@ TEST_F (DspGraphDispatcherTest, HardRecalcRequestedDuringSoftRecalcRunsAfter)
       ++build_count;
       auto * node1 = graph.add_node_for_processable (*processables_[0]);
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
-      node2->connect_to (*graph.add_node_for_processable (*processables_[2]));
-      node1->connect_to (*node2);
+      graph.connect (
+        *node2, *graph.add_node_for_processable (*processables_[2]));
+      graph.connect (*node1, *node2);
     });
 
   create_dispatcher ();
@@ -330,8 +333,8 @@ TEST_F (DspGraphDispatcherTest, StartCycleInRealtimeContext)
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   create_dispatcher ();
@@ -361,8 +364,8 @@ TEST_F (DspGraphDispatcherTest, StartCycleInNonRealtimeContext)
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   create_dispatcher ();
@@ -392,8 +395,8 @@ TEST_F (DspGraphDispatcherTest, StartCycleWithLatencyPreroll)
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   // Set up latency expectations
@@ -430,8 +433,8 @@ TEST_F (DspGraphDispatcherTest, CurrentTriggerNodesAccess)
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   create_dispatcher ();
@@ -451,8 +454,8 @@ TEST_F (DspGraphDispatcherTest, ProcessingThreadDetection)
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   create_dispatcher ();
@@ -486,8 +489,8 @@ TEST_F (DspGraphDispatcherTest, MultipleRecalcGraphCalls)
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
 
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   create_dispatcher ();
@@ -565,8 +568,8 @@ TEST_F (DspGraphDispatcherTest, DynamicTerminalProviderAffectsPruning)
       auto * node1 = graph.add_node_for_processable (*processables_[0]);
       auto * node2 = graph.add_node_for_processable (*processables_[1]);
       auto * node3 = graph.add_node_for_processable (*processables_[2]);
-      node1->connect_to (*node2);
-      node2->connect_to (*node3);
+      graph.connect (*node1, *node2);
+      graph.connect (*node2, *node3);
     });
 
   terminal_processables_ = { processables_[2].get () };

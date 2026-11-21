@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph.h"
@@ -42,7 +42,6 @@ TEST_F (GraphExportTest, SingleNodeExport)
 {
   Graph graph;
   graph.add_node_for_processable (*processable1_);
-  graph.finalize_nodes ();
 
   auto dot = GraphExport::export_to_dot (graph, false);
 
@@ -55,8 +54,7 @@ TEST_F (GraphExportTest, ConnectedNodesExport)
   Graph  graph;
   auto * node1 = graph.add_node_for_processable (*processable1_);
   auto * node2 = graph.add_node_for_processable (*processable2_);
-  node1->connect_to (*node2);
-  graph.finalize_nodes ();
+  graph.connect (*node1, *node2);
 
   auto dot = GraphExport::export_to_dot (graph, false);
 
@@ -74,7 +72,6 @@ TEST_F (GraphExportTest, ClassNameInclusion)
 {
   Graph graph;
   graph.add_node_for_processable (*processable1_);
-  graph.finalize_nodes ();
 
   auto dot = GraphExport::export_to_dot (graph, true);
 

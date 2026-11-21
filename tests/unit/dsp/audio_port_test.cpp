@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/graph.h"
 #include "dsp/panning.h"
 #include "dsp/port_all.h"
 #include "utils/icloneable.h"
@@ -488,8 +489,9 @@ TEST_F (AudioPortRoutingTest, CachedConnectionMultiplierIsApplied)
 
   graph::GraphNode src_node{ 0, *src };
   graph::GraphNode dest_node{ 1, *dest };
-  src_node.connect_to (
-    dest_node, graph::ConnectionConfig{ .multiplier_ = 0.5f });
+  graph::Graph     graph;
+  graph.connect (
+    src_node, dest_node, graph::ConnectionConfig{ .multiplier_ = 0.5f });
   dest->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
 
   dest->process_block (whole_block (), *mock_transport_, *tempo_map_);
@@ -505,7 +507,9 @@ TEST_F (AudioPortRoutingTest, DisabledCachedConnectionSkipsSource)
 
   graph::GraphNode src_node{ 0, *src };
   graph::GraphNode dest_node{ 1, *dest };
-  src_node.connect_to (dest_node, graph::ConnectionConfig{ .enabled_ = false });
+  graph::Graph     graph;
+  graph.connect (
+    src_node, dest_node, graph::ConnectionConfig{ .enabled_ = false });
   dest->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
 
   dest->process_block (whole_block (), *mock_transport_, *tempo_map_);
@@ -528,7 +532,8 @@ TEST_F (AudioPortRoutingTest, CachedExplicitRoutingOverridesArrangements)
 
   graph::GraphNode src_node{ 0, *src };
   graph::GraphNode dest_node{ 1, *dest };
-  src_node.connect_to (dest_node, config);
+  graph::Graph     graph;
+  graph.connect (src_node, dest_node, config);
   dest->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
 
   dest->process_block (whole_block (), *mock_transport_, *tempo_map_);
@@ -544,7 +549,8 @@ TEST_F (AudioPortRoutingTest, EdgeWithoutConnectionUsesUnityDefaults)
 
   graph::GraphNode src_node{ 0, *src };
   graph::GraphNode dest_node{ 1, *dest };
-  src_node.connect_to (dest_node);
+  graph::Graph     graph;
+  graph.connect (src_node, dest_node);
   dest->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
 
   dest->process_block (whole_block (), *mock_transport_, *tempo_map_);

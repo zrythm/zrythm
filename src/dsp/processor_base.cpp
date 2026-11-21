@@ -298,22 +298,19 @@ ProcessorGraphBuilder::add_connections (
   dsp::graph::Graph &graph,
   ProcessorBase     &processor)
 {
-  auto * processor_node =
-    graph.get_nodes ().find_node_for_processable (processor);
+  auto * processor_node = graph.find_node_for_processable (processor);
   z_return_if_fail (processor_node);
   for (const auto &port_ref : processor.get_attached_input_ports ())
     {
-      auto * port_node =
-        graph.get_nodes ().find_node_for_processable (*port_ref.get ());
-      assert (port_node);
-      port_node->connect_to (*processor_node);
+      auto * port_node = graph.find_node_for_processable (*port_ref.get ());
+      z_return_if_fail (port_node);
+      graph.connect (*port_node, *processor_node);
     }
   for (const auto &port_ref : processor.get_attached_output_ports ())
     {
-      auto * port_node =
-        graph.get_nodes ().find_node_for_processable (*port_ref.get ());
+      auto * port_node = graph.find_node_for_processable (*port_ref.get ());
       z_return_if_fail (port_node);
-      processor_node->connect_to (*port_node);
+      graph.connect (*processor_node, *port_node);
     }
   for (const auto &param_ref : processor.get_parameters ())
     {
@@ -323,10 +320,9 @@ ProcessorGraphBuilder::add_connections (
       auto * mod_port = param->get_modulation_input_port_ref ().get ();
       if (mod_port == nullptr || mod_port->detached ())
         continue;
-      auto * port_node =
-        graph.get_nodes ().find_node_for_processable (*mod_port);
+      auto * port_node = graph.find_node_for_processable (*mod_port);
       z_return_if_fail (port_node);
-      port_node->connect_to (*processor_node);
+      graph.connect (*port_node, *processor_node);
     }
 }
 

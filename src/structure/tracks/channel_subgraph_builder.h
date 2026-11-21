@@ -51,14 +51,14 @@ public:
     const T           &src_port,
     const T           &dest_port)
   {
-    auto * src = graph.get_nodes ().find_node_for_processable (src_port);
-    auto * dest = graph.get_nodes ().find_node_for_processable (dest_port);
+    auto * src = graph.find_node_for_processable (src_port);
+    auto * dest = graph.find_node_for_processable (dest_port);
     assert (src);
     assert (dest);
     assert (src != dest && "Cannot connect a port to itself");
     assert (src_port.is_output () && "Source port must be an output port");
     assert (dest_port.is_input () && "Destination port must be an input port");
-    src->connect_to (*dest);
+    graph.connect (*src, *dest);
   }
 
   /**

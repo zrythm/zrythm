@@ -276,10 +276,9 @@ TEST_F (ProcessorBaseTest, GraphBuilderIntegration)
   // Add processor to graph
   ProcessorGraphBuilder::add_nodes (graph, *processor_);
   ProcessorGraphBuilder::add_connections (graph, *processor_);
-  graph.finalize_nodes ();
 
   // Verify graph structure
-  EXPECT_EQ (graph.get_nodes ().graph_nodes_.size (), 3);
+  EXPECT_EQ (graph.nodes ().size (), 3);
   EXPECT_TRUE (graph.is_valid ());
 }
 

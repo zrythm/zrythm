@@ -221,7 +221,7 @@ public:
  * The class provides the following key features:
  * - Configurable processing function and name getter
  * - Playback latency management and compensation
- * - Ability to connect to other GraphNode instances
+ * - Edges to other nodes, established through Graph
  * - Skipping of processing for muting/disabling the node
  *
  * GraphNode is designed to be used as part of the larger DSP graph system,
@@ -277,19 +277,6 @@ public:
   void set_route_playback_latency (units::sample_u32_t dest_latency);
 
   /**
-   * @brief Connects this node to @p target (this node feeds target).
-   *
-   * If the edge already exists it is not duplicated; a passed configuration
-   * still replaces any configuration previously stored for the edge.
-   *
-   * @param config Configuration carried by the edge; std::nullopt means the
-   * edge carries no configuration and consumers apply their defaults.
-   */
-  void connect_to (
-    GraphNode                      &target,
-    std::optional<ConnectionConfig> config = std::nullopt);
-
-  /**
    * @brief Returns the configuration carried by the edge from @p parent, or
    * std::nullopt if the edge carries none.
    *
@@ -321,6 +308,22 @@ public:
    */
   auto &depends () const { return parentnodes_; }
 
+private:
+  friend class Graph;
+
+  /**
+   * @brief Connects this node to @p target (this node feeds target).
+   *
+   * If the edge already exists it is not duplicated; a passed configuration
+   * still replaces any configuration previously stored for the edge.
+   *
+   * @param config Configuration carried by the edge; std::nullopt means the
+   * edge carries no configuration and consumers apply their defaults.
+   */
+  void connect_to (
+    GraphNode                      &target,
+    std::optional<ConnectionConfig> config = std::nullopt);
+
   /**
    * Removes the outgoing edge to @p feed. The configuration carried by the
    * edge lives on the target node and is cleared by its remove_depend() —
@@ -329,7 +332,6 @@ public:
   bool remove_feed (const GraphNode &feed);
   bool remove_depend (const GraphNode &depend);
 
-private:
   void add_feeds (GraphNode &dest);
   void add_depends (GraphNode &src);
 
@@ -393,8 +395,7 @@ public:
   /** The route's playback latency so far. */
   units::sample_u32_t route_playback_latency_;
 
-  /* For debugging. These are set by
-   * GraphNodeCollection.set_initial_and_terminal_nodes(). */
+  /* For debugging. These are set when the owning graph is finalized. */
   bool terminal_{ false };
   bool initial_{ false };
 
@@ -434,16 +435,26 @@ private:
 };
 
 /**
- * @brief Manages the collection of graph nodes.
+ * @brief A finalized collection of graph nodes together with its derived
+ * node sets.
  *
- * This class holds a main collection of graph nodes, as well as subsets of
- * those nodes that are initial trigger nodes and terminal nodes.
+ * Produced by Graph::finalize(). The topology is immutable: nodes and
+ * edges cannot be added or removed, so trigger_nodes() and
+ * terminal_nodes() always match the topology they were computed from.
  */
-class GraphNodeCollection
+class FinalizedGraph
 {
+  friend class Graph;
+
 public:
+  FinalizedGraph () = default;
+  FinalizedGraph (const FinalizedGraph &) = delete;
+  FinalizedGraph &operator= (const FinalizedGraph &) = delete;
+  FinalizedGraph (FinalizedGraph &&) = default;
+  FinalizedGraph &operator= (FinalizedGraph &&) = default;
+
   /**
-   * Returns the max playback latency of the trigger nodes.
+   * @brief Returns the max playback latency of the trigger nodes.
    *
    * @note Requires calling update_latencies() first.
    */
@@ -455,41 +466,47 @@ public:
   void update_latencies ();
 
   /**
-   * @brief Updates the initial and terminal nodes based on @ref graph_nodes_.
+   * @brief All nodes in the collection.
    */
+  const std::vector<std::unique_ptr<GraphNode>> &nodes () const
+  {
+    return graph_nodes_;
+  }
+
+  /**
+   * @brief Nodes without incoming edges.
+   *
+   * Trigger nodes run concurrently at the start of each cycle to kick off
+   * processing.
+   */
+  const std::vector<std::reference_wrapper<GraphNode>> &trigger_nodes () const
+  {
+    return trigger_nodes_;
+  }
+
+  /**
+   * @brief Nodes without outgoing edges.
+   */
+  const std::vector<std::reference_wrapper<GraphNode>> &terminal_nodes () const
+  {
+    return terminal_nodes_;
+  }
+
+private:
+  /**
+   * @brief The initial processor, if the graph was built with one.
+   *
+   * It is the processable of a node, so it must outlive the nodes; it is
+   * declared first so it is destroyed last.
+   */
+  std::unique_ptr<InitialProcessor> initial_processor_;
+
+  /** Recomputes the trigger/terminal sets from the current node edges. */
   void set_initial_and_terminal_nodes ();
 
-  /**
-   * @brief Sets the initial/terminal nodes.
-   *
-   * To be called when all nodes have been added.
-   */
-  void finalize_nodes () { set_initial_and_terminal_nodes (); }
-
-  GraphNode * find_node_for_processable (const IProcessable &processable) const;
-
-public:
-  /**
-   * @brief All nodes in the graph.
-   */
-  std::vector<std::unique_ptr<GraphNode>> graph_nodes_;
-
-  /**
-   * @brief A subset of @ref graph_nodes_ that are trigger nodes.
-   *
-   * Trigger nodes are nodes without incoming edges. They run
-   * concurrently at the start of each cycle to kick off processing.
-   */
+  std::vector<std::unique_ptr<GraphNode>>        graph_nodes_;
   std::vector<std::reference_wrapper<GraphNode>> trigger_nodes_;
-
-  /**
-   * @brief A subset of @ref graph_nodes_ that are terminal nodes.
-   *
-   * Terminal nodes are nodes without outgoing edges.
-   */
   std::vector<std::reference_wrapper<GraphNode>> terminal_nodes_;
-
-  std::unique_ptr<InitialProcessor> initial_processor_;
 };
 
 } // namespace zrythm::dsp::graph

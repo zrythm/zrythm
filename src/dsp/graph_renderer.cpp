@@ -21,7 +21,7 @@ void
 GraphRenderer::render (
   QPromise<juce::AudioSampleBuffer> &promise,
   RenderOptions                      options,
-  graph::GraphNodeCollection       &&nodes,
+  graph::FinalizedGraph            &&nodes,
   RunOnMainThread                    run_on_main_thread,
   SampleRange                        range,
   const dsp::TempoMap               &tempo_map)
@@ -32,7 +32,7 @@ GraphRenderer::render (
     std::move (run_on_main_thread), options.sample_rate_, options.block_length_,
     false);
 
-  graph_scheduler.rechain_from_node_collection (
+  graph_scheduler.rechain_from_finalized_graph (
     std::move (nodes), options.sample_rate_, options.block_length_);
   graph_scheduler.start_threads (options.num_threads_);
 
@@ -41,9 +41,9 @@ GraphRenderer::render (
   // cancel path
   struct OfflineModeSession
   {
-    explicit OfflineModeSession (graph::GraphNodeCollection &nodes)
+    explicit OfflineModeSession (graph::FinalizedGraph &nodes)
     {
-      for (const auto &node : nodes.graph_nodes_)
+      for (const auto &node : nodes.nodes ())
         {
           auto * processor =
             dynamic_cast<ProcessorBase *> (&node->get_processable ());
@@ -148,7 +148,7 @@ GraphRenderer::render (
 
       // Collect audio from terminal nodes
       temp_buffer.clear ();
-      for (const auto &node : graph_scheduler.get_nodes ().terminal_nodes_)
+      for (const auto &node : graph_scheduler.get_nodes ().terminal_nodes ())
         {
           auto &processable = node.get ().get_processable ();
           if (auto * audio_port = dynamic_cast<dsp::AudioPort *> (&processable))
@@ -206,14 +206,14 @@ GraphRenderer::render (
 
 QFuture<juce::AudioSampleBuffer>
 GraphRenderer::render_async (
-  RenderOptions                options,
-  graph::GraphNodeCollection &&nodes,
-  RunOnMainThread              run_on_main_thread,
-  SampleRange                  range,
-  const dsp::TempoMap         &tempo_map)
+  RenderOptions           options,
+  graph::FinalizedGraph &&nodes,
+  RunOnMainThread         run_on_main_thread,
+  SampleRange             range,
+  const dsp::TempoMap    &tempo_map)
 {
   // This is a hack to work around the fact that QtConcurrent::run only supports
-  // copyable arguments, and GraphNodeCollection is not copyable
+  // copyable arguments, and FinalizedGraph is not copyable
   return QtConcurrent::run (
     [inner_nodes = std::move (nodes)] (
       QPromise<juce::AudioSampleBuffer> &promise,

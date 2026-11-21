@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <optional>
+
 #include "dsp/fader.h"
 #include "dsp/graph.h"
 #include "dsp/midi_event.h"
@@ -238,7 +240,7 @@ protected:
   dsp::graph::GraphNode *
   findNodeForProcessable (const dsp::graph::IProcessable &processable)
   {
-    return graph_.get_nodes ().find_node_for_processable (processable);
+    return graph_.find_node_for_processable (processable);
   }
 
   bool hasConnection (
@@ -257,7 +259,7 @@ protected:
       [to_node] (const auto &child) { return &child.get () == to_node; });
   }
 
-  size_t countNodes () { return graph_.get_nodes ().graph_nodes_.size (); }
+  size_t countNodes () { return graph_.nodes ().size (); }
 
   std::unique_ptr<MockTrackProcessor>
   createMockTrackProcessor (dsp::PortType type, int num_channels = 2)
@@ -302,26 +304,30 @@ protected:
         auto * node = graph_.add_node_for_processable (*port);
         if (connect)
           {
-            track_processor_node->connect_to (*node);
+            graph_.connect (*track_processor_node, *node);
           }
       }
   }
 
+  // The finalized counterpart of graph_, produced by process_graph_once().
+  std::optional<dsp::graph::FinalizedGraph> finalized_graph_;
+
   // Prepares all nodes and processes one block in topological order,
   // mirroring what the graph scheduler does per cycle.
-  void process_graph_once (dsp::graph::Graph &graph)
+  void process_graph_once (dsp::graph::Graph &&graph)
   {
-    graph.finalize_nodes ();
     ASSERT_TRUE (graph.is_valid ());
-    for (auto &node : graph.get_nodes ().graph_nodes_)
+    finalized_graph_.emplace (std::move (graph).finalize ());
+    const auto &nodes = finalized_graph_->nodes ();
+    for (const auto &node : nodes)
       {
         node->get_processable ().prepare_for_processing (
           node.get (), sample_rate_, max_block_length_);
       }
-    graph.get_nodes ().update_latencies ();
+    finalized_graph_->update_latencies ();
 
     std::vector<dsp::graph::GraphNode *> ready;
-    for (auto &node : graph.get_nodes ().graph_nodes_)
+    for (const auto &node : nodes)
       {
         if (node->init_refcount_ == 0)
           {
@@ -349,9 +355,9 @@ protected:
   }
 
   // Releases the resources allocated by process_graph_once().
-  void release_graph_resources (dsp::graph::Graph &graph)
+  void release_graph_resources ()
   {
-    for (auto &node : graph.get_nodes ().graph_nodes_)
+    for (const auto &node : finalized_graph_->nodes ())
       {
         node->get_processable ().release_resources ();
       }
@@ -393,7 +399,7 @@ protected:
 
   void verifyBasicAudioChannelConnections (MockTrackProcessor &track_processor)
   {
-    const auto &nodes = graph_.get_nodes ().graph_nodes_;
+    const auto &nodes = graph_.nodes ();
     EXPECT_GT (nodes.size (), 0);
 
     // Verify we have the expected processors
@@ -418,7 +424,7 @@ protected:
 
   void verifyBasicMidiChannelConnections (MockTrackProcessor &track_processor)
   {
-    const auto &nodes = graph_.get_nodes ().graph_nodes_;
+    const auto &nodes = graph_.nodes ();
     EXPECT_GT (nodes.size (), 0);
 
     // Verify we have the expected processors
@@ -464,7 +470,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesForEmptyAudioChannel)
   });
 
   // Verify that nodes were added for pre-fader, fader, and post-fader
-  EXPECT_GT (graph_.get_nodes ().graph_nodes_.size (), 0);
+  EXPECT_GT (graph_.nodes ().size (), 0);
 }
 
 TEST_F (ChannelSubgraphBuilderTest, AddNodesForEmptyMidiChannel)
@@ -477,7 +483,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesForEmptyMidiChannel)
   });
 
   // Verify that nodes were added for pre-fader, fader, and post-fader
-  EXPECT_GT (graph_.get_nodes ().graph_nodes_.size (), 0);
+  EXPECT_GT (graph_.nodes ().size (), 0);
 }
 
 TEST_F (ChannelSubgraphBuilderTest, AddNodesWithAudioPlugins)
@@ -500,7 +506,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesWithAudioPlugins)
 
   // Verify nodes for plugins were added
   EXPECT_GT (
-    graph_.get_nodes ().graph_nodes_.size (),
+    graph_.nodes ().size (),
     3); // pre-fader, fader, post-fader + 2 plugins
 }
 
@@ -524,7 +530,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesWithMidiPlugins)
 
   // Verify nodes for plugins were added
   EXPECT_GT (
-    graph_.get_nodes ().graph_nodes_.size (),
+    graph_.nodes ().size (),
     3); // pre-fader, fader, post-fader + 2 plugins
 }
 
@@ -539,8 +545,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddNodesWithSends)
   });
 
   // Verify nodes for sends were added
-  EXPECT_GT (graph_.get_nodes ().graph_nodes_.size (), 3); // pre-fader, fader,
-                                                           // post-fader + sends
+  EXPECT_GT (graph_.nodes ().size (), 3); // pre-fader, fader, post-fader + sends
 }
 
 TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyAudioChannel)
@@ -1307,7 +1312,7 @@ TEST_F (ChannelSubgraphBuilderTest, PostMidiFxPortStableAcrossGraphRebuilds)
     ChannelSubgraphBuilder::add_nodes (graph_, *instrument_channel_);
     ChannelSubgraphBuilder::add_connections (
       graph_, *instrument_channel_, track_output);
-    EXPECT_NE (graph_.get_nodes ().find_node_for_processable (*tap), nullptr);
+    EXPECT_NE (graph_.find_node_for_processable (*tap), nullptr);
   }
 
   // A graph rebuild re-adds nodes and connections without touching the
@@ -1321,13 +1326,12 @@ TEST_F (ChannelSubgraphBuilderTest, PostMidiFxPortStableAcrossGraphRebuilds)
     for (const auto &port_ref : track_processor->get_all_output_ports ())
       {
         auto * node = second_graph.add_node_for_processable (*port_ref.get ());
-        track_processor_node->connect_to (*node);
+        second_graph.connect (*track_processor_node, *node);
       }
     ChannelSubgraphBuilder::add_nodes (second_graph, *instrument_channel_);
     ChannelSubgraphBuilder::add_connections (
       second_graph, *instrument_channel_, track_output);
-    EXPECT_NE (
-      second_graph.get_nodes ().find_node_for_processable (*tap), nullptr);
+    EXPECT_NE (second_graph.find_node_for_processable (*tap), nullptr);
   }
 
   EXPECT_EQ (instrument_channel_->postMidiFxPort (), tap);
@@ -1352,13 +1356,13 @@ TEST_F (ChannelSubgraphBuilderTest, PostMidiFxPortCarriesSourceAndGeneratedNotes
   ChannelSubgraphBuilder::add_connections (
     graph_, *instrument_channel_, track_output);
 
-  process_graph_once (graph_);
+  process_graph_once (std::move (graph_));
 
   const auto * tap = instrument_channel_->postMidiFxPort ();
   ASSERT_NE (tap, nullptr);
   EXPECT_THAT (pitches_on (*tap), ::testing::UnorderedElementsAre (60, 96));
 
-  release_graph_resources (graph_);
+  release_graph_resources ();
 }
 
 TEST_F (
@@ -1381,14 +1385,14 @@ TEST_F (
 
   generator_ref.get_object_as<NoteGeneratorPlugin> ()->setBypassed (true);
 
-  process_graph_once (graph_);
+  process_graph_once (std::move (graph_));
 
   const auto * tap = instrument_channel_->postMidiFxPort ();
   ASSERT_NE (tap, nullptr);
   // bypass passes the source note through without the generated one
   EXPECT_THAT (pitches_on (*tap), ::testing::ElementsAre (60));
 
-  release_graph_resources (graph_);
+  release_graph_resources ();
 }
 
 TEST_F (ChannelSubgraphBuilderTest, MutedChannelKeepsEventsOnPostMidiFxPort)
@@ -1410,13 +1414,13 @@ TEST_F (ChannelSubgraphBuilderTest, MutedChannelKeepsEventsOnPostMidiFxPort)
   ChannelSubgraphBuilder::add_connections (
     graph_, *instrument_channel_, track_output);
 
-  process_graph_once (graph_);
+  process_graph_once (std::move (graph_));
 
   const auto * tap = instrument_channel_->postMidiFxPort ();
   ASSERT_NE (tap, nullptr);
   EXPECT_THAT (pitches_on (*tap), ::testing::UnorderedElementsAre (60, 96));
 
-  release_graph_resources (graph_);
+  release_graph_resources ();
 }
 
 } // namespace zrythm::structure::tracks

@@ -165,8 +165,8 @@ protected:
     if (src_port == nullptr)
       return false;
 
-    auto * src_node = graph.get_nodes ().find_node_for_processable (*src_port);
-    auto * dst_node = graph.get_nodes ().find_node_for_processable (
+    auto * src_node = graph.find_node_for_processable (*src_port);
+    auto * dst_node = graph.find_node_for_processable (
       track.get_track_processor ()->get_stereo_in_port ());
     if (src_node == nullptr || dst_node == nullptr)
       return false;
@@ -189,7 +189,7 @@ protected:
   utils::QObjectUniquePtr<dsp::Metronome>         metronome_;
 };
 
-TEST_F (ProjectGraphBuilderTest, DefaultTracksGraphIsValidAfterFinalizeNodes)
+TEST_F (ProjectGraphBuilderTest, DefaultTracksGraphIsValid)
 {
   auto project = create_project ();
   project->add_default_tracks ();
@@ -197,7 +197,6 @@ TEST_F (ProjectGraphBuilderTest, DefaultTracksGraphIsValidAfterFinalizeNodes)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
   EXPECT_TRUE (graph.is_valid ())
     << "Default tracks should produce a valid graph";
@@ -213,9 +212,8 @@ TEST_F (ProjectGraphBuilderTest, GlobalRackModulatorPluginIsPartOfGraph)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
-  EXPECT_NE (graph.get_nodes ().find_node_for_processable (*macro), nullptr);
+  EXPECT_NE (graph.find_node_for_processable (*macro), nullptr);
   EXPECT_TRUE (graph.is_valid ())
     << "A global-rack modulator plugin should not break the graph";
 }
@@ -233,9 +231,8 @@ TEST_F (ProjectGraphBuilderTest, TrackRackModulatorPluginIsPartOfGraph)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
-  EXPECT_NE (graph.get_nodes ().find_node_for_processable (*macro), nullptr);
+  EXPECT_NE (graph.find_node_for_processable (*macro), nullptr);
   EXPECT_TRUE (graph.is_valid ())
     << "A track-rack modulator plugin should not break the graph";
 }
@@ -256,12 +253,11 @@ TEST_F (ProjectGraphBuilderTest, TrackProcessorDoesNotFeedRackMemberCvInputs)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
-  const auto * cv_node = graph.get_nodes ().find_node_for_processable (*cv_in);
+  const auto * cv_node = graph.find_node_for_processable (*cv_in);
   ASSERT_NE (cv_node, nullptr);
   const auto * track_processor_node =
-    graph.get_nodes ().find_node_for_processable (*track->get_track_processor ());
+    graph.find_node_for_processable (*track->get_track_processor ());
   ASSERT_NE (track_processor_node, nullptr);
   EXPECT_FALSE (
     std::ranges::any_of (
@@ -281,7 +277,6 @@ TEST_F (ProjectGraphBuilderTest, AudioBusTrackWithNoRouteTargetGraphIsValid)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
   EXPECT_TRUE (graph.is_valid ())
     << "AudioBusTrack with no route target should still produce a valid graph";
@@ -300,7 +295,6 @@ TEST_F (ProjectGraphBuilderTest, AudioBusTrackRoutedToMasterGraphIsValid)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
   EXPECT_TRUE (graph.is_valid ())
     << "AudioBusTrack routed to master should produce a valid graph";
@@ -320,7 +314,6 @@ TEST_F (ProjectGraphBuilderTest, AudioInputProviderWithNoSelectionsGraphIsValid)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
   EXPECT_TRUE (graph.is_valid ())
     << "Graph should be valid when provider returns nullptr for all tracks";
@@ -360,7 +353,6 @@ TEST_F (ProjectGraphBuilderTest, AudioInputConnectedWhenDeviceNameMatches)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
   EXPECT_TRUE (has_audio_input_connection (graph, *project, *track));
 }
@@ -399,7 +391,6 @@ TEST_F (ProjectGraphBuilderTest, AudioInputNotConnectedWhenDeviceNameDiffers)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
   EXPECT_FALSE (has_audio_input_connection (graph, *project, *track));
 }
@@ -437,7 +428,6 @@ TEST_F (ProjectGraphBuilderTest, AudioInputNotConnectedWhenDeviceNameEmpty)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
   EXPECT_FALSE (has_audio_input_connection (graph, *project, *track));
 }
@@ -470,7 +460,6 @@ TEST_F (ProjectGraphBuilderTest, ConnectionsWithMissingEndpointsAreHandled)
   dsp::graph::Graph   graph;
   ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
   builder.build_graph (graph);
-  graph.finalize_nodes ();
 
   EXPECT_TRUE (graph.is_valid ());
   EXPECT_TRUE (mgr->connection_exists (bogus_src, dest_port.get_uuid ()));

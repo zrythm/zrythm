@@ -90,24 +90,24 @@ public:
   ~GraphScheduler ();
 
   /**
-   * @brief Steals the nodes from the given collection and prepares for
-   * processing.
+   * @brief Takes ownership of the given finalized graph and prepares it
+   * for processing.
    *
-   * @warning Nodes added here are expected to be unique for their
+   * @warning Nodes in the graph are expected to be unique for their
    * IProcessable's. This means that an IProcessable-derived object may not be
    * in more than one graph at a time, otherwise @ref release_node_resources()
    * may be called while another graph is using them. FIXME: alleviate this
    * but passing the graph to prepare_for_processing/release_resources and
    * having each processable have a separate cache per graph.
    *
-   * @param nodes Nodes to steal.
+   * @param graph Finalized graph to rechain from.
    * @param sample_rate The current sample rate to prepare the nodes for.
    * @param block_length The current block length to prepare the nodes for.
    */
-  void rechain_from_node_collection (
-    GraphNodeCollection &&nodes,
-    units::sample_rate_t  sample_rate,
-    units::sample_u32_t   max_block_length);
+  void rechain_from_finalized_graph (
+    FinalizedGraph     &&graph,
+    units::sample_rate_t sample_rate,
+    units::sample_u32_t  max_block_length);
 
   /**
    * Starts the threads that will be processing the graph.
@@ -124,7 +124,7 @@ public:
    */
   void terminate_threads ();
 
-  auto &get_nodes () { return graph_nodes_; }
+  auto &get_nodes () { return finalized_graph_; }
 
   /**
    * @brief To be called repeatedly by a system audio callback thread.
@@ -226,7 +226,7 @@ private:
   std::atomic<int> idle_thread_cnt_ = 0;
 
   /**
-   * @brief Set while @ref rechain_from_node_collection() replaces the
+   * @brief Set while @ref rechain_from_finalized_graph() replaces the
    * trigger queue.
    *
    * Workers that wake up while this is set go back to sleep without
@@ -247,9 +247,9 @@ private:
   };
 
   /**
-   * @brief Live graph nodes.
+   * @brief The finalized graph currently being processed.
    */
-  GraphNodeCollection graph_nodes_;
+  FinalizedGraph finalized_graph_;
 
   /** Remaining unprocessed terminal nodes in this cycle. */
   std::atomic<int> terminal_refcnt_ = 0;

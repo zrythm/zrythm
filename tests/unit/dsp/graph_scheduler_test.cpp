@@ -7,6 +7,7 @@
 #include <mutex>
 #include <thread>
 
+#include "dsp/graph.h"
 #include "dsp/graph_scheduler.h"
 #include "dsp/graph_thread.h"
 #include "utils/utf8_string.h"
@@ -45,22 +46,20 @@ protected:
     tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
   }
 
-  GraphNodeCollection create_test_collection ()
+  FinalizedGraph create_test_collection ()
   {
-    GraphNodeCollection collection;
-    auto                node1 = std::make_unique<GraphNode> (1, *processable_);
-    auto                node2 = std::make_unique<GraphNode> (2, *processable_);
-    auto                node3 = std::make_unique<GraphNode> (3, *processable_);
+    Graph  graph;
+    auto * node1 =
+      graph.add_node (std::make_unique<GraphNode> (1, *processable_));
+    auto * node2 =
+      graph.add_node (std::make_unique<GraphNode> (2, *processable_));
+    auto * node3 =
+      graph.add_node (std::make_unique<GraphNode> (3, *processable_));
 
-    node1->connect_to (*node2);
-    node2->connect_to (*node3);
+    graph.connect (*node1, *node2);
+    graph.connect (*node2, *node3);
 
-    collection.graph_nodes_.push_back (std::move (node1));
-    collection.graph_nodes_.push_back (std::move (node2));
-    collection.graph_nodes_.push_back (std::move (node3));
-
-    collection.finalize_nodes ();
-    return collection;
+    return std::move (graph).finalize ();
   }
 
   units::sample_rate_t             sample_rate_{ units::sample_rate (48000) };
@@ -85,7 +84,7 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
   EXPECT_CALL (*processable_, process_block (_, _, _)).Times (3); // Once for
                                                                   // each node
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
@@ -108,7 +107,7 @@ TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
       std::this_thread::sleep_for (10ms);
     });
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (4);
 
@@ -133,7 +132,7 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
       process_order.push_back (process_order.size ());
     });
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (1); // Single thread to ensure deterministic order
 
@@ -175,7 +174,7 @@ TEST_F (GraphSchedulerTest, NodeCanForkJoinDuringProcessingCycle)
         }
     });
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
@@ -198,12 +197,12 @@ TEST_F (GraphSchedulerTest, NodeCanForkJoinDuringProcessingCycle)
 
 TEST_F (GraphSchedulerTest, RechainWithLiveThreadsIsSynchronizedWithWorkers)
 {
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     create_test_collection (), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
   // Rechain replaces the trigger queue underneath live workers
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     create_test_collection (), sample_rate_, block_length_);
 
   scheduler_->terminate_threads ();
@@ -213,7 +212,7 @@ TEST_F (GraphSchedulerTest, RechainAfterCyclesIsSynchronizedWithWorkerQueueAcces
 {
   ON_CALL (*processable_, process_block (_, _, _)).WillByDefault (Return ());
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     create_test_collection (), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
@@ -226,7 +225,7 @@ TEST_F (GraphSchedulerTest, RechainAfterCyclesIsSynchronizedWithWorkerQueueAcces
 
   // Workers can still be inside a queue pop after the last cycle; only
   // sanitizer builds (TSan/ASan) observe the overlap this checks for
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     create_test_collection (), sample_rate_, block_length_);
 
   scheduler_->terminate_threads ();
@@ -246,7 +245,7 @@ TEST_F (GraphSchedulerTest, ResourceManagement)
   // Expect release to be called when scheduler is destroyed
   EXPECT_CALL (*processable_, release_resources ()).Times (3);
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
@@ -264,7 +263,7 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
     prepare_for_processing_impl (
       _, units::sample_rate (48000), units::samples (256u)))
     .Times (3);
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     std::move (collection), sample_rate_, block_length_);
 
   // Create new collection for rechaining
@@ -280,7 +279,7 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
     prepare_for_processing_impl (_, new_sample_rate, new_block_length))
     .Times (3);
 
-  scheduler_->rechain_from_node_collection (
+  scheduler_->rechain_from_finalized_graph (
     std::move (new_collection), new_sample_rate, new_block_length);
 
   // Run a processing cycle to ensure everything works

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/cv_port.h"
+#include "dsp/graph.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -121,8 +122,9 @@ TEST_F (CVPortTest, CachedConnectionMultiplierIsApplied)
 
   graph::GraphNode src_node{ 0, *output_port };
   graph::GraphNode dest_node{ 1, *input_port };
-  src_node.connect_to (
-    dest_node, graph::ConnectionConfig{ .multiplier_ = 0.5f });
+  graph::Graph     graph;
+  graph.connect (
+    src_node, dest_node, graph::ConnectionConfig{ .multiplier_ = 0.5f });
   input_port->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
   std::ranges::fill (input_port->buf_, 0.0f);
 
@@ -139,7 +141,9 @@ TEST_F (CVPortTest, DisabledCachedConnectionSkipsSource)
 
   graph::GraphNode src_node{ 0, *output_port };
   graph::GraphNode dest_node{ 1, *input_port };
-  src_node.connect_to (dest_node, graph::ConnectionConfig{ .enabled_ = false });
+  graph::Graph     graph;
+  graph.connect (
+    src_node, dest_node, graph::ConnectionConfig{ .enabled_ = false });
   input_port->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
   std::ranges::fill (input_port->buf_, 0.0f);
 

@@ -141,7 +141,7 @@ public:
    */
   auto &current_trigger_nodes () const
   {
-    return scheduler_->get_nodes ().trigger_nodes_;
+    return scheduler_->get_nodes ().trigger_nodes ();
   }
 
 private:

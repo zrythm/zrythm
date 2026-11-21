@@ -38,16 +38,17 @@ TEST_F (GraphTest, BasicNodeAddition)
   auto * node = graph.add_node_for_processable (*processable_);
 
   EXPECT_NE (node, nullptr);
-  EXPECT_EQ (graph.get_nodes ().graph_nodes_.size (), 1);
+  EXPECT_EQ (graph.nodes ().size (), 1);
 }
 
 TEST_F (GraphTest, InitialProcessorNode)
 {
-  Graph  graph;
+  Graph graph;
+
   auto * initial_node = graph.add_initial_processor ();
 
   EXPECT_NE (initial_node, nullptr);
-  EXPECT_NE (graph.get_nodes ().initial_processor_, nullptr);
+  EXPECT_EQ (graph.nodes ().size (), 1);
 }
 
 TEST_F (GraphTest, ValidGraphCheck)
@@ -58,21 +59,19 @@ TEST_F (GraphTest, ValidGraphCheck)
   auto   new_procesable = std::make_unique<MockProcessable> ();
   auto * node2 = graph.add_node_for_processable (*new_procesable);
 
-  node1->connect_to (*node2);
-
-  graph.finalize_nodes ();
+  graph.connect (*node1, *node2);
 
   EXPECT_TRUE (graph.is_valid ());
 }
 
-TEST_F (GraphTest, StealNodes)
+TEST_F (GraphTest, FinalizeConsumesTheGraph)
 {
   Graph graph;
   graph.add_node_for_processable (*processable_);
 
-  auto nodes = graph.steal_nodes ();
-  EXPECT_EQ (nodes.graph_nodes_.size (), 1);
-  EXPECT_EQ (graph.get_nodes ().graph_nodes_.size (), 0);
+  auto nodes = std::move (graph).finalize ();
+  EXPECT_EQ (nodes.nodes ().size (), 1);
+  EXPECT_EQ (graph.nodes ().size (), 0);
 }
 
 TEST_F (GraphTest, CompleteGraphSetup)
@@ -85,14 +84,12 @@ TEST_F (GraphTest, CompleteGraphSetup)
   auto   processable3 = std::make_unique<MockProcessable> ();
   auto * node3 = graph.add_node_for_processable (*processable3);
 
-  node1->connect_to (*node2);
-  node2->connect_to (*node3);
+  graph.connect (*node1, *node2);
+  graph.connect (*node2, *node3);
 
-  graph.finalize_nodes ();
-
-  auto &nodes = graph.get_nodes ();
-  EXPECT_EQ (nodes.trigger_nodes_.size (), 1);
-  EXPECT_EQ (nodes.terminal_nodes_.size (), 1);
+  const auto nodes = std::move (graph).finalize ();
+  EXPECT_EQ (nodes.trigger_nodes ().size (), 1);
+  EXPECT_EQ (nodes.terminal_nodes ().size (), 1);
 }
 
 TEST_F (GraphTest, CyclicGraphDetection)
@@ -105,10 +102,8 @@ TEST_F (GraphTest, CyclicGraphDetection)
   auto * node1 = graph.add_node_for_processable (*processable_);
   auto * node2 = graph.add_node_for_processable (*processable2);
 
-  node1->connect_to (*node2);
-  node2->connect_to (*node1);
-
-  graph.finalize_nodes ();
+  graph.connect (*node1, *node2);
+  graph.connect (*node2, *node1);
 
   EXPECT_FALSE (graph.is_valid ());
 }
@@ -125,7 +120,7 @@ TEST_F (GraphTest, AddNodeForProcessableDisallowsDuplicates)
   EXPECT_EQ (node1, node2);
 
   // Should only create one node
-  EXPECT_EQ (graph.get_nodes ().graph_nodes_.size (), 1);
+  EXPECT_EQ (graph.nodes ().size (), 1);
 }
 
 TEST_F (GraphTest, DiamondGraphIsValid)
@@ -146,12 +141,10 @@ TEST_F (GraphTest, DiamondGraphIsValid)
   auto * right = graph.add_node_for_processable (*p_right);
   auto * sink = graph.add_node_for_processable (*p_sink);
 
-  source->connect_to (*left);
-  source->connect_to (*right);
-  left->connect_to (*sink);
-  right->connect_to (*sink);
-
-  graph.finalize_nodes ();
+  graph.connect (*source, *left);
+  graph.connect (*source, *right);
+  graph.connect (*left, *sink);
+  graph.connect (*right, *sink);
 
   EXPECT_TRUE (graph.is_valid ());
 }
@@ -169,10 +162,8 @@ TEST_F (GraphTest, IsValidIdempotent)
   auto * n2 = graph.add_node_for_processable (*p2);
   auto * n3 = graph.add_node_for_processable (*p3);
 
-  n1->connect_to (*n2);
-  n2->connect_to (*n3);
-
-  graph.finalize_nodes ();
+  graph.connect (*n1, *n2);
+  graph.connect (*n2, *n3);
 
   EXPECT_TRUE (graph.is_valid ());
   EXPECT_TRUE (graph.is_valid ());
@@ -194,13 +185,11 @@ TEST_F (GraphTest, DiamondGraphWithCycleIsInvalid)
   auto * right = graph.add_node_for_processable (*p_right);
   auto * sink = graph.add_node_for_processable (*p_sink);
 
-  source->connect_to (*left);
-  source->connect_to (*right);
-  left->connect_to (*sink);
-  right->connect_to (*sink);
-  sink->connect_to (*left);
-
-  graph.finalize_nodes ();
+  graph.connect (*source, *left);
+  graph.connect (*source, *right);
+  graph.connect (*left, *sink);
+  graph.connect (*right, *sink);
+  graph.connect (*sink, *left);
 
   EXPECT_FALSE (graph.is_valid ());
 }
@@ -224,12 +213,62 @@ TEST_F (GraphTest, WideFanOutIsValid)
         .WillByDefault (Return (
           utils::Utf8String::from_utf8_encoded_string (fmt::format ("mid{}", i))));
       auto * mid = graph.add_node_for_processable (*mids[i]);
-      source->connect_to (*mid);
-      mid->connect_to (*sink);
+      graph.connect (*source, *mid);
+      graph.connect (*mid, *sink);
     }
 
-  graph.finalize_nodes ();
+  EXPECT_TRUE (graph.is_valid ());
+}
+
+// A candidate edge must validate without finalizing the graph first
+TEST_F (GraphTest, IsValidAfterConnectWithoutFinalize)
+{
+  Graph graph;
+
+  auto   processable2 = std::make_unique<MockProcessable> ();
+  auto * src = graph.add_node_for_processable (*processable_);
+  auto * dest = graph.add_node_for_processable (*processable2);
+
+  // dest was previously unconnected
+  graph.connect (*src, *dest);
 
   EXPECT_TRUE (graph.is_valid ());
+}
+
+TEST_F (GraphTest, DetectsCycleAfterConnectWithoutFinalize)
+{
+  Graph graph;
+
+  auto   processable2 = std::make_unique<MockProcessable> ();
+  auto * node1 = graph.add_node_for_processable (*processable_);
+  auto * node2 = graph.add_node_for_processable (*processable2);
+
+  graph.connect (*node1, *node2);
+  graph.connect (*node2, *node1);
+
+  EXPECT_FALSE (graph.is_valid ());
+}
+
+// Erasing a node severs its edges into surviving nodes completely:
+// survivors' dependency counts and derived node sets reflect the removal
+TEST_F (GraphTest, ErasedNodeEdgesAreSeveredIntoSurvivors)
+{
+  Graph graph;
+
+  auto   processable2 = std::make_unique<MockProcessable> ();
+  auto   processable3 = std::make_unique<MockProcessable> ();
+  auto * a = graph.add_node_for_processable (*processable_);
+  auto * b = graph.add_node_for_processable (*processable2);
+  auto * c = graph.add_node_for_processable (*processable3);
+
+  graph.connect (*a, *b);
+  graph.connect (*b, *c);
+  ASSERT_TRUE (graph.is_valid ());
+
+  graph.erase_nodes_if ([b] (const auto &node) { return node.get () == b; });
+
+  EXPECT_TRUE (graph.is_valid ());
+  const auto nodes = std::move (graph).finalize ();
+  EXPECT_EQ (nodes.trigger_nodes ().size (), 2); // a and c
 }
 }

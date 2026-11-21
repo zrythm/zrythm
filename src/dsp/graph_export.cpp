@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <sstream>
@@ -18,7 +18,7 @@ GraphExport::export_to_dot (const graph::Graph &graph, bool include_class_names)
   std::stringstream ss;
   ss << "digraph G {\n";
 
-  for (const auto &node : graph.setup_nodes_.graph_nodes_)
+  for (const auto &node : graph.nodes ())
     {
       const auto &processable = node->get_processable ();
 
