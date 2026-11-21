@@ -226,11 +226,11 @@ ProjectSession::ProjectSession (
                 ? static_cast<const dsp::Port &> (send.get_stereo_out_port ())
                 : static_cast<const dsp::Port &> (send.get_midi_out_port ());
             return structure::project::ProjectGraphBuilder::
-              can_ports_be_connected (*project_, out_port, destination);
+              port_wiring_refusal_reason (*project_, out_port, destination);
           },
           [this] (const dsp::Port &src, const dsp::Port &dest) {
             return structure::project::ProjectGraphBuilder::
-              can_ports_be_connected (*project_, src, dest);
+              port_wiring_refusal_reason (*project_, src, dest);
           })),
       operation_registry_ (std::make_unique<operations::OperationRegistry> ()),
       operation_dispatcher_ (

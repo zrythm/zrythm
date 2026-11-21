@@ -158,6 +158,7 @@ public:
       {
         OperationReport report;
         report.status = OperationStatus::Refused;
+        report.refusal_kind = utils::RefusalKind::StaleRevision;
         report.message = fmt::format (
           "expected revision {} but the current revision is {}; re-read and "
           "retry",

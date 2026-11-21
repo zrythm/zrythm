@@ -633,6 +633,7 @@ TEST_F (OperationsTest, TrackRouteRefusesCycleWithReason)
   });
 
   ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::CyclicRoute);
   EXPECT_NE (report.message.find ("cycle"), std::string::npos);
   EXPECT_EQ (undo_stack_->count (), 2);
 }
@@ -652,6 +653,7 @@ TEST_F (OperationsTest, TrackRouteRefusesSignalTypeMismatchWithReason)
   });
 
   ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::TypeMismatch);
   EXPECT_NE (report.message.find ("outputs"), std::string::npos);
   EXPECT_EQ (undo_stack_->count (), 0);
 }
@@ -672,6 +674,7 @@ TEST_F (OperationsTest, TrackRouteRefusesMasterSourceWithReason)
   });
 
   ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::Unsupported);
   EXPECT_NE (report.message.find ("master"), std::string::npos);
 }
 
@@ -952,6 +955,50 @@ TEST_F (OperationsTest, TrackSetSendTargetTrackRefusesForeignSend)
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("belong"), std::string::npos);
+}
+
+// A connectivity query's reason reaches the caller verbatim
+TEST_F (OperationsTest, TrackSetSendTargetTrackPassesQueryRefusalThrough)
+{
+  auto * track = add_audio_track_directly ();
+  auto   group_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
+  track_collection_->add_track (group_ref);
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track) },
+      { "is_prefader", false            }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
+
+  environment_ = std::make_unique<OperationEnvironment> (
+    registry_, *undo_stack_, *track_collection_, *track_factory_,
+    *track_routing_, *channel_send_routing_, *singleton_tracks_,
+    *port_connections_manager_, transport_.get (),
+    [] (const structure::tracks::ChannelSend &, const dsp::Port &) {
+      return std::optional<utils::RefusalReason>{
+        utils::RefusalReason{
+                             utils::RefusalKind::CyclicRoute,
+                             utils::Utf8String::from_utf8_encoded_string (
+            "the send cannot be wired to this destination") }
+      };
+    });
+
+  const auto undo_count_before = undo_stack_->count ();
+  auto       report = dispatch (
+    "track.set_send_target_track",
+    {
+      { "track",        uuid_of (*track)            },
+      { "send",         send_uuid                   },
+      { "target_track", uuid_of (*group_ref.get ()) }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::CyclicRoute);
+  EXPECT_EQ (report.message, "the send cannot be wired to this destination");
+  EXPECT_EQ (undo_stack_->count (), undo_count_before);
 }
 
 TEST_F (OperationsTest, TrackClearSendTargetClearsAndUndoes)
@@ -1278,6 +1325,7 @@ TEST_F (OperationsTest, EditRefusesStaleExpectedRevision)
   },
     DispatchOptions{ .expected_revision = first.revision_before });
   ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::StaleRevision);
   EXPECT_NE (report.message.find ("expected revision"), std::string::npos);
   EXPECT_EQ (report.revision_before, first.revision_after);
   EXPECT_EQ (report.revision_after, report.revision_before);
@@ -1605,7 +1653,14 @@ TEST_F (OperationsTest, PortConnectRefusesWhenGraphRejects)
     registry_, *undo_stack_, *track_collection_, *track_factory_,
     *track_routing_, *channel_send_routing_, *singleton_tracks_,
     *port_connections_manager_, transport_.get (), SendConnectivityQuery{},
-    [] (const dsp::Port &, const dsp::Port &) { return false; });
+    [] (const dsp::Port &, const dsp::Port &) {
+      return std::optional<utils::RefusalReason>{
+        utils::RefusalReason{
+                             utils::RefusalKind::CyclicRoute,
+                             utils::Utf8String::from_utf8_encoded_string (
+            "the wiring would close a signal loop") }
+      };
+    });
 
   auto report = dispatch (
     "port.connect",

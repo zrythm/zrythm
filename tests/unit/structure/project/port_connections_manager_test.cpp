@@ -226,7 +226,9 @@ TEST_F (PortConnectionsManagerReasonTest, ConnectAcceptsValidPairing)
   auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
 
   const PortConnectionsManager::ConnectivityQuery always_valid =
-    [] (const dsp::Port &, const dsp::Port &) { return true; };
+    [] (const dsp::Port &, const dsp::Port &) {
+      return std::optional<utils::RefusalReason>{};
+    };
 
   EXPECT_FALSE (
     manager_->connect_refusal_reason (*src, *dest, always_valid).has_value ());
@@ -235,33 +237,40 @@ TEST_F (PortConnectionsManagerReasonTest, ConnectAcceptsValidPairing)
 TEST_F (PortConnectionsManagerReasonTest, ConnectStatesEachRefusal)
 {
   const PortConnectionsManager::ConnectivityQuery always_valid =
-    [] (const dsp::Port &, const dsp::Port &) { return true; };
+    [] (const dsp::Port &, const dsp::Port &) {
+      return std::optional<utils::RefusalReason>{};
+    };
 
   auto * src = add_cv_port (u8"CV out", dsp::PortFlow::Output);
   auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
 
   const auto self = manager_->connect_refusal_reason (*src, *src, always_valid);
   ASSERT_TRUE (self.has_value ());
-  EXPECT_NE (self->view ().find ("itself"), std::string_view::npos);
+  EXPECT_EQ (self->kind, utils::RefusalKind::InvalidParameter);
+  EXPECT_NE (self->text.view ().find ("itself"), std::string_view::npos);
 
   auto *     second_output = add_cv_port (u8"CV out 2", dsp::PortFlow::Output);
   const auto direction =
     manager_->connect_refusal_reason (*src, *second_output, always_valid);
   ASSERT_TRUE (direction.has_value ());
-  EXPECT_NE (direction->view ().find ("input port"), std::string_view::npos);
+  EXPECT_EQ (direction->kind, utils::RefusalKind::InvalidParameter);
+  EXPECT_NE (
+    direction->text.view ().find ("input port"), std::string_view::npos);
 
   auto *     midi_in = add_midi_port (u8"MIDI in", dsp::PortFlow::Input);
   const auto type =
     manager_->connect_refusal_reason (*src, *midi_in, always_valid);
   ASSERT_TRUE (type.has_value ());
-  EXPECT_NE (type->view ().find ("takes"), std::string_view::npos);
+  EXPECT_EQ (type->kind, utils::RefusalKind::TypeMismatch);
+  EXPECT_NE (type->text.view ().find ("takes"), std::string_view::npos);
 
   manager_->add_default_connection (src->get_uuid (), dest->get_uuid (), false);
   const auto duplicate =
     manager_->connect_refusal_reason (*src, *dest, always_valid);
   ASSERT_TRUE (duplicate.has_value ());
+  EXPECT_EQ (duplicate->kind, utils::RefusalKind::AlreadyExists);
   EXPECT_NE (
-    duplicate->view ().find ("already connected"), std::string_view::npos);
+    duplicate->text.view ().find ("already connected"), std::string_view::npos);
 }
 
 TEST_F (PortConnectionsManagerReasonTest, ConnectValidatesDetachedDestination)
@@ -274,26 +283,39 @@ TEST_F (PortConnectionsManagerReasonTest, ConnectValidatesDetachedDestination)
   const auto loop_refusal = manager_->connect_refusal_reason (
     *src, *dest, [&] (const dsp::Port &, const dsp::Port &queried_dest) {
       query_saw_attached_destination = !queried_dest.detached ();
-      return false;
+      return std::optional<utils::RefusalReason>{
+        utils::RefusalReason{
+                             utils::RefusalKind::CyclicRoute,
+                             utils::Utf8String::from_utf8_encoded_string (
+            "the wiring would close a signal loop") }
+      };
     });
   ASSERT_TRUE (loop_refusal.has_value ());
   EXPECT_TRUE (query_saw_attached_destination);
   // the lasting attachment state is untouched by validation
   EXPECT_TRUE (dest->detached ());
-  EXPECT_NE (loop_refusal->view ().find ("signal loop"), std::string_view::npos);
+  EXPECT_EQ (loop_refusal->kind, utils::RefusalKind::CyclicRoute);
+  EXPECT_NE (
+    loop_refusal->text.view ().find ("signal loop"), std::string_view::npos);
 
   const auto valid = manager_->connect_refusal_reason (
-    *src, *dest, [] (const dsp::Port &, const dsp::Port &) { return true; });
+    *src, *dest, [] (const dsp::Port &, const dsp::Port &) {
+      return std::optional<utils::RefusalReason>{};
+    });
   EXPECT_FALSE (valid.has_value ());
   EXPECT_TRUE (dest->detached ());
 
   const auto failed = manager_->connect_refusal_reason (
-    *src, *dest, [] (const dsp::Port &, const dsp::Port &) -> bool {
+    *src, *dest,
+    [] (const dsp::Port &, const dsp::Port &)
+      -> std::optional<utils::RefusalReason> {
       throw std::runtime_error ("graph build failed");
     });
   ASSERT_TRUE (failed.has_value ());
+  EXPECT_EQ (failed->kind, utils::RefusalKind::Unavailable);
   EXPECT_NE (
-    failed->view ().find ("could not be validated"), std::string_view::npos);
+    failed->text.view ().find ("could not be validated"),
+    std::string_view::npos);
   EXPECT_TRUE (dest->detached ());
 }
 
@@ -310,11 +332,14 @@ TEST_F (PortConnectionsManagerReasonTest, EditStatesMissingAndLockedReasons)
   const auto missing = manager_->edit_refusal_reason (
     *dest, *src); // no connection in this direction
   ASSERT_TRUE (missing.has_value ());
-  EXPECT_NE (missing->view ().find ("no connection"), std::string_view::npos);
+  EXPECT_EQ (missing->kind, utils::RefusalKind::NotFound);
+  EXPECT_NE (
+    missing->text.view ().find ("no connection"), std::string_view::npos);
 
   const auto locked = manager_->edit_refusal_reason (*src, *locked_dest);
   ASSERT_TRUE (locked.has_value ());
-  EXPECT_NE (locked->view ().find ("locked"), std::string_view::npos);
+  EXPECT_EQ (locked->kind, utils::RefusalKind::Unsupported);
+  EXPECT_NE (locked->text.view ().find ("locked"), std::string_view::npos);
 
   EXPECT_FALSE (manager_->edit_refusal_reason (*src, *dest).has_value ());
 }
@@ -345,22 +370,27 @@ TEST_F (PortConnectionsManagerReasonTest, MultiplierStatesTypeAndRangeReasons)
   const auto cv_range =
     manager_->multiplier_refusal_reason (*src, *cv_dest, 1.5);
   ASSERT_TRUE (cv_range.has_value ());
+  EXPECT_EQ (cv_range->kind, utils::RefusalKind::OutOfRange);
   EXPECT_NE (
-    cv_range->view ().find ("between -1 and 1"), std::string_view::npos);
+    cv_range->text.view ().find ("between -1 and 1"), std::string_view::npos);
 
   const auto audio_range =
     manager_->multiplier_refusal_reason (*src, *audio_dest, 2.5);
   ASSERT_TRUE (audio_range.has_value ());
+  EXPECT_EQ (audio_range->kind, utils::RefusalKind::OutOfRange);
   EXPECT_NE (
-    audio_range->view ().find ("between -2 and 2"), std::string_view::npos);
+    audio_range->text.view ().find ("between -2 and 2"), std::string_view::npos);
 
   const auto midi = manager_->multiplier_refusal_reason (*src, *midi_dest, 0.5);
   ASSERT_TRUE (midi.has_value ());
-  EXPECT_NE (midi->view ().find ("MIDI"), std::string_view::npos);
+  EXPECT_EQ (midi->kind, utils::RefusalKind::Unsupported);
+  EXPECT_NE (midi->text.view ().find ("MIDI"), std::string_view::npos);
 
   const auto missing = manager_->multiplier_refusal_reason (*cv_dest, *src, 0.5);
   ASSERT_TRUE (missing.has_value ());
-  EXPECT_NE (missing->view ().find ("no connection"), std::string_view::npos);
+  EXPECT_EQ (missing->kind, utils::RefusalKind::NotFound);
+  EXPECT_NE (
+    missing->text.view ().find ("no connection"), std::string_view::npos);
 }
 
 } // namespace zrythm::structure::project

@@ -4,6 +4,9 @@
 #pragma once
 
 #include <functional>
+#include <optional>
+
+#include "utils/refusal.h"
 
 #include <QUuid>
 
@@ -37,30 +40,29 @@ class UndoStack;
 namespace zrythm::utils
 {
 class IObjectRegistry;
-}
+} // namespace zrythm::utils
 
 namespace zrythm::operations
 {
 
 /**
- * Answers whether a channel send's output may be wired to a
+ * Answers why a channel send's output may not be wired to a
  * destination port in the processing graph.
  *
- * Returns false when the wiring is invalid or would close a signal
- * loop.
+ * Returns no value when the wiring is allowed.
  */
-using SendConnectivityQuery = std::function<
-  bool (const structure::tracks::ChannelSend &, const dsp::Port &)>;
+using SendConnectivityQuery = std::function<std::optional<utils::RefusalReason> (
+  const structure::tracks::ChannelSend &,
+  const dsp::Port &)>;
 
 /**
- * Answers whether two ports may be wired together in the processing
+ * Answers why two ports may not be wired together in the processing
  * graph.
  *
- * Returns false when the wiring is invalid or would close a signal
- * loop.
+ * Returns no value when the wiring is allowed.
  */
-using PortConnectivityQuery =
-  std::function<bool (const dsp::Port &, const dsp::Port &)>;
+using PortConnectivityQuery = std::function<
+  std::optional<utils::RefusalReason> (const dsp::Port &, const dsp::Port &)>;
 
 /**
  * The session-scoped services operations act on.
@@ -101,24 +103,25 @@ public:
   dsp::Transport * transport () const;
 
   /**
-   * Returns whether @p send's output may be wired to @p destination in
-   * the processing graph.
+   * Returns why @p send's output may not be wired to @p destination in
+   * the processing graph, or no value when it may.
    *
    * Sessions without a connectivity query accept every wiring; the
    * static eligibility checks in ChannelSendRouting still apply.
    */
-  bool can_connect_send_destination (
+  std::optional<utils::RefusalReason> send_destination_refusal_reason (
     const structure::tracks::ChannelSend &send,
     const dsp::Port                      &destination) const;
 
   /**
-   * Returns whether @p src may be wired to @p dest in the processing
-   * graph.
+   * Returns why @p src may not be wired to @p dest in the processing
+   * graph, or no value when it may.
    *
    * Sessions without a connectivity query accept every wiring; the
    * static eligibility checks in PortConnectionsManager still apply.
    */
-  bool can_connect_ports (const dsp::Port &src, const dsp::Port &dest) const;
+  std::optional<utils::RefusalReason>
+  port_wiring_refusal_reason (const dsp::Port &src, const dsp::Port &dest) const;
 
   /**
    * Returns the track with the given UUID if it is part of the project's

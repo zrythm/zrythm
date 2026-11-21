@@ -109,8 +109,8 @@ protected:
       *project_->port_connections_manager_, project_->getTransport (),
       operations::SendConnectivityQuery{},
       [this] (const dsp::Port &src, const dsp::Port &dest) {
-        return structure::project::ProjectGraphBuilder::can_ports_be_connected (
-          *project_, src, dest);
+        return structure::project::ProjectGraphBuilder::
+          port_wiring_refusal_reason (*project_, src, dest);
       });
     dispatcher_ = std::make_unique<operations::OperationDispatcher> (
       registry_, *environment_);

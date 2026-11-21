@@ -18,6 +18,7 @@
 #include "utils/color.h"
 #include "utils/enum_utils.h"
 #include "utils/iobject_registry.h"
+#include "utils/refusal.h"
 #include "utils/utf8_string.h"
 
 #include <QStringDecoder>
@@ -104,13 +105,17 @@ resolve_registry_object (
   if (uuid.isNull ())
     {
       return std::unexpected (
-        Refusal{ fmt::format ("'{}' is not a UUID", uuid_string) });
+        Refusal{
+          utils::RefusalKind::InvalidParameter,
+          fmt::format ("'{}' is not a UUID", uuid_string) });
     }
   auto * object = qobject_cast<T *> (registry.find_by_raw_uuid (uuid));
   if (object == nullptr)
     {
       return std::unexpected (
-        Refusal{ fmt::format ("no {} with UUID {}", type_label, uuid_string) });
+        Refusal{
+          utils::RefusalKind::NotFound,
+          fmt::format ("no {} with UUID {}", type_label, uuid_string) });
     }
   return object;
 }
@@ -139,16 +144,20 @@ public:
   {
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_string ())
       {
-        return std::unexpected (Refusal{ "expected a string" });
+        return std::unexpected (
+          Refusal{ utils::RefusalKind::InvalidParameter, "expected a string" });
       }
     const auto str = value.get<std::string> ();
     if (!is_valid_utf8 (str))
       {
-        return std::unexpected (Refusal{ "not valid UTF-8" });
+        return std::unexpected (
+          Refusal{ utils::RefusalKind::InvalidParameter, "not valid UTF-8" });
       }
     return from_value (utils::Utf8String::from_utf8_encoded_string (str));
   }
@@ -161,8 +170,10 @@ public:
     if (length < MinLength || length > MaxLength)
       {
         return std::unexpected (
-          Refusal{ fmt::format (
-            "length must be between {} and {} bytes", MinLength, MaxLength) });
+          Refusal{
+            utils::RefusalKind::OutOfRange,
+            fmt::format (
+              "length must be between {} and {} bytes", MinLength, MaxLength) });
       }
     return StringParam{ std::move (value) };
   }
@@ -199,12 +210,16 @@ public:
   {
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_string ())
       {
         return std::unexpected (
-          Refusal{ "expected a color string like \"#rrggbb\"" });
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            "expected a color string like \"#rrggbb\"" });
       }
     const auto str = value.get<std::string> ();
     const auto digit = [] (char c) {
@@ -217,8 +232,12 @@ public:
     if (!valid)
       {
         return std::unexpected (
-          Refusal{ fmt::format (
-            "invalid color '{}': expected \"#rrggbb\" or \"#rrggbbaa\"", str) });
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            fmt::format (
+              "invalid color '{}': expected \"#rrggbb\" or "
+              "\"#rrggbbaa\"",
+              str) });
       }
     return HexColorParam{ utils::Color (std::string_view{ str }) };
   }
@@ -279,14 +298,18 @@ public:
     }();
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_string ())
       {
         return std::unexpected (
-          Refusal{ fmt::format (
-            "expected a name (one of: {}), got {}", allowed_names,
-            value.dump ()) });
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            fmt::format (
+              "expected a name (one of: {}), got {}", allowed_names,
+              value.dump ()) });
       }
     const auto str = value.get<std::string> ();
     const auto parsed = magic_enum::enum_cast<Enum> (str);
@@ -295,7 +318,9 @@ public:
         return EnumParam{ *parsed };
       }
     return std::unexpected (
-      Refusal{ fmt::format ("'{}' is not one of: {}", str, allowed_names) });
+      Refusal{
+        utils::RefusalKind::InvalidParameter,
+        fmt::format ("'{}' is not one of: {}", str, allowed_names) });
   }
 
   /** Rejects enumerator values that are not part of the enumeration. */
@@ -305,7 +330,10 @@ public:
       {
         return EnumParam{ value };
       }
-    return std::unexpected (Refusal{ "not one of this enumeration's values" });
+    return std::unexpected (
+      Refusal{
+        utils::RefusalKind::InvalidParameter,
+        "not one of this enumeration's values" });
   }
 
   Enum value () const { return value_; }
@@ -350,10 +378,21 @@ public:
     if (!value.is_number_integer () && !value.is_number_unsigned ())
       {
         return std::unexpected (
-          Refusal{ fmt::format (
-            "expected an integer between {} and {}", minimum, maximum) });
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            fmt::format (
+              "expected an integer between {} and {}", minimum, maximum) });
       }
     const auto number = value.get<std::int64_t> ();
+    // Check before narrowing: values outside int's range would otherwise
+    // wrap into it
+    if (number < minimum || number > maximum)
+      {
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::OutOfRange,
+            fmt::format ("must be between {} and {}", minimum, maximum) });
+      }
     return from_value (static_cast<int> (number));
   }
 
@@ -363,7 +402,9 @@ public:
     if (value < minimum || value > maximum)
       {
         return std::unexpected (
-          Refusal{ fmt::format ("must be between {} and {}", minimum, maximum) });
+          Refusal{
+            utils::RefusalKind::OutOfRange,
+            fmt::format ("must be between {} and {}", minimum, maximum) });
       }
     return LimitParam{ value };
   }
@@ -397,11 +438,15 @@ public:
   {
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_boolean ())
       {
-        return std::unexpected (Refusal{ "expected true or false" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::InvalidParameter, "expected true or false" });
       }
     return from_value (value.get<bool> ());
   }
@@ -443,11 +488,14 @@ public:
   {
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_number ())
       {
-        return std::unexpected (Refusal{ "expected a number" });
+        return std::unexpected (
+          Refusal{ utils::RefusalKind::InvalidParameter, "expected a number" });
       }
     return from_value (value.get<double> ());
   }
@@ -458,7 +506,9 @@ public:
     if (value < Min || value > Max)
       {
         return std::unexpected (
-          Refusal{ fmt::format ("must be between {} and {}", Min, Max) });
+          Refusal{
+            utils::RefusalKind::OutOfRange,
+            fmt::format ("must be between {} and {}", Min, Max) });
       }
     return BoundedFloatParam{ value };
   }
@@ -496,11 +546,16 @@ public:
   {
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_string ())
       {
-        return std::unexpected (Refusal{ "expected the send UUID as a string" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            "expected the send UUID as a string" });
       }
     const auto str = value.get<std::string> ();
     auto       send = resolve_registry_object<structure::tracks::ChannelSend> (
@@ -521,7 +576,10 @@ public:
   {
     if (send == nullptr)
       {
-        return std::unexpected (Refusal{ "the channel send is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter,
+            "the channel send is required" });
       }
     return SendParam{
       send, uuid_to_string (type_safe::get (send->get_uuid ()))
@@ -568,11 +626,16 @@ public:
   {
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_string ())
       {
-        return std::unexpected (Refusal{ "expected the port UUID as a string" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            "expected the port UUID as a string" });
       }
     const auto str = value.get<std::string> ();
     auto       port = resolve_registry_object<dsp::AudioPort> (
@@ -593,7 +656,9 @@ public:
   {
     if (port == nullptr)
       {
-        return std::unexpected (Refusal{ "the audio port is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "the audio port is required" });
       }
     return AudioPortParam{
       port, uuid_to_string (type_safe::get (port->get_uuid ()))
@@ -640,11 +705,16 @@ public:
   {
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_string ())
       {
-        return std::unexpected (Refusal{ "expected the port UUID as a string" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            "expected the port UUID as a string" });
       }
     const auto str = value.get<std::string> ();
     auto       port =
@@ -664,7 +734,9 @@ public:
   {
     if (port == nullptr)
       {
-        return std::unexpected (Refusal{ "the port is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "the port is required" });
       }
     return PortParam{
       port, uuid_to_string (type_safe::get (port->get_uuid ()))
@@ -711,12 +783,16 @@ public:
   {
     if (value.is_null ())
       {
-        return std::unexpected (Refusal{ "this parameter is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
       }
     if (!value.is_string ())
       {
         return std::unexpected (
-          Refusal{ "expected the track UUID as a string" });
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            "expected the track UUID as a string" });
       }
     const auto str = value.get<std::string> ();
     const auto uuid =
@@ -724,13 +800,17 @@ public:
     if (uuid.isNull ())
       {
         return std::unexpected (
-          Refusal{ fmt::format ("'{}' is not a UUID", str) });
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            fmt::format ("'{}' is not a UUID", str) });
       }
     auto * track = env.find_track (uuid);
     if (track == nullptr)
       {
         return std::unexpected (
-          Refusal{ fmt::format ("no track with UUID {}", str) });
+          Refusal{
+            utils::RefusalKind::NotFound,
+            fmt::format ("no track with UUID {}", str) });
       }
     return TrackParam{ track, str };
   }
@@ -744,7 +824,9 @@ public:
   {
     if (track == nullptr)
       {
-        return std::unexpected (Refusal{ "the track is required" });
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "the track is required" });
       }
     return TrackParam{
       track, uuid_to_string (type_safe::get (track->get_uuid ()))

@@ -96,26 +96,26 @@ OperationEnvironment::transport () const
   return transport_;
 }
 
-bool
-OperationEnvironment::can_connect_send_destination (
+std::optional<utils::RefusalReason>
+OperationEnvironment::send_destination_refusal_reason (
   const structure::tracks::ChannelSend &send,
   const dsp::Port                      &destination) const
 {
   if (!send_connectivity_query_)
     {
-      return true;
+      return std::nullopt;
     }
   return send_connectivity_query_ (send, destination);
 }
 
-bool
-OperationEnvironment::can_connect_ports (
+std::optional<utils::RefusalReason>
+OperationEnvironment::port_wiring_refusal_reason (
   const dsp::Port &src,
   const dsp::Port &dest) const
 {
   if (!port_connectivity_query_)
     {
-      return true;
+      return std::nullopt;
     }
   return port_connectivity_query_ (src, dest);
 }

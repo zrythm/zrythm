@@ -1098,7 +1098,7 @@ TEST_F (ModularProjectModelTest, ConnectPortsOperatorRoundTripProducesEdge)
     *project->tracklist ()->singletonTracks (),
     *project->port_connections_manager_, project->getTransport (), {},
     [&project] (const dsp::Port &src, const dsp::Port &dest) {
-      return structure::project::ProjectGraphBuilder::can_ports_be_connected (
+      return structure::project::ProjectGraphBuilder::port_wiring_refusal_reason (
         *project, src, dest);
     });
   operations::OperationDispatcher dispatcher (op_registry, environment);

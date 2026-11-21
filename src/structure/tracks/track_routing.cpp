@@ -54,14 +54,16 @@ TrackRouting::canRouteTo (const Track * source, const Track * destination) const
   return !route_refusal_reason (source, destination).has_value ();
 }
 
-std::optional<utils::Utf8String>
+std::optional<utils::RefusalReason>
 TrackRouting::route_refusal_reason (
   const Track * source,
   const Track * destination) const
 {
   // Null source cannot be routed
   if (source == nullptr)
-    return utils::Utf8String{ u8"no source track" };
+    return utils::RefusalReason{
+      utils::RefusalKind::NotFound, utils::Utf8String{ u8"no source track" }
+    };
 
   // Null destination means "unroute" - always valid if source is valid
   if (destination == nullptr)
@@ -75,21 +77,30 @@ TrackRouting::route_refusal_reason (
 
   // Cannot route a track to itself
   if (source->get_uuid () == destination->get_uuid ())
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("'{}' cannot be routed to itself", track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::InvalidParameter,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("'{}' cannot be routed to itself", track_name (source)))
+    };
 
   // Master track cannot be routed to anything (it routes internally to
   // device output)
   if (source->is_master ())
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "'{}' is the master track and routes to the audio device",
-        track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' is the master track and routes to the audio device",
+          track_name (source)))
+    };
 
   // Destination must be able to be a group target
   if (!destination->can_be_group_target ())
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("'{}' cannot be a routing target", track_name (destination)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("'{}' cannot be a routing target", track_name (destination)))
+    };
 
   // Check for circular routes - follow destination's output chain
   // to see if it eventually leads back to source
@@ -101,10 +112,13 @@ TrackRouting::route_refusal_reason (
         break; // No more routes in chain
 
       if (output_it->second == source->get_uuid ())
-        return utils::Utf8String::from_utf8_encoded_string (
-          fmt::format (
-            "routing '{}' to '{}' would create a cycle", track_name (source),
-            track_name (destination)));
+        return utils::RefusalReason{
+          utils::RefusalKind::CyclicRoute,
+          utils::Utf8String::from_utf8_encoded_string (
+            fmt::format (
+              "routing '{}' to '{}' would create a cycle", track_name (source),
+              track_name (destination)))
+        };
 
       current_uuid = output_it->second;
     }
@@ -124,11 +138,14 @@ TrackRouting::route_refusal_reason (
           })
           .value_or ("no signal");
       };
-      return utils::Utf8String::from_utf8_encoded_string (
-        fmt::format (
-          "'{}' outputs {} but '{}' takes {}", track_name (source),
-          type_name (source_out_type), track_name (destination),
-          type_name (dest_in_type)));
+      return utils::RefusalReason{
+        utils::RefusalKind::TypeMismatch,
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "'{}' outputs {} but '{}' takes {}", track_name (source),
+            type_name (source_out_type), track_name (destination),
+            type_name (dest_in_type)))
+      };
     }
 
   return std::nullopt;

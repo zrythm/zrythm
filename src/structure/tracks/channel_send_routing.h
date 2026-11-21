@@ -10,6 +10,7 @@
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/refusal.h"
 #include "utils/utf8_string.h"
 
 #include <QObject>
@@ -30,8 +31,8 @@ namespace zrythm::structure::tracks
  * The service owns no data; it reads the track collection it is
  * constructed with. It performs static eligibility checks only: whether
  * a proposed send would close a signal loop is answered by the
- * processing graph (ProjectGraphBuilder::can_ports_be_connected()), the
- * single source of truth for connectivity.
+ * processing graph (ProjectGraphBuilder::port_wiring_refusal_reason()),
+ * the single source of truth for connectivity.
  */
 class ChannelSendRouting : public QObject
 {
@@ -85,7 +86,7 @@ public:
    * @brief Returns why @p source's channel may not send to @p
    * destination, or nullopt when it may.
    */
-  std::optional<utils::Utf8String>
+  std::optional<utils::RefusalReason>
   send_to_track_refusal_reason (const Track &source, const Track &destination)
     const;
 
@@ -93,7 +94,7 @@ public:
    * @brief Returns why @p source's channel may not send to the sidechain
    * input @p destination, or nullopt when it may.
    */
-  std::optional<utils::Utf8String> send_to_port_refusal_reason (
+  std::optional<utils::RefusalReason> send_to_port_refusal_reason (
     const Track          &source,
     const dsp::AudioPort &destination) const;
 

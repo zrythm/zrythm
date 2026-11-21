@@ -1,10 +1,13 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include <optional>
+
 #include "dsp/graph_builder.h"
 #include "dsp/port.h"
+#include "utils/refusal.h"
 
 namespace zrythm::dsp
 {
@@ -30,13 +33,13 @@ public:
   }
 
   /**
-   * Adds a new connection for the given src and dest ports and validates the
-   * graph.
+   * Returns why the given ports cannot be wired together in the
+   * processing graph, or no value when they can.
    *
-   * @return Whether the ports can be connected (if the connection will
-   * be valid and won't break the acyclicity of the graph).
+   * Refuses a port that has no node in the processing graph, and a
+   * wiring that would break the graph's acyclicity.
    */
-  static bool can_ports_be_connected (
+  static std::optional<utils::RefusalReason> port_wiring_refusal_reason (
     Project         &project,
     const dsp::Port &src,
     const dsp::Port &dest);

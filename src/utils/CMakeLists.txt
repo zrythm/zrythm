@@ -91,6 +91,7 @@ target_sources(zrythm_utils_lib
       qt.h
       raii_utils.h
       ranges.h
+      refusal.h
       resampler.h
       ring_buffer.h
       rt_logger.h

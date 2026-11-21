@@ -27,6 +27,7 @@
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/enum_utils.h"
+#include "utils/refusal.h"
 #include "utils/utf8_string.h"
 
 #include "operations/operation_context.h"
@@ -201,7 +202,7 @@ track_route_operation ()
         routing.route_refusal_reason (track.value (), target.value ());
       if (refusal.has_value ())
         {
-          return ctx.refused (std::string (refusal->view ()));
+          return ctx.refused (*refusal);
         }
       const auto current_target =
         routing.get_output_track (track.value ()->get_uuid ());
@@ -250,12 +251,16 @@ track_unroute_operation ()
  * Returns the send group of the track's channel when the send belongs
  * to it, or the refusal reason otherwise.
  */
-inline std::expected<structure::tracks::ChannelSendGroup *, std::string>
+inline std::expected<structure::tracks::ChannelSendGroup *, utils::RefusalReason>
 send_group_owning (TrackParam track, SendParam send)
 {
   if (track.value ()->channel () == nullptr)
     {
-      return std::unexpected (std::string{ "this track has no channel" });
+      return std::unexpected (
+        utils::RefusalReason{
+          utils::RefusalKind::Unsupported,
+          utils::Utf8String::from_utf8_encoded_string (
+            "this track has no channel") });
     }
   auto       &group = *track.value ()->channel ()->sends ();
   const auto &sends = group.get_sends ();
@@ -265,7 +270,10 @@ send_group_owning (TrackParam track, SendParam send)
   if (owned == sends.end ())
     {
       return std::unexpected (
-        std::string{ "the send does not belong to this track" });
+        utils::RefusalReason{
+          utils::RefusalKind::InvalidState,
+          utils::Utf8String::from_utf8_encoded_string (
+            "the send does not belong to this track") });
     }
   return &group;
 }
@@ -288,7 +296,9 @@ track_add_send_operation ()
       -> OperationReport {
       if (track.value ()->channel () == nullptr)
         {
-          return ctx.refused ("this track has no channel to add a send to");
+          return ctx.refused (
+            utils::RefusalKind::Unsupported,
+            "this track has no channel to add a send to");
         }
       auto &group = *track.value ()->channel ()->sends ();
       ctx.push_command (
@@ -403,13 +413,14 @@ track_set_send_target_track_operation ()
         *track.value (), *target_track.value ());
       if (refusal.has_value ())
         {
-          return ctx.refused (std::string (refusal->view ()));
+          return ctx.refused (*refusal);
         }
       const auto dest_port =
         routing.destination_port_for_track (*target_track.value ());
       if (!dest_port.has_value ())
         {
           return ctx.refused (
+            utils::RefusalKind::Unsupported,
             "the destination track has no input port to send to");
         }
       const auto current = send.value ()->destination_port ();
@@ -417,11 +428,12 @@ track_set_send_target_track_operation ()
         {
           return ctx.applied ();
         }
-      if (!ctx.environment ().can_connect_send_destination (
-            *send.value (), *dest_port->get ()))
+      const auto wiring_refusal =
+        ctx.environment ().send_destination_refusal_reason (
+          *send.value (), *dest_port->get ());
+      if (wiring_refusal.has_value ())
         {
-          return ctx.refused (
-            "that destination would close a signal loop or cannot be wired");
+          return ctx.refused (*wiring_refusal);
         }
       ctx.push_command (
         std::make_unique<commands::RouteChannelSendCommand> (
@@ -464,7 +476,7 @@ track_set_send_target_port_operation ()
         *track.value (), *target_port.value ());
       if (refusal.has_value ())
         {
-          return ctx.refused (std::string (refusal->view ()));
+          return ctx.refused (*refusal);
         }
       const auto current = send.value ()->destination_port ();
       if (
@@ -473,11 +485,12 @@ track_set_send_target_port_operation ()
         {
           return ctx.applied ();
         }
-      if (!ctx.environment ().can_connect_send_destination (
-            *send.value (), *target_port.value ()))
+      const auto wiring_refusal =
+        ctx.environment ().send_destination_refusal_reason (
+          *send.value (), *target_port.value ());
+      if (wiring_refusal.has_value ())
         {
-          return ctx.refused (
-            "that destination would close a signal loop or cannot be wired");
+          return ctx.refused (*wiring_refusal);
         }
       ctx.push_command (
         std::make_unique<commands::RouteChannelSendCommand> (
@@ -544,6 +557,7 @@ track_add_operation ()
       if (!Track::type_is_deletable (type.value ()))
         {
           return ctx.refused (
+            utils::RefusalKind::Unsupported,
             fmt::format (
               "track type '{}' is a singleton and cannot be added",
               ENUM_NAME (type.value ())));
@@ -561,7 +575,9 @@ track_add_operation ()
         track_ref.get ()->output_signal_type () == dsp::PortType::Audio;
       if (routes_to_master && env.singleton_tracks ().masterTrack () == nullptr)
         {
-          return ctx.refused ("this session has no master track to route to");
+          return ctx.refused (
+            utils::RefusalKind::Unavailable,
+            "this session has no master track to route to");
         }
       {
         undo::UndoStack::ScopedMacro macro (

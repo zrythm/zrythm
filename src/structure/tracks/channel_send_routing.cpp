@@ -129,7 +129,7 @@ ChannelSendRouting::can_send_to_track (
   return !send_to_track_refusal_reason (source, destination).has_value ();
 }
 
-std::optional<utils::Utf8String>
+std::optional<utils::RefusalReason>
 ChannelSendRouting::send_to_track_refusal_reason (
   const Track &source,
   const Track &destination) const
@@ -141,44 +141,62 @@ ChannelSendRouting::send_to_track_refusal_reason (
   };
 
   if (source.channel () == nullptr)
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("'{}' has no channel to send from", track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("'{}' has no channel to send from", track_name (source)))
+    };
 
   if (destination.channel () == nullptr)
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "'{}' has no channel to receive sends", track_name (destination)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' has no channel to receive sends", track_name (destination)))
+    };
 
   // The master channel routes to the device and cannot source sends
   if (source.is_master ())
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "'{}' is the master track and routes to the audio device",
-        track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' is the master track and routes to the audio device",
+          track_name (source)))
+    };
 
   if (&source == &destination)
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("'{}' cannot send to itself", track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::InvalidParameter,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("'{}' cannot send to itself", track_name (source)))
+    };
 
   if (!Track::type_can_be_send_target (destination.type ()))
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("'{}' cannot be a send target", track_name (destination)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("'{}' cannot be a send target", track_name (destination)))
+    };
 
   const auto source_type =
     source.channel ()->is_audio () ? dsp::PortType::Audio : dsp::PortType::Midi;
   const auto dest_type = destination.input_signal_type ();
   if (!dest_type.has_value () || *dest_type != source_type)
     {
-      return utils::Utf8String::from_utf8_encoded_string (
-        fmt::format (
-          "'{}' outputs {} but '{}' takes {}", track_name (source),
-          std::string (magic_enum::enum_name (source_type)),
-          track_name (destination),
-          dest_type
-            .transform ([] (auto type) {
-              return std::string (magic_enum::enum_name (type));
-            })
-            .value_or ("no signal")));
+      return utils::RefusalReason{
+        utils::RefusalKind::TypeMismatch,
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "'{}' outputs {} but '{}' takes {}", track_name (source),
+            std::string (magic_enum::enum_name (source_type)),
+            track_name (destination),
+            dest_type
+              .transform ([] (auto type) {
+                return std::string (magic_enum::enum_name (type));
+              })
+              .value_or ("no signal")))
+      };
     }
 
   return std::nullopt;
@@ -192,7 +210,7 @@ ChannelSendRouting::can_send_to_port (
   return !send_to_port_refusal_reason (source, destination).has_value ();
 }
 
-std::optional<utils::Utf8String>
+std::optional<utils::RefusalReason>
 ChannelSendRouting::send_to_port_refusal_reason (
   const Track          &source,
   const dsp::AudioPort &destination) const
@@ -202,40 +220,57 @@ ChannelSendRouting::send_to_port_refusal_reason (
   };
 
   if (source.channel () == nullptr)
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("'{}' has no channel to send from", track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("'{}' has no channel to send from", track_name (source)))
+    };
 
   if (!destination.is_input ())
-    return utils::Utf8String{ u8"the destination port is not an input port" };
+    return utils::RefusalReason{
+      utils::RefusalKind::InvalidParameter,
+      utils::Utf8String{ u8"the destination port is not an input port" }
+    };
 
   // The master channel routes to the device and cannot source sends
   if (source.is_master ())
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "'{}' is the master track and routes to the audio device",
-        track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' is the master track and routes to the audio device",
+          track_name (source)))
+    };
 
   if (destination.purpose () != dsp::AudioPort::Purpose::Sidechain)
-    return utils::Utf8String{
-      u8"the destination port is not a sidechain input"
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String{ u8"the destination port is not a sidechain input" }
     };
 
   // Sidechain ports are audio, so the source must be an audio channel
   if (!source.channel ()->is_audio ())
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "'{}' has no audio channel to send to a sidechain from",
-        track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' has no audio channel to send to a sidechain from",
+          track_name (source)))
+    };
 
   const auto owner = resolve_port_owner (destination.get_uuid ());
   if (!owner.has_value () || owner->plugin == nullptr)
-    return utils::Utf8String{
-      u8"the destination port is not a plugin sidechain input"
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String{ u8"the destination port is not a plugin sidechain input" }
     };
 
   if (owner->track == &source)
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("'{}' cannot send to its own plugins", track_name (source)));
+    return utils::RefusalReason{
+      utils::RefusalKind::CyclicRoute,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("'{}' cannot send to its own plugins", track_name (source)))
+    };
 
   return std::nullopt;
 }

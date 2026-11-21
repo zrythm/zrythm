@@ -29,7 +29,8 @@ transport_set_play_state_operation ()
       auto * transport = ctx.environment ().transport ();
       if (transport == nullptr)
         {
-          return ctx.refused ("this session has no transport");
+          return ctx.refused (
+            utils::RefusalKind::Unavailable, "this session has no transport");
         }
       transport->setPlayState (state.value ());
       return ctx.applied ();

@@ -239,35 +239,46 @@ PortConnectionsManager::get_connection (
   return it != connections_.end () ? it->get () : nullptr;
 }
 
-std::optional<utils::Utf8String>
+std::optional<utils::RefusalReason>
 PortConnectionsManager::connect_refusal_reason (
   const dsp::Port         &src,
   dsp::Port               &dest,
   const ConnectivityQuery &graph_query) const
 {
   if (&src == &dest)
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format ("'{}' cannot be connected to itself", src.get_label ()));
+    return utils::RefusalReason{
+      utils::RefusalKind::InvalidParameter,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format ("'{}' cannot be connected to itself", src.get_label ()))
+    };
 
   if (!src.is_output () || !dest.is_input ())
-    return utils::Utf8String{
-      u8"connections must go from an output port to an input port"
+    return utils::RefusalReason{
+      utils::RefusalKind::InvalidParameter,
+      utils::Utf8String{
+        u8"connections must go from an output port to an input port" }
     };
 
   if (src.type () != dest.type ())
     {
-      return utils::Utf8String::from_utf8_encoded_string (
-        fmt::format (
-          "'{}' outputs {} but '{}' takes {}", src.get_label (),
-          std::string (magic_enum::enum_name (src.type ())), dest.get_label (),
-          std::string (magic_enum::enum_name (dest.type ()))));
+      return utils::RefusalReason{
+        utils::RefusalKind::TypeMismatch,
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "'{}' outputs {} but '{}' takes {}", src.get_label (),
+            std::string (magic_enum::enum_name (src.type ())), dest.get_label (),
+            std::string (magic_enum::enum_name (dest.type ()))))
+      };
     }
 
   if (connection_exists (src.get_uuid (), dest.get_uuid ()))
-    return utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "'{}' and '{}' are already connected", src.get_label (),
-        dest.get_label ()));
+    return utils::RefusalReason{
+      utils::RefusalKind::AlreadyExists,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' and '{}' are already connected", src.get_label (),
+          dest.get_label ()))
+    };
 
   // Detached destination ports join the validation graph only; the
   // undo command owns the lasting attachment state.
@@ -279,19 +290,19 @@ PortConnectionsManager::connect_refusal_reason (
       dest.set_detached (true);
   };
 
-  const auto graph_refusal = [&] () -> std::optional<utils::Utf8String> {
+  const auto graph_refusal = [&] () -> std::optional<utils::RefusalReason> {
     try
       {
-        if (graph_query (src, dest))
-          return std::nullopt;
-        return utils::Utf8String::from_utf8_encoded_string (
-          "that connection would close a signal loop or cannot be wired");
+        return graph_query (src, dest);
       }
     catch (const std::exception &error)
       {
-        return utils::Utf8String::from_utf8_encoded_string (
-          fmt::format (
-            "the connection could not be validated: {}", error.what ()));
+        return utils::RefusalReason{
+          utils::RefusalKind::Unavailable,
+          utils::Utf8String::from_utf8_encoded_string (
+            fmt::format (
+              "the connection could not be validated: {}", error.what ()))
+        };
       }
   }();
   restore_detached ();
@@ -299,20 +310,26 @@ PortConnectionsManager::connect_refusal_reason (
   return graph_refusal;
 }
 
-std::optional<utils::Utf8String>
+std::optional<utils::RefusalReason>
 PortConnectionsManager::edit_refusal_reason (
   const dsp::Port &src,
   const dsp::Port &dest) const
 {
   const auto * conn = get_connection (src.get_uuid (), dest.get_uuid ());
   if (conn == nullptr)
-    return utils::Utf8String{ u8"no connection exists between these ports" };
+    return utils::RefusalReason{
+      utils::RefusalKind::NotFound,
+      utils::Utf8String{ u8"no connection exists between these ports" }
+    };
   if (conn->locked_)
-    return utils::Utf8String{ u8"the connection is locked" };
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String{ u8"the connection is locked" }
+    };
   return std::nullopt;
 }
 
-std::optional<utils::Utf8String>
+std::optional<utils::RefusalReason>
 PortConnectionsManager::multiplier_refusal_reason (
   const dsp::Port &src,
   const dsp::Port &dest,
@@ -323,16 +340,22 @@ PortConnectionsManager::multiplier_refusal_reason (
     return edit_refusal;
 
   if (dest.type () == dsp::PortType::Midi)
-    return utils::Utf8String{ u8"MIDI connections carry no strength" };
+    return utils::RefusalReason{
+      utils::RefusalKind::Unsupported,
+      utils::Utf8String{ u8"MIDI connections carry no strength" }
+    };
 
   const double max_abs_multiplier =
     dest.type () == dsp::PortType::Audio ? 2.0 : 1.0;
   if (multiplier < -max_abs_multiplier || multiplier > max_abs_multiplier)
     {
-      return utils::Utf8String::from_utf8_encoded_string (
-        fmt::format (
-          "the strength must be between {} and {}", -max_abs_multiplier,
-          max_abs_multiplier));
+      return utils::RefusalReason{
+        utils::RefusalKind::OutOfRange,
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "the strength must be between {} and {}", -max_abs_multiplier,
+            max_abs_multiplier))
+      };
     }
   return std::nullopt;
 }

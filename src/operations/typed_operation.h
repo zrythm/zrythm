@@ -193,6 +193,7 @@ private:
     if (!parsed.has_value ())
       {
         failure = Refusal{
+          parsed.error ().kind,
           fmt::format ("parameter '{}': {}", spec.name, parsed.error ().reason)
         };
         return std::unexpected (*failure);
@@ -214,6 +215,7 @@ private:
     if (!parsed.has_value ())
       {
         failure = Refusal{
+          parsed.error ().kind,
           fmt::format ("parameter '{}': {}", spec.name, parsed.error ().reason)
         };
         return std::unexpected (*failure);
@@ -233,7 +235,7 @@ private:
     };
     if (failure.has_value ())
       {
-        return ctx.refused (std::move (failure->reason));
+        return ctx.refused (failure->kind, std::move (failure->reason));
       }
     return std::apply (
       handler_,
@@ -258,7 +260,7 @@ private:
     };
     if (failure.has_value ())
       {
-        return ctx.refused (std::move (failure->reason));
+        return ctx.refused (failure->kind, std::move (failure->reason));
       }
     return std::apply (
       handler_,

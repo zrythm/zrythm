@@ -508,8 +508,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
     }
 }
 
-bool
-ProjectGraphBuilder::can_ports_be_connected (
+std::optional<utils::RefusalReason>
+ProjectGraphBuilder::port_wiring_refusal_reason (
   Project         &project,
   const dsp::Port &src,
   const dsp::Port &dest)
@@ -524,7 +524,7 @@ ProjectGraphBuilder::can_ports_be_connected (
   /* connect the src/dest if not NULL */
   /* this code is only for creating graphs to test if the connection between
    * src->dest is valid */
-  bool success = std::visit (
+  const bool success = std::visit (
     [&] (auto &&srcp, auto &&destp) {
       auto * node = graph.find_node_for_processable (*srcp);
       z_return_val_if_fail (node, false);
@@ -538,13 +538,29 @@ ProjectGraphBuilder::can_ports_be_connected (
   if (!success)
     {
       z_info ("failed to connect {} to {}", src.get_label (), dest.get_label ());
-      return false;
+      return utils::RefusalReason{
+        utils::RefusalKind::InvalidState,
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "'{}' or '{}' is not part of the processing graph",
+            src.get_label (), dest.get_label ()))
+      };
     }
 
-  bool valid = graph.is_valid ();
+  const bool valid = graph.is_valid ();
 
   z_debug ("valid {}", valid);
 
-  return valid;
+  if (!valid)
+    {
+      return utils::RefusalReason{
+        utils::RefusalKind::CyclicRoute,
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format (
+            "connecting '{}' to '{}' would close a signal loop",
+            src.get_label (), dest.get_label ()))
+      };
+    }
+  return std::nullopt;
 }
 }

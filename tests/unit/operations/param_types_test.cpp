@@ -278,6 +278,12 @@ TEST_F (ParamTypesTest, LimitParamDefaultsWhenAbsentAndValidatesRange)
   EXPECT_FALSE ((
     LimitParam::parse (nlohmann::json (LimitParam::maximum + 1), environment_)
       .has_value ()));
+
+  // A number outside int's range must be refused, not wrapped into it
+  const auto wrapped = LimitParam::parse (
+    nlohmann::json (4294967296LL + LimitParam::maximum), environment_);
+  ASSERT_FALSE (wrapped.has_value ());
+  EXPECT_EQ (wrapped.error ().kind, utils::RefusalKind::OutOfRange);
 }
 
 TEST_F (ParamTypesTest, EnumParamAcceptsKnownNamesAndRefusesUnknown)

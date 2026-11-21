@@ -8,6 +8,8 @@
 #include <string_view>
 #include <vector>
 
+#include "utils/refusal.h"
+
 #include <nlohmann/json.hpp>
 
 namespace zrythm::operations
@@ -30,7 +32,8 @@ enum class OperationKind
 /** Why an operation rejected its input or state. */
 struct Refusal
 {
-  std::string reason;
+  utils::RefusalKind kind;
+  std::string        reason;
 };
 
 enum class OperationStatus
@@ -69,6 +72,9 @@ struct OperationReport
 
   /** Refusal reason or error message; empty when applied. */
   std::string message;
+
+  /** Why the operation refused; meaningful when status is Refused. */
+  utils::RefusalKind refusal_kind = utils::RefusalKind::InvalidParameter;
 
   /** Result payload of a query, or extra data for the caller. */
   nlohmann::json result = nullptr;

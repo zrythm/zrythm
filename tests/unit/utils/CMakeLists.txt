@@ -32,6 +32,7 @@ add_executable(zrythm_utils_unit_tests
   qt_test.cpp
   raii_utils_test.cpp
   ranges_test.cpp
+  refusal_test.cpp
   ring_buffer_test.cpp
   rt_logger_test.cpp
   string_test.cpp

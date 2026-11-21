@@ -69,12 +69,24 @@ public:
     return report;
   }
 
-  /** Builds a refused report; the project is unchanged. */
-  [[nodiscard]] OperationReport refused (std::string reason) const
+  /** Builds a refused report from an operation-local reason string. */
+  [[nodiscard]] OperationReport
+  refused (utils::RefusalKind kind, std::string reason) const
   {
     OperationReport report;
     report.status = OperationStatus::Refused;
+    report.refusal_kind = kind;
     report.message = std::move (reason);
+    return report;
+  }
+
+  /** Builds a refused report from a domain refusal reason. */
+  [[nodiscard]] OperationReport refused (utils::RefusalReason reason) const
+  {
+    OperationReport report;
+    report.status = OperationStatus::Refused;
+    report.refusal_kind = reason.kind;
+    report.message = reason.text.str ();
     return report;
   }
 

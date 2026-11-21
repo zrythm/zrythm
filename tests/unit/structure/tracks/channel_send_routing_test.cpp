@@ -240,14 +240,16 @@ TEST_F (ChannelSendRoutingTest, RefusalReasonsNameTheCheckThatFailed)
   const auto self =
     routing_->send_to_track_refusal_reason (*source.get (), *source.get ());
   ASSERT_TRUE (self.has_value ());
+  EXPECT_EQ (self->kind, utils::RefusalKind::InvalidParameter);
   EXPECT_NE (
-    self->view ().find ("cannot send to itself"), std::string_view::npos);
+    self->text.view ().find ("cannot send to itself"), std::string_view::npos);
 
   const auto mismatch =
     routing_->send_to_track_refusal_reason (*source.get (), *midi_group.get ());
   ASSERT_TRUE (mismatch.has_value ());
+  EXPECT_EQ (mismatch->kind, utils::RefusalKind::TypeMismatch);
   EXPECT_NE (
-    mismatch->view ().find ("outputs Audio but"), std::string_view::npos);
+    mismatch->text.view ().find ("outputs Audio but"), std::string_view::npos);
 
   auto plugin_ref =
     utils::create_object<plugins::SidechainTestPlugin> (registry_, registry_);
@@ -260,14 +262,17 @@ TEST_F (ChannelSendRoutingTest, RefusalReasonsNameTheCheckThatFailed)
   const auto not_sidechain =
     routing_->send_to_port_refusal_reason (*source.get (), *main_in);
   ASSERT_TRUE (not_sidechain.has_value ());
+  EXPECT_EQ (not_sidechain->kind, utils::RefusalKind::Unsupported);
   EXPECT_NE (
-    not_sidechain->view ().find ("not a sidechain input"),
+    not_sidechain->text.view ().find ("not a sidechain input"),
     std::string_view::npos);
 
   const auto own_plugin =
     routing_->send_to_port_refusal_reason (*audio_group.get (), *sidechain_in);
   ASSERT_TRUE (own_plugin.has_value ());
-  EXPECT_NE (own_plugin->view ().find ("own plugins"), std::string_view::npos);
+  EXPECT_EQ (own_plugin->kind, utils::RefusalKind::CyclicRoute);
+  EXPECT_NE (
+    own_plugin->text.view ().find ("own plugins"), std::string_view::npos);
 
   // allowed pairings carry no reason
   EXPECT_FALSE (

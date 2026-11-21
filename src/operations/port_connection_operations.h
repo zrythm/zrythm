@@ -32,11 +32,11 @@ port_connect_operation ()
       const auto refusal = manager.connect_refusal_reason (
         *source.value (), *destination.value (),
         [&ctx] (const dsp::Port &src, const dsp::Port &dest) {
-          return ctx.environment ().can_connect_ports (src, dest);
+          return ctx.environment ().port_wiring_refusal_reason (src, dest);
         });
       if (refusal.has_value ())
         {
-          return ctx.refused (std::string (refusal->view ()));
+          return ctx.refused (*refusal);
         }
       ctx.push_command (
         std::make_unique<commands::AddPortConnectionCommand> (
@@ -69,7 +69,7 @@ port_disconnect_operation ()
         manager.edit_refusal_reason (*source.value (), *destination.value ());
       if (refusal.has_value ())
         {
-          return ctx.refused (std::string (refusal->view ()));
+          return ctx.refused (*refusal);
         }
       ctx.push_command (
         std::make_unique<commands::RemovePortConnectionCommand> (
@@ -110,7 +110,7 @@ port_set_connection_multiplier_operation ()
         *source.value (), *destination.value (), multiplier.value ());
       if (refusal.has_value ())
         {
-          return ctx.refused (std::string (refusal->view ()));
+          return ctx.refused (*refusal);
         }
       const auto   value = static_cast<float> (multiplier.value ());
       const auto * conn = manager.get_connection (
@@ -155,7 +155,7 @@ port_set_connection_enabled_operation ()
         manager.edit_refusal_reason (*source.value (), *destination.value ());
       if (refusal.has_value ())
         {
-          return ctx.refused (std::string (refusal->view ()));
+          return ctx.refused (*refusal);
         }
       const auto * conn = manager.get_connection (
         source.value ()->get_uuid (), destination.value ()->get_uuid ());

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/tracks/track.h"
+#include "utils/refusal.h"
 
 namespace zrythm::structure::tracks
 {
@@ -61,7 +62,7 @@ public:
    * @param destination The destination track.
    * @return The refusal reason, or no value when routing is allowed.
    */
-  std::optional<utils::Utf8String>
+  std::optional<utils::RefusalReason>
   route_refusal_reason (const Track * source, const Track * destination) const;
 
   /**
