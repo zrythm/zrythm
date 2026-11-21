@@ -3,6 +3,7 @@
 
 #include <array>
 #include <atomic>
+#include <chrono>
 #include <latch>
 #include <ranges>
 #include <semaphore>
@@ -246,8 +247,9 @@ TEST_F (ForkJoinExecutorTest, AllSlotsInUseRejectNewJobs)
 
   struct GateContext
   {
-    std::latch                entered_;
-    std::counting_semaphore<> gate_{ 0 };
+    std::latch                 entered_;
+    std::counting_semaphore<>  gate_{ 0 };
+    std::atomic<std::uint32_t> first_tasks_started_{ 0 };
   };
   GateContext gate{ .entered_{ ForkJoinExecutor::kMaxConcurrentJobs } };
 
@@ -255,6 +257,7 @@ TEST_F (ForkJoinExecutorTest, AllSlotsInUseRejectNewJobs)
     auto * context = static_cast<GateContext *> (ctx);
     if (task_index == 0)
       {
+        context->first_tasks_started_.fetch_add (1, std::memory_order_relaxed);
         context->entered_.count_down ();
         context->gate_.acquire ();
       }
@@ -272,20 +275,48 @@ TEST_F (ForkJoinExecutorTest, AllSlotsInUseRejectNewJobs)
         });
       }
 
-    // Wait until every submitter holds a slot, then the next submission has
-    // none left and must be rejected without executing anything
-    gate.entered_.wait ();
+    // Bound the wait: a submission that never starts must fail the test
+    // with a report instead of blocking until the ctest timeout
+    const bool all_entered = [&gate] {
+      const auto deadline =
+        std::chrono::steady_clock::now () + std::chrono::seconds (60);
+      while (!gate.entered_.try_wait ())
+        {
+          if (std::chrono::steady_clock::now () >= deadline)
+            return false;
+          std::this_thread::sleep_for (std::chrono::milliseconds (10));
+        }
+      return true;
+    }();
 
-    TaskCounter rejected_counter;
-    EXPECT_FALSE (executor.exec (counting_task, &rejected_counter, 2));
-    EXPECT_EQ (rejected_counter.total_.load (), 0);
+    if (!all_entered)
+      {
+        ADD_FAILURE ()
+          << "only " << gate.first_tasks_started_.load () << " of "
+          << ForkJoinExecutor::kMaxConcurrentJobs
+          << " submissions started their first task within 60s";
+      }
 
+    // While every submitter holds a slot, the next submission must be
+    // rejected without executing anything
+    if (all_entered)
+      {
+        TaskCounter rejected_counter;
+        EXPECT_FALSE (executor.exec (counting_task, &rejected_counter, 2));
+        EXPECT_EQ (rejected_counter.total_.load (), 0);
+      }
+
+    // Opens the gate for every gated task, including any that starts after
+    // the wait above, so the joins on scope exit always complete
     gate.gate_.release (ForkJoinExecutor::kMaxConcurrentJobs);
   }
 
   // All gated jobs completed and their slots were recycled
-  for (const auto &ok : succeeded)
-    EXPECT_TRUE (ok.load ());
+  for (
+    const auto i : std::views::iota (0u, ForkJoinExecutor::kMaxConcurrentJobs))
+    {
+      EXPECT_TRUE (succeeded[i].load ()) << "submission " << i;
+    }
   TaskCounter counter;
   EXPECT_TRUE (executor.exec (counting_task, &counter, 2));
   EXPECT_EQ (counter.total_.load (), 2);

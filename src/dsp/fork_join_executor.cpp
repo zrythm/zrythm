@@ -252,10 +252,12 @@ ForkJoinExecutor::
     (static_cast<std::uint64_t> (generation) << 32) | 1u,
     std::memory_order_release);
 
-  if (!work_queue_.try_push ({ slot, generation }))
+  // The work queue never fills (see work_queue_): each job has at most one
+  // entry, created only by its submitter. A failed try_push only means a
+  // concurrent pop has not stored its turn yet, so retry until it does.
+  while (!work_queue_.try_push ({ slot, generation }))
     {
-      return_slot_to_free_list (*slot);
-      return false;
+      std::this_thread::yield ();
     }
   work_available_sem_.signal ();
 

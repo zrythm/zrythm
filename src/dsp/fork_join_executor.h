@@ -106,9 +106,8 @@ public:
    *
    * @return true if all tasks were executed. Returns false without executing
    * anything when the request is rejected — called from within a task
-   * (contract violation), executor not started, all job slots in use, or the
-   * job's work entry could not be queued — in which case the caller must run
-   * the tasks itself (serial fallback).
+   * (contract violation), executor not started, or all job slots in use —
+   * in which case the caller must run the tasks itself (serial fallback).
    */
   bool
   exec (TaskFunction task, void * context, std::uint32_t num_tasks) noexcept;
@@ -201,9 +200,13 @@ private:
   /** Slots not currently assigned to a job (initially holds all slots). */
   rigtorp::MPMCQueue<JobSlot *> free_slots_{ kMaxConcurrentJobs };
 
-  /** Queued entries pointing at jobs with work to do. Entries are re-queued
-   * while their job has unclaimed tasks, so the queue can hold several
-   * entries per job; capacity is generous and re-queueing is best-effort. */
+  /** Queued entries pointing at jobs with work to do. Each job has at most
+   * one entry in the queue: only the submitter creates an entry, and a
+   * popper re-queues only the entry it just popped. Each slot additionally
+   * carries at most one stale entry of a finished job, so occupancy stays
+   * below half the capacity and the queue never fills. Re-queueing is
+   * best-effort: a popper that fails to re-queue claims the job's remaining
+   * tasks itself. */
   rigtorp::MPMCQueue<WorkItem> work_queue_{ kMaxConcurrentJobs * 4 };
 
   /** Wakes idle workers when jobs arrive. Not a std::counting_semaphore due
