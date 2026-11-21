@@ -36,24 +36,4 @@ file_chooser_backend_installed (
 [[nodiscard]] bool
 portal_file_dialogs_available ();
 
-/**
- * @brief Returns whether the portal daemon currently serves a
- * Settings request.
- *
- * Sends a blocking org.freedesktop.portal.Settings read and waits a
- * short, fixed time. A portal whose backends cannot start (e.g. a
- * crash-looping backend) fails this check even though its backend
- * descriptors are installed.
- *
- * Only available on GNU/Linux.
- *
- * Callable before the application is constructed.
- *
- * @return True when the portal served the read within the timeout.
- * This only shows that a Settings backend is reachable; it does not
- * prove the file chooser interface works.
- */
-[[nodiscard]] bool
-portal_daemon_responsive ();
-
 }
