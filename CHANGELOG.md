@@ -8,6 +8,45 @@ All notable changes to this project will be documented in this file.
 
 For changes prior to v2.0.0, see [CHANGELOG-old.v1.md](CHANGELOG-old.v1.md).
 
+## [v2.0.0-alpha.9] - 2026-11-22
+
+### Changed
+- Projects saved by earlier alphas no longer load: the project
+  format moved to 2.2
+- The first start after updating rescans all plugins once (plugin
+  cache format change)
+- Save As… asks for a project name and a parent folder, and
+  confirms before saving over an existing project
+- Dragging knobs, faders and balance controls now works on every
+  desktop; cursor pinning became an opt-in preference (Pin The
+  Cursor While Dragging)
+- The interface now uses the bundled Noto Sans font everywhere;
+  some labels previously rendered in the system font, often
+  monospace
+- The GNU/Linux window icon ships pre-rendered at standard sizes,
+  so taskbars show a sharp icon at every size
+- Saving no longer writes a project-debug.json copy next to the
+  project file
+
+### Fixed
+- File dialogs did nothing on GNU/Linux desktops without an XDG
+  portal file chooser backend; Qt's built-in dialogs are used
+  there now
+- Packaged builds could not open Qt's built-in file dialogs and
+  other QML parts; all Qt QML files are now packaged
+- A cable dropped on an unconnected port in the Modular panel's
+  routing graph could create a feedback loop; the loop check now
+  catches it
+- The reset confirmation and the plugin search path editor could
+  appear behind the Preferences window on Wayland; they now
+  render inside it
+- Recent projects showed no title in the startup window when the
+  file dialog returned a path with a trailing slash; such paths
+  are handled now
+- Audio worker pool jobs could be rejected during a rare
+  submission race, forcing serial rendering; submissions now
+  retry
+
 ## [v2.0.0-alpha.8] - 2026-11-14
 
 ### Added
