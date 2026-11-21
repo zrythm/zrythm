@@ -700,6 +700,7 @@ if(ZRYTHM_STRICT)
       -Werror=sequence-point
       -Werror=invalid-constexpr
       -Werror=pessimizing-move
+      -Werror=redundant-move
       -pedantic-errors
       -Werror=pedantic
     )
