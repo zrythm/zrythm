@@ -497,6 +497,7 @@ ScrollView {
 
       sourceComponent: ChannelSendsPanel {
         channelSendRouting: root.session.project.tracklist.channelSendRouting
+        operationDispatcher: root.session.operationDispatcher
         parameterOperator: root.session.processorParameterOperator
         project: root.session.project
         sends: root.track.channel.sends

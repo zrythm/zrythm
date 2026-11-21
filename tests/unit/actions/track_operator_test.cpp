@@ -484,4 +484,66 @@ TEST_F (TrackOperatorDispatchTest, RoutingWithoutDispatcherIsIgnored)
   EXPECT_EQ (undo_stack_->count (), 0);
 }
 
+// Add a send through the registry, with undo and redo
+TEST_F (TrackOperatorDispatchTest, AddSendAppendsAndUndoes)
+{
+  track_operator_->addSend (false);
+
+  EXPECT_EQ (track_->channel ()->sends ()->get_sends ().size (), 1);
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->text (0), QString ("Add Channel Send"));
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_->channel ()->sends ()->get_sends ().size (), 0);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (track_->channel ()->sends ()->get_sends ().size (), 1);
+}
+
+// Remove a send through the registry, with undo and redo
+TEST_F (TrackOperatorDispatchTest, RemoveSendRemovesAndUndoes)
+{
+  track_operator_->addSend (false);
+  auto * send = track_->channel ()->sends ()->get_sends ().back ().get ();
+  ASSERT_EQ (undo_stack_->count (), 1);
+
+  track_operator_->removeSend (send);
+  EXPECT_EQ (track_->channel ()->sends ()->get_sends ().size (), 0);
+  EXPECT_EQ (undo_stack_->count (), 2);
+  EXPECT_EQ (undo_stack_->text (1), QString ("Remove Channel Send"));
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track_->channel ()->sends ()->get_sends ().size (), 1);
+}
+
+// Flipping a send's tap point is undoable; setting it to the tap
+// point the send already has is not a change
+TEST_F (TrackOperatorDispatchTest, SetSendPrefaderFlipsAndUndoes)
+{
+  track_operator_->addSend (false);
+  auto * send = track_->channel ()->sends ()->get_sends ().back ().get ();
+  ASSERT_FALSE (send->isPrefader ());
+
+  track_operator_->setSendPrefader (send, true);
+  EXPECT_TRUE (send->isPrefader ());
+  EXPECT_EQ (undo_stack_->count (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (send->isPrefader ());
+
+  track_operator_->setSendPrefader (send, false);
+  EXPECT_EQ (undo_stack_->count (), 2);
+}
+
+// Send changes without a dispatcher wired do nothing
+TEST_F (TrackOperatorDispatchTest, SendChangesWithoutDispatcherAreIgnored)
+{
+  track_operator_->setOperationDispatcher (nullptr);
+
+  track_operator_->addSend (false);
+
+  EXPECT_EQ (track_->channel ()->sends ()->get_sends ().size (), 0);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
 } // namespace zrythm::actions

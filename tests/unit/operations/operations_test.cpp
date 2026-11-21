@@ -162,11 +162,19 @@ protected:
 TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
 {
   const auto expected = std::vector<std::string>{
-    "track.set_name",     "track.set_color",
-    "track.unset_color",  "track.set_comment",
-    "track.set_timebase", "track.route",
-    "track.unroute",      "track.add",
-    "track.list",         "transport.set_play_state",
+    "track.set_name",
+    "track.set_color",
+    "track.unset_color",
+    "track.set_comment",
+    "track.set_timebase",
+    "track.route",
+    "track.unroute",
+    "track.add_send",
+    "track.remove_send",
+    "track.set_send_prefader",
+    "track.add",
+    "track.list",
+    "transport.set_play_state",
   };
   for (const auto &name : expected)
     {
@@ -651,6 +659,123 @@ TEST_F (OperationsTest, TrackUnrouteRemovesRouteAndUndoes)
   const auto output = track_routing_->get_output_track (track->get_uuid ());
   ASSERT_TRUE (output.has_value ());
   EXPECT_EQ (output->id (), group_ref.id ());
+}
+
+// ============================================================================
+// track.add_send / track.remove_send / track.set_send_prefader
+// ============================================================================
+
+TEST_F (OperationsTest, TrackAddSendReturnsSendUuidAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+
+  auto report = dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track) },
+      { "is_prefader", false            }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_EQ (track->channel ()->sends ()->get_sends ().size (), 1);
+  EXPECT_FALSE (report.result.at ("send").get<std::string> ().empty ());
+
+  undo_stack_->undo ();
+  EXPECT_EQ (track->channel ()->sends ()->get_sends ().size (), 0);
+}
+
+TEST_F (OperationsTest, TrackAddSendRefusesTrackWithoutChannel)
+{
+  auto * marker = singleton_tracks_->markerTrack ();
+  ASSERT_NE (marker, nullptr);
+
+  auto report = dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*marker) },
+      { "is_prefader", false             }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("channel"), std::string::npos);
+}
+
+TEST_F (OperationsTest, TrackSetSendPrefaderAppliesAndUndoes)
+{
+  auto * track = add_audio_track_directly ();
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track) },
+      { "is_prefader", false            }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
+  auto * send = track->channel ()->sends ()->get_sends ().front ().get ();
+  ASSERT_FALSE (send->isPrefader ());
+
+  auto report = dispatch (
+    "track.set_send_prefader",
+    {
+      { "send",        send_uuid },
+      { "is_prefader", true      }
+  });
+
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_TRUE (send->isPrefader ());
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (send->isPrefader ());
+}
+
+TEST_F (OperationsTest, TrackSetSendPrefaderElidesSameTapPoint)
+{
+  auto * track = add_audio_track_directly ();
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track) },
+      { "is_prefader", false            }
+  });
+  ASSERT_EQ (undo_stack_->count (), 1);
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
+
+  auto report = dispatch (
+    "track.set_send_prefader",
+    {
+      { "send",        send_uuid },
+      { "is_prefader", false     }
+  });
+
+  ASSERT_TRUE (report.applied ());
+  EXPECT_TRUE (report.command_texts.empty ());
+  EXPECT_EQ (report.revision_after, report.revision_before);
+}
+
+TEST_F (OperationsTest, TrackRemoveSendRefusesForeignSend)
+{
+  auto * track_a = add_audio_track_directly ();
+  auto * track_b = add_audio_track_directly ();
+  dispatch (
+    "track.add_send",
+    {
+      { "track",       uuid_of (*track_a) },
+      { "is_prefader", false              }
+  });
+  const auto send_uuid = uuid_to_string (
+    type_safe::get (track_a->channel ()->sends ()->get_sends ().front ().id ()));
+
+  auto report = dispatch (
+    "track.remove_send",
+    {
+      { "track", uuid_of (*track_b) },
+      { "send",  send_uuid          }
+  });
+
+  ASSERT_TRUE (report.refused ());
+  EXPECT_NE (report.message.find ("belong"), std::string::npos);
+  EXPECT_EQ (track_a->channel ()->sends ()->get_sends ().size (), 1);
 }
 
 // ============================================================================

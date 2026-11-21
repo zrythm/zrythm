@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "structure/tracks/channel_send.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
@@ -110,6 +111,47 @@ TEST_F (ParamTypesTest, FromValueTakesATrackAndDerivesItsUuid)
   ASSERT_TRUE (parsed.has_value ());
   EXPECT_EQ (parsed->value (), ref.get ());
   EXPECT_FALSE (parsed->uuid_string ().empty ());
+}
+
+TEST_F (ParamTypesTest, SendParamResolvesRegistryObjects)
+{
+  auto ref = track_factory_.create_empty_track<structure::tracks::AudioTrack> ();
+  auto *     group = ref.get ()->channel ()->sends ();
+  const auto send_ref = group->append_send (false);
+  auto *     send = send_ref.get ();
+
+  const auto by_value = SendParam::from_value (send);
+  ASSERT_TRUE (by_value.has_value ());
+  EXPECT_EQ (by_value->value (), send);
+  EXPECT_EQ (
+    by_value->uuid_string (),
+    uuid_to_string (type_safe::get (send->get_uuid ())));
+
+  const auto parsed =
+    SendParam::parse (nlohmann::json (by_value->uuid_string ()), environment_);
+  ASSERT_TRUE (parsed.has_value ());
+  EXPECT_EQ (parsed->value (), send);
+
+  const auto unknown = SendParam::parse (
+    nlohmann::json ("11111111-1111-1111-1111-111111111111"), environment_);
+  ASSERT_FALSE (unknown.has_value ());
+  EXPECT_NE (
+    unknown.error ().reason.find ("no channel send"), std::string::npos);
+
+  EXPECT_FALSE ((SendParam::from_value (nullptr).has_value ()));
+}
+
+TEST_F (ParamTypesTest, BoolParamAcceptsOnlyBooleans)
+{
+  const auto parsed = BoolParam::parse (nlohmann::json (true), environment_);
+  ASSERT_TRUE (parsed.has_value ());
+  EXPECT_TRUE (parsed->value ());
+
+  EXPECT_FALSE (
+    (BoolParam::parse (nlohmann::json{}, environment_).has_value ()));
+  EXPECT_FALSE (
+    (BoolParam::parse (nlohmann::json ("yes"), environment_).has_value ()));
+  EXPECT_TRUE ((BoolParam::from_value (false).has_value ()));
 }
 
 TEST_F (ParamTypesTest, HexColorParamAcceptsSixAndEightDigitHex)

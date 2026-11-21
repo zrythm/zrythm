@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "structure/tracks/channel_send.h"
 #include "structure/tracks/track.h"
 #include "utils/color.h"
 #include "utils/enum_utils.h"
@@ -69,6 +70,17 @@ is_valid_utf8 (std::string_view bytes)
     QByteArray (bytes.data (), static_cast<qsizetype> (bytes.size ())));
   Q_UNUSED (decoded);
   return !decoder.hasError ();
+}
+
+/**
+ * Returns a UUID in the string form used in reports.
+ */
+inline std::string
+uuid_to_string (const QUuid &uuid)
+{
+  return std::string (
+    utils::Utf8String::from_qstring (uuid.toString (QUuid::WithoutBraces))
+      .view ());
 }
 
 /**
@@ -332,6 +344,130 @@ private:
 };
 
 /**
+ * A required boolean parameter.
+ */
+class BoolParam
+{
+public:
+  using ValueType = bool;
+
+  static constexpr bool is_required () { return true; }
+
+  static nlohmann::json describe ()
+  {
+    return {
+      { "type", "boolean" }
+    };
+  }
+
+  static std::expected<BoolParam, Refusal>
+  parse (const nlohmann::json &value, const OperationEnvironment &)
+  {
+    if (value.is_null ())
+      {
+        return std::unexpected (Refusal{ "this parameter is required" });
+      }
+    if (!value.is_boolean ())
+      {
+        return std::unexpected (Refusal{ "expected true or false" });
+      }
+    return from_value (value.get<bool> ());
+  }
+
+  /** Any bool is valid, so this never refuses. */
+  static std::expected<BoolParam, Refusal> from_value (bool value)
+  {
+    return BoolParam{ value };
+  }
+
+  bool value () const { return value_; }
+
+private:
+  explicit BoolParam (bool value) : value_ (value) { }
+  bool value_;
+};
+
+/**
+ * A required parameter identifying a channel send by its UUID.
+ *
+ * Parses the UUID and resolves it against the object registry; a UUID
+ * that does not name a registered send is refused.
+ */
+class SendParam
+{
+public:
+  using ValueType = structure::tracks::ChannelSend *;
+
+  static constexpr bool is_required () { return true; }
+
+  static nlohmann::json describe ()
+  {
+    return {
+      { "type",   "string" },
+      { "format", "uuid"   },
+    };
+  }
+
+  static std::expected<SendParam, Refusal>
+  parse (const nlohmann::json &value, const OperationEnvironment &env)
+  {
+    if (value.is_null ())
+      {
+        return std::unexpected (Refusal{ "this parameter is required" });
+      }
+    if (!value.is_string ())
+      {
+        return std::unexpected (Refusal{ "expected the send UUID as a string" });
+      }
+    const auto str = value.get<std::string> ();
+    const auto uuid =
+      QUuid (utils::Utf8String::from_utf8_encoded_string (str).to_qstring ());
+    if (uuid.isNull ())
+      {
+        return std::unexpected (
+          Refusal{ fmt::format ("'{}' is not a UUID", str) });
+      }
+    auto * send = qobject_cast<structure::tracks::ChannelSend *> (
+      env.object_registry ().find_by_raw_uuid (uuid));
+    if (send == nullptr)
+      {
+        return std::unexpected (
+          Refusal{ fmt::format ("no channel send with UUID {}", str) });
+      }
+    return SendParam{ send, str };
+  }
+
+  /**
+   * Takes a live send; the UUID string reported in results is derived
+   * from the send itself.
+   */
+  static std::expected<SendParam, Refusal>
+  from_value (structure::tracks::ChannelSend * send)
+  {
+    if (send == nullptr)
+      {
+        return std::unexpected (Refusal{ "the channel send is required" });
+      }
+    return SendParam{
+      send, uuid_to_string (type_safe::get (send->get_uuid ()))
+    };
+  }
+
+  structure::tracks::ChannelSend * value () const { return send_; }
+
+  /** The UUID string identifying the send in reports. */
+  const std::string &uuid_string () const { return uuid_; }
+
+private:
+  explicit SendParam (structure::tracks::ChannelSend * send, std::string uuid)
+      : send_ (send), uuid_ (std::move (uuid))
+  {
+  }
+  structure::tracks::ChannelSend * send_;
+  std::string                      uuid_;
+};
+
+/**
  * A required parameter identifying a track by its project UUID.
  *
  * Parses the UUID and resolves it against the project's track collection;
@@ -381,14 +517,6 @@ public:
     return TrackParam{ track, str };
   }
 
-  /** Returns the UUID in the string form used in reports. */
-  static std::string uuid_to_string (const QUuid &uuid)
-  {
-    return std::string (
-      utils::Utf8String::from_qstring (uuid.toString (QUuid::WithoutBraces))
-        .view ());
-  }
-
   /**
    * Takes a live track; the UUID string reported in results is derived
    * from the track itself.
@@ -407,7 +535,7 @@ public:
 
   structure::tracks::Track * value () const { return track_; }
 
-  /** The UUID string exactly as the caller supplied it. */
+  /** The UUID string identifying the track in reports. */
   const std::string &uuid_string () const { return uuid_; }
 
 private:

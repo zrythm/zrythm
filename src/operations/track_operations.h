@@ -9,6 +9,8 @@
 #include "commands/change_timebase_override_command.h"
 #include "commands/change_track_color_command.h"
 #include "commands/change_track_comment_command.h"
+#include "commands/change_uuid_identifiable_object_property_command.h"
+#include "commands/channel_send_commands.h"
 #include "commands/rename_track_command.h"
 #include "commands/route_track_command.h"
 #include "dsp/port_fwd.h"
@@ -239,6 +241,117 @@ track_unroute_operation ()
 }
 
 /**
+ * Appends a send to a track's channel. Edit; takes the track and
+ * whether the send taps before the fader. Returns the new send's
+ * UUID.
+ */
+inline const auto &
+track_add_send_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.add_send", "Add a send to a track's channel",
+    std::array<ParamSpec, 2>{
+      { { "track", "UUID of the track" },
+       { "is_prefader", "Whether the send taps before the fader" } }
+  },
+    [] (OperationContext &ctx, TrackParam track, BoolParam is_prefader)
+      -> OperationReport {
+      if (track.value ()->channel () == nullptr)
+        {
+          return ctx.refused ("this track has no channel to add a send to");
+        }
+      auto &group = *track.value ()->channel ()->sends ();
+      ctx.push_command (
+        std::make_unique<commands::AddChannelSendCommand> (
+          group, is_prefader.value ()));
+      ctx.note_affected (track.uuid_string (), "track");
+      if (ctx.failed_push_count () > 0)
+        {
+          // the send was not appended, so there is no UUID to report
+          return ctx.applied ();
+        }
+      const auto send_uuid =
+        uuid_to_string (type_safe::get (group.get_sends ().back ().id ()));
+      ctx.note_affected (send_uuid, "send");
+      return ctx.applied (
+        nlohmann::json{
+          { "send", send_uuid }
+      });
+    });
+  return operation;
+}
+
+/**
+ * Removes a send from a track's channel. Edit; takes the track and
+ * the send; the send must belong to the track.
+ */
+inline const auto &
+track_remove_send_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.remove_send",
+    "Remove a send from a track's channel",
+    std::array<ParamSpec, 2>{
+      { { "track", "UUID of the track that owns the send" },
+       { "send", "UUID of the send" } }
+  },
+    [] (OperationContext &ctx, TrackParam track, SendParam send)
+      -> OperationReport {
+      if (track.value ()->channel () == nullptr)
+        {
+          return ctx.refused ("this track has no channel");
+        }
+      auto       &group = *track.value ()->channel ()->sends ();
+      const auto &sends = group.get_sends ();
+      const auto  owned = std::ranges::find (
+        sends, send.value ()->get_uuid (),
+        &structure::tracks::ChannelSendUuidReference::id);
+      if (owned == sends.end ())
+        {
+          return ctx.refused ("the send does not belong to this track");
+        }
+      ctx.push_command (
+        std::make_unique<commands::RemoveChannelSendCommand> (
+          group, send.value ()->get_uuid ()));
+      ctx.note_affected (track.uuid_string (), "track");
+      ctx.note_affected (send.uuid_string (), "send");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
+ * Moves a send's tap point before or after the channel fader. Edit;
+ * takes the send and the new tap point.
+ */
+inline const auto &
+track_set_send_prefader_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Edit, "track.set_send_prefader",
+    "Move a send's tap point before or after the channel fader",
+    std::array<ParamSpec, 2>{
+      { { "send", "UUID of the send" },
+       { "is_prefader", "Whether the send taps before the fader" } }
+  },
+    [] (OperationContext &ctx, SendParam send, BoolParam is_prefader)
+      -> OperationReport {
+      if (send.value ()->isPrefader () == is_prefader.value ())
+        {
+          return ctx.applied ();
+        }
+      ctx.push_command (
+        std::make_unique<commands::ChangeUuidIdentifiableObjectPropertyCommand> (
+          *send.value (), send.value ()->registry (),
+          QStringLiteral ("isPrefader"), is_prefader.value (),
+          commands::Command::EngineRequirement::RecalculateGraph));
+      ctx.note_affected (send.uuid_string (), "send");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
+/**
  * Adds a new empty track. Edit; takes the track type. Returns the new
  * track's UUID and name.
  */
@@ -266,7 +379,7 @@ track_add_operation ()
             track_ref.id (), track_ref.get ()->get_name ())
           .to_qstring ());
       const auto track_uuid_string =
-        TrackParam::uuid_to_string (type_safe::get (track_ref.id ()));
+        uuid_to_string (type_safe::get (track_ref.id ()));
       const auto routes_to_master =
         track_ref.get ()->output_signal_type () == dsp::PortType::Audio;
       if (routes_to_master && env.singleton_tracks ().masterTrack () == nullptr)
@@ -323,12 +436,11 @@ track_list_operation ()
           const auto * track = track_ref.get ();
           tracks.push_back (
             nlohmann::json{
-              { "uuid",
-               TrackParam::uuid_to_string (type_safe::get (track_ref.id ())) },
+              { "uuid", uuid_to_string (type_safe::get (track_ref.id ()))   },
               { "name",
                std::string (
-                  utils::Utf8String::from_qstring (track->name ()).view ())  },
-              { "type", track->type ()                                       },
+                  utils::Utf8String::from_qstring (track->name ()).view ()) },
+              { "type", track->type ()                                      },
           });
         }
       return ctx.applied (

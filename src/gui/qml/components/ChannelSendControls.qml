@@ -19,6 +19,7 @@ RowLayout {
   id: root
 
   required property ChannelSendRouting channelSendRouting
+  required property OperationDispatcher operationDispatcher
   required property ProcessorParameterOperator parameterOperator
   required property Project project
   required property ChannelSend send
@@ -55,6 +56,7 @@ RowLayout {
     id: sendOp
 
     channelSendRouting: root.channelSendRouting
+    operationDispatcher: root.operationDispatcher
     project: root.project
     track: root.track
     undoStack: root.undoStack

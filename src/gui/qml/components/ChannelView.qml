@@ -325,6 +325,7 @@ ColumnLayout {
             TrackOperator {
               id: addSendOp
 
+              operationDispatcher: root.operationDispatcher
               track: root.track
               undoStack: root.undoStack
             }
@@ -335,6 +336,7 @@ ColumnLayout {
               delegate: ChannelSendControls {
                 Layout.fillWidth: true
                 channelSendRouting: root.tracklist.channelSendRouting
+                operationDispatcher: root.operationDispatcher
                 parameterOperator: root.parameterOperator
                 project: root.project
                 track: root.track

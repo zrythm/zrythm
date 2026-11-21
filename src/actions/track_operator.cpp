@@ -4,8 +4,6 @@
 #include "utils/format_qt.h"
 
 #include "actions/track_operator.h"
-#include "commands/change_uuid_identifiable_object_property_command.h"
-#include "commands/channel_send_commands.h"
 #include "commands/route_channel_send_command.h"
 #include "structure/project/project_graph_builder.h"
 #include "utils/logger.h"
@@ -135,26 +133,33 @@ TrackOperator::setTimebase (dsp::Timebase timebase)
 void
 TrackOperator::addSend (bool isPrefader)
 {
-  if (
-    track_ == nullptr || track_->channel () == nullptr || undo_stack_ == nullptr)
-    return;
-
-  undo_stack_->push (
-    std::make_unique<commands::AddChannelSendCommand> (
-      *track_->channel ()->sends (), isPrefader));
+  if (track_ == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning ("Channel sends need a track and an operation dispatcher");
+      return;
+    }
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_add_send_operation (), track_, isPrefader);
+  if (!report.applied ())
+    {
+      z_warning ("Adding a channel send refused: {}", report.message);
+    }
 }
 
 void
 TrackOperator::removeSend (structure::tracks::ChannelSend * send)
 {
-  if (
-    track_ == nullptr || track_->channel () == nullptr || send == nullptr
-    || undo_stack_ == nullptr)
-    return;
-
-  undo_stack_->push (
-    std::make_unique<commands::RemoveChannelSendCommand> (
-      *track_->channel ()->sends (), send->get_uuid ()));
+  if (track_ == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning ("Channel sends need a track and an operation dispatcher");
+      return;
+    }
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_remove_send_operation (), track_, send);
+  if (!report.applied ())
+    {
+      z_warning ("Removing a channel send refused: {}", report.message);
+    }
 }
 
 void
@@ -162,16 +167,17 @@ TrackOperator::setSendPrefader (
   structure::tracks::ChannelSend * send,
   bool                             isPrefader)
 {
-  if (send == nullptr || undo_stack_ == nullptr)
-    return;
-
-  if (send->isPrefader () == isPrefader)
-    return;
-
-  undo_stack_->push (
-    std::make_unique<commands::ChangeUuidIdentifiableObjectPropertyCommand> (
-      *send, send->registry (), QStringLiteral ("isPrefader"), isPrefader,
-      commands::Command::EngineRequirement::RecalculateGraph));
+  if (send == nullptr || operation_dispatcher_ == nullptr)
+    {
+      z_warning ("Channel sends need a send and an operation dispatcher");
+      return;
+    }
+  const auto report = operation_dispatcher_->invoke (
+    operations::track_set_send_prefader_operation (), send, isPrefader);
+  if (!report.applied ())
+    {
+      z_warning ("Changing a send's tap point refused: {}", report.message);
+    }
 }
 
 void
