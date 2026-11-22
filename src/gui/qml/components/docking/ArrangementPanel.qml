@@ -85,6 +85,7 @@ SplitView {
       Layout.fillWidth: true
       Layout.preferredHeight: contentHeight
       audioEngine: root.project.engine
+      parameterOperator: root.session.processorParameterOperator
       pinned: true
       pluginImporter: root.session.pluginImporter
       portObservationManager: root.project.portObservationManager
@@ -99,6 +100,7 @@ SplitView {
       Layout.fillHeight: true
       Layout.fillWidth: true
       audioEngine: root.project.engine
+      parameterOperator: root.session.processorParameterOperator
       pinned: false
       pluginImporter: root.session.pluginImporter
       portObservationManager: root.project.portObservationManager

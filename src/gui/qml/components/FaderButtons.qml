@@ -4,6 +4,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ZrythmActions
 import ZrythmStyle
 import Zrythm
 
@@ -16,6 +17,7 @@ ColumnLayout {
   id: root
 
   required property Fader fader
+  required property ProcessorParameterOperator parameterOperator
   required property Track track
 
   readonly property bool monoOn: root.fader.monoToggle ? root.fader.monoToggle.baseValue > 0.5 : false
@@ -43,7 +45,10 @@ ColumnLayout {
       // External value syncs that flip checked re-enter these handlers;
       // the write-back is a no-op then (value unchanged), which only
       // holds for binary 0/1 toggles like these
-      onCheckedChanged: root.fader.mute?.setBaseValueByUser(checked ? 1.0 : 0.0)
+      onCheckedChanged: {
+        if (root.fader.mute !== null)
+          root.parameterOperator.setLiveValue(root.fader.mute, checked ? 1.0 : 0.0);
+      }
 
       ToolTip {
         text: qsTr("Mute")
@@ -56,7 +61,10 @@ ColumnLayout {
       checked: root.fader.solo ? root.fader.solo.baseValue > 0.5 : false
       text: "S"
 
-      onCheckedChanged: root.fader.solo?.setBaseValueByUser(checked ? 1.0 : 0.0)
+      onCheckedChanged: {
+        if (root.fader.solo !== null)
+          root.parameterOperator.setLiveValue(root.fader.solo, checked ? 1.0 : 0.0);
+      }
 
       ToolTip {
         text: qsTr("Solo")
@@ -74,7 +82,7 @@ ColumnLayout {
 
       onClicked: {
         const param = root.track.recordingParam;
-        param.setBaseValueByUser(param.range.isToggled(param.baseValue) ? 0.0 : 1.0);
+        root.parameterOperator.setLiveValue(param, param.range.isToggled(param.baseValue) ? 0.0 : 1.0);
       }
 
       ToolTip {
@@ -89,7 +97,10 @@ ColumnLayout {
       text: "L"
       visible: root.fader.listen !== null
 
-      onCheckedChanged: root.fader.listen?.setBaseValueByUser(checked ? 1.0 : 0.0)
+      onCheckedChanged: {
+        if (root.fader.listen !== null)
+          root.parameterOperator.setLiveValue(root.fader.listen, checked ? 1.0 : 0.0);
+      }
 
       ToolTip {
         text: qsTr("Listen")
@@ -114,7 +125,8 @@ ColumnLayout {
         visible: root.fader.monoToggle !== null
 
         onClicked: {
-          root.fader.monoToggle?.setBaseValueByUser(root.monoOn ? 0.0 : 1.0);
+          if (root.fader.monoToggle !== null)
+            root.parameterOperator.setLiveValue(root.fader.monoToggle, root.monoOn ? 0.0 : 1.0);
         }
 
         ToolTip {
@@ -131,7 +143,8 @@ ColumnLayout {
         text: "Ø"
 
         onClicked: {
-          root.fader.swapPhaseToggle?.setBaseValueByUser(root.phaseOn ? 0.0 : 1.0);
+          if (root.fader.swapPhaseToggle !== null)
+            root.parameterOperator.setLiveValue(root.fader.swapPhaseToggle, root.phaseOn ? 0.0 : 1.0);
         }
 
         ToolTip {
@@ -153,7 +166,7 @@ ColumnLayout {
           if (!root.track.monitorParam)
             return;
           const next = (root.monitorMode + 1) % root.track.monitorParam.range.enumCount();
-          root.track.monitorParam.setBaseValueByUser(root.track.monitorParam.range.normalizedEnumValue(next));
+          root.parameterOperator.setLiveValue(root.track.monitorParam, root.track.monitorParam.range.normalizedEnumValue(next));
         }
 
         ToolTip {

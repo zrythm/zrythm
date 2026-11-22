@@ -299,7 +299,7 @@ ScrollView {
             }
             onActivated: function (index: int): void {
               if (monitorParam) {
-                monitorParam.setBaseValueByUser(monitorParam.range.normalizedEnumValue(index));
+                root.session.processorParameterOperator.setLiveValue(monitorParam, monitorParam.range.normalizedEnumValue(index));
               }
             }
             onMonitorParamChanged: {
@@ -529,6 +529,7 @@ ScrollView {
               FaderButtons {
                 Layout.fillWidth: false
                 fader: root.track.channel.fader
+                parameterOperator: root.session.processorParameterOperator
                 track: root.track
               }
 
@@ -579,6 +580,7 @@ ScrollView {
 
     frameContentItem: PluginSlotList {
       implicitHeight: contentHeight
+      parameterOperator: root.session.processorParameterOperator
       pluginGroup: pluginExpander.model
       pluginImporter: root.pluginImporter
       pluginOperator: root.pluginOperator

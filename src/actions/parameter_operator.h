@@ -44,6 +44,20 @@ public:
    */
   Q_INVOKABLE QString setValue (dsp::ProcessorParameter * param, qreal value);
 
+  /**
+   * @brief Applies @p param's base value as live, non-undoable state.
+   *
+   * The change applies immediately and never appears on the undo
+   * stack; it suits runtime control rather than document edits.
+   *
+   * @param value New base value in the normalized 0.0-1.0 range.
+   * Callers must pass a finite value; non-finite values are not
+   * validated.
+   * @return Empty string on success, otherwise the refusal reason.
+   */
+  Q_INVOKABLE QString
+  setLiveValue (dsp::ProcessorParameter * param, qreal value);
+
 private:
   operations::OperationDispatcher &operation_dispatcher_;
 };

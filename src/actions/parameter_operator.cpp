@@ -41,4 +41,13 @@ ProcessorParameterOperator::setValue (
     operations::parameter_set_value_operation (), param, value));
 }
 
+QString
+ProcessorParameterOperator::setLiveValue (
+  dsp::ProcessorParameter * param,
+  qreal                     value)
+{
+  return error_text (operation_dispatcher_.invoke (
+    operations::parameter_set_value_live_operation (), param, value));
+}
+
 } // namespace zrythm::actions

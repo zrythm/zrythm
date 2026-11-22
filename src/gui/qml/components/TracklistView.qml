@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQml.Models
 import Zrythm
+import ZrythmActions
 
 ListView {
   id: root
@@ -21,6 +22,7 @@ ListView {
   property int dropTargetIndex: -1
   required property PluginImporter pluginImporter
   required property PortObservationManager portObservationManager
+  required property ProcessorParameterOperator parameterOperator
   required property bool pinned
   required property TrackCollectionOperator trackCollectionOperator
   required property TrackSelectionModel trackSelectionModel
@@ -101,6 +103,7 @@ ListView {
     listViewDropTargetFolder: root.dropTargetFolder
     listViewDropTargetIndex: root.dropTargetIndex
     listViewIsLast: index === ListView.view.count - 1
+    parameterOperator: root.parameterOperator
     pluginImporter: root.pluginImporter
     portObservationManager: root.portObservationManager
     trackCollectionOperator: root.trackCollectionOperator

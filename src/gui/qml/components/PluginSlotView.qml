@@ -5,6 +5,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
+import ZrythmActions
 
 Control {
   id: root
@@ -29,6 +30,7 @@ Control {
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
   required property PluginSelectionModel pluginSelectionModel
+  required property ProcessorParameterOperator parameterOperator
   required property Track track
   required property TrackSelectionModel trackSelectionModel
   required property ViewContext viewContext
@@ -386,7 +388,7 @@ Control {
 
       onClicked: {
         if (root.plugin) {
-          root.plugin.bypassParameter.setBaseValueByUser((root.pluginEnabled) ? 1.0 : 0.0);
+          root.parameterOperator.setValue(root.plugin.bypassParameter, root.pluginEnabled ? 1.0 : 0.0);
         }
       }
     }

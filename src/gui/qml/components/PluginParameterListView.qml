@@ -25,6 +25,15 @@ ListView {
       param.setBaseValueByUser(value);
   }
 
+  // Live values are momentary (trigger presses) and skip undo on both
+  // paths
+  function applyLiveValue(param: ProcessorParameter, value: real): void {
+    if (parameterOperator !== null)
+      parameterOperator.setLiveValue(param, value);
+    else
+      param.setBaseValueByUser(value);
+  }
+
   clip: true
   implicitHeight: Math.min(contentHeight, maximumContentHeight)
   interactive: contentHeight > height
@@ -100,7 +109,7 @@ ListView {
         text: qsTr("Trigger")
 
         onClicked: {
-          paramDelegate.parameter.setBaseValueByUser(1.0);
+          root.applyLiveValue(paramDelegate.parameter, 1.0);
         }
       }
     }

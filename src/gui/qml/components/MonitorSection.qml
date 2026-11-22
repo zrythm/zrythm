@@ -20,6 +20,11 @@ ScrollView {
   required property TrackCollection trackCollection
   required property TrackCollectionOperator trackCollectionOperator
 
+  // Control-room parameters are application state: they live in the
+  // control room's own registry, outside the project registry the
+  // session's operations validate against, so these controls write them
+  // directly instead of through the parameter operator.
+
   // Formats a linear amplitude as dB text, bottoming out at -infinity.
   function dbText(amplitude: real): string {
     const db = 20 * Math.log10(amplitude);

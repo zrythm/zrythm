@@ -243,6 +243,7 @@ TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
     "port.set_connection_multiplier",
     "port.set_connection_enabled",
     "parameter.set_value",
+    "parameter.set_value_live",
   };
   for (const auto &name : expected)
     {
@@ -2009,6 +2010,71 @@ TEST_F (OperationsTest, ParameterSetValueRefusesMissingValue)
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::MissingParameter);
   EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// ============================================================================
+// parameter.set_value_live
+// ============================================================================
+
+TEST_F (OperationsTest, ParameterSetValueLiveAppliesWithoutCommands)
+{
+  auto * param = add_parameter (u8"mute");
+  param->setBaseValue (0.f);
+
+  const auto report = dispatch (
+    "parameter.set_value_live",
+    {
+      { "parameter", uuid_of (*param) },
+      { "value",     1.0              }
+  });
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_FLOAT_EQ (param->baseValue (), 1.f);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (report.revision_before, report.revision_after);
+}
+
+TEST_F (OperationsTest, ParameterSetValueLiveElidesCurrentValue)
+{
+  auto * param = add_parameter (u8"mute");
+  param->setBaseValue (0.5f);
+
+  const auto report = dispatch (
+    "parameter.set_value_live",
+    {
+      { "parameter", uuid_of (*param) },
+      { "value",     0.5              }
+  });
+  ASSERT_TRUE (report.applied ());
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.5f);
+  EXPECT_TRUE (report.affected_objects.empty ());
+}
+
+TEST_F (OperationsTest, ParameterSetValueLiveRefusesOutOfRangeValue)
+{
+  auto * param = add_parameter (u8"mute");
+  param->setBaseValue (0.f);
+
+  const auto report = dispatch (
+    "parameter.set_value_live",
+    {
+      { "parameter", uuid_of (*param) },
+      { "value",     -0.5             }
+  });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::OutOfRange);
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.f);
+}
+
+TEST_F (OperationsTest, ParameterSetValueLiveRefusesUnknownParameter)
+{
+  const auto report = dispatch (
+    "parameter.set_value_live",
+    {
+      { "parameter", "11111111-2222-3333-4444-555555555555" },
+      { "value",     0.5                                    }
+  });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::NotFound);
 }
 
 // ============================================================================

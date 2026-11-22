@@ -8,6 +8,7 @@ import QtQuick.Controls
 import QtQuick.Controls.impl
 import QtQuick.Layouts
 import Zrythm
+import ZrythmActions
 import ZrythmStyle
 
 Control {
@@ -28,6 +29,7 @@ Control {
   property bool listViewIsLast: false
   required property PortObservationManager portObservationManager
   required property PluginImporter pluginImporter
+  required property ProcessorParameterOperator parameterOperator
   required property Track track // connected automatically when used as a delegate for a Tracklist model
   required property TrackCollectionOperator trackCollectionOperator
   required property TrackSelectionModel trackSelectionModel
@@ -662,7 +664,10 @@ Control {
               // External value syncs that flip checked re-enter these
               // handlers; the write-back is a no-op then (value unchanged),
               // which only holds for binary 0/1 toggles like these
-              onCheckedChanged: root.track.channel?.fader.mute.setBaseValueByUser(checked ? 1.0 : 0.0)
+              onCheckedChanged: {
+                if (root.track.channel !== null)
+                  root.parameterOperator.setLiveValue(root.track.channel.fader.mute, checked ? 1.0 : 0.0);
+              }
 
               ToolTip {
                 text: qsTr("Mute")
@@ -676,7 +681,10 @@ Control {
               text: "S"
               visible: root.track.channel !== null
 
-              onCheckedChanged: root.track.channel?.fader.solo.setBaseValueByUser(checked ? 1.0 : 0.0)
+              onCheckedChanged: {
+                if (root.track.channel !== null)
+                  root.parameterOperator.setLiveValue(root.track.channel.fader.solo, checked ? 1.0 : 0.0);
+              }
 
               ToolTip {
                 text: qsTr("Solo")
@@ -693,7 +701,8 @@ Control {
               visible: root.track.recordingParam !== null
 
               onClicked: {
-                root.track.recordingParam.setBaseValueByUser(root.track.recordingParam.range.isToggled(root.track.recordingParam.baseValue) ? 0.0 : 1.0);
+                const param = root.track.recordingParam;
+                root.parameterOperator.setLiveValue(param, param.range.isToggled(param.baseValue) ? 0.0 : 1.0);
               }
 
               ToolTip {

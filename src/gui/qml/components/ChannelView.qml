@@ -218,6 +218,7 @@ ColumnLayout {
 
             anchors.fill: parent
             interactive: false
+            parameterOperator: root.parameterOperator
             pluginGroup: root.channel.midiFx
             pluginImporter: root.pluginImporter
             pluginOperator: root.pluginOperator
@@ -265,6 +266,7 @@ ColumnLayout {
 
             anchors.fill: parent
             interactive: false
+            parameterOperator: root.parameterOperator
             pluginGroup: root.channel.inserts
             pluginImporter: root.pluginImporter
             pluginOperator: root.pluginOperator
@@ -418,6 +420,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.maximumWidth: Number.POSITIVE_INFINITY
         fader: root.channel.fader
+        parameterOperator: root.parameterOperator
         track: root.track
       }
 

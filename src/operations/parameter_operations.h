@@ -61,6 +61,53 @@ parameter_set_value_operation ()
   return operation;
 }
 
+/**
+ * Sets a parameter's base value as live state. Control; takes the
+ * parameter and the new normalized value. The change applies
+ * immediately and is never undone, suiting runtime control rather
+ * than document edits.
+ */
+inline const auto &
+parameter_set_value_live_operation ()
+{
+  static const auto operation = TypedOperation (
+    OperationKind::Control, "parameter.set_value_live",
+    "Set a parameter's base value as live, non-undoable state",
+    std::array<ParamSpec, 2>{
+      { { "parameter", "UUID of the processor parameter" },
+       { "value", "New base value in the normalized 0.0-1.0 range" } }
+  },
+    [] (
+      OperationContext &ctx, ProcessorParameterParam parameter,
+      BoundedFloatParam<0.0, 1.0> value) -> OperationReport {
+      // Only parameters of this project are controllable through its
+      // session
+      if (!ctx.environment ().object_registry ().contains (
+            type_safe::get (parameter.value ()->get_uuid ())))
+        {
+          return ctx.refused (
+            utils::RefusalKind::NotFound,
+            fmt::format (
+              "'{}' is not registered in this project's registry",
+              parameter.value ()->label ()));
+        }
+      // Mirrors ProcessorParameter::setBaseValue(), which fuzzy-compares
+      // and stores nothing for equal values; skipping the write keeps
+      // the affected list to actual changes
+      if (
+        qFuzzyCompare (
+          parameter.value ()->baseValue (), static_cast<float> (value.value ())))
+        {
+          return ctx.applied ();
+        }
+      parameter.value ()->setBaseValueByUser (
+        static_cast<float> (value.value ()));
+      ctx.note_affected (parameter.uuid_string (), "parameter");
+      return ctx.applied ();
+    });
+  return operation;
+}
+
 /** The parameter.* operations. */
 std::vector<Operation>
 make_parameter_operations ();

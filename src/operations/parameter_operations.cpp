@@ -11,6 +11,7 @@ make_parameter_operations ()
 {
   return {
     Operation{ parameter_set_value_operation () },
+    Operation{ parameter_set_value_live_operation () },
   };
 }
 

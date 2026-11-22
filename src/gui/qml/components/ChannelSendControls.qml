@@ -127,7 +127,7 @@ RowLayout {
 
     onClicked: {
       const param = root.send.enabledParam;
-      param.setBaseValueByUser(param.range.isToggled(param.baseValue) ? 0.0 : 1.0);
+      root.parameterOperator.setValue(param, param.range.isToggled(param.baseValue) ? 0.0 : 1.0);
     }
 
     ToolTip {

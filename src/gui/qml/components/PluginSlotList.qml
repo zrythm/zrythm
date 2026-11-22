@@ -6,6 +6,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.impl
 import Zrythm
+import ZrythmActions
 
 ListView {
   id: root
@@ -32,6 +33,7 @@ ListView {
   required property PluginGroup pluginGroup
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
+  required property ProcessorParameterOperator parameterOperator
   readonly property PluginSelectionModel pluginSelectionModel: internalSelectionModel
   required property Track track
   required property TrackSelectionModel trackSelectionModel
@@ -54,6 +56,7 @@ ListView {
 
   delegate: PluginSlotView {
     dragItem: pluginDragItem
+    parameterOperator: root.parameterOperator
     pluginGroup: root.pluginGroup
     pluginImporter: root.pluginImporter
     pluginOperator: root.pluginOperator

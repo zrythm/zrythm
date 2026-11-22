@@ -218,4 +218,39 @@ TEST_F (ParameterOperatorTest, SetValueRefusesForeignRegistryParameter)
   EXPECT_EQ (undo_stack_->count (), 0);
 }
 
+// Live values apply immediately and never appear on the undo stack
+TEST_F (ParameterOperatorTest, SetLiveValueAppliesWithoutUndoEntry)
+{
+  EXPECT_TRUE (operator_->setLiveValue (param_, 1.0).isEmpty ());
+  EXPECT_FLOAT_EQ (param_->baseValue (), 1.f);
+  EXPECT_EQ (undo_stack_->count (), 0);
+
+  undo_stack_->undo ();
+  EXPECT_FLOAT_EQ (param_->baseValue (), 1.f);
+}
+
+TEST_F (ParameterOperatorTest, SetLiveValueRefusesNullParameter)
+{
+  EXPECT_FALSE (operator_->setLiveValue (nullptr, 0.5f).isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Parameters registered in another registry are refused, so stale
+// references into a closed project cannot be written
+TEST_F (ParameterOperatorTest, SetLiveValueRefusesForeignRegistryParameter)
+{
+  utils::ObjectRegistry other_registry;
+  auto foreign_ref = utils::create_object<dsp::ProcessorParameter> (
+    other_registry, other_registry,
+    dsp::ProcessorParameter::UniqueId (u8"foreign_live_param"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
+    utils::Utf8String::from_utf8_encoded_string ("Foreign Live Parameter"));
+  auto * foreign = foreign_ref.get_object_as<dsp::ProcessorParameter> ();
+  ASSERT_NE (foreign, nullptr);
+  foreign->setBaseValue (0.5f);
+
+  EXPECT_FALSE (operator_->setLiveValue (foreign, 0.9f).isEmpty ());
+  EXPECT_FLOAT_EQ (foreign->baseValue (), 0.5f);
+}
+
 } // namespace zrythm::actions

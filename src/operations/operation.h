@@ -89,9 +89,10 @@ struct OperationReport
    * The project revision before and after this invocation, from the undo
    * stack's journal sequence.
    *
-   * The two are equal whenever the invocation changed nothing. On a
-   * refusal both carry the current revision, so a refused client can
-   * re-read and retry.
+   * The two are equal whenever the invocation pushed no history entry;
+   * Control operations push none, so their applied reports can describe
+   * changes the revisions do not track. On a refusal both carry the
+   * current revision, so a refused client can re-read and retry.
    */
   std::uint64_t revision_before = 0;
   std::uint64_t revision_after = 0;
