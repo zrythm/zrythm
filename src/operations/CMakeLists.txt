@@ -8,6 +8,7 @@ target_sources(zrythm_operations_lib
     builtin_operations.cpp
     operation_dispatcher.cpp
     operation_environment.cpp
+    parameter_operations.cpp
     port_connection_operations.cpp
     track_operations.cpp
     transport_operations.cpp
@@ -22,6 +23,7 @@ target_sources(zrythm_operations_lib
       operation_environment.h
       operation_registry.h
       param_types.h
+      parameter_operations.h
       port_connection_operations.h
       track_operations.h
       transport_operations.h

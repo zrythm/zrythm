@@ -4,10 +4,10 @@
 #pragma once
 
 #include "dsp/parameter.h"
-#include "undo/undo_stack.h"
-#include "utils/iobject_registry.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
+
+#include "operations/operation_dispatcher.h"
 
 namespace zrythm::actions
 {
@@ -15,9 +15,9 @@ namespace zrythm::actions
 /**
  * @brief Pushes undoable edits of processor parameter values.
  *
- * Each edit names its parameter explicitly. Editable parameters must be
- * registered in the registry passed at construction (the project
- * registry); edits of parameters from other registries are refused.
+ * All mutations are dispatched through the operations layer and are
+ * undoable. Edits of parameters outside the project registry are
+ * refused.
  */
 class ProcessorParameterOperator : public QObject
 {
@@ -26,21 +26,25 @@ class ProcessorParameterOperator : public QObject
   QML_UNCREATABLE ("")
 
 public:
-  ProcessorParameterOperator (
-    undo::UndoStack        &undo_stack,
-    utils::IObjectRegistry &registry,
-    QObject *               parent = nullptr);
+  explicit ProcessorParameterOperator (
+    operations::OperationDispatcher &operation_dispatcher,
+    QObject *                        parent = nullptr);
 
   /**
-   * @brief Pushes an undoable edit of @p param's value.
+   * @brief Pushes an undoable edit of @p param's base value.
    *
    * Consecutive edits of the same parameter within a short window merge
    * into a single undo step, so a control drag undoes as one action.
+   * Setting the current value elides.
+   *
+   * @param value New base value in the normalized 0.0-1.0 range.
+   * Callers must pass a finite value; non-finite values are not
+   * validated.
+   * @return Empty string on success, otherwise the refusal reason.
    */
-  Q_INVOKABLE void setValue (dsp::ProcessorParameter * param, float value);
+  Q_INVOKABLE QString setValue (dsp::ProcessorParameter * param, qreal value);
 
 private:
-  undo::UndoStack *        undo_stack_ = nullptr;
-  utils::IObjectRegistry * registry_ = nullptr;
+  operations::OperationDispatcher &operation_dispatcher_;
 };
 } // namespace zrythm::actions

@@ -7,59 +7,81 @@
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
+#include "helpers/project_fixture.h"
+
+#include "operations/builtin_operations.h"
+#include "operations/operation_dispatcher.h"
+#include "operations/operation_environment.h"
+#include "operations/operation_registry.h"
 #include "unit/actions/mock_undo_stack.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::actions
 {
 
-class ParameterOperatorTest : public ::testing::Test
+class ParameterOperatorTest : public test_helpers::ProjectTestFixture
 {
 protected:
+  /** Registers a processor parameter in the project's registry. */
+  dsp::ProcessorParameter * add_parameter (const char8_t * unique_id)
+  {
+    auto ref = utils::create_object<dsp::ProcessorParameter> (
+      project_->get_registry (), project_->get_registry (),
+      dsp::ProcessorParameter::UniqueId (unique_id),
+      dsp::ParameterRange (
+        dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
+      utils::Utf8String{ unique_id });
+    parameter_refs_.push_back (ref.as_untyped ());
+    return ref.get ();
+  }
+
   void SetUp () override
   {
-    // Create test parameters
-    param_ref_ = utils::create_object<dsp::ProcessorParameter> (
-      registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
-      dsp::ParameterRange (
-        dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
-      utils::Utf8String::from_utf8_encoded_string ("Test Parameter"));
-    param_ = param_ref_.get_object_as<dsp::ProcessorParameter> ();
-    ASSERT_NE (param_, nullptr);
+    ProjectTestFixture::SetUp ();
+    project_ = create_minimal_project ();
+    undo_stack_ = create_mock_undo_stack ();
+    operations::register_builtin_operations (operation_registry_);
+    environment_ = std::make_unique<operations::OperationEnvironment> (
+      project_->get_registry (), *undo_stack_,
+      *project_->tracklist ()->collection (), *project_->track_factory_,
+      *project_->tracklist ()->trackRouting (),
+      *project_->tracklist ()->channelSendRouting (),
+      *project_->tracklist ()->singletonTracks (),
+      *project_->port_connections_manager_, project_->getTransport ());
+    dispatcher_ = std::make_unique<operations::OperationDispatcher> (
+      operation_registry_, *environment_);
+    operator_ = std::make_unique<ProcessorParameterOperator> (*dispatcher_);
 
-    second_param_ref_ = utils::create_object<dsp::ProcessorParameter> (
-      registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"second_param"),
-      dsp::ParameterRange (
-        dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
-      utils::Utf8String::from_utf8_encoded_string ("Second Parameter"));
-    second_param_ = second_param_ref_.get_object_as<dsp::ProcessorParameter> ();
+    param_ = add_parameter (u8"test_param");
+    second_param_ = add_parameter (u8"second_param");
+    ASSERT_NE (param_, nullptr);
     ASSERT_NE (second_param_, nullptr);
 
-    // Create undo stack
-    undo_stack_ = create_mock_undo_stack ();
-
-    // Set initial values
     param_->setBaseValue (0.5f);
     second_param_->setBaseValue (0.5f);
-
-    // Create operator
-    operator_ =
-      std::make_unique<ProcessorParameterOperator> (*undo_stack_, registry_);
   }
 
   void TearDown () override
   {
     operator_.reset ();
+    dispatcher_.reset ();
+    environment_.reset ();
     undo_stack_.reset ();
+    // release the parameter references while the project registry they
+    // point into is still alive
+    parameter_refs_.clear ();
+    project_.reset ();
   }
 
-  utils::ObjectRegistry                       registry_;
-  dsp::ProcessorParameterUuidReference        param_ref_{ registry_ };
-  dsp::ProcessorParameter *                   param_ = nullptr;
-  dsp::ProcessorParameterUuidReference        second_param_ref_{ registry_ };
-  dsp::ProcessorParameter *                   second_param_ = nullptr;
-  std::unique_ptr<undo::UndoStack>            undo_stack_;
-  std::unique_ptr<ProcessorParameterOperator> operator_;
+  std::unique_ptr<structure::project::Project>      project_;
+  std::unique_ptr<undo::UndoStack>                  undo_stack_;
+  operations::OperationRegistry                     operation_registry_;
+  std::unique_ptr<operations::OperationEnvironment> environment_;
+  std::unique_ptr<operations::OperationDispatcher>  dispatcher_;
+  std::unique_ptr<ProcessorParameterOperator>       operator_;
+  dsp::ProcessorParameter *                         param_ = nullptr;
+  dsp::ProcessorParameter *                         second_param_ = nullptr;
+  std::vector<utils::UuidReference>                 parameter_refs_;
 };
 
 TEST_F (ParameterOperatorTest, SetValue)
@@ -69,7 +91,7 @@ TEST_F (ParameterOperatorTest, SetValue)
   EXPECT_EQ (undo_stack_->count (), 0);
 
   // Set new value
-  operator_->setValue (param_, 0.75f);
+  EXPECT_TRUE (operator_->setValue (param_, 0.75f).isEmpty ());
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
   EXPECT_EQ (undo_stack_->count (), 1);
 
@@ -82,48 +104,42 @@ TEST_F (ParameterOperatorTest, SetValue)
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.75f);
 }
 
-TEST_F (ParameterOperatorTest, SetValueRejectsNullParameter)
+TEST_F (ParameterOperatorTest, SetValueRefusesNullParameter)
 {
-  operator_->setValue (nullptr, 0.5f);
+  EXPECT_FALSE (operator_->setValue (nullptr, 0.5f).isEmpty ());
   EXPECT_EQ (undo_stack_->count (), 0);
 }
 
-TEST_F (ParameterOperatorTest, SetValueSameValue)
+// Setting the current value applies without growing the undo stack
+TEST_F (ParameterOperatorTest, SetValueElidesSameValue)
 {
-  // Set same value - should still create command
-  operator_->setValue (param_, 0.5f);
+  EXPECT_TRUE (operator_->setValue (param_, 0.5f).isEmpty ());
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
-  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 TEST_F (ParameterOperatorTest, SetValueBoundaryValues)
 {
   // Test minimum boundary
-  operator_->setValue (param_, 0.0f);
+  EXPECT_TRUE (operator_->setValue (param_, 0.0f).isEmpty ());
   EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
   EXPECT_EQ (undo_stack_->count (), 1);
 
   // Undo and test maximum boundary
   undo_stack_->undo ();
-  operator_->setValue (param_, 1.0f);
+  EXPECT_TRUE (operator_->setValue (param_, 1.0f).isEmpty ());
   EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
   EXPECT_EQ (undo_stack_->count (), 1);
 }
 
-TEST_F (ParameterOperatorTest, SetValueNegative)
+// Values outside the normalized 0.0-1.0 range are refused
+TEST_F (ParameterOperatorTest, SetValueRefusesOutOfRangeValues)
 {
-  // Parameter should clamp negative values to 0
-  operator_->setValue (param_, -0.5f);
-  EXPECT_FLOAT_EQ (param_->baseValue (), 0.0f);
-  EXPECT_EQ (undo_stack_->count (), 1);
-}
-
-TEST_F (ParameterOperatorTest, SetValueGreaterThanOne)
-{
-  // Parameter should clamp values > 1 to 1
-  operator_->setValue (param_, 1.5f);
-  EXPECT_FLOAT_EQ (param_->baseValue (), 1.0f);
-  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_FALSE (operator_->setValue (param_, -0.5f).isEmpty ());
+  EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
+  EXPECT_FALSE (operator_->setValue (param_, 1.5f).isEmpty ());
+  EXPECT_FLOAT_EQ (param_->baseValue (), 0.5f);
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 // A control drag pushes one command per change; quick successive edits of
@@ -165,15 +181,16 @@ TEST_F (ParameterOperatorTest, DifferentParametersDoNotMerge)
 // parameter alive independently.
 TEST_F (ParameterOperatorTest, EditRemainsUndoableAfterExternalReferencesDropped)
 {
-  operator_->setValue (param_, 0.75f);
+  EXPECT_TRUE (operator_->setValue (param_, 0.75f).isEmpty ());
   ASSERT_EQ (undo_stack_->count (), 1);
 
   const auto param_id = param_->get_uuid ();
   param_ = nullptr;
-  param_ref_ = dsp::ProcessorParameterUuidReference{ registry_ };
+  parameter_refs_.clear ();
 
-  dsp::ProcessorParameterUuidReference resolved (param_id, registry_);
-  auto *                               param = resolved.get ();
+  dsp::ProcessorParameterUuidReference resolved (
+    param_id, project_->get_registry ());
+  auto * param = resolved.get ();
   ASSERT_NE (param, nullptr);
 
   undo_stack_->undo ();
@@ -183,9 +200,7 @@ TEST_F (ParameterOperatorTest, EditRemainsUndoableAfterExternalReferencesDropped
   EXPECT_FLOAT_EQ (param->baseValue (), 0.75f);
 }
 
-// Parameters registered in another registry are refused: the command's
-// registry reference would throw for an unknown UUID, and the exception
-// must not escape into QML
+// Parameters registered in another registry are refused
 TEST_F (ParameterOperatorTest, SetValueRefusesForeignRegistryParameter)
 {
   utils::ObjectRegistry other_registry;
@@ -196,8 +211,9 @@ TEST_F (ParameterOperatorTest, SetValueRefusesForeignRegistryParameter)
     utils::Utf8String::from_utf8_encoded_string ("Foreign Parameter"));
   auto * foreign = foreign_ref.get_object_as<dsp::ProcessorParameter> ();
   ASSERT_NE (foreign, nullptr);
+  foreign->setBaseValue (0.5f);
 
-  operator_->setValue (foreign, 0.9f);
+  EXPECT_FALSE (operator_->setValue (foreign, 0.9f).isEmpty ());
   EXPECT_FLOAT_EQ (foreign->baseValue (), 0.5f);
   EXPECT_EQ (undo_stack_->count (), 0);
 }

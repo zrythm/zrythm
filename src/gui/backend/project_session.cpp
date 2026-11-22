@@ -184,11 +184,6 @@ ProjectSession::ProjectSession (
             return project_->project_id ().toString (QUuid::WithoutBraces);
           },
           this)),
-      processor_parameter_operator_ (
-        utils::make_qobject_unique<actions::ProcessorParameterOperator> (
-          *undo_stack_,
-          project_->projectRegistry (),
-          this)),
       file_importer_ (
         utils::make_qobject_unique<actions::FileImporter> (
           *undo_stack_,
@@ -254,6 +249,9 @@ ProjectSession::ProjectSession (
 
   port_connection_operator_ = utils::make_qobject_unique<
     actions::PortConnectionOperator> (*operation_dispatcher_, this);
+
+  processor_parameter_operator_ = utils::make_qobject_unique<
+    actions::ProcessorParameterOperator> (*operation_dispatcher_, this);
 
   timeline_arranger_objects_ =
     utils::make_qobject_unique<TimelineArrangerObjectsModel> (this);

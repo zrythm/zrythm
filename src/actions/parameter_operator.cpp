@@ -1,43 +1,44 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/format_qt.h"
-
 #include "actions/parameter_operator.h"
-#include "commands/change_parameter_value_command.h"
 #include "utils/logger.h"
+#include "utils/utf8_string.h"
+
+#include "operations/parameter_operations.h"
 
 namespace zrythm::actions
 {
 
+namespace
+{
+
+QString
+error_text (const operations::OperationReport &report)
+{
+  if (report.applied ())
+    return QString ();
+  z_warning ("refused parameter edit: {}", report.message);
+  return utils::Utf8String::from_utf8_encoded_string (report.message)
+    .to_qstring ();
+}
+
+} // namespace
+
 ProcessorParameterOperator::ProcessorParameterOperator (
-  undo::UndoStack        &undo_stack,
-  utils::IObjectRegistry &registry,
-  QObject *               parent)
-    : QObject (parent), undo_stack_ (&undo_stack), registry_ (&registry)
+  operations::OperationDispatcher &operation_dispatcher,
+  QObject *                        parent)
+    : QObject (parent), operation_dispatcher_ (operation_dispatcher)
 {
 }
 
-void
+QString
 ProcessorParameterOperator::setValue (
   dsp::ProcessorParameter * param,
-  float                     value)
+  qreal                     value)
 {
-  z_return_if_fail (param != nullptr);
-  // The command acquires a registry reference for the parameter, which
-  // throws for UUIDs the registry does not know. Refuse such edits here
-  // so the failure surfaces as an error log instead of an exception
-  // escaping into QML.
-  if (!registry_->contains (type_safe::get (param->get_uuid ())))
-    {
-      z_error (
-        "Refusing edit of parameter '{}': it is not registered in the project registry",
-        param->label ());
-      return;
-    }
-  undo_stack_->push (
-    std::make_unique<commands::ChangeParameterValueCommand> (
-      *param, *registry_, value));
+  return error_text (operation_dispatcher_.invoke (
+    operations::parameter_set_value_operation (), param, value));
 }
 
 } // namespace zrythm::actions

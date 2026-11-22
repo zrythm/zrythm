@@ -99,7 +99,7 @@ protected:
     project_ = create_minimal_project ();
     project_->add_default_tracks ();
     undo_stack_ = create_mock_undo_stack ();
-    operations::register_builtin_operations (registry_);
+    operations::register_builtin_operations (operation_registry_);
     environment_ = std::make_unique<operations::OperationEnvironment> (
       project_->get_registry (), *undo_stack_,
       *project_->tracklist ()->collection (), *project_->track_factory_,
@@ -113,7 +113,7 @@ protected:
           port_wiring_refusal_reason (*project_, src, dest);
       });
     dispatcher_ = std::make_unique<operations::OperationDispatcher> (
-      registry_, *environment_);
+      operation_registry_, *environment_);
     operator_ = std::make_unique<PortConnectionOperator> (*dispatcher_);
     bus1_ = add_audio_bus (u8"Bus 1");
     bus2_ = add_audio_bus (u8"Bus 2");
@@ -145,7 +145,7 @@ protected:
 
   std::unique_ptr<structure::project::Project>      project_;
   std::unique_ptr<undo::UndoStack>                  undo_stack_;
-  operations::OperationRegistry                     registry_;
+  operations::OperationRegistry                     operation_registry_;
   std::unique_ptr<operations::OperationEnvironment> environment_;
   std::unique_ptr<operations::OperationDispatcher>  dispatcher_;
   std::unique_ptr<PortConnectionOperator>           operator_;

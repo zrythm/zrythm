@@ -3,6 +3,7 @@
 
 #include "dsp/cv_port.h"
 #include "dsp/midi_port.h"
+#include "dsp/parameter.h"
 #include "dsp/transport.h"
 #include "structure/project/port_connections_manager.h"
 #include "structure/tracks/audio_group_track.h"
@@ -138,6 +139,18 @@ protected:
     return ref.get ();
   }
 
+  /** Registers a processor parameter owned by the fixture registry. */
+  dsp::ProcessorParameter * add_parameter (const char8_t * unique_id)
+  {
+    auto ref = utils::create_object<dsp::ProcessorParameter> (
+      registry_, registry_, dsp::ProcessorParameter::UniqueId (unique_id),
+      dsp::ParameterRange (
+        dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
+      utils::Utf8String{ unique_id });
+    parameter_refs_.push_back (ref.as_untyped ());
+    return ref.get ();
+  }
+
   std::string uuid_of (const structure::tracks::Track &track) const
   {
     return std::string (
@@ -151,6 +164,14 @@ protected:
     return std::string (
       utils::Utf8String::from_qstring (
         port.raw_uuid ().toString (QUuid::WithoutBraces))
+        .view ());
+  }
+
+  std::string uuid_of (const dsp::ProcessorParameter &parameter) const
+  {
+    return std::string (
+      utils::Utf8String::from_qstring (
+        type_safe::get (parameter.get_uuid ()).toString (QUuid::WithoutBraces))
         .view ());
   }
 
@@ -182,6 +203,7 @@ protected:
   std::unique_ptr<OperationEnvironment> environment_;
   OperationRegistry                     operation_registry_;
   std::vector<utils::UuidReference>     port_refs_;
+  std::vector<utils::UuidReference>     parameter_refs_;
 
   /**
    * The fixture's undo stack drops engine requests from this request
@@ -220,6 +242,7 @@ TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
     "port.disconnect",
     "port.set_connection_multiplier",
     "port.set_connection_enabled",
+    "parameter.set_value",
   };
   for (const auto &name : expected)
     {
@@ -1900,6 +1923,92 @@ TEST_F (OperationsTest, PortEnabledTogglesAndElides)
   });
   ASSERT_TRUE (locked.refused ());
   EXPECT_NE (locked.message.find ("locked"), std::string::npos);
+}
+
+// ============================================================================
+// parameter.set_value
+// ============================================================================
+
+TEST_F (OperationsTest, ParameterSetValueAppliesAndUndoes)
+{
+  auto * param = add_parameter (u8"gain");
+  param->setBaseValue (0.5f);
+
+  auto report = dispatch (
+    "parameter.set_value",
+    {
+      { "parameter", uuid_of (*param) },
+      { "value",     0.75             }
+  });
+  ASSERT_TRUE (report.applied ()) << report.message;
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.75f);
+  EXPECT_GT (report.revision_after, report.revision_before);
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.5f);
+  undo_stack_->redo ();
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.75f);
+}
+
+TEST_F (OperationsTest, ParameterSetValueElidesCurrentValue)
+{
+  auto * param = add_parameter (u8"gain");
+  param->setBaseValue (0.5f);
+
+  const auto report = dispatch (
+    "parameter.set_value",
+    {
+      { "parameter", uuid_of (*param) },
+      { "value",     0.5              }
+  });
+  ASSERT_TRUE (report.applied ());
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.5f);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (report.revision_after, report.revision_before);
+}
+
+TEST_F (OperationsTest, ParameterSetValueRefusesOutOfRangeValue)
+{
+  auto * param = add_parameter (u8"gain");
+  param->setBaseValue (0.5f);
+
+  const auto report = dispatch (
+    "parameter.set_value",
+    {
+      { "parameter", uuid_of (*param) },
+      { "value",     1.5              }
+  });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::OutOfRange);
+  EXPECT_FLOAT_EQ (param->baseValue (), 0.5f);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (OperationsTest, ParameterSetValueRefusesUnknownParameter)
+{
+  const auto report = dispatch (
+    "parameter.set_value",
+    {
+      { "parameter", "11111111-2222-3333-4444-555555555555" },
+      { "value",     0.5                                    }
+  });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::NotFound);
+}
+
+TEST_F (OperationsTest, ParameterSetValueRefusesMissingValue)
+{
+  auto * param = add_parameter (u8"gain");
+
+  const auto report = dispatch (
+    "parameter.set_value",
+    {
+      { "parameter", uuid_of (*param) }
+  });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::MissingParameter);
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 // ============================================================================

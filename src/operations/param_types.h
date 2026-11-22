@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "dsp/parameter.h"
 #include "dsp/port.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/track.h"
@@ -755,6 +756,88 @@ private:
   }
   dsp::Port * port_;
   std::string uuid_;
+};
+
+/**
+ * A required parameter identifying a processor parameter by its project
+ * UUID.
+ *
+ * Parses the UUID and resolves it against the object registry; a UUID
+ * that does not name a registered processor parameter is refused.
+ */
+class ProcessorParameterParam
+{
+public:
+  using ValueType = dsp::ProcessorParameter *;
+
+  static constexpr bool is_required () { return true; }
+
+  static nlohmann::json describe ()
+  {
+    return {
+      { "type",   "string" },
+      { "format", "uuid"   },
+    };
+  }
+
+  static std::expected<ProcessorParameterParam, Refusal>
+  parse (const nlohmann::json &value, const OperationEnvironment &env)
+  {
+    if (value.is_null ())
+      {
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "this parameter is required" });
+      }
+    if (!value.is_string ())
+      {
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::InvalidParameter,
+            "expected the parameter UUID as a string" });
+      }
+    const auto str = value.get<std::string> ();
+    auto       parameter = resolve_registry_object<dsp::ProcessorParameter> (
+      env.object_registry (), str, "processor parameter");
+    if (!parameter.has_value ())
+      {
+        return std::unexpected (parameter.error ());
+      }
+    return ProcessorParameterParam{ parameter.value (), str };
+  }
+
+  /**
+   * Takes a live parameter; the UUID string reported in results is
+   * derived from the parameter itself.
+   */
+  static std::expected<ProcessorParameterParam, Refusal>
+  from_value (dsp::ProcessorParameter * parameter)
+  {
+    if (parameter == nullptr)
+      {
+        return std::unexpected (
+          Refusal{
+            utils::RefusalKind::MissingParameter, "the parameter is required" });
+      }
+    return ProcessorParameterParam{
+      parameter, uuid_to_string (type_safe::get (parameter->get_uuid ()))
+    };
+  }
+
+  dsp::ProcessorParameter * value () const { return parameter_; }
+
+  /** The UUID string identifying the parameter in reports. */
+  const std::string &uuid_string () const { return uuid_; }
+
+private:
+  explicit ProcessorParameterParam (
+    dsp::ProcessorParameter * parameter,
+    std::string               uuid)
+      : parameter_ (parameter), uuid_ (std::move (uuid))
+  {
+  }
+  dsp::ProcessorParameter * parameter_;
+  std::string               uuid_;
 };
 
 /**

@@ -3,6 +3,7 @@
 
 #include "actions/port_connection_operator.h"
 #include "dsp/port.h"
+#include "utils/logger.h"
 #include "utils/utf8_string.h"
 
 #include "operations/port_connection_operations.h"
@@ -16,10 +17,11 @@ namespace
 QString
 error_text (const operations::OperationReport &report)
 {
-  return report.applied ()
-           ? QString ()
-           : utils::Utf8String::from_utf8_encoded_string (report.message)
-               .to_qstring ();
+  if (report.applied ())
+    return QString ();
+  z_warning ("refused port connection edit: {}", report.message);
+  return utils::Utf8String::from_utf8_encoded_string (report.message)
+    .to_qstring ();
 }
 
 } // namespace
