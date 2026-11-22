@@ -92,7 +92,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="657"/>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>剪切</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="663"/>

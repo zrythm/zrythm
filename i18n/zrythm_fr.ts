@@ -27,7 +27,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="137"/>
         <source>Third-Party Licenses</source>
-        <translation type="unfinished"></translation>
+        <translation>Licences tierces</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="144"/>
@@ -54,7 +54,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="16"/>
         <source>Third-Party Licenses</source>
-        <translation type="unfinished"></translation>
+        <translation>Licences tierces</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="41"/>
@@ -70,7 +70,7 @@
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="132"/>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="228"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Retour</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="164"/>
@@ -92,7 +92,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="657"/>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Couper</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="663"/>
@@ -1307,7 +1307,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="252"/>
         <source>Spring Green</source>
-        <translation type="unfinished"></translation>
+        <translation>Vert printanier</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="261"/>
@@ -4035,7 +4035,7 @@ Pour supporter ce projet&#xa0;: https://liberapay.com/Zrythm et pour supporter l
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="460"/>
         <source>The objects could not be deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>Les objets n&apos;ont pas pu être effacés</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="650"/>
@@ -4045,7 +4045,7 @@ Pour supporter ce projet&#xa0;: https://liberapay.com/Zrythm et pour supporter l
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="670"/>
         <source>The object could not be deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;objet n&apos;a pas pu être effacé</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="932"/>

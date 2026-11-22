@@ -104,7 +104,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="657"/>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Вырезать (Cut)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="663"/>
@@ -767,7 +767,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="127"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="361"/>
         <source>Enter title...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Введите название...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="138"/>
@@ -791,7 +791,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="157"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="390"/>
         <source>Music genre</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Жанр музыки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="158"/>
@@ -803,18 +803,18 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="164"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="397"/>
         <source>Enter genre...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Введите жанр...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="175"/>
         <source>Audio file format</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Формат аудиофайла</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="176"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="409"/>
         <source>Format</source>
-        <translation type="unfinished">Формат</translation>
+        <translation>Формат</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="185"/>
@@ -1217,12 +1217,12 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/LoadController.qml" line="23"/>
         <source>Open Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть проект</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/LoadController.qml" line="32"/>
         <source>Loading project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка проекта...</translation>
     </message>
 </context>
 <context>
@@ -1243,7 +1243,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="60"/>
         <source>Export…</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="69"/>

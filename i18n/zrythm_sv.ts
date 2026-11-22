@@ -27,12 +27,12 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="137"/>
         <source>Third-Party Licenses</source>
-        <translation type="unfinished"></translation>
+        <translation>Tredjepartslicenser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="144"/>
         <source>Copy System Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera systeminformation</translation>
     </message>
     <message>
         <source>Third Party Notices</source>
@@ -62,33 +62,33 @@
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="16"/>
         <source>Third-Party Licenses</source>
-        <translation type="unfinished"></translation>
+        <translation>Tredjepartslicenser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="41"/>
         <source>via %1 · </source>
-        <translation type="unfinished"></translation>
+        <translation>via %1 · </translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="57"/>
         <source>Search components…</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök komponenter…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="132"/>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="228"/>
         <source>Back</source>
-        <translation type="unfinished">Tillbaka</translation>
+        <translation>Tillbaka</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="164"/>
         <source>Required by %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Krävs av %1</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutThirdPartyLicensesPage.qml" line="200"/>
         <source>License text not bundled; see the component homepage.</source>
-        <translation type="unfinished"></translation>
+        <translation>Licenstexten medföljer inte. Se komponentens webbplats.</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
@@ -104,7 +104,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="657"/>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Klipp ut</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="663"/>
@@ -119,12 +119,12 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="675"/>
         <source>Duplicate</source>
-        <translation type="unfinished">Duplicera</translation>
+        <translation>Duplicera</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="690"/>
         <source>Toggle &amp;Mute</source>
-        <translation type="unfinished">Växla &amp;tyst läge</translation>
+        <translation>Växla &amp;tystnad</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="700"/>
@@ -171,7 +171,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="681"/>
         <source>Delete</source>
-        <translation type="unfinished">Ta bort</translation>
+        <translation>Ta bort</translation>
     </message>
 </context>
 <context>
@@ -403,7 +403,7 @@
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="187"/>
         <source>Maj</source>
-        <translation>dur</translation>
+        <translation>Dur</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ChordSelectorDialog.qml" line="191"/>
@@ -703,8 +703,8 @@
         <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
         <source>DSP Load: %1%
 XRun Count: %2</source>
-        <translation>DSP-belastning: %1%
-Antal XRuns: %2</translation>
+        <translation>DSP-belastning: %1 %
+Antal XRun: %2</translation>
     </message>
 </context>
 <context>
@@ -712,7 +712,7 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="34"/>
         <source>Export Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Exporten misslyckades</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="45"/>
@@ -1065,7 +1065,7 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="177"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
-        <translation>Om du använder Zrythm för första gången rekommenderar vi att du går igenom avsnittet ”Komma igång” i %1användarhandboken%2.</translation>
+        <translation>Om det är första gången du använder Zrythm föreslår vi att du går igenom avsnittet %1under Kom igång i användarhandboken%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="235"/>
@@ -1133,12 +1133,12 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="421"/>
         <source>Show in File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Visa i filhanteraren</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="428"/>
         <source>Remove From List</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta bort från listan</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="452"/>
@@ -1281,7 +1281,7 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="202"/>
         <source>More Languages</source>
-        <translation type="unfinished"></translation>
+        <translation>Fler språk</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="212"/>
@@ -1787,7 +1787,7 @@ Antal XRuns: %2</translation>
         <location filename="../src/gui/qml/components/NotificationCenterButton.qml" line="37"/>
         <location filename="../src/gui/qml/components/NotificationCenterButton.qml" line="40"/>
         <source>Notifications</source>
-        <translation type="unfinished"></translation>
+        <translation>Aviseringar</translation>
     </message>
 </context>
 <context>
@@ -1795,32 +1795,32 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/components/NotificationCenterPopover.qml" line="42"/>
         <source>just now</source>
-        <translation type="unfinished"></translation>
+        <translation>nyss</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/NotificationCenterPopover.qml" line="44"/>
         <source>%1 s ago</source>
-        <translation type="unfinished"></translation>
+        <translation>för %1 s sedan</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/NotificationCenterPopover.qml" line="47"/>
         <source>%1 min ago</source>
-        <translation type="unfinished"></translation>
+        <translation>för %1 min sedan</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/NotificationCenterPopover.qml" line="50"/>
         <source>%1 h ago</source>
-        <translation type="unfinished"></translation>
+        <translation>för %1 h sedan</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/NotificationCenterPopover.qml" line="161"/>
         <source>No Notifications</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga aviseringar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/NotificationCenterPopover.qml" line="177"/>
         <source>Clear All</source>
-        <translation type="unfinished"></translation>
+        <translation>Rensa alla</translation>
     </message>
 </context>
 <context>
@@ -1829,98 +1829,98 @@ Antal XRuns: %2</translation>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="20"/>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="268"/>
         <source>Instrument</source>
-        <translation type="unfinished">Instrument</translation>
+        <translation>Instrument</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="21"/>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="276"/>
         <source>Effect</source>
-        <translation type="unfinished"></translation>
+        <translation>Effekt</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="22"/>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="284"/>
         <source>MIDI</source>
-        <translation type="unfinished">MIDI</translation>
+        <translation>MIDI</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="23"/>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="292"/>
         <source>Modulator</source>
-        <translation type="unfinished">Modulator</translation>
+        <translation>Modulator</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="39"/>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="249"/>
         <source>Favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Favoriter</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="175"/>
         <source>Search plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="186"/>
         <source>Plugin Spec Filters</source>
-        <translation type="unfinished"></translation>
+        <translation>Filter för insticksmodulspecifikation</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="191"/>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="226"/>
         <source>Filters</source>
-        <translation type="unfinished"></translation>
+        <translation>Filter</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="236"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Rensa</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="262"/>
         <source>Type</source>
-        <translation type="unfinished">Typ</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="304"/>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="653"/>
         <source>Format</source>
-        <translation type="unfinished">Format</translation>
+        <translation>Format</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="405"/>
         <source>No Plugins Match</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga insticksmoduler matchar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="406"/>
         <source>Scanning Plugins…</source>
-        <translation type="unfinished"></translation>
+        <translation>Söker igenom insticksmoduler…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="406"/>
         <source>No Plugins Found</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga insticksmoduler hittades</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="420"/>
         <source>Try a different search or clear the active filters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Prova en annan sökning eller rensa de aktiva filtren.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="423"/>
         <source>Scan your system for audio plugins to get started.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök igenom systemet efter ljudinsticksmoduler för att komma igång.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="433"/>
         <source>Clear Filters</source>
-        <translation type="unfinished"></translation>
+        <translation>Rensa filter</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="449"/>
         <source>Scan for Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök efter insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="509"/>
@@ -1931,37 +1931,37 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="556"/>
         <source>Show in File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Visa i filhanteraren</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="561"/>
         <source>Plugin Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Information om insticksmodulen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="578"/>
         <source>Favorite</source>
-        <translation type="unfinished"></translation>
+        <translation>Favorit</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="586"/>
         <source>Import</source>
-        <translation type="unfinished"></translation>
+        <translation>Importera</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="664"/>
         <source>Category</source>
-        <translation type="unfinished">Kategori</translation>
+        <translation>Kategori</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="676"/>
         <source>Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Plats</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="724"/>
         <source>Remove Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta bort filter</translation>
     </message>
 </context>
 <context>
@@ -2025,17 +2025,17 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotList.qml" line="95"/>
         <source>Drop or Paste Plugins Here</source>
-        <translation type="unfinished"></translation>
+        <translation>Släpp eller klistra in insticksmoduler här</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotList.qml" line="105"/>
         <source>Paste Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Klistra in insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotList.qml" line="115"/>
         <source>Paste the plugins from the clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Klistra in insticksmodulerna från urklipp</translation>
     </message>
 </context>
 <context>
@@ -2054,40 +2054,40 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="84"/>
         <source>Cut %1 Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Klipp ut %1 insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="84"/>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="101"/>
         <source>Cut Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Klipp ut insticksmodul</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="86"/>
         <source>Copy %1 Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera %1 insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="86"/>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="114"/>
         <source>Copy Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera insticksmodul</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="88"/>
         <source>Duplicate %1 Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplicera %1 insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="88"/>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="138"/>
         <source>Duplicate Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplicera insticksmodul</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="125"/>
         <source>Paste</source>
-        <translation type="unfinished">Klistra in</translation>
+        <translation>Klistra in</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="165"/>
@@ -2105,27 +2105,27 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/components/PluginWindowHeaderBar.qml" line="165"/>
         <source>Bypass</source>
-        <translation type="unfinished">Förbikoppla</translation>
+        <translation>Förbikoppla</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginWindowHeaderBar.qml" line="221"/>
         <source>Compare two plugin states</source>
-        <translation type="unfinished"></translation>
+        <translation>Jämför två tillstånd för insticksmodulen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginWindowHeaderBar.qml" line="238"/>
         <source>Toggle plugin diagnostics</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla diagnostik för insticksmodulen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginWindowHeaderBar.qml" line="276"/>
         <source>Load: %1% · Latency: %2 samples (%3 ms)</source>
-        <translation type="unfinished"></translation>
+        <translation>Belastning: %1 % · Latens: %2 samplingar (%3 ms)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginWindowHeaderBar.qml" line="278"/>
         <source>Load: %1% · Latency: %2 samples</source>
-        <translation type="unfinished"></translation>
+        <translation>Belastning: %1 % · Latens: %2 samplingar</translation>
     </message>
 </context>
 <context>
@@ -2133,37 +2133,37 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetBrowserPopup.qml" line="322"/>
         <source>Search presets</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök förinställningar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetBrowserPopup.qml" line="391"/>
         <source>All</source>
-        <translation type="unfinished">Alla</translation>
+        <translation>Alla</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetBrowserPopup.qml" line="445"/>
         <source>%1 of %2 presets</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 av %2 förinställningar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetBrowserPopup.qml" line="447"/>
         <source> · Loaded: %1</source>
-        <translation type="unfinished"></translation>
+        <translation> · Inläst: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetBrowserPopup.qml" line="458"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Avbryt</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetBrowserPopup.qml" line="467"/>
         <source>OK</source>
-        <translation type="unfinished">OK</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetBrowserPopup.qml" line="480"/>
         <source>No matching presets</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga matchande förinställningar</translation>
     </message>
 </context>
 <context>
@@ -2171,17 +2171,17 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetSelector.qml" line="53"/>
         <source>No Preset</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingen förinställning</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetSelector.qml" line="133"/>
         <source>Previous Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Föregående objekt</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/PresetSelector.qml" line="182"/>
         <source>Next Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Nästa objekt</translation>
     </message>
 </context>
 <context>
@@ -2207,35 +2207,35 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="28"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished">&amp;Kopiera</translation>
+        <translation>&amp;Kopiera</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="37"/>
         <source>Cu&amp;t</source>
-        <translation type="unfinished"></translation>
+        <translation>Klipp u&amp;t</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="56"/>
         <source>&amp;Duplicate</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Duplicera</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="76"/>
         <source>&amp;Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>K&amp;listra in</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="170"/>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="182"/>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="190"/>
         <source>Cannot Perform Operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Det går inte att utföra åtgärden</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="174"/>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="194"/>
         <source>Pasted Content Modified</source>
-        <translation type="unfinished"></translation>
+        <translation>Det inklistrade innehållet ändrades</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="202"/>
@@ -2254,12 +2254,12 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="500"/>
         <source>%1 Hz · %2 samples</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Hz · %2 samplingar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="503"/>
         <source>%1 tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 spår</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="508"/>
@@ -2345,7 +2345,7 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/controllers/project_saver.cpp" line="177"/>
         <source>Unable to read file at {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att läsa filen vid {}</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_saver.cpp" line="191"/>
@@ -2360,32 +2360,32 @@ Antal XRuns: %2</translation>
     <message>
         <location filename="../src/controllers/project_saver.cpp" line="483"/>
         <source>Writing audio files...</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriver ljudfiler…</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_saver.cpp" line="489"/>
         <source>Serializing project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Serialiserar projektet…</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_saver.cpp" line="498"/>
         <source>Validating project data...</source>
-        <translation type="unfinished"></translation>
+        <translation>Validerar projektdata…</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_saver.cpp" line="502"/>
         <source>Writing project file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriver projektfilen…</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_saver.cpp" line="506"/>
         <source>Finalizing save...</source>
-        <translation type="unfinished"></translation>
+        <translation>Slutför sparandet…</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_saver.cpp" line="517"/>
         <source>Project saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Projektet har sparats</translation>
     </message>
     <message>
         <source>Failed to compress project file</source>
@@ -3738,27 +3738,27 @@ Stöd projektet på {}
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="427"/>
         <source>An object&apos;s owner could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att hitta objektets ägare</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="433"/>
         <source>No objects to delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga objekt att ta bort</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="460"/>
         <source>The objects could not be deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att ta bort objekten</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="650"/>
         <source>Delete Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta bort objekt</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="670"/>
         <source>The object could not be deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att ta bort objektet</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="932"/>
@@ -3769,12 +3769,12 @@ Stöd projektet på {}
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="945"/>
         <source>The objects could not be cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att klippa ut objekten</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="996"/>
         <source>The objects could not be cloned</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att klona objekten</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1001"/>
@@ -3784,67 +3784,67 @@ Stöd projektet på {}
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1205"/>
         <source>The objects could not be copied to the clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att kopiera objekten till urklipp</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1231"/>
         <source>Some selected objects cannot be cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Vissa markerade objekt kan inte klippas ut</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1356"/>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1612"/>
         <source>Time signatures can only be placed at bar boundaries</source>
-        <translation type="unfinished"></translation>
+        <translation>Taktarter kan bara placeras vid taktgränser</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1385"/>
         <source>The objects could not be duplicated</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att duplicera objekten</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1392"/>
         <source>Duplicate %1 Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplicera %1 objekt</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1601"/>
         <source>Objects cannot be placed before the start of the destination</source>
-        <translation type="unfinished"></translation>
+        <translation>Objekt kan inte placeras före destinationens början</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1639"/>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1689"/>
         <source>The clipboard objects could not be pasted here</source>
-        <translation type="unfinished"></translation>
+        <translation>Objekten i urklipp kan inte klistras in här</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1695"/>
         <source>Paste %1 Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Klistra in %1 objekt</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1712"/>
         <location filename="../src/actions/track_collection_operator.cpp" line="289"/>
         <source>%n audio item(s) were dropped</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n ljudobjekt släpptes</numerusform>
+            <numerusform>%n ljudobjekt släpptes</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1716"/>
         <source>%n routing(s) were severed</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n dirigering bröts</numerusform>
+            <numerusform>%n dirigeringar bröts</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1721"/>
         <location filename="../src/actions/track_collection_operator.cpp" line="302"/>
         <source> (content from another project could not be resolved here)</source>
-        <translation type="unfinished"></translation>
+        <translation> (innehåll från ett annat projekt kunde inte lösas här)</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="1831"/>
@@ -3859,7 +3859,7 @@ Stöd projektet på {}
         <location filename="../src/actions/track_collection_operator.cpp" line="514"/>
         <location filename="../src/actions/track_collection_operator.cpp" line="529"/>
         <source>The clipboard contents could not be pasted</source>
-        <translation type="unfinished"></translation>
+        <translation>Innehållet i urklipp kunde inte klistras in</translation>
     </message>
     <message>
         <location filename="../src/actions/arranger_object_selection_operator.cpp" line="2013"/>
@@ -3934,103 +3934,103 @@ Stöd projektet på {}
     <message>
         <location filename="../src/commands/delete_lane_command.cpp" line="13"/>
         <source>Delete Lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta bort fält</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_operator.cpp" line="93"/>
         <location filename="../src/actions/plugin_operator.cpp" line="105"/>
         <source>The plugins could not be copied to the clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Insticksmodulerna kunde inte kopieras till urklipp</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_operator.cpp" line="128"/>
         <source>Cut %1 Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Klipp ut %1 insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_operator.cpp" line="147"/>
         <source>Paste %1 Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Klistra in %1 insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_operator.cpp" line="187"/>
         <source>The clipboard plugins do not fit this slot category</source>
-        <translation type="unfinished"></translation>
+        <translation>Insticksmodulerna i urklipp passar inte i den här platskategorin</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_operator.cpp" line="213"/>
         <source>The clipboard plugins could not be pasted here</source>
-        <translation type="unfinished"></translation>
+        <translation>Insticksmodulerna i urklipp kunde inte klistras in här</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_operator.cpp" line="236"/>
         <source>A clipboard plugin failed to instantiate</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att instansiera en insticksmodul från urklipp</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_operator.cpp" line="297"/>
         <source>The plugins could not be duplicated</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att duplicera insticksmodulerna</translation>
     </message>
     <message>
         <location filename="../src/actions/plugin_operator.cpp" line="305"/>
         <source>Duplicate %1 Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplicera %1 insticksmoduler</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="138"/>
         <source>The lane is not attached to a track</source>
-        <translation type="unfinished"></translation>
+        <translation>Fältet är inte kopplat till ett spår</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="152"/>
         <source>The lane could not be deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>Fältet kunde inte tas bort</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="175"/>
         <location filename="../src/actions/track_collection_operator.cpp" line="187"/>
         <source>The tracks could not be copied to the clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Spåren kunde inte kopieras till urklipp</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="212"/>
         <location filename="../src/actions/track_collection_operator.cpp" line="223"/>
         <source>The tracks could not be cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Spåren kunde inte klippas ut</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="236"/>
         <source>Cut %1 Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Klipp ut %1 spår</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="280"/>
         <source>Paste %1 Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Klistra in %1 spår</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/actions/track_collection_operator.cpp" line="293"/>
         <source>%n external reference(s) were severed</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n extern referens bröts</numerusform>
+            <numerusform>%n externa referenser bröts</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="305"/>
         <source> (content deleted after the copy could not be restored)</source>
-        <translation type="unfinished"></translation>
+        <translation> (innehåll som raderades efter kopieringen kunde inte återställas)</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="335"/>
         <source>The tracks could not be duplicated</source>
-        <translation type="unfinished"></translation>
+        <translation>Spåren kunde inte dupliceras</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="383"/>
         <source>Duplicate %1 Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplicera %1 spår</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="569"/>
@@ -4038,17 +4038,17 @@ Stöd projektet på {}
         <location filename="../src/actions/track_collection_operator.cpp" line="687"/>
         <location filename="../src/actions/track_collection_operator.cpp" line="852"/>
         <source>The clipboard tracks could not be pasted here</source>
-        <translation type="unfinished"></translation>
+        <translation>Spåren i urklipp kunde inte klistras in här</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="593"/>
         <source>A plugin on the clipboard tracks failed to instantiate</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att instansiera en insticksmodul på spåren i urklipp</translation>
     </message>
     <message>
         <location filename="../src/actions/track_collection_operator.cpp" line="672"/>
         <source>The clipboard tracks contain invalid folder nesting</source>
-        <translation type="unfinished"></translation>
+        <translation>Spåren i urklipp har ogiltig mappnästning</translation>
     </message>
 </context>
 <context>
@@ -4138,7 +4138,7 @@ Stöd projektet på {}
     <message>
         <location filename="../src/gui/qml/components/SaveController.qml" line="52"/>
         <source>Project Save Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att spara projektet</translation>
     </message>
 </context>
 <context>
@@ -4618,35 +4618,35 @@ Stöd projektet på {}
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="72"/>
         <source>Cut %1 Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Klipp ut %1 spår</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="72"/>
         <location filename="../src/gui/qml/components/TrackView.qml" line="86"/>
         <source>Cut Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Klipp ut spår</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="74"/>
         <source>Copy %1 Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera %1 spår</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="74"/>
         <location filename="../src/gui/qml/components/TrackView.qml" line="96"/>
         <source>Copy Track</source>
-        <translation type="unfinished">Aktivera solo på spåret</translation>
+        <translation>Kopiera spår</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="77"/>
         <source>Duplicate %1 Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplicera %1 spår</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="77"/>
         <location filename="../src/gui/qml/components/TrackView.qml" line="114"/>
         <source>Duplicate Track</source>
-        <translation type="unfinished">_Duplicera spår</translation>
+        <translation>Duplicera spår</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="79"/>
@@ -4662,12 +4662,12 @@ Stöd projektet på {}
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="106"/>
         <source>Paste Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Klistra in spår</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="380"/>
         <source>Delete Lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta bort fält</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackView.qml" line="666"/>
@@ -4766,7 +4766,7 @@ Stöd projektet på {}
     <message>
         <location filename="../src/gui/qml/components/TransportControls.qml" line="200"/>
         <source>Base tempo: %1 BPM</source>
-        <translation type="unfinished"></translation>
+        <translation>Grundtempo: %1 BPM</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TransportControls.qml" line="209"/>
@@ -4781,17 +4781,17 @@ Stöd projektet på {}
     <message>
         <location filename="../src/gui/qml/components/TransportControls.qml" line="455"/>
         <source>Edit Time Signature</source>
-        <translation type="unfinished">Redigera taktart</translation>
+        <translation>Redigera taktart</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TransportControls.qml" line="461"/>
         <source>Beats per bar:</source>
-        <translation type="unfinished">Slag per takt:</translation>
+        <translation>Slag per takt:</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TransportControls.qml" line="475"/>
         <source>Beat unit:</source>
-        <translation type="unfinished">Slagenhet:</translation>
+        <translation>Slagenhet:</translation>
     </message>
 </context>
 <context>
@@ -17153,23 +17153,23 @@ Stöd projektet på https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="344"/>
         <source>Verifying project directory...</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontrollerar projektkatalogen…</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="354"/>
         <source>Reading project file...</source>
-        <translation type="unfinished">Läser projektfil…</translation>
+        <translation>Läser projektfil…</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="361"/>
         <source>Parsing project data...</source>
-        <translation type="unfinished">Tolkar projektdata…</translation>
+        <translation>Tolkar projektdata…</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="378"/>
         <location filename="../src/gui/backend/project_manager.cpp" line="509"/>
         <source>Failed to load project data. See the log for details.</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att läsa in projektdata. Se loggen för mer information.</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="408"/>
@@ -17204,14 +17204,14 @@ Stöd projektet på https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="542"/>
         <source>unknown error</source>
-        <translation type="unfinished"></translation>
+        <translation>okänt fel</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/backend/project_manager.cpp" line="550"/>
         <source>%n plugin(s) failed to load</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n insticksmodul kunde inte läsas in</numerusform>
+            <numerusform>%n insticksmoduler kunde inte läsas in</numerusform>
         </translation>
     </message>
 </context>
@@ -17229,17 +17229,17 @@ Stöd projektet på https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="201"/>
         <source>Project Loading Failed</source>
-        <translation type="unfinished">Det gick inte att läsa in projektet</translation>
+        <translation>Det gick inte att läsa in projektet</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="403"/>
         <source>Audio Device Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ljudenhetsfel</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="415"/>
         <source>Audio Device Initialization Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att initiera ljudenheten</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="434"/>
@@ -17280,23 +17280,23 @@ Stöd projektet på https://liberapay.com/Zrythm
     <message>
         <location filename="../src/plugins/lv2_plugin.cpp" line="1266"/>
         <source>LV2 descriptor has no path</source>
-        <translation type="unfinished"></translation>
+        <translation>LV2-beskrivaren saknar sökväg</translation>
     </message>
     <message>
         <location filename="../src/plugins/lv2_plugin.cpp" line="1275"/>
         <source>Failed to load LV2 plugin from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att läsa in LV2-insticksmodulen från %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/lv2_plugin.cpp" line="1304"/>
         <location filename="../src/plugins/lv2_plugin.cpp" line="2845"/>
         <source>Instantiation failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Instansiering misslyckades</translation>
     </message>
     <message>
         <location filename="../src/plugins/lv2_plugin.cpp" line="1332"/>
         <source>Cannot re-configure LV2 plugin during processing</source>
-        <translation type="unfinished"></translation>
+        <translation>Det går inte att konfigurera om LV2-insticksmodulen under bearbetning</translation>
     </message>
 </context>
 <context>
@@ -17312,13 +17312,13 @@ Stöd projektet på https://liberapay.com/Zrythm
     <message>
         <location filename="../src/plugins/vst3_plugin.cpp" line="960"/>
         <source>Failed to load VST3 plugin from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Det gick inte att läsa in VST3-insticksmodulen från %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vst3_plugin.cpp" line="2446"/>
         <location filename="../src/plugins/vst3_plugin.cpp" line="2461"/>
         <source>Program %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Program %1</translation>
     </message>
 </context>
 <context>
