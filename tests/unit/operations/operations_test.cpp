@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <ranges>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "dsp/cv_port.h"
 #include "dsp/midi_port.h"
 #include "dsp/parameter.h"
@@ -20,6 +25,8 @@
 #include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
 #include "utils/uuid_reference.h"
+
+#include <QByteArray>
 
 #include "helpers/scoped_qcoreapplication.h"
 #include "helpers/sidechain_test_plugin.h"
@@ -1258,15 +1265,18 @@ TEST_F (OperationsTest, TrackListReturnsSummaries)
   auto report = dispatch ("track.list");
 
   ASSERT_TRUE (report.applied ());
-  ASSERT_TRUE (report.result.contains ("tracks"));
-  const auto &tracks = report.result.at ("tracks");
-  ASSERT_EQ (tracks.size (), 4);
-  EXPECT_EQ (tracks.at (3).at ("name").get<std::string> (), "Drums");
+  ASSERT_TRUE (report.result.contains ("items"));
+  const auto &items = report.result.at ("items");
+  ASSERT_EQ (items.size (), 4);
+  EXPECT_EQ (items.at (3).at ("name").get<std::string> (), "Drums");
   // Enums serialize as their enumerator names
   EXPECT_EQ (
-    tracks.at (3).at ("type").get<std::string> (),
+    items.at (3).at ("type").get<std::string> (),
     std::string (ENUM_NAME (structure::tracks::Track::Type::Audio)));
-  EXPECT_EQ (report.result.at ("total").get<int> (), 4);
+  EXPECT_EQ (report.result.at ("total_count").get<int> (), 4);
+  // a page covering the whole list carries no cursor
+  EXPECT_TRUE (report.result.at ("next_cursor").is_null ());
+  EXPECT_FALSE (report.result.at ("revision_changed").get<bool> ());
   EXPECT_EQ (report.revision_after, report.revision_before);
 }
 
@@ -1281,8 +1291,10 @@ TEST_F (OperationsTest, TrackListHonorsLimit)
   });
 
   ASSERT_TRUE (report.applied ());
-  EXPECT_EQ (report.result.at ("tracks").size (), 2);
-  EXPECT_EQ (report.result.at ("total").get<int> (), 4);
+  EXPECT_EQ (report.result.at ("items").size (), 2);
+  EXPECT_EQ (report.result.at ("total_count").get<int> (), 4);
+  // more tracks remain, so the response carries a cursor
+  ASSERT_FALSE (report.result.at ("next_cursor").is_null ());
 }
 
 TEST_F (OperationsTest, TrackListRefusesBadLimit)
@@ -1294,6 +1306,135 @@ TEST_F (OperationsTest, TrackListRefusesBadLimit)
   });
 
   ASSERT_TRUE (report.refused ());
+}
+
+// walking the cursor chain serves every track exactly once
+TEST_F (OperationsTest, TrackListPaginatesThroughAllPages)
+{
+  for (const auto _ : std::views::iota (0, 3))
+    {
+      add_audio_track_directly ();
+    }
+
+  std::vector<std::string> uuids;
+  auto                     report = dispatch (
+    "track.list",
+    {
+      { "limit", 2 }
+  });
+  for (int page = 0;; ++page)
+    {
+      ASSERT_LT (page, 8) << "pagination did not terminate";
+      ASSERT_TRUE (report.applied ()) << report.message;
+      for (const auto &item : report.result.at ("items"))
+        {
+          uuids.push_back (item.at ("uuid").get<std::string> ());
+        }
+      if (report.result.at ("next_cursor").is_null ())
+        {
+          break;
+        }
+      report = dispatch (
+        "track.list",
+        {
+          { "limit",  2                                                    },
+          { "cursor", report.result.at ("next_cursor").get<std::string> () }
+      });
+    }
+
+  EXPECT_EQ (report.result.at ("total_count").get<int> (), 6);
+  EXPECT_FALSE (report.result.at ("revision_changed").get<bool> ());
+  ASSERT_EQ (uuids.size (), 6);
+  const std::set<std::string> unique (uuids.begin (), uuids.end ());
+  EXPECT_EQ (unique.size (), uuids.size ());
+}
+
+TEST_F (OperationsTest, TrackListCursorStatesRevisionChange)
+{
+  const auto first = dispatch (
+    "track.list",
+    {
+      { "limit", 1 }
+  });
+  ASSERT_TRUE (first.applied ());
+  ASSERT_FALSE (first.result.at ("next_cursor").is_null ());
+
+  // a rename pushes a history entry, moving the revision between pages
+  auto * track = add_audio_track_directly ();
+  ASSERT_TRUE (
+    dispatch (
+      "track.set_name",
+      {
+        { "track",    uuid_of (*track) },
+        { "new_name", "Renamed"        }
+  })
+      .applied ());
+
+  const auto second = dispatch (
+    "track.list",
+    {
+      { "limit",  1                                                   },
+      { "cursor", first.result.at ("next_cursor").get<std::string> () }
+  });
+  ASSERT_TRUE (second.applied ());
+  EXPECT_TRUE (second.result.at ("revision_changed").get<bool> ());
+
+  // the second page mints its cursor at the current revision
+  const auto third = dispatch (
+    "track.list",
+    {
+      { "limit",  1                                                    },
+      { "cursor", second.result.at ("next_cursor").get<std::string> () }
+  });
+  ASSERT_TRUE (third.applied ());
+  EXPECT_FALSE (third.result.at ("revision_changed").get<bool> ());
+}
+
+TEST_F (OperationsTest, TrackListRefusesMalformedCursor)
+{
+  // valid base64url, but the decoded bytes are not a cursor payload
+  auto report = dispatch (
+    "track.list",
+    {
+      { "cursor", "aGVsbG8=" }
+  });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::InvalidParameter);
+
+  // characters outside the base64url alphabet
+  report = dispatch (
+    "track.list",
+    {
+      { "cursor", "???" }
+  });
+  ASSERT_TRUE (report.refused ());
+}
+
+// an overlong cursor is refused even when its payload would pass
+// schema validation
+TEST_F (OperationsTest, TrackListRefusesOverlongCursor)
+{
+  const auto payload =
+    nlohmann::json{
+      { "v", 1 },
+      { "k", 0 },
+      { "u", std::string (400, 'x') },
+      { "r", 0 }
+  }
+      .dump ();
+  const auto encoded =
+    QByteArray (payload.data (), static_cast<qsizetype> (payload.size ()))
+      .toBase64 (QByteArray::Base64UrlEncoding);
+  const std::string cursor (encoded.constData (), encoded.size ());
+  ASSERT_GT (cursor.size (), CursorParam::maximum_length);
+
+  auto report = dispatch (
+    "track.list",
+    {
+      { "cursor", cursor }
+  });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::InvalidParameter);
 }
 
 // ============================================================================

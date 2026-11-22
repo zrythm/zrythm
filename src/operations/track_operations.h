@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <expected>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,6 +33,7 @@
 
 #include "operations/operation_context.h"
 #include "operations/operation_registry.h"
+#include "operations/pagination.h"
 #include "operations/param_types.h"
 #include <type_safe/strong_typedef.hpp>
 
@@ -607,40 +609,44 @@ track_add_operation ()
 }
 
 /**
- * Lists the project's tracks. Query; takes an optional limit. Returns
- * each track's UUID, name and type, and the total count.
+ * Lists the project's tracks. Query; takes an optional page limit and
+ * an opaque cursor from a previous response's next_cursor. Returns one
+ * page of track summaries (UUID, name, type) in position order, with
+ * the total track count, the cursor to the next page, and whether the
+ * project revision moved since the cursor was minted.
  */
 inline const auto &
 track_list_operation ()
 {
   static const auto operation = TypedOperation (
     OperationKind::Query, "track.list", "List the project's tracks",
-    std::array<ParamSpec, 1>{
-      { { "limit", "Maximum number of tracks to return" } } },
-    [] (OperationContext &ctx, LimitParam limit) -> OperationReport {
-      auto &collection = ctx.environment ().track_collection ();
-      auto  tracks = nlohmann::json::array ();
-      for (const auto &track_ref : collection.tracks ())
+    std::array<ParamSpec, 2>{
+      { { "limit", "Maximum number of tracks to return" },
+       { "cursor",
+          "Opaque pagination cursor from a previous response's next_cursor" } }
+  },
+    [] (OperationContext &ctx, LimitParam limit, CursorParam cursor)
+      -> OperationReport {
+      auto       &collection = ctx.environment ().track_collection ();
+      PageBuilder page (
+        limit, cursor, ctx.environment ().undo_stack ().revision ());
+      const auto &tracks = collection.tracks ();
+      for (const auto index : std::views::iota (0uz, tracks.size ()))
         {
-          if (tracks.size () >= static_cast<std::size_t> (limit.value ()))
-            {
-              break;
-            }
+          const auto  &track_ref = tracks[index];
           const auto * track = track_ref.get ();
-          tracks.push_back (
-            nlohmann::json{
-              { "uuid", uuid_to_string (type_safe::get (track_ref.id ()))   },
+          const auto   uuid = uuid_to_string (type_safe::get (track_ref.id ()));
+          page.consider (index, uuid, [&uuid, track] {
+            return nlohmann::json{
+              { "uuid", uuid                                                },
               { "name",
                std::string (
                   utils::Utf8String::from_qstring (track->name ()).view ()) },
               { "type", track->type ()                                      },
+            };
           });
         }
-      return ctx.applied (
-        nlohmann::json{
-          { "tracks", std::move (tracks)        },
-          { "total",  collection.track_count () },
-      });
+      return ctx.applied (page.finish (collection.track_count ()));
     });
   return operation;
 }

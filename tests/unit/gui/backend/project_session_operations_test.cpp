@@ -100,11 +100,11 @@ TEST_F (ProjectSessionOperationsTest, SessionDispatchesOperations)
 
   auto report = dispatch (*session, "track.list", nlohmann::json::object ());
   ASSERT_TRUE (report.applied ()) << report.message;
-  EXPECT_GT (report.result.at ("total").get<int> (), 0);
+  EXPECT_GT (report.result.at ("total_count").get<int> (), 0);
 
   // an edit flows through the session's undo stack
   const auto uuid =
-    report.result.at ("tracks").at (0).at ("uuid").get<std::string> ();
+    report.result.at ("items").at (0).at ("uuid").get<std::string> ();
   auto applied = dispatch (
     *session, "track.set_name",
     {

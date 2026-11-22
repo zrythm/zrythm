@@ -22,6 +22,7 @@ target_sources(zrythm_operations_lib
       operation_dispatcher.h
       operation_environment.h
       operation_registry.h
+      pagination.h
       param_types.h
       parameter_operations.h
       port_connection_operations.h
