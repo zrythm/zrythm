@@ -3,15 +3,15 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/backend/actions/channel_send_action.h"
+#include "frontends/gui/backend/backend/actions/channel_send_action.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/midi_event.h"
 #include "engine/session/graph_dispatcher.h"
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/actions/tracklist_selections_action.h"
+#include "frontends/gui/backend/backend/actions/undoable_action.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/region.h"
 #include "structure/project/project.h"

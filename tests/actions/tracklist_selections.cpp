@@ -5,14 +5,14 @@
 
 #include "dsp/midi_event.h"
 #include "engine/session/graph_dispatcher.h"
-#include "gui/backend/backend/actions/arranger_selections_action.h"
-#include "gui/backend/backend/actions/channel_send_action.h"
-#include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/actions/port_connection_action.h"
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
+#include "frontends/gui/backend/backend/actions/arranger_selections_action.h"
+#include "frontends/gui/backend/backend/actions/channel_send_action.h"
+#include "frontends/gui/backend/backend/actions/mixer_selections_action.h"
+#include "frontends/gui/backend/backend/actions/port_connection_action.h"
+#include "frontends/gui/backend/backend/actions/tracklist_selections_action.h"
+#include "frontends/gui/backend/backend/actions/undoable_action.h"
+#include "frontends/gui/backend/backend/zrythm.h"
+#include "frontends/gui/dsp/control_port.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/chord_region.h"
@@ -859,7 +859,7 @@ _test_move_tracks (
     {
       setting.descr_.category_ = PluginCategory::INSTRUMENT;
     }
-  setting.descr_.category_str_ = zrythm::gui::old_dsp::plugins::
+  setting.descr_.category_str_ = zrythm::frontends::gui::old_dsp::plugins::
     PluginDescriptor::category_to_string (setting.descr_.category_);
 
   /* create a track with an instrument */

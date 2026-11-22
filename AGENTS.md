@@ -119,7 +119,7 @@ Judge your own changes by grepping the captured output for your file paths — t
 
 **Only run clang-format on C++ files** (`.cpp`/`.h`/`.hpp`). Never run it on QML, CMake, Python, or other non-C++ files — clang-format does not understand their syntax and mangles them beyond repair.
 
-QML module resolution for `qmllint`/`qmlls` is wired in the root `CMakeLists.txt`: the Qt CanvasPainter module ships without QML type info, so a supplemental module description lives under `src/gui/qml/typeinfo/CanvasPainter/` and is copied into the build's `qml/` import root, which is registered as an additional Qt package prefix. `.qmlls.ini` files are generated next to each QML module (gitignored) so the QML language server resolves project types from the build directory.
+QML module resolution for `qmllint`/`qmlls` is wired in the root `CMakeLists.txt`: the Qt CanvasPainter module ships without QML type info, so a supplemental module description lives under `src/frontends/gui/qml/typeinfo/CanvasPainter/` and is copied into the build's `qml/` import root, which is registered as an additional Qt package prefix. `.qmlls.ini` files are generated next to each QML module (gitignored) so the QML language server resolves project types from the build directory.
 
 ---
 
@@ -138,7 +138,7 @@ Zrythm is a highly automated and intuitive digital audio workstation (DAW) writt
 zrythm/
 ├── src/                 # Main source code
 │   ├── main.cpp        # Application entry point
-│   ├── gui/            # Qt/QML user interface (backend/gtk_widgets and backend/legacy_actions are legacy unused code kept for reference)
+│   ├── frontends/      # Frontends (gui/ holds the Qt/QML user interface; backend/gtk_widgets and backend/legacy_actions are legacy unused code kept for reference)
 │   ├── dsp/            # Digital signal processing
 │   ├── engine/         # Core audio engine
 │   ├── plugins/        # Audio plugin hosting-related code
@@ -188,8 +188,8 @@ Some Conan recipes carry local patches in the [`ext/conan-center-index`](ext/con
 - **Working Directory**: Never use `cd` for build/test commands; pass the build directory as an argument (e.g., `cmake --build conanbuild/Debug`, `ctest --test-dir conanbuild/Debug`)
 - **AUTOMOC cache staleness**: When adding a new header containing `Q_OBJECT`/`Q_GADGET`/`QML_ELEMENT`, CMake's AUTOMOC may fail to pick it up even after reconfiguring, producing linker errors like `undefined symbol: ...::staticMetaObject` or `vtable for ...`. Fix by deleting the affected target's autogen directories and reconfiguring. For the GUI library:
   ```bash
-  rm -rf conanbuild/Debug/src/zrythm_gui_lib_autogen \
-         conanbuild/Debug/src/CMakeFiles/zrythm_gui_lib.dir/zrythm_gui_lib_autogen
+  rm -rf conanbuild/Debug/src/zrythm_frontends_gui_lib_autogen \
+         conanbuild/Debug/src/CMakeFiles/zrythm_frontends_gui_lib.dir/zrythm_frontends_gui_lib_autogen
   cmake --preset default
   ```
   The same pattern applies to other targets — substitute the target name in the paths.
@@ -351,7 +351,7 @@ Zrythm makes extensive use of modern C++ features:
 ### Qt/QML Integration
 
 **GUI Development:**
-- Follow the design system defined in [DESIGN.md](DESIGN.md) (repo root) — the single source of truth for colors, typography, spacing, shapes, and component states. Its tokens are implemented in `src/gui/qml/ZrythmStyle/ZrythmTheme.qml`; consume those tokens or palette roles instead of hardcoding colors, fonts, or radii
+- Follow the design system defined in [DESIGN.md](DESIGN.md) (repo root) — the single source of truth for colors, typography, spacing, shapes, and component states. Its tokens are implemented in `src/frontends/gui/qml/ZrythmStyle/ZrythmTheme.qml`; consume those tokens or palette roles instead of hardcoding colors, fonts, or radii
 - Use Qt6 QML for modern UI components
 - Follow Qt coding conventions
 - Use Qt's signal/slot system for event handling
@@ -377,7 +377,7 @@ Zrythm makes extensive use of modern C++ features:
 - Always use the modern QML API when an alternative exists: Qt Quick Layouts (`GridLayout`/`RowLayout`/`ColumnLayout`) instead of the legacy positioners (`Grid`/`Row`/`Column`), pointer handlers instead of `MouseArea` for new interactions, etc. — not the Qt Quick 1-era conveniences
 
 **Style template components:**
-- Files under `src/gui/qml/ZrythmStyle/` are styled stock Qt Quick Controls, not new component types: consumers must see exactly the stock `T.*` template's API. Never add public properties (or other API surface) to them — cross-template coordination through injected properties is a design smell; use the stock control's own API (e.g. `DialogButtonBox.defaultButton`, `Dialog.visible`) instead
+- Files under `src/frontends/gui/qml/ZrythmStyle/` are styled stock Qt Quick Controls, not new component types: consumers must see exactly the stock `T.*` template's API. Never add public properties (or other API surface) to them — cross-template coordination through injected properties is a design smell; use the stock control's own API (e.g. `DialogButtonBox.defaultButton`, `Dialog.visible`) instead
 - Internal implementation details inside a template (readonly helper properties, functions, child items like `Shortcut` or `Keys` handlers) are fine — the rule covers what consumers could read or set
 
 ### UI Design
@@ -439,7 +439,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - Test filenames end in `_test.cpp`
 - If a header is needed (to make qmoc happy for example when defining test QObjects), put it in `_test.h`
 - Enclose the unit test classes and functions inside the namespace of the class being tested (avoid `using namespace`)
-- QML (Qt Quick Test) tests live flat in `tests/unit/gui/qml/` (auto-discovered `tst_*.qml`, one `QmlTests` module) and are named by kind: component tests after the component (`tst_DestructiveButton.qml`), style-template tests after the stock control (`tst_Menu.qml`), and theme/derivation contract tests (pure-function contracts on `ZrythmTheme` and the values in DESIGN.md) go in `tst_ZrythmTheme.qml`
+- QML (Qt Quick Test) tests live flat in `tests/unit/frontends/gui/qml/` (auto-discovered `tst_*.qml`, one `QmlTests` module) and are named by kind: component tests after the component (`tst_DestructiveButton.qml`), style-template tests after the stock control (`tst_Menu.qml`), and theme/derivation contract tests (pure-function contracts on `ZrythmTheme` and the values in DESIGN.md) go in `tst_ZrythmTheme.qml`
 
 ### Flaky Test Prevention
 

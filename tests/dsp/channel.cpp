@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/actions/mixer_selections_action.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/tracks/track.h"
 
 #include "tests/helpers/exporter.h"

@@ -11,4 +11,4 @@ add_subdirectory(actions)
 add_subdirectory(undo)
 add_subdirectory(operations)
 
-add_subdirectory(gui)
+add_subdirectory(frontends/gui)

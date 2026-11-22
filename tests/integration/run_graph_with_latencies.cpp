@@ -10,10 +10,10 @@
 
 #include "dsp/graph.h"
 #include "engine/session/graph_dispatcher.h"
-#include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
+#include "frontends/gui/backend/backend/actions/mixer_selections_action.h"
+#include "frontends/gui/backend/backend/actions/undo_manager.h"
+#include "frontends/gui/backend/backend/zrythm.h"
+#include "frontends/gui/dsp/control_port.h"
 #include "structure/project/project.h"
 #include "structure/tracks/tempo_track.h"
 

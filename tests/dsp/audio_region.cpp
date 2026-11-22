@@ -4,7 +4,7 @@
 #include "zrythm-test-config.h"
 
 #include "dsp/transport.h"
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region.h"
 #include "structure/project/project.h"

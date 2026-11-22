@@ -38,13 +38,13 @@
 
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
-#include "gui/backend/backend/project/project_init_flow_manager.h"
+#include "frontends/gui/backend/backend/project/project_init_flow_manager.h"
 #include "utils/io_utils.h"
 #include "utils/pcg_rand.h"
 #include "utils/rt_thread_id.h"
 
 #include "tests/helpers/zrythm_helper.h"
-// #include "gui/backend/gtk_widgets/gtk_wrapper.h"
+// #include "frontends/gui/backend/gtk_widgets/gtk_wrapper.h"
 
 static void
 z_g_test_watcher_remove_pid (GPid pid);

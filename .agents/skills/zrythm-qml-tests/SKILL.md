@@ -6,7 +6,7 @@ SPDX-License-Identifier: FSFAP
 ---
 name: zrythm-qml-tests
 description: >-
-  Run and filter Zrythm's Qt Quick Test suite (zrythm_gui_qml_unit_tests):
+  Run and filter Zrythm's Qt Quick Test suite (zrythm_frontends_gui_qml_unit_tests):
   binary path, offscreen flag, the TestCaseName::function filter syntax,
   -functions listing, ctest integration, and color-assertion gotchas.
   Use when running, debugging, or adding QML tests in this repository.
@@ -16,7 +16,7 @@ description: >-
 
 ## Layout & discovery
 
-- Test files are `tst_*.qml`, flat under `tests/unit/gui/qml/` — one
+- Test files are `tst_*.qml`, flat under `tests/unit/frontends/gui/qml/` — one
   `TestCase` per file, named via its `name:` property (e.g. a file
   `tst_TrackColors.qml` declares `name: "TrackColors"`).
 - The runner is built from `qml_test_main.cpp` with `QUICK_TEST_MAIN`:
@@ -25,19 +25,19 @@ description: >-
   - adding a new `tst_Foo.qml` needs **no CMake registration**
   - editing an existing test file needs **no rebuild**
   - only C++-side changes require rebuilding the target
-    (`cmake --build conanbuild/Debug --target zrythm_gui_qml_unit_tests`)
+    (`cmake --build conanbuild/Debug --target zrythm_frontends_gui_qml_unit_tests`)
 
 ## Running
 
 ```bash
 # Directly (fast iteration on one case)
-./conanbuild/Debug/products/bin/zrythm_gui_qml_unit_tests -platform offscreen [filters...]
+./conanbuild/Debug/products/bin/zrythm_frontends_gui_qml_unit_tests -platform offscreen [filters...]
 
 # List every available test function (verify discovery + exact names)
-./conanbuild/Debug/products/bin/zrythm_gui_qml_unit_tests -platform offscreen -functions
+./conanbuild/Debug/products/bin/zrythm_frontends_gui_qml_unit_tests -platform offscreen -functions
 
 # Via CTest (the CI path, runs everything)
-ctest --test-dir conanbuild/Debug -R zrythm_gui_qml_unit_tests --output-on-failure
+ctest --test-dir conanbuild/Debug -R zrythm_frontends_gui_qml_unit_tests --output-on-failure
 ```
 
 ## Filter syntax (the trap)
@@ -48,10 +48,10 @@ function name:
 
 ```bash
 # right
-./conanbuild/Debug/products/bin/zrythm_gui_qml_unit_tests -platform offscreen TrackColors::test_dark_defaults
+./conanbuild/Debug/products/bin/zrythm_frontends_gui_qml_unit_tests -platform offscreen TrackColors::test_dark_defaults
 # wrong (silently matches nothing: "Could not find the following test functions")
-./conanbuild/Debug/products/bin/zrythm_gui_qml_unit_tests -platform offscreen tst_TrackColors
-./conanbuild/Debug/products/bin/zrythm_gui_qml_unit_tests -platform offscreen test_dark_defaults
+./conanbuild/Debug/products/bin/zrythm_frontends_gui_qml_unit_tests -platform offscreen tst_TrackColors
+./conanbuild/Debug/products/bin/zrythm_frontends_gui_qml_unit_tests -platform offscreen test_dark_defaults
 ```
 
 Multiple filters can be passed as separate arguments. A failing
@@ -74,7 +74,7 @@ in a temporary test function instead of iterating assertions.
 ## Imports in test files
 
 App singletons and registered C++ types resolve with `import Zrythm`
-(the `QmlTests` module imports `zrythm_qml_lib`); the theme with
+(the `QmlTests` module imports `zrythm_frontends_gui_qml_lib`); the theme with
 `import ZrythmStyle`; `QtTest` for `TestCase`.
 
 ## Benign noise

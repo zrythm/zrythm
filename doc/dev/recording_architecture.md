@@ -177,7 +177,7 @@ The old `RecordingManager` (`src/engine/session/`) used an `MPMCQueue<RecordingE
 | `src/controllers/recording_coordinator.h` | Session lifecycle orchestration and RT snapshot |
 | `src/controllers/audio_recording_session.h` | Lock-free SPSC ring buffer per track |
 | `src/controllers/recording_materializer.h` | Packet-to-region conversion with undo macros |
-| `src/gui/backend/project_session.cpp` | Composition root: wires all components together |
+| `src/frontends/gui/backend/project_session.cpp` | Composition root: wires all components together |
 | `src/engine/session/project_graph_builder.cpp` | Connects AudioInputProcessor outputs to track inputs |
 | `src/structure/project/project_ui_state.h` | Stores per-track audio input selections |
 | `tests/integration/audio_recording_pipeline_test.cpp` | End-to-end pipeline tests |

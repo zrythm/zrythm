@@ -6,14 +6,14 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/port_identifier.h"
-#include "gui/backend/backend/actions/arranger_selections_action.h"
-#include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/actions/port_connection_action.h"
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/carla_discovery.h"
-#include "gui/dsp/control_port.h"
+#include "frontends/gui/backend/backend/actions/arranger_selections_action.h"
+#include "frontends/gui/backend/backend/actions/mixer_selections_action.h"
+#include "frontends/gui/backend/backend/actions/port_connection_action.h"
+#include "frontends/gui/backend/backend/actions/tracklist_selections_action.h"
+#include "frontends/gui/backend/backend/actions/undo_manager.h"
+#include "frontends/gui/backend/backend/zrythm.h"
+#include "frontends/gui/dsp/carla_discovery.h"
+#include "frontends/gui/dsp/control_port.h"
 #include "structure/project/project.h"
 
 #include "tests/helpers/plugin_manager.h"

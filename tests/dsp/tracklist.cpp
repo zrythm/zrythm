@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/backend/actions/arranger_selections_action.h"
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/actions/arranger_selections_action.h"
+#include "frontends/gui/backend/backend/actions/tracklist_selections_action.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/project/project.h"
 #include "structure/tracks/tracklist.h"

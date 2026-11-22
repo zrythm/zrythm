@@ -691,7 +691,7 @@ apply_plugin (
   GError **    error)
 {
   zrythm::plugins::PluginDescriptor * descr =
-    plugin_manager_find_plugin_from_uri (zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance (), uri);
+    plugin_manager_find_plugin_from_uri (zrythm::frontends::gui::old_dsp::plugins::PluginManager::get_active_instance (), uri);
   z_return_val_if_fail (descr, -1);
   PluginConfiguration * setting = plugin_setting_new_default (descr);
   z_return_val_if_fail (setting, -1);
@@ -733,7 +733,7 @@ apply_plugin (
 
 #  if 0
   /* add menu bar */
-  zrythm::gui::old_dsp::plugins::plugin_gtk_build_menu (
+  zrythm::frontends::gui::old_dsp::plugins::plugin_gtk_build_menu (
     pl, GTK_WIDGET (pl->window),
     GTK_WIDGET (pl->vbox));
 #  endif
@@ -745,7 +745,7 @@ apply_plugin (
   gtk_widget_set_vexpand (GTK_WIDGET (pl->ev_box), true);
 
   /* open */
-  zrythm::gui::old_dsp::plugins::plugin_gtk_open_generic_ui (pl, false);
+  zrythm::frontends::gui::old_dsp::plugins::plugin_gtk_open_generic_ui (pl, false);
 
   ret = z_gtk_dialog_run (GTK_DIALOG (pl->window), false);
 
@@ -871,7 +871,7 @@ apply_plugin (
   plugin_update_latency (pl);
   z_info ("end latency {}", pl->latency);
 
-  zrythm::gui::old_dsp::plugins::plugin_gtk_close_ui (pl);
+  zrythm::frontends::gui::old_dsp::plugins::plugin_gtk_close_ui (pl);
   plugin_free (pl);
 
   return 0;
@@ -1188,11 +1188,11 @@ audio_function_apply (
     && type != AudioFunctionType::CustomPlugin)
     {
       /* set last action */
-      gui::SettingsManager::get_instance ()->set_lastAudioFunction (
+      frontends::gui::SettingsManager::get_instance ()->set_lastAudioFunction (
         ENUM_VALUE_TO_INT (type));
       if (type == AudioFunctionType::PitchShift)
         {
-          gui::SettingsManager::get_instance ()
+          frontends::gui::SettingsManager::get_instance ()
             ->set_lastAudioFunctionPitchShiftRatio (opts.amount_);
         }
     }

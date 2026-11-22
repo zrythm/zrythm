@@ -6,7 +6,7 @@
 #include "dsp/midi_event.h"
 #include "engine/device_io/engine_dummy.h"
 #include "engine/session/recording_manager.h"
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/project/project.h"
 #include "structure/tracks/master_track.h"
 #include "structure/tracks/midi_track.h"

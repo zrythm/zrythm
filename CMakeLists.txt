@@ -292,7 +292,7 @@ set(trademark_policy_url "${main_repo_url}/-/raw/master/TRADEMARKS.md")
 set(bug_report_api_endpoint "https://accounts.zrythm.org/api/v1/error-reports/new")
 set(latest_release_ver_url "https://www.zrythm.org/zrythm-version.txt")
 set(PLUGIN_SCANNER_UUID "f47ac10b")
-set(ZRYTHM_SVG_ICON "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resources/icons/zrythm-dark/scalable/apps/zrythm.svg")
+set(ZRYTHM_SVG_ICON "${CMAKE_CURRENT_SOURCE_DIR}/src/frontends/gui/resources/icons/zrythm-dark/scalable/apps/zrythm.svg")
 set(ZRYTHM_ICNS_FILE_NAME "Zrythm.icns")
 set(ZRYTHM_ICNS_FILE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${ZRYTHM_ICNS_FILE_NAME}")
 set(ZRYTHM_ICO_FILE "${CMAKE_CURRENT_SOURCE_DIR}/data/platform/windows/zrythm.ico")
@@ -965,8 +965,8 @@ endif()
 # QML tooling picks it up as an import path.
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/qml/CanvasPainter")
 file(COPY
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/qml/typeinfo/CanvasPainter/qmldir"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/qml/typeinfo/CanvasPainter/plugins.qmltypes"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/frontends/gui/qml/typeinfo/CanvasPainter/qmldir"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/frontends/gui/qml/typeinfo/CanvasPainter/plugins.qmltypes"
   DESTINATION "${CMAKE_BINARY_DIR}/qml/CanvasPainter"
 )
 list(APPEND _qt_additional_packages_prefix_paths "${CMAKE_BINARY_DIR}")
@@ -1103,14 +1103,16 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 endif()
 
-# Generates attributions.json (bundled via QRC in src/gui) and sbom.cdx.json
+# Generates attributions.json (bundled via QRC in src/frontends/gui) and
+# sbom.cdx.json
 # from data/dependencies.toml at configure time.
 include(DependencyInventory)
 
 add_subdirectory(src)
 
 # qmlls keeps only the last .qmlls.build.ini workspace entry per source
-# path, and src/gui declares two QML modules (Zrythm and ZrythmApp), so
+# path, and src/frontends/gui declares two QML modules (Zrythm and
+# ZrythmApp), so
 # merge duplicate entries after Qt's deferred write of the file. Deferred
 # calls run in scheduling order, and Qt's is scheduled during
 # add_subdirectory(src) above.
@@ -1129,7 +1131,7 @@ if(NOT XCODE)
     "${generated_attributions_json}"
     "${CMAKE_SOURCE_DIR}/ext/*"
     "${CMAKE_SOURCE_DIR}/.cache/CPM/*"
-    "${CMAKE_SOURCE_DIR}/src/gui/resources/icons/*"
+    "${CMAKE_SOURCE_DIR}/src/frontends/gui/resources/icons/*"
     "${CMAKE_SOURCE_DIR}/LICENSES/*"
     "${CMAKE_SOURCE_DIR}/TRADEMARKS.md"
   )

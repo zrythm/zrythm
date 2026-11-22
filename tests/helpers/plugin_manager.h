@@ -12,8 +12,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/backend/zrythm.h"
-#include "gui/backend/plugin_manager.h"
+#include "frontends/gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/plugin_manager.h"
 #include "structure/project/project.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
@@ -95,22 +95,22 @@ test_plugin_manager_get_plugin_setting (
   }
 
   bool scan_finished = false;
-  zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
+  zrythm::frontends::gui::old_dsp::plugins::PluginManager::get_active_instance ()
     ->clear_plugins ();
-  zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
+  zrythm::frontends::gui::old_dsp::plugins::PluginManager::get_active_instance ()
     ->begin_scan (1.0, nullptr, [&scan_finished] () { scan_finished = true; });
   while (!scan_finished)
     {
       g_main_context_iteration (nullptr, true);
     }
   EXPECT_NONEMPTY (
-    zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
+    zrythm::frontends::gui::old_dsp::plugins::PluginManager::get_active_instance ()
       ->plugin_descriptors_);
 
   std::optional<PluginDescriptor> descr;
   for (
     const auto &cur_descr :
-    zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
+    zrythm::frontends::gui::old_dsp::plugins::PluginManager::get_active_instance ()
       ->plugin_descriptors_)
     {
       if (pl_uri)

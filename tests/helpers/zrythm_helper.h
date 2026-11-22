@@ -7,7 +7,7 @@
 #include "zrythm-test-config.h"
 
 /* include commonly used stuff */
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 
 #ifdef G_OS_UNIX
 #  include <glib-unix.h>

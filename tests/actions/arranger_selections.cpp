@@ -5,11 +5,11 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "gui/backend/backend/actions/arranger_selections_action.h"
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/actions/transport_action.h"
-#include "gui/backend/backend/clipboard.h"
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/actions/arranger_selections_action.h"
+#include "frontends/gui/backend/backend/actions/tracklist_selections_action.h"
+#include "frontends/gui/backend/backend/actions/transport_action.h"
+#include "frontends/gui/backend/backend/clipboard.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/region.h"
 #include "structure/project/project.h"

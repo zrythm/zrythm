@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+add_executable(zrythm_frontends_gui_backend_unit_tests
+  control_room_test.cpp
+  device_manager_test.cpp
+  editor_arranger_objects_model_test.cpp
+  juce_event_loop_bridge_test.cpp
+  modular_project_model_test.cpp
+  notification_center_test.cpp
+  project_session_operations_test.cpp
+  timeline_arranger_objects_model_test.cpp
+  xdg_desktop_portal_test.cpp
+)
+
+set_target_properties(zrythm_frontends_gui_backend_unit_tests PROPERTIES
+  AUTOMOC ON
+  UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+)
+
+target_link_libraries(zrythm_frontends_gui_backend_unit_tests PRIVATE
+  GTest::gmock_main
+  zrythm_frontends_gui_lib
+  zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
+)
+
+zrythm_discover_tests(zrythm_frontends_gui_backend_unit_tests)

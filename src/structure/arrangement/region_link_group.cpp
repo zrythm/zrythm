@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/arrangement/region.h"
 #include "structure/arrangement/region_link_group.h"
 #include "structure/arrangement/region_link_group_manager.h"

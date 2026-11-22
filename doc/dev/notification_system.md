@@ -53,7 +53,7 @@ Three principles drive the design:
 - **The actions layer stays GUI-free.** Semantic signals
   (`operationRefused` and friends) are forwarded into the center by the
   window that receives them; `src/actions/` never depends on
-  `src/gui/`.
+  `src/frontends/gui/`.
 
 ## Components
 
@@ -202,11 +202,11 @@ may stay technical English.
 
 ## Testing
 
-- `tests/unit/gui/backend/notification_center_test.cpp` — delivery and
+- `tests/unit/frontends/gui/backend/notification_center_test.cpp` — delivery and
   history semantics, action carriers, logging, cross-thread behavior
-- `tests/unit/gui/qml/tst_NotificationArea.qml` — toast presentation,
+- `tests/unit/frontends/gui/qml/tst_NotificationArea.qml` — toast presentation,
   coalescing, queueing, dismissal acknowledgment, actions
-- `tests/unit/gui/qml/tst_NotificationBell.qml` — badge counts,
+- `tests/unit/frontends/gui/qml/tst_NotificationBell.qml` — badge counts,
   popover acknowledgment
-- `tests/unit/gui/qquick/qfuture_qml_wrapper_test.cpp` — the outcome
+- `tests/unit/frontends/gui/qquick/qfuture_qml_wrapper_test.cpp` — the outcome
   signals that drive save/export/load failure reporting

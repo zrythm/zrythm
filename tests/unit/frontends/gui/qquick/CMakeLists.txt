@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+add_executable(zrythm_frontends_gui_qquick_unit_tests
+  chord_clip_canvas_test.cpp
+  chord_row_list_model_test.cpp
+  generic_plugin_ui_controller_test.cpp
+  meter_processor_test.cpp
+  qfuture_qml_wrapper_test.cpp
+  qml_utils_test.cpp
+  timeline_position_tracker_test.cpp
+  track_colors_test.cpp
+  track_event_activity_provider_test.cpp
+  unified_proxy_model_test.cpp
+  waveform_peak_computation_test.cpp
+)
+
+set_target_properties(zrythm_frontends_gui_qquick_unit_tests PROPERTIES
+  AUTOMOC ON
+  UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+)
+
+target_link_libraries(zrythm_frontends_gui_qquick_unit_tests PRIVATE
+  GTest::gmock_main
+  zrythm_frontends_gui_lib
+  zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
+)
+
+zrythm_discover_tests(zrythm_frontends_gui_qquick_unit_tests)

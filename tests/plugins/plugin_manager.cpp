@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/plugin_manager.h"
+#include "frontends/gui/backend/plugin_manager.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"

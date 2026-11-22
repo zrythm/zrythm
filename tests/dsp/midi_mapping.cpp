@@ -4,7 +4,7 @@
 #include "zrythm-test-config.h"
 
 #include "engine/session/midi_mapping.h"
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/project/project.h"
 #include "structure/tracks/master_track.h"
 #include "utils/math_utils.h"

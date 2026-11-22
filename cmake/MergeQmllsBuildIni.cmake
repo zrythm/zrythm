@@ -7,7 +7,7 @@
 # Qt writes one workspace entry per QML module, using the module target's
 # source directory as the key. qmlls keeps only the last entry for a given
 # source path, so multiple QML modules declared in the same directory (e.g.
-# Zrythm and ZrythmApp in src/gui) would lose all but the last module's
+# Zrythm and ZrythmApp in src/frontends/gui) would lose all but the last module's
 # import paths and resource files. Collapse such entries into one entry
 # holding the union of their import paths and resource files.
 #

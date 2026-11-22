@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-qt_add_library(zrythm_gui_lib STATIC)
+qt_add_library(zrythm_frontends_gui_lib STATIC)
 
 # each executable/library has its own subdirectory
 add_subdirectory(utils)
@@ -14,17 +14,17 @@ add_subdirectory(controllers)
 add_subdirectory(operations)
 add_subdirectory(actions)
 
-target_include_directories(zrythm_gui_lib
+target_include_directories(zrythm_frontends_gui_lib
   PUBLIC
     # C++ headers in QML modules must be available as toplevel includes
     # https://bugreports.qt.io/browse/QTBUG-87221
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/backend
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontends/gui/backend
     ${CMAKE_CURRENT_SOURCE_DIR}/engine/session
 )
 
 # create a plugin so that types get exposed to QML
 # Note: this needs to be in the same directory as the qt_add_library() call
-qt_add_qml_module(zrythm_gui_lib
+qt_add_qml_module(zrythm_frontends_gui_lib
   URI ZrythmGui
   VERSION 1.0
   DEPENDENCIES
@@ -47,28 +47,28 @@ qt_add_qml_module(zrythm_gui_lib
     TARGET zrythm_actions_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmGui
 )
-set_target_properties(zrythm_gui_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(zrythm_frontends_gui_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
-add_subdirectory(gui)
+add_subdirectory(frontends/gui)
 add_subdirectory(engine)
 
-target_sources(zrythm_gui_lib PRIVATE globals.cpp)
+target_sources(zrythm_frontends_gui_lib PRIVATE globals.cpp)
 if(MSVC)
   # some files are too big - this increases the section limit in object files
-  target_compile_options(zrythm_gui_lib PRIVATE /bigobj)
+  target_compile_options(zrythm_frontends_gui_lib PRIVATE /bigobj)
 endif()
 
 if(WIN32)
   # There are problems if added to zrythm_srcs directly
-  target_sources(zrythm_gui_lib PRIVATE ${win_res})
+  target_sources(zrythm_frontends_gui_lib PRIVATE ${win_res})
 endif()
 
-set_target_properties(zrythm_gui_lib PROPERTIES
-  OUTPUT_NAME zrythm_gui_lib
+set_target_properties(zrythm_frontends_gui_lib PROPERTIES
+  OUTPUT_NAME zrythm_frontends_gui_lib
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
-target_compile_definitions(zrythm_gui_lib PRIVATE $<$<BOOL:${ZRYTHM_DEBUG_QML}>:QT_QML_DEBUG>)
-target_link_libraries(zrythm_gui_lib
+target_compile_definitions(zrythm_frontends_gui_lib PRIVATE $<$<BOOL:${ZRYTHM_DEBUG_QML}>:QT_QML_DEBUG>)
+target_link_libraries(zrythm_frontends_gui_lib
   PUBLIC
     zrythm_actions_lib
     zrythm_controllers_lib
@@ -78,13 +78,13 @@ target_link_libraries(zrythm_gui_lib
     Qt6::CanvasPainter
     Qt6::GuiPrivate
 )
-target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_actions_lib)
+target_precompile_headers(zrythm_frontends_gui_lib REUSE_FROM zrythm_actions_lib)
 
 # libX11 for the X11 plugin host window (native plugin embedding on
 # GNU/Linux); already a runtime requirement via JUCE (which dlopens it)
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   find_package(X11 REQUIRED)
-  target_link_libraries(zrythm_gui_lib PRIVATE X11::X11)
+  target_link_libraries(zrythm_frontends_gui_lib PRIVATE X11::X11)
 endif ()
 
 # add resource file with icon
@@ -95,8 +95,8 @@ if(WIN32)
 endif()
 
 target_sources(zrythm PRIVATE main.cpp)
-target_link_libraries(zrythm PRIVATE zrythm_gui_lib zrythm_qml_lib)
-target_precompile_headers(zrythm REUSE_FROM zrythm_gui_lib)
+target_link_libraries(zrythm PRIVATE zrythm_frontends_gui_lib zrythm_frontends_gui_qml_lib)
+target_precompile_headers(zrythm REUSE_FROM zrythm_frontends_gui_lib)
 
 if(OS_GNU)
   add_dependencies(zrythm appdata-xml desktop-file)

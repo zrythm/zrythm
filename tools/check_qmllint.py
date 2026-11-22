@@ -50,7 +50,7 @@ def main(argv=None):
     parser.add_argument("output_file", help="qmllint output file, or - for stdin")
     parser.add_argument(
         "--path-prefix",
-        default="src/gui/qml/",
+        default="src/frontends/gui/qml/",
         help="only count findings whose file is under this path",
     )
     parser.add_argument(

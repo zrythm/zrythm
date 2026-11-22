@@ -7,18 +7,18 @@ SPDX-License-Identifier: FSFAP
 
 ## Core Architecture
 
-Zrythm uses a unified selection system that handles multiple arranger object types through Qt's [`ItemSelectionModel`](src/gui/qml/components/arranger/Arranger.qml:55). The system bridges C++ models with QML views through several key components.
+Zrythm uses a unified selection system that handles multiple arranger object types through Qt's [`ItemSelectionModel`](src/frontends/gui/qml/components/arranger/Arranger.qml:55). The system bridges C++ models with QML views through several key components.
 
 ## Key Components
 
 ### Unified Model
-[`UnifiedProxyModel`](src/gui/backend/unified_proxy_model.h:12) aggregates multiple source models into a single selection context:
-- Maps source indices to unified indices with [`mapFromSource()`](src/gui/backend/unified_proxy_model.h:22)
+[`UnifiedProxyModel`](src/frontends/gui/backend/unified_proxy_model.h:12) aggregates multiple source models into a single selection context:
+- Maps source indices to unified indices with [`mapFromSource()`](src/frontends/gui/backend/unified_proxy_model.h:22)
 - Supports mixed object types (regions, markers, notes, automation points)
 
 ### Selection Tracking
-[`SelectionTracker.qml`](src/gui/qml/utils/SelectionTracker.qml) provides per-object selection state:
-- Tracks [`isSelected`](src/gui/qml/utils/SelectionTracker.qml:10) property
+[`SelectionTracker.qml`](src/frontends/gui/qml/utils/SelectionTracker.qml) provides per-object selection state:
+- Tracks [`isSelected`](src/frontends/gui/qml/utils/SelectionTracker.qml:10) property
 - Connects to global selection model changes
 - Used by all arranger object views
 
@@ -39,7 +39,7 @@ SelectionTracker {
 ```
 
 ### Mouse Handling
-[`Arranger.qml`](src/gui/qml/components/arranger/Arranger.qml:325) handles movement:
+[`Arranger.qml`](src/frontends/gui/qml/components/arranger/Arranger.qml:325) handles movement:
 ```qml
 function moveSelectionsX(ticksDiff) {
     selectionOperator.moveByTicks(ticksDiff);
@@ -47,7 +47,7 @@ function moveSelectionsX(ticksDiff) {
 ```
 
 ### Selection Logic
-[`handleObjectSelection()`](src/gui/qml/components/arranger/Arranger.qml:87) manages selection modes:
+[`handleObjectSelection()`](src/frontends/gui/qml/components/arranger/Arranger.qml:87) manages selection modes:
 - Single click: Clear and select
 - Ctrl+click: Toggle selection
 - Shift+click: Range selection (TODO)

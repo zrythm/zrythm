@@ -5,8 +5,8 @@
 #include <iostream>
 #include <ranges>
 
-#include "gui/backend/xdg_desktop_portal.h"
-#include "gui/backend/zrythm_application.h"
+#include "frontends/gui/backend/xdg_desktop_portal.h"
+#include "frontends/gui/backend/zrythm_application.h"
 #include "utils/logger.h"
 
 #include <QCommandLineParser>
@@ -29,7 +29,7 @@ main (int argc, char ** argv)
   // theme plugin shipped with the bundled Qt; the portal frontend accepts
   // requests even when no file chooser backend is installed, so activate
   // the theme only when one is installed.
-  if (zrythm::gui::portal_file_dialogs_available ())
+  if (zrythm::frontends::gui::portal_file_dialogs_available ())
     {
       qputenv ("QT_QPA_PLATFORMTHEME", "xdgdesktopportal");
     }
@@ -49,7 +49,8 @@ main (int argc, char ** argv)
   verify_parser.parse (args);
   if (verify_parser.isSet ("verify-installation"))
     {
-      const auto result = zrythm::gui::ZrythmApplication::verify_installation ();
+      const auto result =
+        zrythm::frontends::gui::ZrythmApplication::verify_installation ();
       if (!result)
         {
           std::cerr
@@ -63,7 +64,7 @@ main (int argc, char ** argv)
 
   try
     {
-      zrythm::gui::ZrythmApplication app (argc, argv);
+      zrythm::frontends::gui::ZrythmApplication app (argc, argv);
       return app.exec ();
     }
   catch (const std::exception &e)

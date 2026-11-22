@@ -1,0 +1,92 @@
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#pragma once
+
+#include <vector>
+
+#include <QColor>
+#include <QPointer>
+#include <QtCanvasPainter/qcanvaspainteritem.h>
+
+namespace zrythm::structure::arrangement
+{
+class AudioClip;
+}
+
+namespace zrythm::frontends::gui::qquick
+{
+
+class FadeOverlayCanvasRenderer;
+
+/**
+ * @brief QML-visible canvas item that renders a single fade overlay.
+ *
+ * Each instance handles one fade direction (FadeIn or FadeOut).
+ * The canvas should be sized to the fade area width only.
+ */
+class FadeOverlayCanvasItem : public QCanvasPainterItem
+{
+  Q_OBJECT
+  QML_NAMED_ELEMENT (FadeOverlayCanvas)
+
+  Q_PROPERTY (
+    zrythm::structure::arrangement::AudioClip * audioClip READ audioClip WRITE
+      setAudioClip NOTIFY audioClipChanged)
+  Q_PROPERTY (
+    double pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
+  Q_PROPERTY (
+    FadeType fadeType READ fadeType WRITE setFadeType NOTIFY fadeTypeChanged)
+  Q_PROPERTY (bool hovered READ hovered WRITE setHovered NOTIFY hoveredChanged)
+  Q_PROPERTY (
+    QColor overlayColor READ overlayColor WRITE setOverlayColor NOTIFY
+      overlayColorChanged)
+  Q_PROPERTY (
+    QColor curveColor READ curveColor WRITE setCurveColor NOTIFY
+      curveColorChanged)
+
+public:
+  enum FadeType
+  {
+    FadeIn = 0,
+    FadeOut = 1,
+  };
+  Q_ENUM (FadeType)
+
+  explicit FadeOverlayCanvasItem (QQuickItem * parent = nullptr);
+
+  QCanvasPainterItemRenderer * createItemRenderer () const override;
+
+  structure::arrangement::AudioClip * audioClip () const { return audio_clip_; }
+  void     setAudioClip (structure::arrangement::AudioClip * clip);
+  double   pxPerTick () const { return px_per_tick_; }
+  void     setPxPerTick (double px);
+  FadeType fadeType () const { return fade_type_; }
+  void     setFadeType (FadeType type);
+  bool     hovered () const { return hovered_; }
+  void     setHovered (bool hovered);
+  QColor   overlayColor () const { return overlay_color_; }
+  void     setOverlayColor (const QColor &color);
+  QColor   curveColor () const { return curve_color_; }
+  void     setCurveColor (const QColor &color);
+
+Q_SIGNALS:
+  void audioClipChanged ();
+  void pxPerTickChanged ();
+  void fadeTypeChanged ();
+  void hoveredChanged ();
+  void overlayColorChanged ();
+  void curveColorChanged ();
+
+private:
+  QPointer<structure::arrangement::AudioClip> audio_clip_;
+  double                                      px_per_tick_ = 1.0;
+  FadeType                                    fade_type_ = FadeIn;
+  bool                                        hovered_ = false;
+  QColor                                      overlay_color_{ 51, 51, 51, 153 };
+  QColor curve_color_{ 255, 255, 255, 200 };
+
+  std::vector<QMetaObject::Connection> clip_connections_;
+};
+
+} // namespace zrythm::frontends::gui::qquick

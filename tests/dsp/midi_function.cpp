@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/backend/actions/arranger_selections_action.h"
+#include "frontends/gui/backend/backend/actions/arranger_selections_action.h"
 #include "structure/arrangement/midi_function.h"
 #include "structure/tracks/tracklist.h"
 

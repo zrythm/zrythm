@@ -6,6 +6,6 @@ data/plugins/zrythm-arch.cpp
 doc/dev/m.css/**/*
 ext/**/*
 inc/plugins/lv2/suil/*
-src/gui/backend/gtk_widgets/**
+src/frontends/gui/backend/gtk_widgets/**
 src/plugins/faust/faust_registry.cpp.in
 tests/test_plugins/lv2/**

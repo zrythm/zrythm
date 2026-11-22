@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/project/project.h"
 #include "structure/tracks/channel_track.h"
 

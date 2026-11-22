@@ -53,11 +53,11 @@ graph TD
         MS[MusicalScale]
     end
 
-    subgraph "QML-Facing Layer — src/gui/qquick/"
+    subgraph "QML-Facing Layer — src/frontends/gui/qquick/"
         CSP[ChordSuggestionProvider<br/>QObject, QML_ELEMENT]
     end
 
-    subgraph "QML UI — src/gui/qml/components/"
+    subgraph "QML UI — src/frontends/gui/qml/components/"
         CPP[ChordPadPanel.qml<br/>pad coloring + suggestion label]
     end
 
@@ -73,7 +73,7 @@ The design follows Zrythm's existing separation of concerns:
   free functions in `namespace zrythm::dsp::chords`. No Qt dependencies beyond
   what `ChordDescriptor` and `MusicalScale` already pull in. Every function is
   independently unit-testable.
-- **QML-facing layer** (`src/gui/qquick/chord_suggestion_provider.h/.cpp`): A
+- **QML-facing layer** (`src/frontends/gui/qquick/chord_suggestion_provider.h/.cpp`): A
   `QObject` that holds the current chord, current scale, and category
   toggles. Calls the DSP functions and exposes results to QML via properties.
 - **QML UI** (`ChordPadPanel.qml`): Colors each pad based on its score and

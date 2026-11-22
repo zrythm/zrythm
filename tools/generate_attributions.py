@@ -6,7 +6,7 @@
 
 Combines data/dependencies.toml with the Conan-tier fragment (for graph
 versions and transitive components). Output is bundled into QRC at
-configure time (see src/gui/CMakeLists.txt).
+configure time (see src/frontends/gui/CMakeLists.txt).
 
 Unlike the SBOM generator, a missing fragment degrades gracefully (conan
 versions stay null): the attribution display does not need to be complete

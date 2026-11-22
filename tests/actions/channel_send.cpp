@@ -6,8 +6,8 @@
 #include "zrythm-test-config.h"
 
 #include "engine/session/graph_dispatcher.h"
-#include "gui/backend/backend/actions/channel_send_action.h"
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/actions/channel_send_action.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/arrangement/region.h"
 #include "structure/project/project.h"
 #include "structure/tracks/master_track.h"

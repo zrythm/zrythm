@@ -5,7 +5,7 @@
 
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
-#include "gui/backend/backend/zrythm.h"
+#include "frontends/gui/backend/backend/zrythm.h"
 #include "structure/project/project.h"
 #include "utils/gtest_wrapper.h"
 
