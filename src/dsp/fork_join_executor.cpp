@@ -132,8 +132,22 @@ void
 ForkJoinExecutor::drain_work_queue () noexcept
 {
   WorkItem item{};
-  while (work_queue_.try_pop (item))
+  for (;;)
     {
+      if (outstanding_entries_.load (std::memory_order_acquire) == 0)
+        {
+          return;
+        }
+
+      if (!work_queue_.try_pop (item))
+        {
+          // An entry is outstanding but not poppable yet: its push is
+          // between the queue's head CAS and its turn store
+          std::this_thread::yield ();
+          continue;
+        }
+      outstanding_entries_.fetch_sub (1, std::memory_order_acq_rel);
+
       JobSlot &slot = *item.slot_;
 
       // Join the job before touching it: the CAS expected value embeds the
@@ -166,9 +180,14 @@ ForkJoinExecutor::drain_work_queue () noexcept
         slot.next_task_index_.load (std::memory_order_relaxed) < slot.num_tasks_)
         {
           // Waking a worker is only useful if the entry was re-queued
+          outstanding_entries_.fetch_add (1, std::memory_order_acq_rel);
           if (work_queue_.try_push (item))
             {
               work_available_sem_.signal ();
+            }
+          else
+            {
+              outstanding_entries_.fetch_sub (1, std::memory_order_acq_rel);
             }
         }
       run_tasks_from_job (slot);
@@ -254,9 +273,17 @@ ForkJoinExecutor::
 
   // The work queue never fills (see work_queue_): each job has at most one
   // entry, created only by its submitter. A failed try_push only means a
-  // concurrent pop has not stored its turn yet, so retry until it does.
-  while (!work_queue_.try_push ({ slot, generation }))
+  // concurrent pop has not stored its turn yet, so retry until it does. The
+  // entry is counted before each attempt so drainers never mistake it for
+  // an empty queue while the push is still in flight.
+  for (;;)
     {
+      outstanding_entries_.fetch_add (1, std::memory_order_acq_rel);
+      if (work_queue_.try_push ({ slot, generation }))
+        {
+          break;
+        }
+      outstanding_entries_.fetch_sub (1, std::memory_order_acq_rel);
       std::this_thread::yield ();
     }
   work_available_sem_.signal ();

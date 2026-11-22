@@ -174,6 +174,10 @@ private:
   /**
    * @brief Pops and runs queued work until the queue is drained.
    *
+   * A failed try_pop does not prove the queue empty (it also fails while a
+   * concurrent push is between the queue's head CAS and its turn store), so
+   * draining continues while @ref outstanding_entries_ is non-zero.
+   *
    * Each popped entry whose job still has unclaimed tasks is re-queued (so
    * other participants can claim them) and one more worker is woken before
    * this thread starts claiming tasks itself. Stale entries are discarded.
@@ -208,6 +212,12 @@ private:
    * best-effort: a popper that fails to re-queue claims the job's remaining
    * tasks itself. */
   rigtorp::MPMCQueue<WorkItem> work_queue_{ kMaxConcurrentJobs * 4 };
+
+  /** Number of entries announced for @ref work_queue_ but not yet popped.
+   * Every push increments it before pushing; every pop decrements it.
+   * try_pop can fail while such an entry is still in flight, so drainers
+   * keep going until this count reaches zero. */
+  std::atomic<std::size_t> outstanding_entries_{ 0 };
 
   /** Wakes idle workers when jobs arrive. Not a std::counting_semaphore due
    * to issues on MSVC/Windows (same as the graph scheduler). */

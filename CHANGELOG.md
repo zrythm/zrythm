@@ -43,9 +43,9 @@ For changes prior to v2.0.0, see [CHANGELOG-old.v1.md](CHANGELOG-old.v1.md).
 - Recent projects showed no title in the startup window when the
   file dialog returned a path with a trailing slash; such paths
   are handled now
-- Audio worker pool jobs could be rejected during a rare
-  submission race, forcing serial rendering; submissions now
-  retry
+- Audio worker pool jobs could be rejected or stall in the queue during
+  rare submission races; submissions now retry and queued entries are
+  always picked up
 
 ## [v2.0.0-alpha.8] - 2026-11-14
 

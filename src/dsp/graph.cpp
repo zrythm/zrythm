@@ -95,7 +95,7 @@ bool
 Graph::disconnect (GraphNode &from, GraphNode &to)
 {
   const auto feed_removed = from.remove_feed (to);
-  const auto depend_removed = to.remove_depend (from);
+  const auto depend_removed [[maybe_unused]] = to.remove_depend (from);
   assert (feed_removed == depend_removed);
   return feed_removed;
 }
