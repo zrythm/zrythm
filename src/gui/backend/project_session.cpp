@@ -34,9 +34,14 @@ namespace zrythm::gui
 ProjectSession::ProjectSession (
   utils::AppSettings                                    &app_settings,
   controllers::Clipboard                                &clipboard,
+  utils::IObjectRegistry                                &app_registry,
   utils::QObjectUniquePtr<structure::project::Project> &&project)
     : app_settings_ (app_settings), clipboard_ (clipboard),
       project_ (std::move (project)),
+      composite_registry_ (
+        std::make_unique<utils::CompositeObjectRegistry> (
+          project_->get_registry (),
+          app_registry)),
       ui_state_ (
         utils::make_qobject_unique<
           structure::project::ProjectUiState> (*project_, app_settings_)),
@@ -204,6 +209,7 @@ ProjectSession::ProjectSession (
           this)),
       operation_environment_ (
         std::make_unique<operations::OperationEnvironment> (
+          *composite_registry_,
           project_->get_registry (),
           *undo_stack_,
           *project_->tracklist ()->collection (),

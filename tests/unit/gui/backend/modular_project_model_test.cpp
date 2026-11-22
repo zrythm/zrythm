@@ -19,6 +19,8 @@
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
+#include "utils/composite_object_registry.h"
+#include "utils/object_registry.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -1085,6 +1087,9 @@ TEST_F (ModularProjectModelTest, ConnectPortsOperatorRoundTripProducesEdge)
   ASSERT_NE (mod_port, nullptr);
   ASSERT_TRUE (mod_port->detached ());
 
+  utils::ObjectRegistry          app_registry;
+  utils::CompositeObjectRegistry composite_registry (
+    project->get_registry (), app_registry);
   undo::UndoStack undo_stack ([&project] (auto action, bool recalculate_graph) {
     project->engine ()->with_paused_processing (
       std::move (action), recalculate_graph);
@@ -1092,8 +1097,9 @@ TEST_F (ModularProjectModelTest, ConnectPortsOperatorRoundTripProducesEdge)
   operations::OperationRegistry op_registry;
   operations::register_builtin_operations (op_registry);
   operations::OperationEnvironment environment (
-    project->get_registry (), undo_stack, *project->tracklist ()->collection (),
-    *project->track_factory_, *project->tracklist ()->trackRouting (),
+    composite_registry, project->get_registry (), undo_stack,
+    *project->tracklist ()->collection (), *project->track_factory_,
+    *project->tracklist ()->trackRouting (),
     *project->tracklist ()->channelSendRouting (),
     *project->tracklist ()->singletonTracks (),
     *project->port_connections_manager_, project->getTransport (), {},

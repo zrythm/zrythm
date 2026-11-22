@@ -13,11 +13,12 @@ namespace zrythm::actions
 {
 
 /**
- * @brief Pushes undoable edits of processor parameter values.
+ * @brief Dispatches processor parameter value writes through the
+ * operations layer.
  *
- * All mutations are dispatched through the operations layer and are
- * undoable. Edits of parameters outside the project registry are
- * refused.
+ * setValue pushes an undoable edit and refuses parameters outside the
+ * project registry. setLiveValue applies live, non-undoable state and
+ * accepts parameters from the project and application scopes.
  */
 class ProcessorParameterOperator : public QObject
 {

@@ -72,10 +72,23 @@ public:
   // ============================================================================
   // Type-filtered iteration (NVI pattern)
   //
-  // Public templated API delegates to private virtual _impl methods.
+  // Public API delegates to private virtual _impl methods.
   // ProjectRegistry optimizes via internal type buckets.
   // ObjectRegistry falls back to iterating all objects with a type check.
   // ============================================================================
+
+  /** Visitor over objects matching a QMetaObject type. */
+  using ObjectVisitor = std::function<void (UuidIdentifiableObject &)>;
+
+  /**
+   * Iterates every object whose type inherits @p meta_object, passing
+   * each to @p visitor once, in unspecified order.
+   */
+  void
+  for_each_matching (const QMetaObject &meta_object, ObjectVisitor visitor) const
+  {
+    for_each_matching_impl (meta_object, std::move (visitor));
+  }
 
   template <typename T>
   void for_each_matching (std::function<void (T &)> visitor) const
@@ -116,7 +129,6 @@ protected:
                find_by_raw_uuid_impl (const QUuid &id) const = 0;
   virtual bool contains_impl (const QUuid &id) const = 0;
 
-  using ObjectVisitor = std::function<void (UuidIdentifiableObject &)>;
   virtual void
   for_each_matching_impl (const QMetaObject &meta_type, ObjectVisitor visitor)
     const = 0;

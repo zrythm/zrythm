@@ -8,7 +8,8 @@
 #include "dsp/fader.h"
 #include "dsp/metronome.h"
 #include "structure/tracks/track_fwd.h"
-#include "utils/object_registry.h"
+#include "utils/iobject_registry.h"
+#include "utils/typed_uuid_reference.h"
 
 namespace zrythm::engine::session
 {
@@ -42,12 +43,15 @@ public:
   using RealtimeTracksProvider = std::function<RealtimeTracks ()>;
 
   /**
+   * @param registry The application registry the control room's state
+   *   registers in.
    * @param metronome_emphasis_sample Bar-click sample played by the metronome.
    * @param metronome_normal_sample Beat-click sample played by the metronome.
    * @param rt_tracks_provider Returns the tracks to scan for Listen state
    *   during each processing cycle.
    */
   ControlRoom (
+    utils::IObjectRegistry &registry,
     juce::AudioSampleBuffer metronome_emphasis_sample,
     juce::AudioSampleBuffer metronome_normal_sample,
     RealtimeTracksProvider  rt_tracks_provider,
@@ -68,12 +72,9 @@ public:
   }
   Q_SIGNAL void dimOutputChanged (bool dim);
 
-  dsp::ProcessorParameter * muteVolume () const { return mute_volume_.get (); }
-  dsp::ProcessorParameter * listenVolume () const
-  {
-    return listen_volume_.get ();
-  }
-  dsp::ProcessorParameter * dimVolume () const { return dim_volume_.get (); }
+  dsp::ProcessorParameter * muteVolume () const { return mute_volume_; }
+  dsp::ProcessorParameter * listenVolume () const { return listen_volume_; }
+  dsp::ProcessorParameter * dimVolume () const { return dim_volume_; }
   auto * monitorFader () const { return monitor_fader_.get (); }
   auto * metronome () const { return metronome_.get (); }
 
@@ -81,28 +82,38 @@ public:
 
 private:
   /**
-   * @brief Self-contained registry (just to satisfy port/fader requirements).
+   * @brief The application registry the control room's state registers
+   * in.
    */
-  utils::ObjectRegistry registry_;
+  utils::IObjectRegistry &registry_;
 
   /**
    * The volume to set muted channels to when
    * soloing/muting.
    */
-  utils::QObjectUniquePtr<dsp::ProcessorParameter> mute_volume_;
+  utils::TypedUuidReference<dsp::ProcessorParameter> mute_volume_id_;
 
   /**
    * The volume to set listened channels to when
    * Listen is enabled on a Channel.
    */
-  utils::QObjectUniquePtr<dsp::ProcessorParameter> listen_volume_;
+  utils::TypedUuidReference<dsp::ProcessorParameter> listen_volume_id_;
 
   /**
    * The volume to set other channels to when Listen
    * is enabled on a Channel, or the monitor when
    * dim is enabled.
    */
-  utils::QObjectUniquePtr<dsp::ProcessorParameter> dim_volume_;
+  utils::TypedUuidReference<dsp::ProcessorParameter> dim_volume_id_;
+
+  /**
+   * Cached for the processing callbacks, which run on the audio thread
+   * and must not touch the registry; the references above keep the
+   * objects alive.
+   */
+  dsp::ProcessorParameter * mute_volume_ = nullptr;
+  dsp::ProcessorParameter * listen_volume_ = nullptr;
+  dsp::ProcessorParameter * dim_volume_ = nullptr;
 
   /** Dim the output volume. */
   std::atomic_bool dim_output_ = false;

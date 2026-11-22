@@ -11,6 +11,7 @@
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
+#include "utils/composite_object_registry.h"
 #include "utils/object_registry.h"
 
 #include "operations/operation_environment.h"
@@ -19,7 +20,8 @@ namespace zrythm::operations
 {
 
 OperationEnvironment::OperationEnvironment (
-  utils::IObjectRegistry                     &object_registry,
+  utils::CompositeObjectRegistry             &object_registry,
+  utils::IObjectRegistry                     &project_object_registry,
   undo::UndoStack                            &undo_stack,
   structure::tracks::TrackCollection         &track_collection,
   structure::tracks::TrackFactory            &track_factory,
@@ -30,9 +32,10 @@ OperationEnvironment::OperationEnvironment (
   dsp::Transport *                            transport,
   SendConnectivityQuery                       send_connectivity_query,
   PortConnectivityQuery                       port_connectivity_query)
-    : object_registry_ (object_registry), undo_stack_ (undo_stack),
-      track_collection_ (track_collection), track_factory_ (track_factory),
-      track_routing_ (track_routing),
+    : object_registry_ (object_registry),
+      project_object_registry_ (project_object_registry),
+      undo_stack_ (undo_stack), track_collection_ (track_collection),
+      track_factory_ (track_factory), track_routing_ (track_routing),
       channel_send_routing_ (channel_send_routing),
       singleton_tracks_ (singleton_tracks),
       port_connections_manager_ (port_connections_manager),
@@ -42,10 +45,16 @@ OperationEnvironment::OperationEnvironment (
 {
 }
 
-utils::IObjectRegistry &
+utils::CompositeObjectRegistry &
 OperationEnvironment::object_registry () const
 {
   return object_registry_;
+}
+
+utils::IObjectRegistry &
+OperationEnvironment::project_object_registry () const
+{
+  return project_object_registry_;
 }
 
 undo::UndoStack &

@@ -32,16 +32,16 @@ parameter_set_value_operation ()
     [] (
       OperationContext &ctx, ProcessorParameterParam parameter,
       BoundedFloatParam<0.0, 1.0> value) -> OperationReport {
-      auto &registry = ctx.environment ().object_registry ();
-      // ChangeParameterValueCommand requires its parameter to be
-      // registered in the project registry
-      if (!registry.contains (type_safe::get (parameter.value ()->get_uuid ())))
+      // the undo history is project-scoped: edits refuse application
+      // state, which only live control accepts
+      if (
+        const auto refusal = ctx.edit_target_refusal (
+          type_safe::get (parameter.value ()->get_uuid ()),
+          utils::Utf8String::from_qstring (parameter.value ()->label ()),
+          "parameter.set_value_live");
+        refusal.has_value ())
         {
-          return ctx.refused (
-            utils::RefusalKind::NotFound,
-            fmt::format (
-              "'{}' is not registered in this project's registry",
-              parameter.value ()->label ()));
+          return ctx.refused (*refusal);
         }
       // Mirrors ProcessorParameter::setBaseValue(), which fuzzy-compares
       // and stores nothing for equal values; skipping the command keeps
@@ -54,7 +54,8 @@ parameter_set_value_operation ()
         }
       ctx.push_command (
         std::make_unique<commands::ChangeParameterValueCommand> (
-          *parameter.value (), registry, static_cast<float> (value.value ())));
+          *parameter.value (), ctx.environment ().project_object_registry (),
+          static_cast<float> (value.value ())));
       ctx.note_affected (parameter.uuid_string (), "parameter");
       return ctx.applied ();
     });
@@ -80,15 +81,15 @@ parameter_set_value_live_operation ()
     [] (
       OperationContext &ctx, ProcessorParameterParam parameter,
       BoundedFloatParam<0.0, 1.0> value) -> OperationReport {
-      // Only parameters of this project are controllable through its
-      // session
+      // Only parameters resolvable through the session's registry are
+      // controllable through it
       if (!ctx.environment ().object_registry ().contains (
             type_safe::get (parameter.value ()->get_uuid ())))
         {
           return ctx.refused (
             utils::RefusalKind::NotFound,
             fmt::format (
-              "'{}' is not registered in this project's registry",
+              "'{}' is not registered in this session's registry",
               parameter.value ()->label ()));
         }
       // Mirrors ProcessorParameter::setBaseValue(), which fuzzy-compares

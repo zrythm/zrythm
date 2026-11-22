@@ -13,6 +13,7 @@ target_sources(zrythm_utils_lib
     chromaprint.cpp
     color.cpp
     compression.cpp
+    composite_object_registry.cpp
     datetime.cpp
     debouncer.cpp
     directory_manager.cpp
@@ -58,6 +59,7 @@ target_sources(zrythm_utils_lib
       color.h
       color_math.h
       compression.h
+      composite_object_registry.h
       concurrency.h
       datetime.h
       debouncer.h

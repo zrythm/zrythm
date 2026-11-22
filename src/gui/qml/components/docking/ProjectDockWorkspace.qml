@@ -182,6 +182,7 @@ Item {
         audioEngine: root.project.engine
         controlRoom: root.controlRoom
         deviceManager: root.deviceManager
+        parameterOperator: root.session.processorParameterOperator
         portObservationManager: root.project.portObservationManager
         trackCollection: root.project.tracklist.collection
         trackCollectionOperator: root.session.trackCollectionOperator

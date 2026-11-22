@@ -7,6 +7,7 @@
 #include "controllers/project_json_serializer.h"
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
+#include "gui/backend/app_scope.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/project_session.h"
 #include "gui/backend/qt_plugin_host_window.h"
@@ -283,7 +284,8 @@ ProjectManager::create_default (
               *zapp->controlRoom ()->monitorFader (),
               zapp->pluginManager ()->get_lv2_world ());
             project_session = utils::make_qobject_unique<ProjectSession> (
-              app_settings_, *clipboard_, std::move (prj));
+              app_settings_, *clipboard_, zapp->appScope ().registry (),
+              std::move (prj));
           }
           project_session->setTitle (name.to_qstring ());
           project_session->project ()->add_default_tracks ();
@@ -555,7 +557,8 @@ ProjectManager::loadProject (const QString &filepath)
               return;
 
             auto project_session = utils::make_qobject_unique<ProjectSession> (
-              app_settings_, *clipboard_, std::move (prj));
+              app_settings_, *clipboard_, zapp->appScope ().registry (),
+              std::move (prj));
 
             // Deserialize JSON into Project, ProjectUiState, and UndoStack
             controllers::ProjectLoader::deserialize (

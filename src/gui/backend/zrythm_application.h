@@ -31,6 +31,8 @@ class IHardwareAudioInterface;
 namespace zrythm::gui
 {
 
+class AppScope;
+
 class ZrythmApplication final : public QApplication
 {
   Q_OBJECT
@@ -96,6 +98,8 @@ public:
   zrythm::gui::FileSystemModel *        fileSystemModel () const;
 
   engine::session::ControlRoom * controlRoom () const;
+
+  AppScope &appScope () const;
 
   ChordPresetManager * chordPresetManager () const;
 

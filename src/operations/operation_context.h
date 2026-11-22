@@ -4,14 +4,19 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "undo/undo_stack.h"
 #include "utils/utf8_string.h"
 
+#include <QUuid>
+
 #include "operations/operation.h"
 #include "operations/operation_environment.h"
+#include <fmt/format.h>
 
 namespace zrythm::operations
 {
@@ -88,6 +93,55 @@ public:
     report.refusal_kind = reason.kind;
     report.message = reason.text.str ();
     return report;
+  }
+
+  /**
+   * Returns why @p uuid may not be the target of an Edit, or no value
+   * when it may.
+   *
+   * The undo history is project-scoped: an object that resolves through
+   * the session but not through the project registry is application
+   * state, and an object that resolves through neither is not
+   * registered. @p alternative names the Control operation to suggest
+   * for application state, when one exists.
+   */
+  [[nodiscard]] std::optional<utils::RefusalReason> edit_target_refusal (
+    const QUuid             &id,
+    const utils::Utf8String &label,
+    std::string_view         alternative = {}) const
+  {
+    const auto &env = environment ();
+    if (env.project_object_registry ().contains (id))
+      {
+        return std::nullopt;
+      }
+    auto name = label;
+    if (name.empty ())
+      {
+        name =
+          utils::Utf8String::from_qstring (id.toString (QUuid::WithoutBraces));
+      }
+    std::string hint;
+    if (!alternative.empty ())
+      {
+        hint = fmt::format (", use {}", alternative);
+      }
+    if (env.object_registry ().contains (id))
+      {
+        return utils::RefusalReason{
+          utils::RefusalKind::Unsupported,
+          utils::Utf8String::from_utf8_encoded_string (
+            fmt::format (
+              "'{}' is application state: edits are project-scoped{}",
+              name.view (), hint))
+        };
+      }
+    return utils::RefusalReason{
+      utils::RefusalKind::NotFound,
+      utils::Utf8String::from_utf8_encoded_string (
+        fmt::format (
+          "'{}' is not registered in this session's registry", name.view ()))
+    };
   }
 
   /** Number of commands the stack refused during this invocation. */

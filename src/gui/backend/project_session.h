@@ -27,6 +27,7 @@
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
+#include "utils/composite_object_registry.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -131,6 +132,7 @@ public:
   ProjectSession (
     utils::AppSettings                                    &app_settings,
     controllers::Clipboard                                &clipboard,
+    utils::IObjectRegistry                                &app_registry,
     utils::QObjectUniquePtr<structure::project::Project> &&project);
 
   ~ProjectSession () override;
@@ -263,6 +265,10 @@ private:
 
   // Core project data
   utils::QObjectUniquePtr<structure::project::Project> project_;
+
+  // Resolves the project registry and the application registry; the
+  // session's operations dispatch against this composite
+  std::unique_ptr<utils::CompositeObjectRegistry> composite_registry_;
 
   // Serializable UI state (tool, clipEditor, timeline, snapGrids)
   utils::QObjectUniquePtr<structure::project::ProjectUiState> ui_state_;

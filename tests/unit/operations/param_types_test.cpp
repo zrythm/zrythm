@@ -12,6 +12,7 @@
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
+#include "utils/composite_object_registry.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
@@ -33,6 +34,8 @@ protected:
   dsp::TempoMap         tempo_map_{ units::sample_rate (44100.0) };
   dsp::TempoMapWrapper  tempo_map_wrapper_{ tempo_map_ };
   utils::ObjectRegistry registry_;
+  utils::ObjectRegistry app_registry_;
+  utils::CompositeObjectRegistry composite_registry_{ registry_, app_registry_ };
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };
@@ -56,10 +59,9 @@ protected:
   undo::UndoStack undo_stack_{ [] (auto callback, bool) { callback (); } };
   structure::project::PortConnectionsManager port_connections_manager_;
   OperationEnvironment                       environment_{
-    registry_,         undo_stack_,
-    track_collection_, track_factory_,
-    track_routing_,    channel_send_routing_,
-    singleton_tracks_, port_connections_manager_
+    composite_registry_,   registry_,         undo_stack_,
+    track_collection_,     track_factory_,    track_routing_,
+    channel_send_routing_, singleton_tracks_, port_connections_manager_
   };
 };
 

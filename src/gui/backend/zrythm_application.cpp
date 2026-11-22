@@ -12,6 +12,7 @@
 
 #include "dsp/juce_hardware_audio_interface.h"
 #include "engine/session/midi_mapping.h"
+#include "gui/backend/app_scope.h"
 #include "gui/backend/offscreen_qml_scene.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "plugins/lv2_plugin_format.h"
@@ -111,6 +112,7 @@ public:
   utils::QObjectUniquePtr<TranslationManager>           translation_manager_;
   utils::QObjectUniquePtr<ProjectManager>               project_manager_;
   utils::QObjectUniquePtr<FileSystemModel>              file_system_model_;
+  std::unique_ptr<AppScope>                             app_scope_;
   utils::QObjectUniquePtr<engine::session::ControlRoom> control_room_;
 
   utils::QObjectUniquePtr<ChordPresetManager> chord_preset_manager_;
@@ -243,10 +245,15 @@ ZrythmApplication::initialize ()
 
   ZoneScopedN ("App initialization");
 
+  // Application-scope state; control room objects register into its
+  // registry
+  impl_->app_scope_ = std::make_unique<AppScope> ();
+
   // Create control room after command-line parsing to avoid leaking
   // AudioBuffers when --help/--version calls std::exit()
   impl_
     ->control_room_ = utils::make_qobject_unique<engine::session::ControlRoom> (
+    impl_->app_scope_->registry (),
     load_metronome_sample (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s),
     load_metronome_sample (u":/qt/qml/Zrythm/wav/square_normal.wav"_s),
     [this] () -> engine::session::ControlRoom::RealtimeTracks {
@@ -914,6 +921,12 @@ engine::session::ControlRoom *
 ZrythmApplication::controlRoom () const
 {
   return impl_->control_room_.get ();
+}
+
+AppScope &
+ZrythmApplication::appScope () const
+{
+  return *impl_->app_scope_;
 }
 
 ChordPresetManager *

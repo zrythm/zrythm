@@ -9,6 +9,7 @@ add_executable(zrythm_utils_unit_tests
   audio_test.cpp
   color_test.cpp
   compression_test.cpp
+  composite_object_registry_test.cpp
   concurrency_test.cpp
   datetime_test.cpp
   debouncer_test.cpp

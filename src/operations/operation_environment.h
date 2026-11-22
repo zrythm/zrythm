@@ -6,6 +6,7 @@
 #include <functional>
 #include <optional>
 
+#include "utils/composite_object_registry.h"
 #include "utils/refusal.h"
 
 #include <QUuid>
@@ -76,7 +77,8 @@ class OperationEnvironment
 {
 public:
   OperationEnvironment (
-    utils::IObjectRegistry                     &object_registry,
+    utils::CompositeObjectRegistry             &object_registry,
+    utils::IObjectRegistry                     &project_object_registry,
     undo::UndoStack                            &undo_stack,
     structure::tracks::TrackCollection         &track_collection,
     structure::tracks::TrackFactory            &track_factory,
@@ -88,7 +90,17 @@ public:
     SendConnectivityQuery                       send_connectivity_query = {},
     PortConnectivityQuery                       port_connectivity_query = {});
 
-  utils::IObjectRegistry                     &object_registry () const;
+  utils::CompositeObjectRegistry &object_registry () const;
+
+  /**
+   * The registry Edit targets must resolve in.
+   *
+   * The undo history is project-scoped, so Edit operations refuse
+   * objects registered elsewhere (application scope). Control
+   * operations resolve through object_registry (), which spans every
+   * scope the session can reach.
+   */
+  utils::IObjectRegistry                     &project_object_registry () const;
   undo::UndoStack                            &undo_stack () const;
   structure::tracks::TrackCollection         &track_collection () const;
   structure::tracks::TrackFactory            &track_factory () const;
@@ -130,7 +142,8 @@ public:
   structure::tracks::Track * find_track (const QUuid &uuid) const;
 
 private:
-  utils::IObjectRegistry                     &object_registry_;
+  utils::CompositeObjectRegistry             &object_registry_;
+  utils::IObjectRegistry                     &project_object_registry_;
   undo::UndoStack                            &undo_stack_;
   structure::tracks::TrackCollection         &track_collection_;
   structure::tracks::TrackFactory            &track_factory_;

@@ -4,6 +4,7 @@
 #include "actions/parameter_operator.h"
 #include "dsp/parameter.h"
 #include "undo/undo_stack.h"
+#include "utils/composite_object_registry.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
@@ -35,14 +36,29 @@ protected:
     return ref.get ();
   }
 
+  /** Registers a processor parameter in the application registry. */
+  dsp::ProcessorParameter * add_app_parameter (const char8_t * unique_id)
+  {
+    auto ref = utils::create_object<dsp::ProcessorParameter> (
+      app_registry_, app_registry_,
+      dsp::ProcessorParameter::UniqueId (unique_id),
+      dsp::ParameterRange (
+        dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
+      utils::Utf8String{ unique_id });
+    app_parameter_refs_.push_back (ref.as_untyped ());
+    return ref.get ();
+  }
+
   void SetUp () override
   {
     ProjectTestFixture::SetUp ();
     project_ = create_minimal_project ();
     undo_stack_ = create_mock_undo_stack ();
     operations::register_builtin_operations (operation_registry_);
+    composite_registry_ = std::make_unique<utils::CompositeObjectRegistry> (
+      project_->get_registry (), app_registry_);
     environment_ = std::make_unique<operations::OperationEnvironment> (
-      project_->get_registry (), *undo_stack_,
+      *composite_registry_, project_->get_registry (), *undo_stack_,
       *project_->tracklist ()->collection (), *project_->track_factory_,
       *project_->tracklist ()->trackRouting (),
       *project_->tracklist ()->channelSendRouting (),
@@ -67,13 +83,17 @@ protected:
     dispatcher_.reset ();
     environment_.reset ();
     undo_stack_.reset ();
-    // release the parameter references while the project registry they
-    // point into is still alive
+    // release the parameter references while the registries they
+    // point into are still alive
     parameter_refs_.clear ();
+    app_parameter_refs_.clear ();
+    composite_registry_.reset ();
     project_.reset ();
   }
 
   std::unique_ptr<structure::project::Project>      project_;
+  utils::ObjectRegistry                             app_registry_;
+  std::unique_ptr<utils::CompositeObjectRegistry>   composite_registry_;
   std::unique_ptr<undo::UndoStack>                  undo_stack_;
   operations::OperationRegistry                     operation_registry_;
   std::unique_ptr<operations::OperationEnvironment> environment_;
@@ -82,6 +102,7 @@ protected:
   dsp::ProcessorParameter *                         param_ = nullptr;
   dsp::ProcessorParameter *                         second_param_ = nullptr;
   std::vector<utils::UuidReference>                 parameter_refs_;
+  std::vector<utils::UuidReference>                 app_parameter_refs_;
 };
 
 TEST_F (ParameterOperatorTest, SetValue)
@@ -251,6 +272,31 @@ TEST_F (ParameterOperatorTest, SetLiveValueRefusesForeignRegistryParameter)
 
   EXPECT_FALSE (operator_->setLiveValue (foreign, 0.9f).isEmpty ());
   EXPECT_FLOAT_EQ (foreign->baseValue (), 0.5f);
+}
+
+// Application-scope parameters resolve through the session's composite
+// registry, so live control of control-room state works through the
+// operator
+TEST_F (ParameterOperatorTest, SetLiveValueAppliesApplicationRegistryParameter)
+{
+  auto * app_param = add_app_parameter (u8"monitor_level");
+  app_param->setBaseValue (0.5f);
+
+  EXPECT_TRUE (operator_->setLiveValue (app_param, 0.9f).isEmpty ());
+  EXPECT_FLOAT_EQ (app_param->baseValue (), 0.9f);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Application-scope parameters accept live control only: the undo
+// history is project-scoped, so undoable edits refuse them
+TEST_F (ParameterOperatorTest, SetValueRefusesApplicationRegistryParameter)
+{
+  auto * app_param = add_app_parameter (u8"mute_level");
+  app_param->setBaseValue (0.2f);
+
+  EXPECT_FALSE (operator_->setValue (app_param, 0.7f).isEmpty ());
+  EXPECT_FLOAT_EQ (app_param->baseValue (), 0.2f);
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 } // namespace zrythm::actions

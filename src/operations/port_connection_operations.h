@@ -12,10 +12,37 @@
 namespace zrythm::operations
 {
 
+namespace detail
+{
+/**
+ * Returns why either port of the pair may not be edited, or no value
+ * when both may.
+ */
+inline std::optional<utils::RefusalReason>
+port_pair_edit_refusal (
+  OperationContext &ctx,
+  PortParam         source,
+  PortParam         destination)
+{
+  for (const auto * port : { source.value (), destination.value () })
+    {
+      if (
+        auto refusal = ctx.edit_target_refusal (
+          type_safe::get (port->get_uuid ()), port->get_label ());
+        refusal.has_value ())
+        {
+          return refusal;
+        }
+    }
+  return std::nullopt;
+}
+} // namespace detail
+
 /**
  * Connects two ports. Edit; takes the source and destination ports.
  * Refuses connections that duplicate an existing one, run against the
- * signal flow or would close a signal loop.
+ * signal flow or would close a signal loop. Ports outside the project
+ * registry are refused (the undo history is project-scoped).
  */
 inline const auto &
 port_connect_operation ()
@@ -28,6 +55,13 @@ port_connect_operation ()
   },
     [] (OperationContext &ctx, PortParam source, PortParam destination)
       -> OperationReport {
+      if (
+        const auto refusal =
+          detail::port_pair_edit_refusal (ctx, source, destination);
+        refusal.has_value ())
+        {
+          return ctx.refused (*refusal);
+        }
       auto      &manager = ctx.environment ().port_connections_manager ();
       const auto refusal = manager.connect_refusal_reason (
         *source.value (), *destination.value (),
@@ -51,7 +85,9 @@ port_connect_operation ()
 
 /**
  * Removes a connection between two ports. Edit; takes the source and
- * destination ports. Refuses missing and locked connections.
+ * destination ports. Refuses missing and locked connections. Ports
+ * outside the project registry are refused (the undo history is
+ * project-scoped).
  */
 inline const auto &
 port_disconnect_operation ()
@@ -64,6 +100,13 @@ port_disconnect_operation ()
   },
     [] (OperationContext &ctx, PortParam source, PortParam destination)
       -> OperationReport {
+      if (
+        const auto refusal =
+          detail::port_pair_edit_refusal (ctx, source, destination);
+        refusal.has_value ())
+        {
+          return ctx.refused (*refusal);
+        }
       auto      &manager = ctx.environment ().port_connections_manager ();
       const auto refusal =
         manager.edit_refusal_reason (*source.value (), *destination.value ());
@@ -87,7 +130,8 @@ port_disconnect_operation ()
  * destination ports and the new strength. Refuses MIDI connections
  * and strengths outside the destination's range; setting the current
  * strength elides. Consecutive changes to one connection merge into
- * a single undo step.
+ * a single undo step. Ports outside the project registry are refused
+ * (the undo history is project-scoped).
  */
 inline const auto &
 port_set_connection_multiplier_operation ()
@@ -105,6 +149,13 @@ port_set_connection_multiplier_operation ()
     [] (
       OperationContext &ctx, PortParam source, PortParam destination,
       BoundedFloatParam<-2.0, 2.0> multiplier) -> OperationReport {
+      if (
+        const auto refusal =
+          detail::port_pair_edit_refusal (ctx, source, destination);
+        refusal.has_value ())
+        {
+          return ctx.refused (*refusal);
+        }
       auto      &manager = ctx.environment ().port_connections_manager ();
       const auto refusal = manager.multiplier_refusal_reason (
         *source.value (), *destination.value (), multiplier.value ());
@@ -134,7 +185,8 @@ port_set_connection_multiplier_operation ()
 /**
  * Enables or disables a connection. Edit; takes the source and
  * destination ports and the new state. Refuses missing and locked
- * connections; setting the current state elides.
+ * connections; setting the current state elides. Ports outside the
+ * project registry are refused (the undo history is project-scoped).
  */
 inline const auto &
 port_set_connection_enabled_operation ()
@@ -150,6 +202,13 @@ port_set_connection_enabled_operation ()
     [] (
       OperationContext &ctx, PortParam source, PortParam destination,
       BoolParam enabled) -> OperationReport {
+      if (
+        const auto refusal =
+          detail::port_pair_edit_refusal (ctx, source, destination);
+        refusal.has_value ())
+        {
+          return ctx.refused (*refusal);
+        }
       auto      &manager = ctx.environment ().port_connections_manager ();
       const auto refusal =
         manager.edit_refusal_reason (*source.value (), *destination.value ());

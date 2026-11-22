@@ -68,6 +68,7 @@ target_sources(zrythm_gui_lib
     timeline_arranger_objects_model.cpp
     x11_plugin_host_window.h
     x11_plugin_host_window.cpp
+    app_scope.h
     zrythm_application.h
     zrythm_application.cpp
 )

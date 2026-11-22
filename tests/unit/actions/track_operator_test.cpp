@@ -10,6 +10,7 @@
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_routing.h"
 #include "undo/undo_stack.h"
+#include "utils/composite_object_registry.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
@@ -96,9 +97,9 @@ protected:
 
     operations::register_builtin_operations (registry_);
     environment_ = std::make_unique<operations::OperationEnvironment> (
-      object_registry_, *undo_stack_, *track_collection_, *track_factory_,
-      *track_routing_, *channel_send_routing_, singleton_tracks_,
-      *port_connections_manager_);
+      composite_registry_, object_registry_, *undo_stack_, *track_collection_,
+      *track_factory_, *track_routing_, *channel_send_routing_,
+      singleton_tracks_, *port_connections_manager_);
     dispatcher_ = std::make_unique<operations::OperationDispatcher> (
       registry_, *environment_);
 
@@ -107,9 +108,13 @@ protected:
     track_operator_->setOperationDispatcher (dispatcher_.get ());
   }
 
-  dsp::TempoMap         tempo_map_{ units::sample_rate (44100.0) };
-  dsp::TempoMapWrapper  tempo_map_wrapper_{ tempo_map_ };
-  utils::ObjectRegistry object_registry_;
+  dsp::TempoMap                  tempo_map_{ units::sample_rate (44100.0) };
+  dsp::TempoMapWrapper           tempo_map_wrapper_{ tempo_map_ };
+  utils::ObjectRegistry          object_registry_;
+  utils::ObjectRegistry          app_registry_;
+  utils::CompositeObjectRegistry composite_registry_{
+    object_registry_, app_registry_
+  };
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };

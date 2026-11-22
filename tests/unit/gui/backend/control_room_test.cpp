@@ -6,6 +6,7 @@
 #include "dsp/fader.h"
 #include "dsp/parameter.h"
 #include "engine/session/control_room.h"
+#include "utils/object_registry.h"
 
 #include "helpers/scoped_juce_qapplication.h"
 
@@ -25,7 +26,7 @@ protected:
     // The metronome samples are empty: the tests below only exercise the
     // monitor fader, which does not process the metronome.
     control_room_ = std::make_unique<ControlRoom> (
-      juce::AudioSampleBuffer (), juce::AudioSampleBuffer (),
+      registry_, juce::AudioSampleBuffer (), juce::AudioSampleBuffer (),
       [] () -> ControlRoom::RealtimeTracks { return {}; });
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (48000.0));
@@ -72,6 +73,7 @@ protected:
     return stereo_out.buffers ()->getSample (0, 0);
   }
 
+  utils::ObjectRegistry                           registry_;
   std::unique_ptr<ControlRoom>                    control_room_;
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;

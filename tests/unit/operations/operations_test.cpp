@@ -15,6 +15,7 @@
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
+#include "utils/composite_object_registry.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
@@ -111,9 +112,9 @@ protected:
     port_connections_manager_ =
       std::make_unique<structure::project::PortConnectionsManager> ();
     environment_ = std::make_unique<OperationEnvironment> (
-      registry_, *undo_stack_, *track_collection_, *track_factory_,
-      *track_routing_, *channel_send_routing_, *singleton_tracks_,
-      *port_connections_manager_, transport_.get ());
+      composite_registry_, registry_, *undo_stack_, *track_collection_,
+      *track_factory_, *track_routing_, *channel_send_routing_,
+      *singleton_tracks_, *port_connections_manager_, transport_.get ());
 
     register_builtin_operations (operation_registry_);
   }
@@ -186,6 +187,8 @@ protected:
   dsp::TempoMap         tempo_map_{ units::sample_rate (44100.0) };
   dsp::TempoMapWrapper  tempo_map_wrapper_{ tempo_map_ };
   utils::ObjectRegistry registry_;
+  utils::ObjectRegistry app_registry_;
+  utils::CompositeObjectRegistry composite_registry_{ registry_, app_registry_ };
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };
@@ -998,9 +1001,9 @@ TEST_F (OperationsTest, TrackSetSendTargetTrackPassesQueryRefusalThrough)
     type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
 
   environment_ = std::make_unique<OperationEnvironment> (
-    registry_, *undo_stack_, *track_collection_, *track_factory_,
-    *track_routing_, *channel_send_routing_, *singleton_tracks_,
-    *port_connections_manager_, transport_.get (),
+    composite_registry_, registry_, *undo_stack_, *track_collection_,
+    *track_factory_, *track_routing_, *channel_send_routing_,
+    *singleton_tracks_, *port_connections_manager_, transport_.get (),
     [] (const structure::tracks::ChannelSend &, const dsp::Port &) {
       return std::optional<utils::RefusalReason>{
         utils::RefusalReason{
@@ -1227,9 +1230,9 @@ TEST_F (OperationsTest, TrackAddRefusesWhenNoMasterTrack)
   // the singleton track pointers were never populated in this environment
   singleton_tracks_ = std::make_unique<structure::tracks::SingletonTracks> ();
   environment_ = std::make_unique<OperationEnvironment> (
-    registry_, *undo_stack_, *track_collection_, *track_factory_,
-    *track_routing_, *channel_send_routing_, *singleton_tracks_,
-    *port_connections_manager_, transport_.get ());
+    composite_registry_, registry_, *undo_stack_, *track_collection_,
+    *track_factory_, *track_routing_, *channel_send_routing_,
+    *singleton_tracks_, *port_connections_manager_, transport_.get ());
 
   const auto count_before = track_collection_->track_count ();
   auto       report = dispatch (
@@ -1674,10 +1677,10 @@ TEST_F (OperationsTest, PortConnectRefusesWhenGraphRejects)
   auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
 
   environment_ = std::make_unique<OperationEnvironment> (
-    registry_, *undo_stack_, *track_collection_, *track_factory_,
-    *track_routing_, *channel_send_routing_, *singleton_tracks_,
-    *port_connections_manager_, transport_.get (), SendConnectivityQuery{},
-    [] (const dsp::Port &, const dsp::Port &) {
+    composite_registry_, registry_, *undo_stack_, *track_collection_,
+    *track_factory_, *track_routing_, *channel_send_routing_,
+    *singleton_tracks_, *port_connections_manager_, transport_.get (),
+    SendConnectivityQuery{}, [] (const dsp::Port &, const dsp::Port &) {
       return std::optional<utils::RefusalReason>{
         utils::RefusalReason{
                              utils::RefusalKind::CyclicRoute,

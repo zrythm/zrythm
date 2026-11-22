@@ -6,6 +6,7 @@
 #include "engine/session/control_room.h"
 #include "structure/tracks/track_all.h"
 #include "utils/float_ranges.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::engine::session
 {
@@ -19,11 +20,37 @@ parameter_amplitude (const dsp::ProcessorParameter &parameter)
 } // namespace
 
 ControlRoom::ControlRoom (
+  utils::IObjectRegistry &registry,
   juce::AudioSampleBuffer metronome_emphasis_sample,
   juce::AudioSampleBuffer metronome_normal_sample,
   RealtimeTracksProvider  rt_tracks_provider,
   QObject *               parent)
-    : QObject (parent),
+    : QObject (parent), registry_ (registry),
+      mute_volume_id_ (
+        utils::create_object<dsp::ProcessorParameter> (
+          registry_,
+          registry_,
+          dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"mute_volume") },
+          dsp::ParameterRange{
+            dsp::ParameterRange::Type::GainAmplitude, 0.f, 0.5f, 0.f, 0.f },
+          utils::Utf8String (u8"Mute"))),
+      listen_volume_id_ (
+        utils::create_object<dsp::ProcessorParameter> (
+          registry_,
+          registry_,
+          dsp::ProcessorParameter::UniqueId{
+            utils::Utf8String (u8"listen_volume") },
+          dsp::ParameterRange{
+            dsp::ParameterRange::Type::GainAmplitude, 0.5f, 2.0f, 0.f, 1.f },
+          utils::Utf8String (u8"Listen"))),
+      dim_volume_id_ (
+        utils::create_object<dsp::ProcessorParameter> (
+          registry_,
+          registry_,
+          dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"dim_volume") },
+          dsp::ParameterRange{
+            dsp::ParameterRange::Type::GainAmplitude, 0.0f, 0.5f, 0.f, 0.1f },
+          utils::Utf8String (u8"Dim"))),
       monitor_fader_ (
         utils::make_qobject_unique<dsp::Fader> (
           registry_,
@@ -34,32 +61,14 @@ ControlRoom::ControlRoom (
           [] (bool fader_solo_status) { return false; })),
       rt_tracks_provider_ (std::move (rt_tracks_provider))
 {
+  mute_volume_ = mute_volume_id_.get ();
+  listen_volume_ = listen_volume_id_.get ();
+  dim_volume_ = dim_volume_id_.get ();
+
   // Create metronome in constructor body after registries are initialized
   metronome_ = utils::make_qobject_unique<dsp::Metronome> (
     registry_, std::move (metronome_emphasis_sample),
     std::move (metronome_normal_sample), true, 1.0f, this);
-
-  /* init listen/mute/dim faders */
-  mute_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
-    registry_,
-    dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"mute_volume") },
-    dsp::ParameterRange{
-      dsp::ParameterRange::Type::GainAmplitude, 0.f, 0.5f, 0.f, 0.f },
-    utils::Utf8String (u8"Mute"), this);
-
-  listen_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
-    registry_,
-    dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"listen_volume") },
-    dsp::ParameterRange{
-      dsp::ParameterRange::Type::GainAmplitude, 0.5f, 2.0f, 0.f, 1.f },
-    utils::Utf8String (u8"Listen"), this);
-
-  dim_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
-    registry_,
-    dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"dim_volume") },
-    dsp::ParameterRange{
-      dsp::ParameterRange::Type::GainAmplitude, 0.0f, 0.5f, 0.f, 0.1f },
-    utils::Utf8String (u8"Dim"), this);
 
   monitor_fader_->set_mute_gain_callback ([this] () {
     return parameter_amplitude (*mute_volume_);

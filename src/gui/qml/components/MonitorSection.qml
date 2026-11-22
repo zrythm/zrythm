@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
+import ZrythmActions
 import ZrythmStyle
 
 ScrollView {
@@ -15,15 +16,11 @@ ScrollView {
   required property AudioEngine audioEngine
   required property ControlRoom controlRoom
   required property DeviceManager deviceManager
+  required property ProcessorParameterOperator parameterOperator
   required property PortObservationManager portObservationManager
   readonly property color quietInkColor: Qt.alpha(ZrythmTheme.textColor, 0.62)
   required property TrackCollection trackCollection
   required property TrackCollectionOperator trackCollectionOperator
-
-  // Control-room parameters are application state: they live in the
-  // control room's own registry, outside the project registry the
-  // session's operations validate against, so these controls write them
-  // directly instead of through the parameter operator.
 
   // Formats a linear amplitude as dB text, bottoming out at -infinity.
   function dbText(amplitude: real): string {
@@ -72,7 +69,7 @@ ScrollView {
               to: 1
               value: root.controlRoom.monitorFader.gain.baseValue
 
-              onMoved: root.controlRoom.monitorFader.gain.setBaseValueByUser(value)
+              onMoved: root.parameterOperator.setLiveValue(root.controlRoom.monitorFader.gain, value)
             }
 
             Label {
@@ -93,7 +90,7 @@ ScrollView {
               icon.source: ResourceManager.getIconUrl("box-icons", "reset.svg")
               icon.width: 14
 
-              onClicked: root.controlRoom.monitorFader.gain.setBaseValueByUser(root.controlRoom.monitorFader.gain.range.defaultNormalizedValue)
+              onClicked: root.parameterOperator.setLiveValue(root.controlRoom.monitorFader.gain, root.controlRoom.monitorFader.gain.range.defaultNormalizedValue)
             }
           }
         }
@@ -126,7 +123,7 @@ ScrollView {
             icon.source: ResourceManager.getIconUrl("zrythm-dark", "monitor-mono.svg")
             text: qsTr("Mono")
 
-            onToggled: root.controlRoom.monitorFader.monoToggle.setBaseValueByUser(checked ? 1.0 : 0.0)
+            onToggled: root.parameterOperator.setLiveValue(root.controlRoom.monitorFader.monoToggle, checked ? 1.0 : 0.0)
           }
 
           Button {
@@ -150,7 +147,7 @@ ScrollView {
             icon.source: ResourceManager.getIconUrl("zrythm-dark", "monitor-mute.svg")
             text: qsTr("Mute")
 
-            onToggled: root.controlRoom.monitorFader.mute.setBaseValueByUser(checked ? 1.0 : 0.0)
+            onToggled: root.parameterOperator.setLiveValue(root.controlRoom.monitorFader.mute, checked ? 1.0 : 0.0)
           }
         }
       }
@@ -304,7 +301,7 @@ ScrollView {
         to: 1
         value: paramLevelRow.param.baseValue
 
-        onMoved: paramLevelRow.param.setBaseValueByUser(value)
+        onMoved: root.parameterOperator.setLiveValue(paramLevelRow.param, value)
       }
 
       Label {

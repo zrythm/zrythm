@@ -3,6 +3,7 @@
 
 #include "actions/port_connection_operator.h"
 #include "commands/port_connection_commands.h"
+#include "dsp/cv_port.h"
 #include "dsp/graph.h"
 #include "dsp/midi_port.h"
 #include "dsp/port.h"
@@ -15,6 +16,7 @@
 #include "structure/tracks/audio_bus_track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/tracklist.h"
+#include "utils/composite_object_registry.h"
 #include "utils/registry_utils.h"
 
 #include "helpers/project_fixture.h"
@@ -100,8 +102,10 @@ protected:
     project_->add_default_tracks ();
     undo_stack_ = create_mock_undo_stack ();
     operations::register_builtin_operations (operation_registry_);
+    composite_registry_ = std::make_unique<utils::CompositeObjectRegistry> (
+      project_->get_registry (), app_registry_);
     environment_ = std::make_unique<operations::OperationEnvironment> (
-      project_->get_registry (), *undo_stack_,
+      *composite_registry_, project_->get_registry (), *undo_stack_,
       *project_->tracklist ()->collection (), *project_->track_factory_,
       *project_->tracklist ()->trackRouting (),
       *project_->tracklist ()->channelSendRouting (),
@@ -144,6 +148,8 @@ protected:
   }
 
   std::unique_ptr<structure::project::Project>      project_;
+  utils::ObjectRegistry                             app_registry_;
+  std::unique_ptr<utils::CompositeObjectRegistry>   composite_registry_;
   std::unique_ptr<undo::UndoStack>                  undo_stack_;
   operations::OperationRegistry                     operation_registry_;
   std::unique_ptr<operations::OperationEnvironment> environment_;
@@ -212,6 +218,21 @@ TEST_F (
   undo_stack_->redo ();
   EXPECT_FALSE (connection_exists (*bus1_.out, *bus2_.in));
   EXPECT_FALSE (bus2_.in->detached ());
+}
+
+// Ports that resolve only in the application registry refuse undoable
+// edits: the undo history is project-scoped
+TEST_F (PortConnectionOperatorTest, ConnectPortsRefusesApplicationScopePort)
+{
+  auto app_port_ref = utils::create_object<dsp::CVPort> (
+    app_registry_, utils::Utf8String (u8"App CV Out"), dsp::PortFlow::Output);
+  auto * app_port = app_port_ref.get ();
+
+  EXPECT_FALSE (
+    operator_->connectPorts (uuid_of (*app_port), uuid_of (*bus2_.in))
+      .isEmpty ());
+  EXPECT_FALSE (connection_exists (*app_port, *bus2_.in));
+  EXPECT_EQ (undo_stack_->count (), 0);
 }
 
 TEST_F (PortConnectionOperatorTest, ValidationErrors)
