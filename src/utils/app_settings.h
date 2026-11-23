@@ -169,6 +169,10 @@ public:
   DEFINE_SETTING_PROPERTY (double, timelineLastCreatedObjectLengthInTicks, 3840.0)
   DEFINE_SETTING_PROPERTY (double, editorLastCreatedObjectLengthInTicks, 480.0)
   DEFINE_SETTING_PROPERTY (QString, uiLocale, QString ())
+  // MCP server ("name|grant|sha256hex" token entries; off without tokens)
+  DEFINE_SETTING_PROPERTY (bool, mcpEnabled, false)
+  DEFINE_SETTING_PROPERTY (int, mcpPort, 7777)
+  DEFINE_SETTING_PROPERTY (QStringList, mcpTokens, QStringList ())
 
 public:
   explicit AppSettings (

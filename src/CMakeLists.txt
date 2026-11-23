@@ -13,6 +13,7 @@ add_subdirectory(undo)
 add_subdirectory(controllers)
 add_subdirectory(operations)
 add_subdirectory(actions)
+add_subdirectory(frontends/mcp)
 
 target_include_directories(zrythm_frontends_gui_lib
   PUBLIC
@@ -72,6 +73,7 @@ target_link_libraries(zrythm_frontends_gui_lib
   PUBLIC
     zrythm_actions_lib
     zrythm_controllers_lib
+    zrythm_frontends_mcp_lib
     zrythm_operations_lib
     zrythm::include_dirs
     zrythm::all_compile_options

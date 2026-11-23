@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+add_executable(zrythm_frontends_mcp_unit_tests
+  mcp_test.cpp
+  mcp_test_client.h
+)
+
+set_target_properties(zrythm_frontends_mcp_unit_tests PROPERTIES
+  AUTOMOC ON
+  UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+)
+
+target_link_libraries(zrythm_frontends_mcp_unit_tests PRIVATE
+  GTest::gmock_main
+  Qt6::Network
+  zrythm_frontends_mcp_lib
+  zrythm_test_helpers_lib
+  zrythm_test_warning_suppressions_link_last
+)
+
+target_precompile_headers(zrythm_frontends_mcp_unit_tests REUSE_FROM zrythm_operations_unit_tests)
+
+zrythm_discover_tests(zrythm_frontends_mcp_unit_tests)

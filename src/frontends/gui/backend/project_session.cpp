@@ -250,6 +250,33 @@ ProjectSession::ProjectSession (
 
   operations::register_builtin_operations (*operation_registry_);
 
+  mcp_service_ = utils::make_qobject_unique<mcp::McpService> (
+    *operation_registry_, *operation_dispatcher_, *undo_stack_, this);
+  const auto apply_mcp_settings = [this] () {
+    // The environment configuration wins over the settings: it is the
+    // non-interactive path for headless and CI runs.
+    if (const auto config = mcp::mcp_config_from_environment ())
+      {
+        mcp_service_->apply_config (*config);
+        return;
+      }
+    mcp::McpServiceConfig config;
+    config.enabled = app_settings_.mcpEnabled ();
+    config.port = app_settings_.mcpPort ();
+    config.tokens = mcp::parse_token_entries (app_settings_.mcpTokens ());
+    mcp_service_->apply_config (config);
+  };
+  apply_mcp_settings ();
+  QObject::connect (
+    &app_settings_, &utils::AppSettings::mcpEnabledChanged, this,
+    apply_mcp_settings);
+  QObject::connect (
+    &app_settings_, &utils::AppSettings::mcpPortChanged, this,
+    apply_mcp_settings);
+  QObject::connect (
+    &app_settings_, &utils::AppSettings::mcpTokensChanged, this,
+    apply_mcp_settings);
+
   modular_project_model_ = utils::make_qobject_unique<ModularProjectModel> (
     *project_, *ui_state_, this);
 

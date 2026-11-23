@@ -12,3 +12,4 @@ add_subdirectory(undo)
 add_subdirectory(operations)
 
 add_subdirectory(frontends/gui)
+add_subdirectory(frontends/mcp)

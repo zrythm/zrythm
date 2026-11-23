@@ -24,6 +24,7 @@
 #include "frontends/gui/backend/timeline_arranger_objects_model.h"
 #include "frontends/gui/qquick/generic_plugin_ui_controller.h"
 #include "frontends/gui/qquick/qfuture_qml_wrapper.h"
+#include "frontends/mcp/mcp_service.h"
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
@@ -317,6 +318,9 @@ private:
   std::unique_ptr<operations::OperationEnvironment> operation_environment_;
   std::unique_ptr<operations::OperationRegistry>    operation_registry_;
   utils::QObjectUniquePtr<operations::OperationDispatcher> operation_dispatcher_;
+
+  /** The MCP frontend exposing the operations over the operations API. */
+  utils::QObjectUniquePtr<mcp::McpService> mcp_service_;
 };
 
 } // namespace zrythm::frontends::gui

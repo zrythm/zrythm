@@ -1029,6 +1029,8 @@ target_link_libraries(qt_libs
 )
 add_library(zrythm::qt_libs ALIAS qt_libs)
 
+find_package(QtMcp REQUIRED)
+
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
   zrythm::soxr
