@@ -376,6 +376,7 @@ Zrythm makes extensive use of modern C++ features:
 - Provide fallbacks for possibly-null values with optional chaining and nullish coalescing (`root.model?.title() ?? ""`), not `!== null` ternaries
 - Cast items returned by generic accessors (`Repeater::itemAt()`, `ListView::currentItem`) to their concrete type before accessing custom members
 - Always use the modern QML API when an alternative exists: Qt Quick Layouts (`GridLayout`/`RowLayout`/`ColumnLayout`) instead of the legacy positioners (`Grid`/`Row`/`Column`), pointer handlers instead of `MouseArea` for new interactions, etc. — not the Qt Quick 1-era conveniences
+- When a derived QML type replaces a property of its base type, mark the base property `virtual` and declare the derived one `final` (Qt: "Prefer to use final over override"). qmllint reports a replacement without these keywords as `[property-override]`. The keywords declare shadowing: code in the base file keeps reading the base property, so supply a value that the base itself calls or reads through assignment (`hook: root.impl`)
 
 **Style template components:**
 - Files under `src/frontends/gui/qml/ZrythmStyle/` are styled stock Qt Quick Controls, not new component types: consumers must see exactly the stock `T.*` template's API. Never add public properties (or other API surface) to them — cross-template coordination through injected properties is a design smell; use the stock control's own API (e.g. `DialogButtonBox.defaultButton`, `Dialog.visible`) instead
