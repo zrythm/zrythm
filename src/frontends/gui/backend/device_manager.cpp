@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cassert>
 #include <mutex>
 #include <shared_mutex>
 #include <string_view>
@@ -74,8 +75,10 @@ struct DeviceManager::MidiImpl
   std::atomic<size_t>                    overflow_count{ 0 };
   std::optional<DeviceChangeCallback>    device_change_cb;
 
-  explicit MidiImpl (DeviceManager &owner)
-      : callback (*this), owner_ (owner) { }
+  MidiImpl (DeviceManager &owner, DeviceMode device_mode)
+      : callback (*this), owner_ (owner), device_mode_ (device_mode)
+  {
+  }
 
   // The JUCE MIDI callback runs on a device thread (not the audio render
   // thread), so emitting this cross-thread signal is safe.
@@ -83,24 +86,33 @@ struct DeviceManager::MidiImpl
 
   void register_with_device_manager ()
   {
-    owner_.addMidiInputDeviceCallback ({}, &callback);
+    if (device_mode_ == DeviceMode::Hardware)
+      {
+        // An empty identifier receives events from every input device
+        owner_.addMidiInputDeviceCallback ({}, &callback);
+      }
   }
 
   void unregister_from_device_manager ()
   {
-    owner_.removeMidiInputDeviceCallback ({}, &callback);
+    if (device_mode_ == DeviceMode::Hardware)
+      {
+        owner_.removeMidiInputDeviceCallback ({}, &callback);
+      }
   }
 
 private:
-  DeviceManager &owner_;
+  DeviceManager   &owner_;
+  const DeviceMode device_mode_;
 };
 
 DeviceManager::DeviceManager (
   XmlStateGetter state_getter,
-  XmlStateSetter state_setter)
+  XmlStateSetter state_setter,
+  DeviceMode     device_mode)
     : state_getter_ (std::move (state_getter)),
-      state_setter_ (std::move (state_setter)),
-      midi_impl_ (std::make_unique<MidiImpl> (*this))
+      state_setter_ (std::move (state_setter)), device_mode_ (device_mode),
+      midi_impl_ (std::make_unique<MidiImpl> (*this, device_mode))
 {
   addChangeListener (&device_change_listener_);
   midi_impl_->register_with_device_manager ();
@@ -118,6 +130,7 @@ DeviceManager::initialize (
   int  max_output_channels,
   bool fallback_to_default)
 {
+  assert (device_mode_ == DeviceMode::Hardware);
   auto error = initialise (
     max_input_channels, max_output_channels, state_getter_ ().get (),
     fallback_to_default);
@@ -224,9 +237,22 @@ DeviceManager::createAudioDeviceTypes (
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_Android ());
 }
 
+[[nodiscard]] bool
+DeviceManager::deviceSelectionAvailable () const
+{
+  return device_mode_ == DeviceMode::Hardware;
+}
+
 void
 DeviceManager::showDeviceSelector ()
 {
+  if (!deviceSelectionAvailable ())
+    {
+      z_warning (
+        "The device selector is not available: the device manager uses "
+        "no devices");
+      return;
+    }
   if (device_selector_window_)
     {
       device_selector_window_->toFront (true);

@@ -148,13 +148,12 @@ protected:
     structure::project::Project          &project,
     std::optional<std::function<bool ()>> condition)
   {
-    auto * mock_hw = dynamic_cast<
-      test_helpers::ThreadedMockHardwareAudioInterface *> (hw_interface_.get ());
+    auto &dummy_hw = *hw_interface_;
     project.engine ()->activate ();
     project.engine ()->graph_dispatcher ().recalc_graph (false);
     project.engine ()->set_running (true);
 
-    const auto initial_count = mock_hw->process_call_count ();
+    const auto initial_count = dummy_hw.processed_block_count ();
     if (condition.has_value ())
       {
         ASSERT_TRUE (QTest::qWaitFor (*condition));
@@ -166,8 +165,8 @@ protected:
       }
 
     // Ensure at least 1 cycle is processed before returning.
-    ASSERT_TRUE (QTest::qWaitFor ([mock_hw, initial_count] () {
-      return mock_hw->process_call_count () >= initial_count + 1;
+    ASSERT_TRUE (QTest::qWaitFor ([&dummy_hw, initial_count] () {
+      return dummy_hw.processed_block_count () >= initial_count + 1;
     }));
 
     project.engine ()->set_running (false);

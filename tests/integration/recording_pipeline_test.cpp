@@ -91,10 +91,6 @@ protected:
     ui_state_ = utils::make_qobject_unique<structure::project::ProjectUiState> (
       *project_, *app_settings_);
 
-    mock_hw_ = dynamic_cast<test_helpers::ThreadedMockHardwareAudioInterface *> (
-      hw_interface_.get ());
-    ASSERT_NE (mock_hw_, nullptr);
-
     auto * coordinator_raw = coordinator_.get ();
     auto * engine_raw = project_->engine ();
     QObject::connect (
@@ -189,10 +185,10 @@ protected:
     project_->getTransport ()->setPlayState (
       dsp::ITransport::PlayState::RollRequested);
 
-    initial_process_count_ = mock_hw_->process_call_count ();
+    initial_process_count_ = hw_interface_->processed_block_count ();
 
     ASSERT_TRUE (QTest::qWaitFor ([this, min_cycles] () {
-      return mock_hw_->process_call_count ()
+      return hw_interface_->processed_block_count ()
              >= initial_process_count_ + min_cycles;
     }));
   }
@@ -214,10 +210,10 @@ protected:
     project_->getTransport ()->setPlayState (
       dsp::ITransport::PlayState::RollRequested);
 
-    initial_process_count_ = mock_hw_->process_call_count ();
+    initial_process_count_ = hw_interface_->processed_block_count ();
 
     ASSERT_TRUE (QTest::qWaitFor ([this, min_cycles] () {
-      return mock_hw_->process_call_count ()
+      return hw_interface_->processed_block_count ()
              >= initial_process_count_ + min_cycles;
     }));
   }
@@ -359,8 +355,7 @@ protected:
     return clip_ref.get_object_as<dsp::FileAudioSource> ();
   }
 
-  test_helpers::ThreadedMockHardwareAudioInterface * mock_hw_{};
-  size_t initial_process_count_{ 0 };
+  size_t initial_process_count_{};
 
   utils::QObjectUniquePtr<controllers::RecordingCoordinator>  coordinator_;
   std::unique_ptr<structure::project::Project>                project_;
@@ -567,14 +562,14 @@ TEST_F (RecordingPipelineTest, AudioBlockLengthIncreaseDuringRecording)
   };
   QSignalSpy block_length_spy (
     project_->engine (), &dsp::AudioEngine::blockLengthChanged);
-  const auto count_before_change = mock_hw_->process_call_count ();
-  mock_hw_->simulate_device_change (new_device_info);
+  const auto count_before_change = hw_interface_->processed_block_count ();
+  hw_interface_->set_device_info (new_device_info);
 
   ASSERT_EQ (block_length_spy.size (), 1);
   EXPECT_EQ (block_length_spy.takeFirst ().at (0).toInt (), 512);
 
   ASSERT_TRUE (QTest::qWaitFor ([this, count_before_change] () {
-    return mock_hw_->process_call_count () >= count_before_change + 5;
+    return hw_interface_->processed_block_count () >= count_before_change + 5;
   }));
 
   auto session_after = coordinator_->session_for_track (track->get_uuid ());
@@ -635,14 +630,14 @@ TEST_F (RecordingPipelineTest, AudioBlockLengthShrinkDuringRecording)
   };
   QSignalSpy block_length_spy (
     project_->engine (), &dsp::AudioEngine::blockLengthChanged);
-  const auto count_before_change = mock_hw_->process_call_count ();
-  mock_hw_->simulate_device_change (new_device_info);
+  const auto count_before_change = hw_interface_->processed_block_count ();
+  hw_interface_->set_device_info (new_device_info);
 
   ASSERT_EQ (block_length_spy.size (), 1);
   EXPECT_EQ (block_length_spy.takeFirst ().at (0).toInt (), 64);
 
   ASSERT_TRUE (QTest::qWaitFor ([this, count_before_change] () {
-    return mock_hw_->process_call_count () >= count_before_change + 5;
+    return hw_interface_->processed_block_count () >= count_before_change + 5;
   }));
 
   auto session_after = coordinator_->session_for_track (track->get_uuid ());

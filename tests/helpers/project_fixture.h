@@ -3,12 +3,12 @@
 
 #pragma once
 
+#include "dsp/dummy_hardware_audio_interface.h"
 #include "structure/project/project.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
 
 #include "helpers/in_memory_settings_backend.h"
-#include "helpers/mock_hardware_audio_interface_threaded.h"
 #include "helpers/mock_hardware_midi_interface.h"
 #include "helpers/scoped_juce_qapplication.h"
 
@@ -20,8 +20,9 @@ namespace zrythm::test_helpers
 
 /**
  * @brief Shared test fixture providing a minimal project environment
- * (temp directory, mock hardware, settings, port/param registries, fader,
- * metronome) and a `create_minimal_project()` factory.
+ * (temp directory, dummy audio hardware, mock MIDI hardware, settings,
+ * port/param registries, fader, metronome) and a `create_minimal_project()`
+ * factory.
  */
 class ProjectTestFixture : public ::testing::Test, protected ScopedJuceQApplication
 {
@@ -32,7 +33,7 @@ protected:
     project_dir_ =
       utils::Utf8String::from_qstring (temp_dir_obj_->path ()).to_path ();
 
-    hw_interface_ = std::make_unique<ThreadedMockHardwareAudioInterface> ();
+    hw_interface_ = std::make_unique<dsp::DummyHardwareAudioInterface> ();
 
     plugin_format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
     juce::addDefaultFormatsToManager (*plugin_format_manager_);
@@ -139,15 +140,15 @@ protected:
       make_null_recording_callback (), make_null_window_factory (), false);
   }
 
-  std::unique_ptr<QTemporaryDir>                  temp_dir_obj_;
-  std::filesystem::path                           project_dir_;
-  std::unique_ptr<dsp::IHardwareAudioInterface>   hw_interface_;
-  test_helpers::MockHardwareMidiInterface         midi_interface_;
-  std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager_;
-  std::unique_ptr<utils::AppSettings>             app_settings_;
-  std::unique_ptr<utils::ObjectRegistry>          registry_;
-  utils::QObjectUniquePtr<dsp::Fader>             monitor_fader_;
-  utils::QObjectUniquePtr<dsp::Metronome>         metronome_;
+  std::unique_ptr<QTemporaryDir>                    temp_dir_obj_;
+  std::filesystem::path                             project_dir_;
+  std::unique_ptr<dsp::DummyHardwareAudioInterface> hw_interface_;
+  test_helpers::MockHardwareMidiInterface           midi_interface_;
+  std::shared_ptr<juce::AudioPluginFormatManager>   plugin_format_manager_;
+  std::unique_ptr<utils::AppSettings>               app_settings_;
+  std::unique_ptr<utils::ObjectRegistry>            registry_;
+  utils::QObjectUniquePtr<dsp::Fader>               monitor_fader_;
+  utils::QObjectUniquePtr<dsp::Metronome>           metronome_;
 };
 
 } // namespace zrythm::test_helpers

@@ -324,19 +324,22 @@ FakeAudioIODevice::~FakeAudioIODevice ()
  * type listing the devices in @ref device_specs.
  *
  * @param saved_state Device setup XML served by the state getter.
+ * @param device_mode Where the manager takes its devices from.
  */
 class TestDeviceManager final : public DeviceManager
 {
 public:
   explicit TestDeviceManager (
-    std::unique_ptr<juce::XmlElement> saved_state = nullptr)
+    std::unique_ptr<juce::XmlElement> saved_state = nullptr,
+    DeviceMode                        device_mode = DeviceMode::Hardware)
       : DeviceManager (
           [this] () -> std::unique_ptr<juce::XmlElement> {
             return saved_state_
                      ? std::make_unique<juce::XmlElement> (*saved_state_)
                      : nullptr;
           },
-          [] (const juce::XmlElement &) { }),
+          [] (const juce::XmlElement &) { },
+          device_mode),
         saved_state_ (std::move (saved_state))
   {
   }
@@ -541,6 +544,31 @@ TEST_F (DeviceManagerTest, InitializeUsesSavedDeviceWhenItOpens)
   EXPECT_EQ (
     device->getActiveInputChannels ().countNumberOfSetBits (),
     fake_num_channels);
+
+  manager.reset ();
+}
+
+// A manager without devices has no device to select from
+TEST_F (DeviceManagerTest, DeviceSelectionIsUnavailableWithoutDevices)
+{
+  TestDeviceManager deviceless_manager (
+    nullptr, DeviceManager::DeviceMode::None);
+  EXPECT_FALSE (deviceless_manager.deviceSelectionAvailable ());
+}
+
+// The device selector is the way to pick another device when none could
+// be opened
+TEST_F (DeviceManagerTest, DeviceSelectionStaysAvailableWhenNoDeviceOpens)
+{
+  auto manager = std::make_unique<TestDeviceManager> ();
+  manager->device_specs = {
+    FakeAudioIODeviceType::DeviceSpec{
+                                      .name = juce::String ("Busy Device"), .busy = true },
+  };
+  EXPECT_THROW (
+    manager->initialize (fake_num_channels, fake_num_channels, true),
+    utils::ZrythmException);
+  EXPECT_TRUE (manager->deviceSelectionAvailable ());
 
   manager.reset ();
 }

@@ -230,6 +230,7 @@ ScrollView {
       Button {
         Accessible.name: qsTr("Open audio device settings")
         Layout.fillWidth: true
+        enabled: root.deviceManager.deviceSelectionAvailable
         icon.source: ResourceManager.getIconUrl("gnome-icon-library", "settings-symbolic.svg")
         text: qsTr("Device Settings")
 

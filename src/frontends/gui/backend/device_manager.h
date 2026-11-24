@@ -77,12 +77,37 @@ class DeviceManager
   Q_PROPERTY (
     QString currentAudioDeviceName READ currentAudioDeviceName NOTIFY
       currentAudioDeviceNameChanged)
+  Q_PROPERTY (
+    bool deviceSelectionAvailable READ deviceSelectionAvailable CONSTANT)
 
 public:
   using XmlStateGetter = std::function<std::unique_ptr<juce::XmlElement> ()>;
   using XmlStateSetter = std::function<void (const juce::XmlElement &)>;
 
-  DeviceManager (XmlStateGetter state_getter, XmlStateSetter state_setter);
+  /**
+   * @brief Where the manager takes its audio and MIDI devices from.
+   */
+  enum class DeviceMode
+  {
+    /** The audio and MIDI devices of the system. */
+    Hardware,
+    /**
+     * No device: the manager opens no MIDI input and offers no device
+     * selection.
+     */
+    None
+  };
+
+  /**
+   * @param state_getter Returns the saved device setup, or nullptr when
+   * there is none.
+   * @param state_setter Receives the device setup to save.
+   * @param device_mode Where the manager takes its devices from.
+   */
+  DeviceManager (
+    XmlStateGetter state_getter,
+    XmlStateSetter state_setter,
+    DeviceMode     device_mode = DeviceMode::Hardware);
 
   ~DeviceManager () override;
 
@@ -95,6 +120,8 @@ public:
    * might be less than this).
    * @param fallback_to_default Whether to fallback to the default device if
    * opening the device(s) from the state fails.
+   *
+   * Requires DeviceMode::Hardware.
    *
    * This calls `juce::AudioDeviceManager::initialise()` internally and passes
    * the state obtained from @ref state_getter_.
@@ -121,6 +148,17 @@ public:
   void createAudioDeviceTypes (
     juce::OwnedArray<juce::AudioIODeviceType> &types) override;
 
+  /**
+   * @brief Whether showDeviceSelector() opens the device selector.
+   */
+  [[nodiscard]] bool deviceSelectionAvailable () const;
+
+  /**
+   * @brief Opens the device selector window, or brings it to the front
+   * when it is already open.
+   *
+   * Does nothing when deviceSelectionAvailable() is false.
+   */
   Q_INVOKABLE void showDeviceSelector ();
 
   Q_SIGNAL void midiNoteOnReceived ();
@@ -187,6 +225,7 @@ private:
 private:
   XmlStateGetter                        state_getter_;
   XmlStateSetter                        state_setter_;
+  DeviceMode                            device_mode_;
   std::unique_ptr<DeviceSelectorWindow> device_selector_window_;
   DeviceChangeListener                  device_change_listener_{ *this };
   std::unique_ptr<MidiImpl>             midi_impl_;

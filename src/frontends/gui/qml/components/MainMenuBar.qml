@@ -209,6 +209,7 @@ MenuBar {
     title: qsTr("Devices")
 
     Action {
+      enabled: root.deviceManager.deviceSelectionAvailable
       text: qsTr("Audio/MIDI Setup")
 
       onTriggered: {

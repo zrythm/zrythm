@@ -10,6 +10,7 @@
 #include "utils/format_qt.h"
 #include <fmt/std.h>
 
+#include "dsp/dummy_hardware_audio_interface.h"
 #include "dsp/juce_hardware_audio_interface.h"
 #include "engine/session/midi_mapping.h"
 #include "frontends/gui/backend/app_scope.h"
@@ -457,6 +458,7 @@ ZrythmApplication::setup_control_room ()
 void
 ZrythmApplication::setup_device_manager ()
 {
+  const bool dummy_engine = dummyEngine ();
   const auto data_dir =
     QStandardPaths::writableLocation (QStandardPaths::AppDataLocation);
   const auto filepath =
@@ -491,7 +493,19 @@ ZrythmApplication::setup_device_manager ()
         {
           z_warning ("Failed to write device setup file: {}", filepath);
         }
-    });
+    },
+    dummy_engine
+      ? backend::DeviceManager::DeviceMode::None
+      : backend::DeviceManager::DeviceMode::Hardware);
+
+  if (dummy_engine)
+    {
+      z_info ("Using the dummy audio and MIDI engine");
+      impl_->hw_audio_interface_ =
+        std::make_unique<dsp::DummyHardwareAudioInterface> ();
+      return;
+    }
+
   try
     {
       impl_->device_manager_->initialize (2, 2, true);
@@ -959,4 +973,10 @@ dsp::IHardwareAudioInterface &
 ZrythmApplication::hw_audio_interface () const
 {
   return *impl_->hw_audio_interface_;
+}
+
+bool
+ZrythmApplication::dummyEngine () const
+{
+  return cmd_line_parser_.isSet (u"dummy"_s);
 }

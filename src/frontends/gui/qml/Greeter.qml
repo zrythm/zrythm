@@ -48,6 +48,10 @@ ApplicationWindow {
     if (root.deviceManager === null || root.notificationCenter === null)
       return;
 
+    // The dummy engine has no audio device to select
+    if (root.app?.dummyEngine ?? false)
+      return;
+
     if (root.deviceManager.currentAudioDeviceName !== "")
       return;
 
@@ -315,6 +319,7 @@ ApplicationWindow {
             id: menu
 
             Action {
+              enabled: root.deviceManager?.deviceSelectionAvailable ?? false
               text: qsTr("Device Selector")
 
               onTriggered: {

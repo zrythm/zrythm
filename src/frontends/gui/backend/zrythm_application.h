@@ -65,6 +65,8 @@ class ZrythmApplication final : public QApplication
   Q_PROPERTY (
     QString pendingProjectFile READ pendingProjectFile NOTIFY
       pendingProjectFileChanged FINAL)
+  /** Whether the engine runs on the dummy audio and MIDI hardware. */
+  Q_PROPERTY (bool dummyEngine READ dummyEngine CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -108,6 +110,12 @@ public:
   std::shared_ptr<frontends::gui::backend::DeviceManager>
                                 get_device_manager () const;
   dsp::IHardwareAudioInterface &hw_audio_interface () const;
+
+  /**
+   * @brief Whether audio is processed through a dummy device and no
+   * MIDI device is opened.
+   */
+  bool dummyEngine () const;
 
   QString pendingProjectFile () const;
 

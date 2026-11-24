@@ -50,7 +50,6 @@ target_sources(zrythm_test_helpers_lib
       helpers/test_plugin_finder.h
       helpers/in_memory_settings_backend.h
       helpers/mock_hardware_audio_interface.h
-      helpers/mock_hardware_audio_interface_threaded.h
       helpers/mock_plugin_host_window.h
       helpers/mock_qobject.h
       helpers/mock_uuid_object.h

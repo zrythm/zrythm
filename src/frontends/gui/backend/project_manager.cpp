@@ -226,25 +226,33 @@ namespace
 {
 
 /**
- * @brief Throws a ZrythmException if no audio device is open.
+ * @brief Throws a ZrythmException if no audio device is available.
  *
- * Opening a project requires an open audio device (the project's tempo map
- * and processing graph are built from the device's sample rate and buffer
- * size).
+ * Opening a project requires audio hardware (the project's tempo map
+ * and processing graph are built from the device's sample rate and
+ * buffer size). The dummy engine counts as available hardware.
  */
 void
 throw_if_no_audio_device ()
 {
   auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
-  if (
-    zapp == nullptr
-    || zapp->deviceManager ()->getCurrentAudioDevice () == nullptr)
+  if (zapp != nullptr)
     {
-      throw ZrythmException (
-        QObject::tr (
-          "No audio device is open. Select an audio device in the device "
-          "settings and try again."));
+      try
+        {
+          // Throws when no device is open
+          zapp->hw_audio_interface ().get_device_info ();
+          return;
+        }
+      catch (const ZrythmException &)
+        {
+          // Reported below with a message for the user
+        }
     }
+  throw ZrythmException (
+    QObject::tr (
+      "No audio device is open. Select an audio device in the device "
+      "settings and try again."));
 }
 
 } // namespace
