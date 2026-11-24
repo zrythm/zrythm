@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include <chrono>
+#include <cstdlib>
 #include <expected>
 #include <filesystem>
 #include <ranges>
@@ -95,6 +97,20 @@ load_metronome_sample (const QString &resource_path)
   return buffer;
 }
 
+/**
+ * @brief Delay between the end of startup and the quit of
+ * --quit-after-startup.
+ */
+constexpr auto kQuitAfterStartupDelay = std::chrono::seconds{ 5 };
+
+/**
+ * @brief Time that --quit-after-startup gives startup to finish.
+ *
+ * The application quits with EXIT_FAILURE when startup is not finished
+ * after this time.
+ */
+constexpr auto kStartupTimeLimit = std::chrono::seconds{ 60 };
+
 } // namespace
 
 class ZrythmApplication::Impl
@@ -138,6 +154,27 @@ public:
 
   /** DSP context (disables denormals) for the main thread. */
   std::unique_ptr<DspContextRAII> dsp_context_;
+
+  /** Whether the command line requested a project to open. */
+  bool startup_project_requested_{};
+
+  /** EXIT_FAILURE when a project load failed or startup timed out. */
+  int exit_status_{};
+
+  /**
+   * Counts from the end of startup to the quit of
+   * --quit-after-startup. Null without the option.
+   */
+  std::unique_ptr<QTimer> quit_timer_;
+
+  /** Whether startup ended under --quit-after-startup. */
+  bool startup_finished_{};
+
+  /**
+   * Counts from the start of the application to the end of startup
+   * under --quit-after-startup. Null without the option.
+   */
+  std::unique_ptr<QTimer> startup_limit_timer_;
 };
 
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
@@ -304,6 +341,16 @@ ZrythmApplication::initialize ()
       const QString &title, const QString &detail) {
       center->postWarning (title, detail);
     });
+  QObject::connect (
+    impl_->project_manager_.get (), &ProjectManager::projectLoadingFailed, this,
+    [this] (const QString &) { impl_->exit_status_ = EXIT_FAILURE; });
+  QObject::connect (
+    this, &QCoreApplication::aboutToQuit, this,
+    &ZrythmApplication::onAboutToQuit);
+  if (cmd_line_parser_.isSet (u"quit-after-startup"_s))
+    {
+      setup_quit_after_startup ();
+    }
   impl_->translation_manager_ = utils::make_qobject_unique<TranslationManager> (
     *impl_->app_settings_, this);
   impl_->file_system_model_ = utils::make_qobject_unique<FileSystemModel> (this);
@@ -355,6 +402,72 @@ void
 ZrythmApplication::post_exec_initialization ()
 {
   setup_ipc ();
+
+  // With no requested project, the first event loop iteration ends
+  // startup
+  if (impl_->quit_timer_ && !impl_->startup_project_requested_)
+    {
+      startupFinished ();
+    }
+}
+
+void
+ZrythmApplication::setup_quit_after_startup ()
+{
+  impl_->startup_project_requested_ = !pending_project_file_.isEmpty ();
+  z_info (
+    "Quitting {} seconds after startup; a project was requested: {}",
+    kQuitAfterStartupDelay.count (), impl_->startup_project_requested_);
+
+  impl_->quit_timer_ = std::make_unique<QTimer> ();
+  impl_->quit_timer_->setSingleShot (true);
+  QObject::connect (
+    impl_->quit_timer_.get (), &QTimer::timeout, this,
+    &ZrythmApplication::request_quit);
+
+  impl_->startup_limit_timer_ = std::make_unique<QTimer> ();
+  impl_->startup_limit_timer_->setSingleShot (true);
+  QObject::connect (
+    impl_->startup_limit_timer_.get (), &QTimer::timeout, this,
+    &ZrythmApplication::startupTimeLimitReached);
+  impl_->startup_limit_timer_->start (kStartupTimeLimit);
+
+  // Startup ends when the requested project is loaded or refused
+  auto * project_manager = impl_->project_manager_.get ();
+  QObject::connect (
+    project_manager, &ProjectManager::projectLoaded, this,
+    [this] (ProjectSession *) { startupFinished (); });
+  QObject::connect (
+    project_manager, &ProjectManager::projectLoadingFailed, this,
+    [this] (const QString &) { startupFinished (); });
+}
+
+void
+ZrythmApplication::startupFinished ()
+{
+  if (impl_->startup_finished_)
+    {
+      return;
+    }
+  impl_->startup_finished_ = true;
+  impl_->startup_limit_timer_->stop ();
+  impl_->quit_timer_->start (kQuitAfterStartupDelay);
+}
+
+void
+ZrythmApplication::startupTimeLimitReached ()
+{
+  z_warning (
+    "Startup did not finish within {} seconds", kStartupTimeLimit.count ());
+  impl_->exit_status_ = EXIT_FAILURE;
+  request_quit ();
+}
+
+void
+ZrythmApplication::request_quit ()
+{
+  z_info ("Quitting with exit status {}", impl_->exit_status_);
+  QCoreApplication::exit (impl_->exit_status_);
 }
 
 void
@@ -586,6 +699,14 @@ ZrythmApplication::setup_command_line_options ()
        u"new-project-with-template"_s, u"new-project-with-template"_s },
       {
        u"dummy"_s, tr ("Use dummy audio/midi engine"),
+       },
+      {
+       u"quit-after-startup"_s, tr (
+          "Exit %1 seconds after startup. Exit with status 1 when the "
+          "project could not be loaded, or when startup is not finished "
+          "after %2 seconds")
+          .arg (static_cast<int> (kQuitAfterStartupDelay.count ()))
+          .arg (static_cast<int> (kStartupTimeLimit.count ())),
        },
   });
 

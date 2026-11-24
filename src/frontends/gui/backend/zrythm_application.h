@@ -136,6 +136,39 @@ private:
   void setup_device_manager ();
   void setup_control_room ();
 
+  /**
+   * @brief Makes the application quit a fixed delay after startup.
+   *
+   * Startup ends when the project requested on the command line is
+   * loaded or refused, or with the first event loop iteration when no
+   * project was requested. The application quits with EXIT_FAILURE
+   * when startup has not ended within the startup time limit.
+   */
+  void setup_quit_after_startup ();
+
+  /**
+   * @brief Ends startup for the quit after startup.
+   *
+   * Stops the startup time limit and starts the countdown to the quit.
+   * Later calls do nothing.
+   */
+  void startupFinished ();
+
+  /**
+   * @brief Quits with EXIT_FAILURE because startup did not end within
+   * the startup time limit.
+   */
+  void startupTimeLimitReached ();
+
+  /**
+   * @brief Leaves the event loop.
+   *
+   * The exit status is EXIT_FAILURE when loading a project failed since
+   * startup or startup did not end within its time limit, EXIT_SUCCESS
+   * otherwise.
+   */
+  void request_quit ();
+
 protected:
   bool notify (QObject * receiver, QEvent * event) override;
   bool event (QEvent * event) override;
