@@ -31,6 +31,10 @@ Arranger {
   property QObjectPropertyOperator fadePropertyOperator: null
   readonly property Track track: clipEditor.track
 
+  getObjectY: root.getAudioObjectY
+  moveSelectionsY: root.keepObjectsInPlace
+  moveTemporaryObjectsY: root.keepObjectsInPlace
+
   // A different clip being edited invalidates the selected range
   onAudioClipChanged: {
     if (root.audioEditor) {
@@ -39,18 +43,12 @@ Arranger {
     }
   }
 
-  function getObjectHeight(obj): real {
+  // The audio editor shows no arranger objects that a drag can move.
+  function getAudioObjectY(obj: ArrangerObject): real {
     return 0;
   }
 
-  function getObjectY(obj): real {
-    return 0;
-  }
-
-  function moveSelectionsY(dy: real, prevY: real) {
-  }
-
-  function moveTemporaryObjectsY(dy: real, prevY: real) {
+  function keepObjectsInPlace(dy: real, prevY: real) {
   }
 
   editorSettings: audioEditor

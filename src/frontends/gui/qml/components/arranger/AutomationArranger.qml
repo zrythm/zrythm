@@ -36,8 +36,15 @@ Arranger {
   readonly property Track track: clipEditor.track
   required property UuidPropertyOperator uuidPropertyOperator
 
-  function beginObjectCreation(coordinates: point): AutomationPoint {
-    const automationPoint = createObjectAt(coordinates);
+  beginObjectCreation: root.beginAutomationPointCreation
+  createObjectAt: root.createAutomationPointAt
+  createdObjectTypeAt: root.automationPointTypeAt
+  getObjectY: root.getAutomationPointY
+  moveSelectionsY: root.moveSelectionsByValue
+  moveTemporaryObjectsY: root.moveTemporaryPointsByValue
+
+  function beginAutomationPointCreation(coordinates: point): AutomationPoint {
+    const automationPoint = createAutomationPointAt(coordinates);
     root.currentAction = Arranger.CreatingMoving;
     root.selectSingleObject(root.automationClip.automationPoints, root.automationClip.automationPoints.rowCount() - 1);
     CursorManager.setResizeEndCursor();
@@ -45,7 +52,7 @@ Arranger {
     return automationPoint;
   }
 
-  function createObjectAt(coordinates: point): AutomationPoint {
+  function createAutomationPointAt(coordinates: point): AutomationPoint {
     const value = getNormalizedValueAtY(coordinates.y);
     const tickPosition = coordinates.x / root.ruler.pxPerTick;
     const localTickPosition = tickPosition - root.automationClip.position.ticks;
@@ -53,7 +60,7 @@ Arranger {
     return objectCreator.addAutomationPoint(root.automationClip, localTickPosition, value);
   }
 
-  function createdObjectTypeAt(coordinates: point): int {
+  function automationPointTypeAt(coordinates: point): int {
     return ArrangerObject.AutomationPoint;
   }
 
@@ -61,11 +68,7 @@ Arranger {
     return 1.0 - y / root.height;
   }
 
-  function getObjectHeight(obj: AutomationPoint): real {
-    return 2 * ZrythmTheme.buttonPadding; // Height of automation points
-  }
-
-  function getObjectY(obj: AutomationPoint): real {
+  function getAutomationPointY(obj: AutomationPoint): real {
     return getYAtNormalizedValue(obj.value);
   }
 
@@ -73,7 +76,7 @@ Arranger {
     return (1.0 - normalizedValue) * root.height;
   }
 
-  function moveSelectionsY(dy: real, prevY: real) {
+  function moveSelectionsByValue(dy: real, prevY: real) {
     const prevValue = getNormalizedValueAtY(prevY);
     const currentValue = getNormalizedValueAtY(prevY + dy);
     if (currentValue === prevValue) {
@@ -89,7 +92,7 @@ Arranger {
     }
   }
 
-  function moveTemporaryObjectsY(dy: real, prevY: real) {
+  function moveTemporaryPointsByValue(dy: real, prevY: real) {
     root.dragState.dragDeltaY += dy;
   }
 

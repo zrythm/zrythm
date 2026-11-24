@@ -15,13 +15,20 @@ Arranger {
   required property TempoObjectManager tempoObjectManager
   required property Tracklist tracklist
 
-  function beginObjectCreation(coordinates: point): ArrangerObject {
+  beginObjectCreation: root.beginTempoObjectCreation
+  createObjectAt: root.createTempoObjectAt
+  getObjectY: root.getTempoObjectY
+  moveSelectionsY: root.keepTempoObjectsInTheirLane
+  moveTemporaryObjectsY: root.keepTempoObjectsInTheirLane
+  pasteAtPlayhead: root.pasteOnTimeline
+
+  function beginTempoObjectCreation(coordinates: point): ArrangerObject {
     // Open the macro before creation so the creation and the post-creation
     // drag-move fold into a single undo step; the arranger closes it on
     // release
     const isTimeSignature = coordinates.y > laneHeight;
     root.undoStack.beginMacro(isTimeSignature ? qsTr("Create Time Signature Object") : qsTr("Create Tempo Object"));
-    const obj = createObjectAt(coordinates);
+    const obj = createTempoObjectAt(coordinates);
     if (obj === null) {
       root.undoStack.endMacro();
       return null;
@@ -38,7 +45,7 @@ Arranger {
     return obj;
   }
 
-  function createObjectAt(coordinates: point): ArrangerObject {
+  function createTempoObjectAt(coordinates: point): ArrangerObject {
     const tickPosition = coordinates.x / root.ruler.pxPerTick;
 
     if (coordinates.y > laneHeight) {
@@ -49,23 +56,17 @@ Arranger {
     return objectCreator.addTempoObject(tempoObjectManager, 140, TempoEventWrapper.Linear, tickPosition);
   }
 
-  function getObjectHeight(obj: ArrangerObject): real {
-    return laneHeight;
-  }
-
-  function getObjectY(obj: ArrangerObject): real {
+  function getTempoObjectY(obj: ArrangerObject): real {
     return obj.type === ArrangerObject.TempoObject ? 0 : laneHeight + laneSpacing;
   }
 
-  function moveSelectionsY(dy: real, prevY: real) {
-  }
-
-  function moveTemporaryObjectsY(dy: real, prevY: real) {
+  // Tempo and time-signature objects stay in their lane during a drag.
+  function keepTempoObjectsInTheirLane(dy: real, prevY: real) {
   }
 
   // Pastes the clipboard's tempo and time-signature objects so the
   // earliest object lands at the playhead
-  function pasteAtPlayhead(): list<string> {
+  function pasteOnTimeline(): list<string> {
     return root.selectionOperator.pasteObjectsOnTimeline(
       null,
       root.tracklist.singletonTracks.markerTrack,

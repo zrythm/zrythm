@@ -21,6 +21,14 @@ Arranger {
   required property Tracklist tracklist
   required property TrackSelectionModel trackSelectionModel
 
+  beginObjectCreation: root.beginTimelineObjectCreation
+  createObjectAt: root.createTimelineObjectAt
+  createdObjectTypeAt: root.timelineObjectTypeAt
+  getObjectY: root.getTimelineObjectY
+  moveSelectionsY: root.keepObjectsOnTheirTrack
+  moveTemporaryObjectsY: root.keepObjectsOnTheirTrack
+  pasteAtPlayhead: root.pasteOnTimeline
+
   // Returns the topmost track of the track selection, used as the paste
   // target for lane clips
   function firstSelectedTrack(): Track {
@@ -32,7 +40,7 @@ Arranger {
     return firstSelectedRow !== null ? firstSelectedRow.data(TrackCollection.TrackPtrRole) : null;
   }
 
-  function beginObjectCreation(coordinates: point): ArrangerObject {
+  function beginTimelineObjectCreation(coordinates: point): ArrangerObject {
     const track = getTrackAtY(coordinates.y);
     if (!track) {
       return null;
@@ -41,13 +49,13 @@ Arranger {
     // Open the macro before creation so the creation, its snap adjustment
     // and the post-creation drag fold into a single undo step; the arranger
     // closes it on release
-    const objectType = createdObjectTypeAt(coordinates);
+    const objectType = timelineObjectTypeAt(coordinates);
     const isMoveOnlyObject = objectType === ArrangerObject.Marker || objectType === ArrangerObject.ScaleObject;
     root.undoStack.beginMacro(isMoveOnlyObject
       ? (objectType === ArrangerObject.Marker ? qsTr("Create Marker") : qsTr("Create Scale Object"))
       : qsTr("Create Clip"));
 
-    const obj = createObjectAt(coordinates);
+    const obj = createTimelineObjectAt(coordinates);
     if (obj === null) {
       root.undoStack.endMacro();
       return null;
@@ -78,7 +86,7 @@ Arranger {
     return relativeY > trackItem.track.height - scaleLaneHeight;
   }
 
-  function createObjectAt(coordinates: point): ArrangerObject {
+  function createTimelineObjectAt(coordinates: point): ArrangerObject {
     const track = getTrackAtY(coordinates.y);
     if (!track) {
       return null;
@@ -110,7 +118,7 @@ Arranger {
     return null;
   }
 
-  function createdObjectTypeAt(coordinates: point): int {
+  function timelineObjectTypeAt(coordinates: point): int {
     const track = getTrackAtY(coordinates.y);
     if (!track) {
       return -1;
@@ -159,38 +167,6 @@ Arranger {
     return automationItem?.automationTrack ?? null;
   }
 
-  function getObjectHeight(obj: ArrangerObject): real {
-    // Determine height based on object type
-    if (obj.type === ArrangerObject.ScaleObject) {
-      return arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding;
-    } else if (obj.type === ArrangerObject.Marker) {
-      return arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding;
-    } else if (obj.type === ArrangerObject.ChordClip) {
-      // Chord clips use the main track height minus scale objects height
-      const track = getTrackForObject(obj);
-      if (track) {
-        return track.height - (arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding);
-      }
-    } else if (obj.type === ArrangerObject.MidiClip || obj.type === ArrangerObject.AudioClip) {
-      // For clips, check if lanes are visible
-      const track = getTrackForObject(obj);
-      if (track && track.lanes && track.lanes.lanesVisible) {
-        // Use lane height if lanes are visible
-        const lane = root.tracklist.getTrackLaneForObject(obj);
-        if (lane) {
-          return lane.height;
-        }
-      }
-      // Use main track height if lanes not visible
-      if (track) {
-        return track.height;
-      }
-      return 60; // Fallback clip height
-    } else {
-      return 20; // Fallback height
-    }
-  }
-
   /**
    * @brief Gets the Y position of an object relative to the whole timeline.
    *
@@ -201,7 +177,7 @@ Arranger {
    * @param obj The arranger object to get Y position for.
    * @return The Y position relative to the whole timeline.
    */
-  function getObjectY(obj: ArrangerObject): real {
+  function getTimelineObjectY(obj: ArrangerObject): real {
     const track = getTrackForObject(obj);
     if (!track)
       return 0;
@@ -395,16 +371,14 @@ Arranger {
     return 0;
   }
 
-  function moveSelectionsY(dy: real, prevY: real) {
-  }
-
-  function moveTemporaryObjectsY(dy: real, prevY: real) {
+  // Timeline objects stay on their track during a drag.
+  function keepObjectsOnTheirTrack(dy: real, prevY: real) {
   }
 
   // Pastes the clipboard's arranger objects onto the timeline so the
   // earliest object lands at the playhead; lane clips are attached to the
   // topmost selected track
-  function pasteAtPlayhead(): list<string> {
+  function pasteOnTimeline(): list<string> {
     return root.selectionOperator.pasteObjectsOnTimeline(
       root.firstSelectedTrack(),
       root.tracklist.singletonTracks.markerTrack,

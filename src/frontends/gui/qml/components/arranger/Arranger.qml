@@ -53,6 +53,99 @@ Item {
     StartingSecondaryErase
   }
 
+  // ---- Operations each arranger supplies ----
+  // QML cannot give a function property a type, so each declaration carries
+  // its signature in a comment. Assign typed named functions only: the
+  // engine checks their annotations at each call, and qmllint checks the
+  // calls that name the function directly.
+  // (coordinates: point) => ArrangerObject
+  // Interactive object creation (single-press pencil, double-click):
+  // creates an object and applies the interactive side effects (selection,
+  // current action, cursor, undo macros, popups). Returns null when nothing
+  // can be created there. The default creates nothing.
+  property var beginObjectCreation: defaultOperations.beginObjectCreation
+  // (coordinates: point) => ArrangerObject
+  // Creates an object at the given coordinates without interactive side
+  // effects (no selection, actions, macros or popups). The default creates
+  // nothing.
+  property var createObjectAt: defaultOperations.createObjectAt
+  // (coordinates: point) => int
+  // The ArrangerObject.Type that createObjectAt would create at the given
+  // coordinates, or -1 if none, without creating anything. The default
+  // returns -1.
+  property var createdObjectTypeAt: defaultOperations.createdObjectTypeAt
+  // (obj: ArrangerObject) => real
+  // Y position of an object in content coordinates, recorded when a move
+  // drag starts. The default returns 0.
+  property var getObjectY: defaultOperations.getObjectY
+  // (mouse: var) => bool
+  // Handles a press for a tool not built into the base arranger, called
+  // before the generic object move/resize and selection fallback. Returns
+  // true if it handled the press and set the action itself. The default
+  // returns false.
+  property var handleCustomToolPress: defaultOperations.handleCustomToolPress
+  // () => bool
+  // Handles a release while a custom tool action is active. Called first in
+  // the release handler; returns true if it consumed the release. The
+  // default returns false.
+  property var handleCustomToolRelease: defaultOperations.handleCustomToolRelease
+  // (dy: real, prevY: real) => void
+  // Vertical part of a committed move: adjusts the selected objects to a
+  // vertical drag of dy pixels starting at y position prevY. Runs during
+  // the drag of a newly created object, and once on release of a move with
+  // the accumulated preview distance (dragState.dragDeltaY) and the dragged
+  // object's original Y (see getObjectY).
+  required property var moveSelectionsY
+  // (dy: real, prevY: real) => void
+  // Vertical part of a move preview: updates dragState.dragDeltaY for a
+  // vertical drag of dy pixels starting at y position prevY, in steps of
+  // the arranger's vertical unit (pitch, row, value). Runs on every move
+  // event of a move drag.
+  required property var moveTemporaryObjectsY
+  // () => list<string>
+  // Pastes the clipboard contents at the playhead and returns the pasted
+  // objects' UUID strings. The default pastes into the edited clip when
+  // clipContext is set, and returns an empty list otherwise.
+  property var pasteAtPlayhead: defaultOperations.pasteAtPlayhead
+
+  // Default operations for arrangers that do not supply their own.
+  QtObject {
+    id: defaultOperations
+
+    function beginObjectCreation(coordinates: point): ArrangerObject {
+      return null;
+    }
+
+    function createObjectAt(coordinates: point): ArrangerObject {
+      return null;
+    }
+
+    function createdObjectTypeAt(coordinates: point): int {
+      return -1;
+    }
+
+    function getObjectY(obj: ArrangerObject): real {
+      return 0;
+    }
+
+    function handleCustomToolPress(mouse: var): bool {
+      return false;
+    }
+
+    function handleCustomToolRelease(): bool {
+      return false;
+    }
+
+    // Pastes into the edited clip when the arranger has a clip context.
+    function pasteAtPlayhead(): list<string> {
+      if (root.clipContext !== null) {
+        const localTicks = root.transport.playhead.ticks - root.clipContext.position.ticks;
+        return root.selectionOperator.pasteObjectsIntoClip(root.clipContext, Math.max(0, localTicks));
+      }
+      return [];
+    }
+  }
+
   property alias arrangerContentHeight: arrangerContent.height
 
   // Axes the active drag may auto-scroll: the per-action policy, with the
@@ -163,14 +256,6 @@ Item {
   signal canvasDragMoved(DragEvent drag)
   signal canvasDragExited()
 
-  // Interactive object creation entry point (single-press pencil,
-  // double-click): creates an object via createObjectAt() and applies
-  // interactive side effects (selection, current action, cursor, undo
-  // macros, popups). Subclasses override; the default creates nothing.
-  function beginObjectCreation(coordinates: point): ArrangerObject {
-    return null;
-  }
-
   function calculateSnappedTimelinePosition(currentTicks: real, startTicks: real): real {
     // Clamp: timeline positions must be at or after the timeline origin
     const clampedTicks = Math.max(0, currentTicks);
@@ -179,22 +264,6 @@ Item {
 
   function canPaintObjectAt(coordinates: point): bool {
     return root.objectPaintingEnabledForType(root.createdObjectTypeAt(coordinates));
-  }
-
-  // Creates an object at the given coordinates without any interactive side
-  // effects (no selection, actions, macros or popups). Used by object
-  // painting and by beginObjectCreation(). Subclasses override; the default
-  // creates nothing.
-  function createObjectAt(coordinates: point): ArrangerObject {
-    return null;
-  }
-
-  // Returns the ArrangerObject.Type that createObjectAt() would create at
-  // the given coordinates, or -1 if none. Used to gate Edit tool Ctrl+drag
-  // object painting before anything is created. Subclasses override; the
-  // default creates nothing.
-  function createdObjectTypeAt(coordinates: point): int {
-    return -1;
   }
 
   // Deletes all objects intersecting a small rect around the given point
@@ -259,19 +328,6 @@ Item {
   // Only StartingMovingCopy needs this because Ctrl+click means "toggle
   // selection" when no drag happens, whereas Alt+click and plain click do not
   // toggle — they always select.
-  // Handles a press for a tool not built into the base arranger. Called
-  // before the generic object move/resize and selection fallback; subclasses
-  // return true if they handled the press (setting the action themselves).
-  function handleCustomToolPress(mouse: var): bool {
-    return false;
-  }
-
-  // Handles a release while a custom tool action is active. Called first in
-  // the release handler; subclasses return true if they consumed it.
-  function handleCustomToolRelease(): bool {
-    return false;
-  }
-
   function handleDeferredCtrlClickToggle() {
     if (root.wasClickedObjectSelectedOnPress) {
       const idx = root.clickedUnifiedIndexOnPress;
@@ -419,17 +475,6 @@ Item {
         return unifiedIndex;
     }
     return null;
-  }
-
-  // Pastes the clipboard contents at the playhead and returns the pasted
-  // objects' UUID strings. Editor arrangers (which set clipContext) paste
-  // into the edited clip; the timeline arranger overrides this function
-  function pasteAtPlayhead(): list<string> {
-    if (root.clipContext !== null) {
-      const localTicks = root.transport.playhead.ticks - root.clipContext.position.ticks;
-      return root.selectionOperator.pasteObjectsIntoClip(root.clipContext, Math.max(0, localTicks));
-    }
-    return [];
   }
 
   function shouldResizeBeLoopResize(object: ArrangerObjectBaseView, fromStart: bool): bool {
@@ -1038,11 +1083,11 @@ Item {
             } else if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
               const obj = root.getObjectAtCurrentIndex();
               root.dragState.dragDeltaPx = calculateSnappedMovementTicks(ArrangerObjectHelper.timelineTicks(obj)) * root.ruler.pxPerTick;
-              moveTemporaryObjectsY(dy, previousY);
+              root.moveTemporaryObjectsY(dy, previousY);
             } else if (action == Arranger.CreatingMoving) {
               const ticksToMove = calculateObjectMovementTicks();
               moveSelectionsX(ticksToMove);
-              moveSelectionsY(dy, previousY);
+              root.moveSelectionsY(dy, previousY);
             } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingLFade].includes(action)) {
               // Determine resize type based on current action
               let resizeType = ArrangerObjectSelectionOperator.Bounds;
@@ -1077,7 +1122,7 @@ Item {
               }
             } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
               if (action === Arranger.CreatingResizingMovingR) {
-                moveSelectionsY(dy, previousY);
+                root.moveSelectionsY(dy, previousY);
               }
               // Apply snapping to resize endpoint
               const endTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
@@ -1403,7 +1448,7 @@ Item {
                 }
                 if (hasHorizontalMove || action === Arranger.MovingCopy || action === Arranger.MovingLink)
                   moveSelectionsX(finalTicksDiff);
-                moveSelectionsY(finalYDiff, dragStartObjectY);
+                root.moveSelectionsY(finalYDiff, dragStartObjectY);
                 if (hasHorizontalMove || action === Arranger.MovingCopy || action === Arranger.MovingLink)
                   root.undoStack.endMacro();
               } else if (action === Arranger.CreatingMoving

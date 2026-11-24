@@ -15,8 +15,13 @@ Arranger {
   readonly property real maxVelocityHeight: height
   required property MidiEditor midiEditor
 
-  // Ramp tool: a press starts a ramp line drag (see handleCustomToolRelease)
-  function handleCustomToolPress(mouse: var): bool {
+  handleCustomToolPress: root.startRamp
+  handleCustomToolRelease: root.applyRamp
+  moveSelectionsY: root.keepVelocities
+  moveTemporaryObjectsY: root.keepVelocities
+
+  // Ramp tool: a press starts a ramp line drag (see applyRamp)
+  function startRamp(mouse: var): bool {
     if (tool.effectiveToolValue !== ArrangerTool.Ramp) {
       return false;
     }
@@ -25,7 +30,7 @@ Arranger {
   }
 
   // Ramp tool: applies the dragged line to the selected notes' velocities
-  function handleCustomToolRelease(): bool {
+  function applyRamp(): bool {
     if (currentAction !== Arranger.Ramping) {
       return false;
     }
@@ -35,10 +40,9 @@ Arranger {
     return true;
   }
 
-  function moveSelectionsY(dy: real, prevY: real) {
-  }
-
-  function moveTemporaryObjectsY(dy: real, prevY: real) {
+  // Velocities change only through the velocity bars, so a vertical drag on
+  // the arranger moves nothing.
+  function keepVelocities(dy: real, prevY: real) {
   }
 
   // Maps a y coordinate to a MIDI velocity (top of the lane = 127)

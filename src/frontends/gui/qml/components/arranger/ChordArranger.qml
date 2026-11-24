@@ -26,8 +26,15 @@ Arranger {
   // Emitted when selected chord objects should change to the target row's chord.
   signal verticalChordChangeRequested(var targetDescriptor)
 
-  function beginObjectCreation(coordinates: point): ChordObject {
-    const obj = createObjectAt(coordinates);
+  beginObjectCreation: root.beginChordObjectCreation
+  createObjectAt: root.createChordObjectAt
+  createdObjectTypeAt: root.chordObjectTypeAt
+  getObjectY: root.getChordObjectY
+  moveSelectionsY: root.moveSelectionsByRow
+  moveTemporaryObjectsY: root.moveTemporaryObjectsByRow
+
+  function beginChordObjectCreation(coordinates: point): ChordObject {
+    const obj = createChordObjectAt(coordinates);
     if (obj !== null) {
       root.currentAction = Arranger.CreatingResizingMovingR;
       root.selectSingleObject(root.chordClip.chordObjects, root.chordClip.chordObjects.rowCount() - 1);
@@ -41,7 +48,7 @@ Arranger {
     return null;
   }
 
-  function createObjectAt(coordinates: point): ChordObject {
+  function createChordObjectAt(coordinates: point): ChordObject {
     const row = Math.floor(coordinates.y / root.rowHeight);
     if (row < 0 || row >= root.chordRowModel.rowCount()) {
       return null;
@@ -53,20 +60,16 @@ Arranger {
     return root.objectCreator.addChordObjectFromDescriptor(root.chordClip, localTickPosition, desc);
   }
 
-  function createdObjectTypeAt(coordinates: point): int {
+  function chordObjectTypeAt(coordinates: point): int {
     const row = Math.floor(coordinates.y / root.rowHeight);
     return (row >= 0 && row < root.chordRowModel.rowCount()) ? ArrangerObject.ChordObject : -1;
   }
 
-  function getObjectHeight(obj: ChordObject): real {
-    return root.rowHeight;
-  }
-
-  function getObjectY(obj: ChordObject): real {
+  function getChordObjectY(obj: ChordObject): real {
     return root.chordRowModel.rowForChordObject(obj) * root.rowHeight;
   }
 
-  function moveSelectionsY(dy: real, prevY: real) {
+  function moveSelectionsByRow(dy: real, prevY: real) {
     const prevRow = Math.floor(prevY / root.rowHeight);
     const currentRow = Math.floor((prevY + dy) / root.rowHeight);
     if (currentRow === prevRow)
@@ -78,16 +81,11 @@ Arranger {
     root.verticalChordChangeRequested(targetDesc);
   }
 
-  function moveTemporaryObjectsY(dy: real, prevY: real) {
+  function moveTemporaryObjectsByRow(dy: real, prevY: real) {
     const prevRow = Math.floor(prevY / root.rowHeight);
     const currentRow = Math.floor((prevY + dy) / root.rowHeight);
     const deltaRows = currentRow - prevRow;
     root.dragState.dragDeltaY += deltaRows * root.rowHeight;
-  }
-
-  // Chord events have no bounds; never treat resize as loop resize.
-  function shouldResizeBeLoopResize(object: ArrangerObjectBaseView, fromStart: bool): bool {
-    return false;
   }
 
   editorSettings: clipEditor.chordEditor

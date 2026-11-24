@@ -18,8 +18,15 @@ Arranger {
   required property MidiEditor midiEditor
   readonly property Track track: clipEditor.track
 
-  function beginObjectCreation(coordinates: point): MidiNote {
-    const midiNote = createObjectAt(coordinates);
+  beginObjectCreation: root.beginNoteCreation
+  createObjectAt: root.createNoteAt
+  createdObjectTypeAt: root.noteTypeAt
+  getObjectY: root.getNoteY
+  moveSelectionsY: root.moveSelectionsByPitch
+  moveTemporaryObjectsY: root.moveTemporaryNotesByPitch
+
+  function beginNoteCreation(coordinates: point): MidiNote {
+    const midiNote = createNoteAt(coordinates);
     root.currentAction = Arranger.CreatingResizingMovingR;
     root.selectSingleObject(root.midiClip.midiNotes, root.midiClip.midiNotes.rowCount() - 1);
     CursorManager.setResizeEndCursor();
@@ -27,7 +34,7 @@ Arranger {
     return midiNote;
   }
 
-  function createObjectAt(coordinates: point): MidiNote {
+  function createNoteAt(coordinates: point): MidiNote {
     const pitch = getPitchAtY(coordinates.y);
     const tickPosition = coordinates.x / root.ruler.pxPerTick;
     const localTickPosition = tickPosition - root.midiClip.position.ticks;
@@ -35,15 +42,11 @@ Arranger {
     return objectCreator.addMidiNote(root.midiClip, localTickPosition, pitch);
   }
 
-  function createdObjectTypeAt(coordinates: point): int {
+  function noteTypeAt(coordinates: point): int {
     return ArrangerObject.MidiNote;
   }
 
-  function getObjectHeight(obj: MidiNote): real {
-    return root.midiEditor.keyHeight; // Height of MIDI notes
-  }
-
-  function getObjectY(obj: MidiNote): real {
+  function getNoteY(obj: MidiNote): real {
     return getYAtPitch(obj.pitch);
   }
 
@@ -55,7 +58,7 @@ Arranger {
     return midiEditor.keyHeight * (127 - pitch);
   }
 
-  function moveSelectionsY(dy: real, prevY: real) {
+  function moveSelectionsByPitch(dy: real, prevY: real) {
     const prevPitch = getPitchAtY(prevY);
     const currentPitch = getPitchAtY(prevY + dy);
     if (currentPitch == prevPitch) {
@@ -71,7 +74,7 @@ Arranger {
     }
   }
 
-  function moveTemporaryObjectsY(dy: real, prevY: real) {
+  function moveTemporaryNotesByPitch(dy: real, prevY: real) {
     const prevPitch = getPitchAtY(prevY);
     const currentPitch = getPitchAtY(prevY + dy);
     const delta = currentPitch - prevPitch;
