@@ -392,7 +392,8 @@ void
 AudioEngine::activate_impl (const bool activate)
 {
   const auto new_state = activate ? State::Active : State::Initialized;
-  if (state_.load () == new_state)
+  const auto is_active = state_.load () == State::Active;
+  if (is_active == activate)
     {
       return;
     }

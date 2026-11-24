@@ -167,6 +167,22 @@ TEST_F (AudioEngineTest, ActivateWithSameStateDoesNothing)
   EXPECT_TRUE (engine->activated ());
 }
 
+TEST_F (AudioEngineTest, DeactivateBeforeActivateDoesNothing)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  // The mock hardware asserts when a callback that was never added is
+  // removed
+  engine->deactivate ();
+
+  EXPECT_FALSE (engine->activated ());
+  EXPECT_TRUE (engine->running ());
+}
+
 TEST_F (AudioEngineTest, SetAndGetRunning)
 {
   auto engine = std::make_unique<AudioEngine> (
