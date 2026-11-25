@@ -1409,7 +1409,7 @@ INSTANTIATE_TEST_SUITE_P (
 
 TEST_F (ClapPluginTest, LogExtensionFromProcessIsDeliveredAsync)
 {
-  utils::init_logging (utils::LoggerType::Test);
+  utils::init_test_logging ();
 
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
   process_blocks (2);

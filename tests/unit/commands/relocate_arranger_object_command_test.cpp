@@ -37,7 +37,8 @@ protected:
       tempo_map_wrapper_, registry_, param_ref);
 
     app_settings_ = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+      std::make_unique<test_helpers::InMemorySettingsBackend> (),
+      utils::UserDirectories{});
 
     factory_ = std::make_unique<arrangement::ArrangerObjectFactory> (
       arrangement::ArrangerObjectFactory::Dependencies{

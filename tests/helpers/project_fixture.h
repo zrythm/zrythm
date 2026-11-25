@@ -39,8 +39,8 @@ protected:
     juce::addDefaultFormatsToManager (*plugin_format_manager_);
 
     auto settings_backend = std::make_unique<InMemorySettingsBackend> ();
-    app_settings_ =
-      std::make_unique<utils::AppSettings> (std::move (settings_backend));
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::move (settings_backend), utils::UserDirectories{});
 
     registry_ = std::make_unique<utils::ObjectRegistry> (nullptr);
     monitor_fader_ = utils::make_qobject_unique<dsp::Fader> (

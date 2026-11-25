@@ -45,8 +45,8 @@ protected:
     ON_CALL (*mock_backend_ptr, value (testing::_, testing::_))
       .WillByDefault (testing::Return (QVariant ()));
 
-    app_settings =
-      std::make_unique<utils::AppSettings> (std::move (mock_backend));
+    app_settings = std::make_unique<utils::AppSettings> (
+      std::move (mock_backend), utils::UserDirectories{});
 
     registry_ = std::make_unique<utils::ObjectRegistry> ();
     monitor_fader = utils::make_qobject_unique<dsp::Fader> (

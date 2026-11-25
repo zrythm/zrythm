@@ -65,7 +65,8 @@ protected:
     bpm_provider = [] () { return units::bpm (120.0); };
 
     app_settings = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+      std::make_unique<test_helpers::InMemorySettingsBackend> (),
+      utils::UserDirectories{});
 
     factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{

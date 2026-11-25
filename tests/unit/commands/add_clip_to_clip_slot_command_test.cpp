@@ -25,7 +25,8 @@ protected:
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
     app_settings = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+      std::make_unique<test_helpers::InMemorySettingsBackend> (),
+      utils::UserDirectories{});
 
     factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{

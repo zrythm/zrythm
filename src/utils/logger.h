@@ -29,12 +29,7 @@
 namespace zrythm::utils
 {
 class Utf8String;
-
-enum class LoggerType
-{
-  GUI,
-  Test,
-};
+class UserDirectories;
 
 enum class LogLevel
 {
@@ -78,7 +73,7 @@ struct SpdlogApi
     submit (loc, level, std::move (msg));
   }
 
-  void init (LoggerType type);
+  void init (bool for_testing, const std::filesystem::path &log_dir);
 
   // Opaque -- defined in logger.cpp, hides spdlog from this header.
   struct Logger;
@@ -100,8 +95,29 @@ template <> inline auto log_api<> = SpdlogApi{};
 
 } // namespace detail
 
+/**
+ * @brief Starts the application log in the cache directory of @p user_dirs.
+ *
+ * A later call does nothing. A message of error level or higher aborts
+ * the process when no debugger is attached. Under a debugger, the process
+ * stops at the message, and a message of critical level then exits with
+ * EXIT_FAILURE.
+ *
+ * @throw ZrythmException When the log directory cannot be created.
+ * @throw spdlog::spdlog_ex When the log file cannot be opened.
+ */
 void
-init_logging (LoggerType type);
+init_logging (const UserDirectories &user_dirs);
+
+/**
+ * @brief Starts the log of unit tests.
+ *
+ * The log file is written to a "zrythm_test_logs" directory under the
+ * temporary directory. A later call does nothing. A message of error level
+ * does not abort the process.
+ */
+void
+init_test_logging ();
 bool
 is_logging_initialized ();
 

@@ -84,7 +84,8 @@ protected:
 
     // Create arranger object factory with proper dependencies
     app_settings_ = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+      std::make_unique<test_helpers::InMemorySettingsBackend> (),
+      utils::UserDirectories{});
 
     structure::arrangement::ArrangerObjectFactory::Dependencies obj_factory_deps{
       .tempo_map_ = tempo_map_wrapper_,

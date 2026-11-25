@@ -5,10 +5,10 @@
 
 #include "utils/isettings_backend.h"
 #include "utils/qt.h"
+#include "utils/user_directories.h"
 #include "utils/utf8_string.h"
 
-#include <QCoreApplication>
-#include <QStandardPaths>
+#include <QVariant>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 using namespace Qt::StringLiterals;
@@ -26,7 +26,7 @@ log_setting_change (const char * name, const QVariant &value);
                                                 name##Changed) \
 \
 public: \
-  [[nodiscard]] Q_INVOKABLE static ptype name##DefaultValue () \
+  [[nodiscard]] Q_INVOKABLE ptype name##DefaultValue () const \
   { \
     return default_value; \
   } \
@@ -74,7 +74,7 @@ public:
   DEFINE_SETTING_PROPERTY (
     QString,
     zrythmUserPath,
-    QStandardPaths::writableLocation (QStandardPaths::AppDataLocation))
+    Utf8String::from_path (user_dirs_.data_dir ()).to_qstring ())
   DEFINE_SETTING_PROPERTY (bool, firstRun, true)
   DEFINE_SETTING_PROPERTY (ThemeMode, themeMode, ThemeMode::Dark)
   DEFINE_SETTING_PROPERTY (QString, accentToken, u"zrythm-orange"_s)
@@ -104,13 +104,7 @@ public:
   DEFINE_SETTING_PROPERTY (
     QString,
     newProjectDirectory,
-    utils::Utf8String::from_path (
-      (utils::Utf8String::from_qstring (
-         QStandardPaths::writableLocation (QStandardPaths::DocumentsLocation))
-         .to_path ()
-       / utils::Utf8String::from_qstring (QCoreApplication::applicationName ())
-           .to_path ()))
-      .to_qstring ())
+    Utf8String::from_path (user_dirs_.default_new_project_dir ()).to_qstring ())
   DEFINE_SETTING_PROPERTY (bool, leftPanelVisible, true)
   DEFINE_SETTING_PROPERTY (bool, rightPanelVisible, true)
   DEFINE_SETTING_PROPERTY (bool, bottomPanelVisible, true)
@@ -175,8 +169,20 @@ public:
   DEFINE_SETTING_PROPERTY (QStringList, mcpTokens, QStringList ())
 
 public:
+  /**
+   * @param backend Store of the settings.
+   * @param user_dirs Directories used for the default values of the settings
+   * that hold a location.
+   * @param parent Parent object.
+   *
+   * Reading zrythmUserPath or newProjectDirectory, and their default
+   * values, throws ZrythmException when @p user_dirs cannot give the
+   * location. The reasons are given with UserDirectories::data_dir() and
+   * UserDirectories::default_new_project_dir().
+   */
   explicit AppSettings (
     std::unique_ptr<ISettingsBackend> backend,
+    const UserDirectories            &user_dirs,
     QObject *                         parent = nullptr);
 
   /**
@@ -190,6 +196,7 @@ public:
 
 private:
   std::unique_ptr<ISettingsBackend> backend_;
+  UserDirectories                   user_dirs_;
 };
 }
 

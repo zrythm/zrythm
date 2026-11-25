@@ -21,7 +21,8 @@ private Q_SLOTS:
   void qmlEngineAvailable (QQmlEngine * engine)
   {
     settings_ = std::make_unique<zrythm::utils::AppSettings> (
-      std::make_unique<zrythm::test_helpers::InMemorySettingsBackend> (), this);
+      std::make_unique<zrythm::test_helpers::InMemorySettingsBackend> (),
+      zrythm::utils::UserDirectories{}, this);
     engine->rootContext ()->setContextProperty (
       "testAppSettings", settings_.get ());
   }

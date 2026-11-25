@@ -8,8 +8,7 @@
 #include "utils/logger.h"
 #include "utils/rt_logger.h"
 #include "utils/threads.h"
-
-#include <QStandardPaths>
+#include "utils/user_directories.h"
 
 #include <juce_core/juce_core.h>
 #include <spdlog/pattern_formatter.h>
@@ -156,38 +155,23 @@ set_sink_pattern (auto &sink, bool with_date)
 }
 
 static std::filesystem::path
-make_log_file_path (LoggerType type)
+make_log_file_path (const std::filesystem::path &log_dir)
 {
-  auto str_datetime = utils::datetime::get_for_filename ();
-
-  if (type == LoggerType::Test)
-    {
-      auto tmp_log_dir = utils::io::get_temp_path () / "zrythm_test_logs";
-      utils::io::mkdir (tmp_log_dir);
-      return tmp_log_dir / str_datetime.to_path ();
-    }
-
-  auto user_log_dir =
-    QStandardPaths::writableLocation (QStandardPaths::CacheLocation);
-  auto log_filepath =
-    Utf8String::from_qstring (user_log_dir).to_path ()
-    / (std::u8string (u8"log_") + str_datetime.to_u8_string ());
-  utils::io::mkdir (Utf8String::from_qstring (user_log_dir).to_path ());
-  return log_filepath;
+  const auto str_datetime = utils::datetime::get_for_filename ();
+  utils::io::mkdir (log_dir);
+  return log_dir / (std::u8string (u8"log_") + str_datetime.to_u8_string ());
 }
 
 void
-detail::SpdlogApi::init (LoggerType type)
+detail::SpdlogApi::init (bool for_testing, const std::filesystem::path &log_dir)
 {
   if (logger_.load (std::memory_order_acquire)) [[unlikely]]
     return;
 
-  std::call_once (init_flag_, [this, type] {
-    const bool for_testing = (type == LoggerType::Test);
-
+  std::call_once (init_flag_, [this, for_testing, &log_dir] {
     auto * impl = new Logger ();
     impl->for_testing = for_testing;
-    impl->log_file_path = make_log_file_path (type);
+    impl->log_file_path = make_log_file_path (log_dir);
 
     // 10 MB rotating file, 5 files max
     auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt> (
@@ -253,9 +237,16 @@ detail::SpdlogApi::
 }
 
 void
-init_logging (LoggerType type)
+init_logging (const UserDirectories &user_dirs)
 {
-  detail::log_api<>.init (type);
+  detail::log_api<>.init (false, user_dirs.cache_dir ());
+}
+
+void
+init_test_logging ()
+{
+  detail::log_api<>.init (
+    true, utils::io::get_temp_path () / "zrythm_test_logs");
 }
 
 bool

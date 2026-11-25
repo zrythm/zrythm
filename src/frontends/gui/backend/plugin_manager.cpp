@@ -21,8 +21,6 @@
 
 #include <nlohmann/json.hpp>
 
-using namespace Qt::StringLiterals;
-
 using namespace zrythm::frontends::gui::old_dsp::plugins;
 
 bool
@@ -42,8 +40,10 @@ zrythm::frontends::gui::old_dsp::plugins::known_plugin_file_missing (
 
 PluginManager::PluginManager (
   zrythm::plugins::ProtocolPluginPathsProvider plugin_paths_provider,
+  const utils::UserDirectories                &user_dirs,
   QObject *                                    parent)
-    : QObject (parent), collections_ (PluginCollections::read_or_new ())
+    : QObject (parent), collections_ (PluginCollections::read_or_new ()),
+      user_dirs_ (user_dirs)
 {
   // One LV2 world per process, shared by the scan format and the plugins
   // instantiated through get_lv2_world()
@@ -102,13 +102,9 @@ PluginManager::add_category_and_author (
 }
 
 std::filesystem::path
-PluginManager::get_known_plugins_json_path ()
+PluginManager::get_known_plugins_json_path () const
 {
-  QString local_app_data_path =
-    QStandardPaths::writableLocation (QStandardPaths::AppLocalDataLocation);
-  QDir dir (local_app_data_path);
-  return utils::Utf8String::from_qstring (
-    dir.absoluteFilePath (u"known_plugins.json"_s));
+  return user_dirs_.plugin_scan_cache_dir () / u8"known_plugins.json";
 }
 
 void

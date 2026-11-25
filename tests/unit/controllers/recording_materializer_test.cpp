@@ -63,7 +63,8 @@ protected:
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100));
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
     app_settings_ = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+      std::make_unique<test_helpers::InMemorySettingsBackend> (),
+      utils::UserDirectories{});
     coordinator_ = std::make_unique<RecordingCoordinator> ();
     undo_stack_ = zrythm::actions::create_mock_undo_stack ();
     temp_dir_obj_ = utils::io::make_tmp_dir ();

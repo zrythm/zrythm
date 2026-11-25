@@ -31,7 +31,8 @@ protected:
     sample_rate_provider_ = [] () { return units::sample_rate (44100); };
     bpm_provider_ = [] () { return units::bpm (120.0); };
     app_settings_ = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+      std::make_unique<test_helpers::InMemorySettingsBackend> (),
+      utils::UserDirectories{});
     factory_ = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{
         .tempo_map_ = *tempo_map_wrapper_,

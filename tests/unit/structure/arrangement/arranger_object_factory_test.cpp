@@ -26,7 +26,8 @@ protected:
 
     // Create factory
     app_settings = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+      std::make_unique<test_helpers::InMemorySettingsBackend> (),
+      utils::UserDirectories{});
 
     factory = std::make_unique<ArrangerObjectFactory> (
       ArrangerObjectFactory::Dependencies{

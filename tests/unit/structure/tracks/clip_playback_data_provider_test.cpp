@@ -36,7 +36,8 @@ protected:
     // Create an object registry
     registry_ = std::make_unique<utils::ObjectRegistry> ();
     app_settings_ = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+      std::make_unique<test_helpers::InMemorySettingsBackend> (),
+      utils::UserDirectories{});
   }
 
   void TearDown () override

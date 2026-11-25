@@ -11,6 +11,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_scan_manager.h"
 #include "utils/qt.h"
+#include "utils/user_directories.h"
 
 namespace zrythm::plugins
 {
@@ -53,8 +54,14 @@ public:
   using Protocol = zrythm::plugins::Protocol;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
+  /**
+   * @param plugin_paths_provider Returns the search paths of a protocol.
+   * @param user_dirs Directories that hold the cache of scanned plugins.
+   * @param parent Parent object.
+   */
   PluginManager (
     zrythm::plugins::ProtocolPluginPathsProvider plugin_paths_provider,
+    const utils::UserDirectories                &user_dirs,
     QObject *                                    parent = nullptr);
 
   QString getCurrentlyScanningPlugin () const
@@ -130,9 +137,9 @@ private:
     const utils::Utf8String &category,
     const utils::Utf8String &author);
 
-  static std::filesystem::path get_known_plugins_json_path ();
-  void                         serialize_known_plugins ();
-  void                         deserialize_known_plugins ();
+  std::filesystem::path get_known_plugins_json_path () const;
+  void                  serialize_known_plugins ();
+  void                  deserialize_known_plugins ();
 
   /**
    * @brief Adds descriptors for bundled internal (Faust) plugins to the
@@ -156,6 +163,8 @@ private:
 
   /** Plugin collections. */
   std::unique_ptr<PluginCollections> collections_;
+
+  utils::UserDirectories user_dirs_;
 
   std::unique_ptr<::zrythm::plugins::PluginScanManager> scanner_;
 

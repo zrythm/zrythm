@@ -39,6 +39,7 @@ add_executable(zrythm_utils_unit_tests
   string_test.cpp
   test_uuid_identifiable_qobjects.h
   units_test.cpp
+  user_directories_test.cpp
   uuid_identifiable_object_test.cpp
   uuid_reference_test.h
   uuid_reference_test.cpp
@@ -52,6 +53,11 @@ add_executable(zrythm_utils_unit_tests
 set_target_properties(zrythm_utils_unit_tests PROPERTIES
   AUTOMOC ON
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
+)
+
+# Path of the C++ sources, read by the test that scans them
+target_compile_definitions(zrythm_utils_unit_tests PRIVATE
+  ZRYTHM_SRC_DIR="${CMAKE_SOURCE_DIR}/src"
 )
 
 target_link_libraries(zrythm_utils_unit_tests PRIVATE

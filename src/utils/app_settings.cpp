@@ -10,8 +10,9 @@ namespace zrythm::utils
 {
 AppSettings::AppSettings (
   std::unique_ptr<ISettingsBackend> backend,
+  const UserDirectories            &user_dirs,
   QObject *                         parent)
-    : QObject (parent), backend_ (std::move (backend))
+    : QObject (parent), backend_ (std::move (backend)), user_dirs_ (user_dirs)
 {
 }
 

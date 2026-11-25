@@ -105,7 +105,7 @@ TEST_F (NotificationCenterTest, HistoryCappedAtMaxNotifications)
 
 TEST_F (NotificationCenterTest, PostsAreLoggedWithSeverityName)
 {
-  utils::init_logging (utils::LoggerType::Test);
+  utils::init_test_logging ();
 
   center_->postInfo (u"Info Occurrence"_s, {});
   center_->postError (u"Error Occurrence"_s, u"extra detail"_s);
@@ -331,7 +331,7 @@ TEST_F (NotificationCenterTest, CriticalWithActionIsDropped)
 
 TEST_F (NotificationCenterTest, ThrowingCppLambdaActionIsReported)
 {
-  utils::init_logging (utils::LoggerType::Test);
+  utils::init_test_logging ();
 
   center_->post (
     Notification::Error, u"Cannot Perform Operation"_s, {}, {}, u"Retry"_s,

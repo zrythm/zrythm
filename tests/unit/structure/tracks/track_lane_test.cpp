@@ -231,7 +231,8 @@ TEST_F (TrackLaneTest, AudioClipManagement)
 
   // Create an audio clip
   auto app_settings = std::make_unique<utils::AppSettings> (
-    std::make_unique<test_helpers::InMemorySettingsBackend> ());
+    std::make_unique<test_helpers::InMemorySettingsBackend> (),
+    utils::UserDirectories{});
   dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
   dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
   auto audio_clip_ref = utils::create_object<arrangement::AudioClip> (
@@ -306,7 +307,8 @@ TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
 
   // Add an audio clip
   auto app_settings = std::make_unique<utils::AppSettings> (
-    std::make_unique<test_helpers::InMemorySettingsBackend> ());
+    std::make_unique<test_helpers::InMemorySettingsBackend> (),
+    utils::UserDirectories{});
   dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
   dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
   auto audio_clip_ref = utils::create_object<arrangement::AudioClip> (
@@ -437,7 +439,8 @@ TEST_F (TrackLaneTest, ClipTypeSeparation)
 
   // Add audio clip to audio lane
   auto app_settings_2 = std::make_unique<utils::AppSettings> (
-    std::make_unique<test_helpers::InMemorySettingsBackend> ());
+    std::make_unique<test_helpers::InMemorySettingsBackend> (),
+    utils::UserDirectories{});
   auto audio_clip_ref = utils::create_object<arrangement::AudioClip> (
     *registry_, tempo_map_wrapper, *registry_);
   audio_lane_->arrangement::ArrangerObjectOwner<

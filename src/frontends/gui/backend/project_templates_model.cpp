@@ -6,8 +6,6 @@
 #include "frontends/gui/backend/project_manager.h"
 #include "project_templates_model.h"
 
-#include <QSettings>
-
 using namespace zrythm::frontends::gui;
 
 ProjectTemplatesModel::ProjectTemplatesModel (QObject * parent)

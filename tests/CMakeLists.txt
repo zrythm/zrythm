@@ -57,6 +57,7 @@ target_sources(zrythm_test_helpers_lib
       helpers/project_fixture.h
       helpers/project_json_comparators.h
       helpers/qt_helpers.h
+      helpers/scoped_env_var.h
       helpers/scoped_qcoreapplication.h
       helpers/scoped_juce_qapplication.h
 )

@@ -130,6 +130,16 @@ private:
   void initialize ();
 
   void setup_command_line_options ();
+
+  /**
+   * @brief Uses the private directory requested with --user-data-dir, then
+   * requests every location once.
+   *
+   * @throw ZrythmException When the directory cannot be used, or when a
+   * location cannot be given.
+   */
+  void setup_user_directories ();
+
   void process_command_line ();
   void set_pending_project_file (const QString &path);
   void post_exec_initialization ();

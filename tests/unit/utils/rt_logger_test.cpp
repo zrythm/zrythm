@@ -52,7 +52,7 @@ TEST (RtLoggerTest, UninitializedRealtimeLoggingDoesNotCrash)
 
 TEST (RtLoggerTest, DeliversMessagesWithProducerThreadMarker)
 {
-  init_logging (LoggerType::Test);
+  init_test_logging ();
 
   z_rt_warning ("rt-deliver marker {}", 123);
 
@@ -63,7 +63,7 @@ TEST (RtLoggerTest, DeliversMessagesWithProducerThreadMarker)
 
 TEST (RtLoggerTest, TruncatesMessagesToSlotCapacity)
 {
-  init_logging (LoggerType::Test);
+  init_test_logging ();
 
   const auto prefix = std::string (RtLogMsg::text_capacity - 1, 'x');
   z_rt_warning ("{} tail-beyond-capacity", prefix);
@@ -75,7 +75,7 @@ TEST (RtLoggerTest, TruncatesMessagesToSlotCapacity)
 
 TEST (RtLoggerTest, DeliversMessagesFromMultipleProducerThreads)
 {
-  init_logging (LoggerType::Test);
+  init_test_logging ();
 
   const auto    dropped_before = rt_log_dropped_count ();
   constexpr int num_threads = 4;
@@ -112,7 +112,7 @@ TEST (RtLoggerTest, DeliversMessagesFromMultipleProducerThreads)
 
 TEST (RtLoggerTest, FullQueueRejectsPushesAndCountsDrops)
 {
-  init_logging (LoggerType::Test);
+  init_test_logging ();
 
   const auto dropped_before = rt_log_dropped_count ();
   set_rt_log_consumer_paused (true);

@@ -292,6 +292,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 - **Fail fast, noisily, and at the source.** Validate external input (plugin callbacks, file data, user actions) at the boundary where it enters our code, and reject invalid conditions with a   visible error (warning log + refusal of the operation, or an assertion for contract violations). Do not clamp, coerce, or otherwise silently "fix" bad values deeper in the system — that masks bugs and makes them surface far from their cause.
 - Use assertions for catching programmer bugs, and exceptions (or error/warning logs + refusals/early returns) for catching unsupported runtime input
 - **Always convert between string/path types through the `Utf8String` helpers** (`src/utils/utf8_string.h`): `Utf8String::from_path`/`to_path`, `from_qstring`/`to_qstring`, `from_juce_string`/`to_juce_string`, `from_utf8_encoded_string`, `.c_str()`. Never hand-roll conversions (`QString::toStdString`, `QString::fromStdString`, `std::filesystem::path::c_str()`, `path::u8string()`, etc.) — they break on Windows (wchar_t-based paths, `char8_t`) and bypass the guarantee that stored strings are valid UTF-8
+- **Take the settings store, the data directory and the cache directory from `utils::UserDirectories`** (`src/utils/user_directories.h`). Never call `QStandardPaths::writableLocation()` or construct a `QSettings` anywhere else in `src/`. A unit test fails when either appears outside `src/utils/user_directories.cpp`
 - **Prefer cross-platform APIs over per-platform code:** before writing `#ifdef` platform branches, look for a cross-platform API in our dependencies (JUCE, Qt and the C++ standard library cover most needs); use per-platform code only as a last resort
 - **Prefer the cleanest correct approach over quick fixes.** Long-term good design and maintainability always outweigh temporary refactoring costs — take the time to refactor properly rather than layering workarounds on top of a flawed design.
 
@@ -457,7 +458,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - [MockProcessable, MockTransport](tests/unit/dsp/graph_helpers.h)
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
 - [make_tmp_dir()](src/utils/io_utils.h): unique, auto-deleting temp directory (QTemporaryDir-based); use it instead of hand-rolling temp dir creation/cleanup in tests
-- Logging can be enabled in tests by calling `init_logging(utils::LoggerType::Test)` (`#include "utils/logger.h"`)
+- Logging can be enabled in tests by calling `init_test_logging()` (`#include "utils/logger.h"`)
 
 ---
 

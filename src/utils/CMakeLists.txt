@@ -37,6 +37,7 @@ target_sources(zrythm_utils_lib
     rt_thread_id.cpp
     symap.cpp
     threads.cpp
+    user_directories.cpp
     utf8_string.cpp
     uuid_reference.cpp
     uuid_identifiable_object.cpp
@@ -89,7 +90,6 @@ target_sources(zrythm_utils_lib
       monotonic_time_provider.h
       pcg_rand.h
       playback_cache_scheduler.h
-      qsettings_backend.h
       qt.h
       raii_utils.h
       ranges.h
@@ -106,6 +106,7 @@ target_sources(zrythm_utils_lib
       traits.h
       types.h
       units.h
+      user_directories.h
       utils.h
       iobject_registry.h
       object_registry.h

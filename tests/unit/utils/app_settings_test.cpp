@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/app_settings.h"
+#include "utils/io_utils.h"
+#include "utils/user_directories.h"
 
 #include <QSignalSpy>
 #include <QStringList>
@@ -9,6 +11,8 @@
 
 #include "helpers/in_memory_settings_backend.h"
 #include "helpers/mock_settings_backend.h"
+#include "helpers/scoped_env_var.h"
+#include "helpers/scoped_qcoreapplication.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -25,7 +29,8 @@ protected:
   {
     auto mock_backend = std::make_unique<test_helpers::MockSettingsBackend> ();
     mock_backend_ = mock_backend.get ();
-    app_settings_ = std::make_unique<AppSettings> (std::move (mock_backend));
+    app_settings_ = std::make_unique<AppSettings> (
+      std::move (mock_backend), UserDirectories{});
   }
 
   void TearDown () override { app_settings_.reset (); }
@@ -227,11 +232,61 @@ TEST_F (AppSettingsTest, DockLayoutProperty)
   app_settings_->reset_dockLayout ();
 }
 
+TEST_F (AppSettingsTest, UserPathDefaultIsTheDataDirectory)
+{
+  test_helpers::QtCacheVariables qt_cache_variables;
+  const auto                     tmp_dir = io::make_tmp_dir ();
+  const auto                     directories = UserDirectories::make_private (
+    Utf8String::from_qstring (tmp_dir->path ()).to_path ());
+  ASSERT_TRUE (directories) << directories.error ().view ();
+  const AppSettings settings (
+    std::make_unique<test_helpers::InMemorySettingsBackend> (), *directories);
+
+  const auto expected =
+    Utf8String::from_path (directories->data_dir ()).to_qstring ();
+
+  // The default values are also readable through a const object
+  EXPECT_EQ (settings.zrythmUserPathDefaultValue (), expected);
+  EXPECT_EQ (settings.zrythmUserPath (), expected);
+}
+
+TEST_F (AppSettingsTest, ValuesSurviveARestartInAPrivateDirectory)
+{
+  test_helpers::QtCacheVariables qt_cache_variables;
+  const auto                     tmp_dir = io::make_tmp_dir ();
+  const auto                     directories = UserDirectories::make_private (
+    Utf8String::from_qstring (tmp_dir->path ()).to_path ());
+  ASSERT_TRUE (directories) << directories.error ().view ();
+
+  {
+    AppSettings settings (directories->make_settings_backend (), *directories);
+    settings.set_firstRun (false);
+    settings.set_undoStackLength (256);
+    settings.set_metronomeVolume (0.1);
+    settings.set_monitorVolume (0.1f);
+    settings.set_accentToken (u"celestial-blue"_s);
+    settings.set_recentProjects ({ u"/tmp/one.zpj"_s, u"/tmp/two words.zpj"_s });
+  }
+
+  // A new object over the same settings file stands in for the next start
+  const AppSettings settings (
+    directories->make_settings_backend (), *directories);
+
+  EXPECT_FALSE (settings.firstRun ());
+  EXPECT_EQ (settings.undoStackLength (), 256);
+  EXPECT_DOUBLE_EQ (settings.metronomeVolume (), 0.1);
+  EXPECT_FLOAT_EQ (settings.monitorVolume (), 0.1f);
+  EXPECT_EQ (settings.accentToken (), u"celestial-blue"_s);
+  EXPECT_EQ (
+    settings.recentProjects (),
+    QStringList ({ u"/tmp/one.zpj"_s, u"/tmp/two words.zpj"_s }));
+}
+
 TEST_F (AppSettingsTest, ResetPreferenceSettingsRestoresOnlyPreferenceRows)
 {
   auto   backend = std::make_unique<test_helpers::InMemorySettingsBackend> ();
   auto * backend_ptr = backend.get ();
-  AppSettings settings (std::move (backend));
+  AppSettings settings (std::move (backend), UserDirectories{});
 
   settings.set_themeMode (AppSettings::ThemeMode::Light);
   settings.set_accentToken (u"gunmetal"_s);

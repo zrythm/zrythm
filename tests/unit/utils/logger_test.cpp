@@ -42,7 +42,7 @@ TEST (LoggerTest, LogLevelEnumValues)
 
 TEST (LoggerTest, InitLoggingDoesNotCrash)
 {
-  init_logging (LoggerType::Test);
+  init_test_logging ();
   z_info ("test message after init");
   z_debug ("debug with args {}", 123);
   z_warning ("warning with multiple args {} {}", 1, 2);
@@ -50,7 +50,7 @@ TEST (LoggerTest, InitLoggingDoesNotCrash)
 
 TEST (LoggerTest, GetLastLogEntriesReturnsEntries)
 {
-  init_logging (LoggerType::Test);
+  init_test_logging ();
   z_info ("entry one");
   z_info ("entry two");
   auto entries = get_last_log_entries (2);
@@ -59,7 +59,7 @@ TEST (LoggerTest, GetLastLogEntriesReturnsEntries)
 
 TEST (LoggerTest, GetLogFilePathReturnsNonEmpty)
 {
-  init_logging (LoggerType::Test);
+  init_test_logging ();
   auto path = get_log_file_path ();
   EXPECT_FALSE (path.empty ());
 }

@@ -24,7 +24,6 @@
 #include "utils/dsp_context.h"
 #include "utils/exceptions.h"
 #include "utils/format_juce.h"
-#include "utils/qsettings_backend.h"
 #include "utils/qt.h"
 #include "utils/thread_safe_fftw.h"
 #include "utils/tracy.h"
@@ -122,6 +121,9 @@ public:
 
   utils::QObjectUniquePtr<utils::AppSettings> app_settings_;
 
+  /** Directories of the settings, data and caches of this run. */
+  utils::UserDirectories user_dirs_{};
+
   utils::QObjectUniquePtr<QLocalSocket> socket_;
 
   std::unique_ptr<DirectoryManager>                     dir_manager_;
@@ -186,6 +188,11 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     }
   catch (const std::exception &e)
     {
+      // Startup can fail before the log exists
+      if (!zrythm::utils::is_logging_initialized ())
+        {
+          fmt::println (stderr, "Fatal error at startup: {}", e.what ());
+        }
       z_critical ("Fatal error at startup: {}", e.what ());
       // ZRYTHM_FATAL_DIALOG=0 skips the dialog (e.g. headless runs)
       if (qgetenv ("ZRYTHM_FATAL_DIALOG") != "0")
@@ -255,28 +262,37 @@ ZrythmApplication::initialize ()
 
   // Register meta-types
   qRegisterMetaType<utils::ExpandableTickRange> ();
+
+  // Parsed before anything below is created: --help and --version exit
+  // here, and the user directories decide where the settings and the log
+  // are written
+  setup_command_line_options ();
+  cmd_line_parser_.process (*this);
+  setup_user_directories ();
+
   impl_->app_settings_ = utils::make_qobject_unique<utils::AppSettings> (
-    std::unique_ptr<utils::ISettingsBackend> (new utils::QSettingsBackend),
-    this);
+    impl_->user_dirs_.make_settings_backend (), impl_->user_dirs_, this);
   auto * app_settings = impl_->app_settings_.get ();
   impl_->dir_manager_ = std::make_unique<DirectoryManager> (
     [app_settings] () {
       return utils::Utf8String::from_qstring (app_settings->zrythmUserPath ())
         .to_path ();
     },
-    [] () {
+    [app_settings] () {
       return utils::Utf8String::
-        from_qstring (utils::AppSettings::zrythmUserPathDefaultValue ())
+        from_qstring (app_settings->zrythmUserPathDefaultValue ())
           .to_path ();
     },
     [] () {
       return utils::Utf8String::from_qstring (applicationDirPath ()).to_path ();
     });
-  utils::init_logging (utils::LoggerType::GUI);
-
-  /* setup command line parser */
-  setup_command_line_options ();
-  cmd_line_parser_.process (*this);
+  utils::init_logging (impl_->user_dirs_);
+  if (impl_->user_dirs_.is_private ())
+    {
+      z_info (
+        "Data directory: '{}'; cache directory: '{}'",
+        impl_->user_dirs_.data_dir (), impl_->user_dirs_.cache_dir ());
+    }
   process_command_line ();
 
   zrythm::utils::start_tracy ();
@@ -360,7 +376,7 @@ ZrythmApplication::initialize ()
       return plugins::PluginProtocolPaths (*impl_->app_settings_)
         .get_for_protocol (protocol);
     },
-    this);
+    impl_->user_dirs_, this);
 
   launch_engine_process ();
 
@@ -572,12 +588,9 @@ void
 ZrythmApplication::setup_device_manager ()
 {
   const bool dummy_engine = dummyEngine ();
-  const auto data_dir =
-    QStandardPaths::writableLocation (QStandardPaths::AppDataLocation);
   const auto filepath =
     utils::Utf8String::from_path (
-      utils::Utf8String::from_qstring (data_dir).to_path ()
-      / u8"device_setup.xml")
+      impl_->user_dirs_.data_dir () / u8"device_setup.xml")
       .to_juce_file ();
   impl_->device_manager_ = std::make_shared<
     frontends::gui::backend::DeviceManager> (
@@ -697,6 +710,11 @@ ZrythmApplication::setup_command_line_options ()
        u"new-project"_s },
       { u"new-project-with-template"_s, tr ("Create new project with template"),
        u"new-project-with-template"_s, u"new-project-with-template"_s },
+      { u"user-data-dir"_s,
+       tr (
+          "Keep settings, data and caches in the given directory instead "
+          "of the system locations"),
+       u"directory"_s },
       {
        u"dummy"_s, tr ("Use dummy audio/midi engine"),
        },
@@ -713,6 +731,30 @@ ZrythmApplication::setup_command_line_options ()
   cmd_line_parser_.addPositionalArgument (
     u"project"_s, tr ("Project file (.zpj) or project directory to open"),
     u"[project]"_s);
+}
+
+void
+ZrythmApplication::setup_user_directories ()
+{
+  if (!cmd_line_parser_.isSet (u"user-data-dir"_s))
+    {
+      return;
+    }
+
+  const auto directory =
+    utils::Utf8String::from_qstring (
+      cmd_line_parser_.value (u"user-data-dir"_s).trimmed ())
+      .to_path ();
+  auto user_dirs = utils::UserDirectories::make_private (directory);
+  if (!user_dirs)
+    {
+      throw utils::ZrythmException (user_dirs.error ().view ());
+    }
+  impl_->user_dirs_ = std::move (*user_dirs);
+
+  // Every location is requested here, so a location that cannot be given
+  // ends the startup before a binding reads it
+  impl_->user_dirs_.check_locations ();
 }
 
 void
