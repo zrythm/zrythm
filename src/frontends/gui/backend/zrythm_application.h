@@ -119,6 +119,19 @@ public:
 
   QString pendingProjectFile () const;
 
+  /**
+   * @brief Returns the project that a request asked to open, and forgets
+   * the request.
+   *
+   * A request comes from the command line or from the operating system.
+   * pendingProjectFile() gives an empty string afterwards, until another
+   * request arrives.
+   *
+   * @return The directory of the project, or an empty string when no
+   * request is pending.
+   */
+  Q_INVOKABLE QString takePendingProjectFile ();
+
 private:
   /**
    * @brief Runs the application initialization performed by the
@@ -201,7 +214,7 @@ private:
    * Project directory pending to be opened, as passed on the command line or
    * via a file-open request from the OS (eg, double-clicking a .zpj file).
    *
-   * Empty if no project was requested to be opened at startup.
+   * Empty while no request is pending.
    */
   QString pending_project_file_;
 };

@@ -799,6 +799,17 @@ ZrythmApplication::pendingProjectFile () const
   return pending_project_file_;
 }
 
+QString
+ZrythmApplication::takePendingProjectFile ()
+{
+  const auto path = pending_project_file_;
+  if (path.isEmpty ())
+    return path;
+  pending_project_file_.clear ();
+  Q_EMIT pendingProjectFileChanged (pending_project_file_);
+  return path;
+}
+
 bool
 ZrythmApplication::event (QEvent * event)
 {

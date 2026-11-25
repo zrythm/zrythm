@@ -44,6 +44,19 @@ ApplicationWindow {
     root.hide();
   }
 
+  /**
+   * Opens the project of a pending request. A request waits while a
+   * project window is open.
+   */
+  function loadPendingProject() {
+    if (root.currentProjectWindow !== null)
+      return;
+    const path = root.app.takePendingProjectFile();
+    if (path.length === 0)
+      return;
+    loadController.loadProject(path);
+  }
+
   function showAudioDeviceHintIfMissing() {
     if (root.deviceManager === null || root.notificationCenter === null)
       return;
@@ -71,6 +84,7 @@ ApplicationWindow {
     if (currentProjectWindow === null) {
       Qt.callLater(function () {
         projectManager.activeSession = null;
+        root.loadPendingProject();
       });
     }
   }
@@ -85,6 +99,7 @@ ApplicationWindow {
       root.pluginManager.beginScan();
       root.pluginScanRunning = true;
     }
+    root.loadPendingProject();
   }
 
   Connections {
@@ -93,6 +108,14 @@ ApplicationWindow {
     }
 
     target: root.pluginScanner
+  }
+
+  Connections {
+    function onPendingProjectFileChanged() {
+      root.loadPendingProject();
+    }
+
+    target: root.app
   }
 
   AboutDialog {
@@ -269,20 +292,10 @@ ApplicationWindow {
       NavigatablePage {
         // Distinguishes this page when inspecting the StackView's current item
         readonly property bool isProjectSelectorPage: true
-        property bool pendingProjectLoadHandled: false
 
         notificationCenter: root.notificationCenter
         showBackButton: false
         title: qsTr("Open a Project")
-
-        StackView.onActivated: {
-          // open the project requested on the command line or via a
-          // file-open request from the OS (once)
-          if (!pendingProjectLoadHandled && root.pendingProjectPath.length > 0) {
-            pendingProjectLoadHandled = true;
-            loadController.loadProject(root.pendingProjectPath);
-          }
-        }
 
         resources: [
           Action {
