@@ -129,7 +129,7 @@ All dependencies are fetched and built automatically: most (including Qt) by [Co
    | GNU/Linux (aarch64, GCC) | `gcc_debug_aarch64` / `gcc_release_aarch64` | — |
    | macOS | `appleclang_debug` / `appleclang_release` | `appleclang_build` |
    | Windows (x64) | `msvc_debug` / `msvc_release` | — |
-   | Windows (ARM64EC) | `msvc_arm64ec_debug` / `msvc_arm64ec_release` | — |
+   | Windows (ARM64EC) | `msvc_arm64ec_debug` / `msvc_arm64ec_release` | `msvc_arm64ec_build` |
 
    > [!NOTE]
    > macOS uses `appleclang_build` (Release) as the build profile because the host profile builds sanitizer-instrumented Qt, which requires cross-building (sanitizer profiles set `cross_build=True` to skip running test executables that would otherwise fail under the sanitizer runtime).

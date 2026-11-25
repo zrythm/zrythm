@@ -303,7 +303,7 @@ configure:windows-arm64ec:
     - .configure-windows-template
     - .windows-arm-with-conan
   variables:
-    BUILD_PROFILE: "msvc_arm64ec_release"
+    BUILD_PROFILE: "msvc_arm64ec_build"
   parallel:
     matrix:
       - BUILD_TYPE: Debug

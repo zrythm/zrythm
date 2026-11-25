@@ -6,8 +6,8 @@
 # All dependencies except qtmcp are plain x64 binaries: ARM64EC binaries
 # can link x64 libraries and load x64 plugins in-process under emulation.
 # Zrythm itself is compiled as ARM64EC via the flags below, and qtmcp via
-# its arm64ec option. The ARM64-targeted compiler accepts /arm64EC, and
-# CMake detects the ARM64EC architecture family during compiler
+# its arch setting below. The ARM64-targeted compiler accepts /arm64EC,
+# and CMake detects the ARM64EC architecture family during compiler
 # identification, adding /MACHINE:ARM64EC and the _ARM64EC_ defines
 # automatically.
 #
@@ -20,9 +20,7 @@ include(_qt_windows)
 arch=x86_64
 build_type=Release
 compiler.runtime_type=Release
-
-[options]
-qtmcp/*:arm64ec=True
+qtmcp/*:arch=arm64ec
 
 [conf]
 zrythm/*:tools.build:cflags+=["/arm64EC"]

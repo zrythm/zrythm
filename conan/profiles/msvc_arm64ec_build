@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: CC0-1.0
+#
+# Build profile for the Windows on ARM (ARM64EC) jobs.
+#
+# The build tools are plain x64 binaries. qtmcp has no arch here: Conan
+# selects the ARM64-targeting compiler for a package only when its arch
+# differs from the build arch.
+#
+# compiler.march is deliberately not set here, as in the ARM64EC host
+# profiles.
+include(_msvc)
+include(_qt_windows)
+
+[settings]
+arch=x86_64
+build_type=Release
+compiler.runtime_type=Release
