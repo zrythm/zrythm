@@ -310,6 +310,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use `std::numbers` instead of macros for number constants like `M_PI`
 - Use ranges and range-based for-loops instead of C-style for-loops
 - Use `std::span` instead of array pointers and sizes; for read-only accessors returning a collection, return `std::span<const T>` (a lightweight view) rather than `const std::vector<T>&`, so callers can't mutate the contents and the interface isn't tied to a specific container type
+- Prefer `std::string_view` over `const char *` where appropriate
 - Utilize `std::views` where possible to make code more readable, for example for filtering, transforming, or even to simply loop n times using `std::views::iota`
 - Use `_` as the name for unused loop variables (e.g., `for (const auto _ : std::views::iota (0, n))`)
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
