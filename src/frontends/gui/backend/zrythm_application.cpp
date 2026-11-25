@@ -1042,8 +1042,12 @@ ZrythmApplication::~ZrythmApplication ()
 
   impl_->device_manager_->closeAudioDevice ();
 
-  // Delete the project manager first to release project resources (engine,
-  // tracks, etc.) before tearing down infrastructure.
+  // The QML objects bind to project objects. They are destroyed while the
+  // project objects still exist.
+  impl_->qml_engine_.reset ();
+
+  // Release project resources (engine, tracks, etc.) before tearing down
+  // infrastructure.
   impl_->project_manager_.reset ();
 
   if (impl_->socket_)

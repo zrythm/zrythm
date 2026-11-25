@@ -26,7 +26,9 @@ ApplicationWindow {
   property bool pluginScanRunning: false
 
   function openProjectWindow(session) {
-    let newWindow = projectWindowComponent.createObject(session, {
+    // The Greeter owns the project window, so the window is destroyed
+    // with the Greeter
+    let newWindow = projectWindowComponent.createObject(root, {
       "session": session,
       "deviceManager": deviceManager,
       "appSettings": appSettings,
