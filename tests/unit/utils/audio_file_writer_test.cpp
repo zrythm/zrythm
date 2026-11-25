@@ -13,6 +13,8 @@
 #include <QThreadPool>
 #include <QtConcurrentRun>
 
+#include "helpers/scoped_qcoreapplication.h"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -98,8 +100,11 @@ protected:
     };
   }
 
-  std::unique_ptr<QTemporaryDir> temp_dir_;
-  std::filesystem::path          temp_dir_path_;
+  // Qt gives no global thread pool, which write_async () uses, after an
+  // application object of this process was destroyed
+  test_helpers::ScopedQCoreApplication application_;
+  std::unique_ptr<QTemporaryDir>       temp_dir_;
+  std::filesystem::path                temp_dir_path_;
 };
 
 TEST_F (AudioFileWriterTest, WriteWavFile)
