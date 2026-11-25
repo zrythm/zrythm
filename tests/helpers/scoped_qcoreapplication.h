@@ -7,6 +7,7 @@
 #include <memory>
 
 #include <QCoreApplication>
+#include <QString>
 #include <QTest>
 
 namespace zrythm::test_helpers
@@ -15,6 +16,10 @@ namespace zrythm::test_helpers
  * @brief A base class that starts a QCoreApplication.
  *
  * This is needed in order to test signal functionality.
+ *
+ * Qt keeps the application name, the organization name and the
+ * organization domain for the whole process. The values they had before
+ * this object was constructed return when it is destroyed.
  *
  * @see https://forum.qt.io/post/804638
  */
@@ -28,12 +33,31 @@ public:
     // (individual calls can still pass their own timeout).
     QTest::defaultTryTimeout.store (
       std::chrono::seconds (5), std::memory_order_relaxed);
+    application_name_ = QCoreApplication::applicationName ();
+    organization_name_ = QCoreApplication::organizationName ();
+    organization_domain_ = QCoreApplication::organizationDomain ();
     int     argc = 0;
     char ** argv = nullptr;
     app_ = std::make_unique<QCoreApplication> (argc, argv);
   }
 
+  ScopedQCoreApplication (const ScopedQCoreApplication &) = delete;
+  ScopedQCoreApplication &operator= (const ScopedQCoreApplication &) = delete;
+  ScopedQCoreApplication (ScopedQCoreApplication &&) = delete;
+  ScopedQCoreApplication &operator= (ScopedQCoreApplication &&) = delete;
+
+  ~ScopedQCoreApplication ()
+  {
+    app_.reset ();
+    QCoreApplication::setApplicationName (application_name_);
+    QCoreApplication::setOrganizationName (organization_name_);
+    QCoreApplication::setOrganizationDomain (organization_domain_);
+  }
+
 private:
+  QString                           application_name_;
+  QString                           organization_name_;
+  QString                           organization_domain_;
   std::unique_ptr<QCoreApplication> app_;
 };
 }
