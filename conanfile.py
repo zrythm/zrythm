@@ -56,7 +56,7 @@ class Zrythm(ConanFile):
         # plugin discovery/hosting
         self.requires("lilv/0.28.0")
         # MCP server frontend for the operations API
-        self.requires("qtmcp/2026.7.28-z2")
+        self.requires("qtmcp/2026.7.28-z3")
 
         if self.settings.os in ["Linux", "FreeBSD"]:
             self.requires("freetype/[>=2.14]")
