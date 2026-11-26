@@ -426,7 +426,10 @@ TEST_F (UserDirectoriesTest, RelativeDirectoryIsBelowTheCurrentDirectory)
   const auto directories = UserDirectories::make_private (relative);
 
   ASSERT_TRUE (directories) << directories.error ().view ();
-  EXPECT_EQ (directories->data_dir (), tmp_path () / relative / u8"data");
+  // The current directory is reported with its symbolic links resolved
+  EXPECT_TRUE (
+    std::filesystem::equivalent (
+      directories->data_dir (), tmp_path () / relative / u8"data"));
 }
 
 TEST_F (UserDirectoriesTest, EmptyDirectoryIsRejected)
