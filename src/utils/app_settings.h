@@ -8,6 +8,7 @@
 #include "utils/user_directories.h"
 #include "utils/utf8_string.h"
 
+#include <QObject>
 #include <QVariant>
 #include <QtQmlIntegration/qqmlintegration.h>
 
