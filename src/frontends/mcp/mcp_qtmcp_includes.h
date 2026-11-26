@@ -19,6 +19,10 @@
 #  define emit
 #endif
 
+// qtmcp's qmcpserversession.h, qmcpserver.h and qmcpserverbackendinterface.h
+// use QHash without including it.
+// FIXME include <QHash> in those headers in qtmcp, then remove it here.
+#include <QHash>
 #include <QtMcpServer/QMcpServer>
 #include <QtMcpServer/QMcpServerSession>
 #include <QtMcpServer/qmcpserverstreamablehttp.h>
