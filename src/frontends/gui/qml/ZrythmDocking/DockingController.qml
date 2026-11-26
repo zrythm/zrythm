@@ -458,7 +458,9 @@ QtObject {
     for (const floating of layout.floating) {
       wanted[floating.id] = true;
       if (_windows[floating.id] === undefined) {
-        const window = floatingWindowComponent.createObject(null, { "controller": root, "windowId": floating.id });
+        // With the main window as parent, the floating window is
+        // destroyed together with the main window
+        const window = floatingWindowComponent.createObject(root.mainWindow, { "controller": root, "windowId": floating.id });
         if (window === null) {
           console.warn("Could not create floating dock window", floating.id);
           continue;

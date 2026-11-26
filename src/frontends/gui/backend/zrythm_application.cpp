@@ -762,17 +762,16 @@ ZrythmApplication::process_command_line ()
 {
   if (cmd_line_parser_.isSet (u"project"_s))
     {
-      set_pending_project_file (cmd_line_parser_.value (u"project"_s));
+      setPendingProjectFile (cmd_line_parser_.value (u"project"_s));
     }
   else if (!cmd_line_parser_.positionalArguments ().isEmpty ())
     {
-      set_pending_project_file (
-        cmd_line_parser_.positionalArguments ().front ());
+      setPendingProjectFile (cmd_line_parser_.positionalArguments ().front ());
     }
 }
 
 void
-ZrythmApplication::set_pending_project_file (const QString &path)
+ZrythmApplication::setPendingProjectFile (const QString &path)
 {
   if (path.isEmpty ())
     return;
@@ -788,7 +787,7 @@ ZrythmApplication::set_pending_project_file (const QString &path)
   if (dir_path == pending_project_file_)
     return;
 
-  z_info ("Project to open at startup: {}", dir_path);
+  z_info ("Project to open: {}", dir_path);
   pending_project_file_ = dir_path;
   Q_EMIT pendingProjectFileChanged (pending_project_file_);
 }
@@ -818,7 +817,7 @@ ZrythmApplication::event (QEvent * event)
   if (event->type () == QEvent::FileOpen)
     {
       auto * file_open_event = static_cast<QFileOpenEvent *> (event);
-      set_pending_project_file (file_open_event->file ());
+      setPendingProjectFile (file_open_event->file ());
       return true;
     }
   return QApplication::event (event);

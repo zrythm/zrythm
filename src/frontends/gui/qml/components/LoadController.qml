@@ -23,25 +23,16 @@ Item {
     title: qsTr("Open Project")
 
     onAccepted: {
-      // loadProject() expects the project directory containing the
-      // project.zpj file
-      root.loadProject(QmlUtils.toPathString(QmlUtils.parentFolder(root.loadFileDialog.selectedFile)));
+      root.requestProject(QmlUtils.toPathString(root.loadFileDialog.selectedFile));
     }
   }
-  property QFutureQmlWrapper loadFuture
-  property ProgressDialogWithFuture loadProgressDialog: ProgressDialogWithFuture {
-    future: root.loadFuture
-    labelText: qsTr("Loading project...")
-  }
 
-  function loadProject(path: string) {
-    const future = GlobalState.application.projectManager.loadProject(path);
-    if (!future)
-      return;
-
-    root.loadProgressDialog.resetValues();
-    root.loadProgressDialog.open();
-    root.loadFuture = future;
+  /**
+   * Requests that the project at @p path be opened. The project opens
+   * once no other project is open.
+   */
+  function requestProject(path: string) {
+    GlobalState.application.setPendingProjectFile(path);
   }
 
   function openLoadDialog() {

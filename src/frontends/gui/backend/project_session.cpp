@@ -248,6 +248,12 @@ ProjectSession::ProjectSession (
     undo_stack_.get (),
     [this] (int limit) { undo_stack_->set_undo_limit (limit); });
 
+  // indexChanged is emitted on every history change, also when a push
+  // merges into the top applied entry and the index stays the same
+  QObject::connect (
+    undo_stack_.get (), &undo::UndoStack::indexChanged, this,
+    &ProjectSession::update_has_unsaved_changes);
+
   operations::register_builtin_operations (*operation_registry_);
 
   mcp_service_ = utils::make_qobject_unique<mcp::McpService> (
@@ -836,12 +842,18 @@ ProjectSession::save ()
 {
   assert (!project_directory_.empty ());
 
-  auto future = controllers::ProjectSaver::save (
+  const auto state_id_at_save_start = undo_stack_->stateId ();
+  auto       future = controllers::ProjectSaver::save (
     *project_, *ui_state_, *undo_stack_, utils::get_app_version (),
     project_directory_, false);
 
   auto * wrapper =
     new frontends::gui::qquick::QFutureQmlWrapperT<QString> (future);
+  QObject::connect (
+    wrapper, &frontends::gui::qquick::QFutureQmlWrapper::succeeded, this,
+    [this, state_id_at_save_start] () {
+      set_saved_state (state_id_at_save_start);
+    });
   QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
 
   return wrapper;
@@ -921,6 +933,7 @@ ProjectSession::saveAs (
   project_->regenerate_project_id ();
   const auto installed_id = project_->project_id ();
 
+  const auto       state_id_at_save_start = undo_stack_->stateId ();
   QFuture<QString> future;
   try
     {
@@ -963,11 +976,12 @@ ProjectSession::saveAs (
     });
   QObject::connect (
     wrapper, &frontends::gui::qquick::QFutureQmlWrapper::succeeded, this,
-    [this, new_path, future] () {
+    [this, new_path, future, state_id_at_save_start] () {
       save_as_in_flight_ = false;
       const auto saved_path = future.result ();
       if (!saved_path.isEmpty ())
         {
+          set_saved_state (state_id_at_save_start);
           setProjectDirectory (saved_path);
           // The saved copy's pool holds the blocks from now on.
           project_->set_project_directory (
@@ -981,6 +995,24 @@ ProjectSession::saveAs (
   QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
 
   return wrapper;
+}
+
+void
+ProjectSession::set_saved_state (std::uint64_t state_id)
+{
+  saved_state_id_ = state_id;
+  update_has_unsaved_changes ();
+}
+
+void
+ProjectSession::update_has_unsaved_changes ()
+{
+  const bool unsaved = undo_stack_->stateId () != saved_state_id_;
+  if (unsaved == has_unsaved_changes_)
+    return;
+
+  has_unsaved_changes_ = unsaved;
+  Q_EMIT hasUnsavedChangesChanged ();
 }
 
 void

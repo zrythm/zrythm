@@ -4,9 +4,12 @@
 #include "controllers/clipboard.h"
 #include "dsp/parameter.h"
 #include "frontends/gui/backend/project_session.h"
+#include "frontends/gui/qquick/qfuture_qml_wrapper.h"
 #include "utils/object_registry.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
+
+#include <QSignalSpy>
 
 #include "helpers/project_fixture.h"
 
@@ -117,6 +120,54 @@ TEST_F (ProjectSessionOperationsTest, SessionDispatchesOperations)
 
   session->undoStack ()->undo ();
   EXPECT_EQ (session->undoStack ()->index (), 0);
+}
+
+// hasUnsavedChanges follows the undo history position, and a successful
+// save records the position at the start of the save
+TEST_F (ProjectSessionOperationsTest, SessionTracksUnsavedChanges)
+{
+  // The provider constructor never touches the OS clipboard, which this
+  // test environment does not provide
+  auto clipboard = utils::make_qobject_unique<controllers::Clipboard> (
+    [] () -> QString { return {}; }, [] (const QString &) { });
+  auto project = create_minimal_project_without_recording_callback ();
+  utils::QObjectUniquePtr<structure::project::Project> project_ptr (
+    project.release ());
+  utils::ObjectRegistry app_registry;
+  auto                  session = utils::make_qobject_unique<ProjectSession> (
+    *app_settings_, *clipboard, app_registry, std::move (project_ptr));
+  session->project ()->add_default_tracks ();
+
+  QSignalSpy changed (session.get (), &ProjectSession::hasUnsavedChangesChanged);
+  EXPECT_FALSE (session->hasUnsavedChanges ());
+
+  auto report = dispatch (*session, "track.list", nlohmann::json::object ());
+  ASSERT_TRUE (report.applied ()) << report.message;
+  const auto uuid =
+    report.result.at ("items").at (0).at ("uuid").get<std::string> ();
+  auto applied = dispatch (
+    *session, "track.set_name",
+    {
+      { "track",    uuid             },
+      { "new_name", "Unsaved Rename" }
+  });
+  ASSERT_TRUE (applied.applied ()) << applied.message;
+  EXPECT_TRUE (session->hasUnsavedChanges ());
+  EXPECT_EQ (changed.size (), 1);
+
+  session->undoStack ()->undo ();
+  EXPECT_FALSE (session->hasUnsavedChanges ());
+
+  session->undoStack ()->redo ();
+  EXPECT_TRUE (session->hasUnsavedChanges ());
+
+  session->setProjectDirectory (
+    utils::Utf8String::from_path (project_dir_).to_qstring ());
+  const std::unique_ptr<qquick::QFutureQmlWrapper> wrapper (session->save ());
+  QSignalSpy saved (wrapper.get (), &qquick::QFutureQmlWrapper::succeeded);
+  ASSERT_TRUE (saved.wait (5000));
+  EXPECT_FALSE (session->hasUnsavedChanges ());
+  EXPECT_EQ (changed.size (), 4);
 }
 
 } // namespace zrythm::frontends::gui

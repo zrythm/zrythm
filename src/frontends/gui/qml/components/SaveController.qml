@@ -12,13 +12,7 @@ Item {
     shortcut: StandardKey.Save
     text: qsTr("Save")
 
-    onTriggered: {
-      if (root.session && root.session.projectDirectory !== "") {
-        root.saveProgressDialog.resetValues();
-        root.saveProgressDialog.open();
-        root.saveFuture = root.session.save();
-      }
-    }
+    onTriggered: root.save()
   }
   readonly property Action saveAsAction: Action {
     shortcut: StandardKey.SaveAs
@@ -49,17 +43,44 @@ Item {
   required property NotificationCenter notificationCenter
   required property ProjectSession session
 
+  /**
+   * A save or a Save As ended. @p saved is true when the project was
+   * written to disk.
+   */
+  signal saveEnded(bool saved)
+
+  /**
+   * Saves the project to its directory. Returns false when the project
+   * has no directory: nothing is saved then and saveEnded() is not
+   * emitted.
+   */
+  function save(): bool {
+    if (!root.session || root.session.projectDirectory === "")
+      return false;
+
+    root.saveProgressDialog.resetValues();
+    root.saveProgressDialog.open();
+    root.saveFuture = root.session.save();
+    return true;
+  }
+
   Connections {
+    function onCanceled() {
+      root.saveEnded(false);
+    }
+
     function onFailed(errorString: string) {
       root.notificationCenter.postCritical(qsTr("Project Save Failed"), errorString);
+      root.saveEnded(false);
     }
 
     function onSucceeded() {
       // An empty result means the operation was refused before starting
       const savedPath = root.saveFuture.resultVar();
-      if (savedPath && savedPath !== "") {
+      const saved = Boolean(savedPath);
+      if (saved)
         GlobalState.application.projectManager.recentProjects.addRecentProject(savedPath);
-      }
+      root.saveEnded(saved);
     }
 
     target: root.saveFuture

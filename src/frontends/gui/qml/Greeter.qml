@@ -18,6 +18,11 @@ ApplicationWindow {
   readonly property AppSettings appSettings: app?.appSettings ?? null
   property ProjectWindow currentProjectWindow: null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
+  property QFutureQmlWrapper loadFuture
+  property ProgressDialogWithFuture loadProgressDialog: ProgressDialogWithFuture {
+    future: root.loadFuture
+    labelText: qsTr("Loading project...")
+  }
   readonly property NotificationCenter notificationCenter: app?.notificationCenter ?? null
   readonly property string pendingProjectPath: app?.pendingProjectFile ?? ""
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
@@ -36,9 +41,14 @@ ApplicationWindow {
       "controlRoom": app.controlRoom,
       "notificationCenter": notificationCenter
     }) as ProjectWindow;
-    newWindow.closing.connect(function () {
+    newWindow.closeApproved.connect(function () {
       root.show();
       root.currentProjectWindow = null;
+    });
+    newWindow.closeCancelled.connect(function () {
+      // This project stays open, so the request to open another one is
+      // dropped
+      root.app.takePendingProjectFile();
     });
     newWindow.show();
     currentProjectWindow = newWindow;
@@ -47,16 +57,29 @@ ApplicationWindow {
   }
 
   /**
-   * Opens the project of a pending request. A request waits while a
-   * project window is open.
+   * Opens the project of a pending request, if there is one. While a
+   * project window is open, the window is asked to close first and the
+   * request waits.
    */
   function loadPendingProject() {
-    if (root.currentProjectWindow !== null)
+    if (root.pendingProjectPath.length === 0)
+      return;
+    if (root.currentProjectWindow !== null) {
+      root.currentProjectWindow.requestClose();
+      return;
+    }
+    // The session of a closed window stays active until the queued
+    // teardown releases it, which then runs this again
+    if (root.projectManager.activeSession !== null)
       return;
     const path = root.app.takePendingProjectFile();
-    if (path.length === 0)
+    const future = root.projectManager.loadProject(path);
+    if (!future)
       return;
-    loadController.loadProject(path);
+
+    root.loadProgressDialog.resetValues();
+    root.loadProgressDialog.open();
+    root.loadFuture = future;
   }
 
   function showAudioDeviceHintIfMissing() {
@@ -427,7 +450,7 @@ ApplicationWindow {
                   }
                 ]
 
-                onClicked: loadController.loadProject(projectItem.path)
+                onClicked: loadController.requestProject(projectItem.path)
 
                 Label {
                   color: palette.text

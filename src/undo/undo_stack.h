@@ -113,6 +113,19 @@ public:
   /** @brief Current revision; 0 before any mutation. */
   [[nodiscard]] std::uint64_t revision () const noexcept { return revision_; }
 
+  /**
+   * @brief Identifies the state that the applied entries produce.
+   *
+   * Returns 0 when no entry is applied, else the revision of the last
+   * push into the top applied entry. The same history position gives
+   * the same id, also after undo and redo. Every push gives a new id,
+   * also a push that merges into an existing entry.
+   */
+  [[nodiscard]] std::uint64_t stateId () const noexcept
+  {
+    return index_ == 0 ? 0 : entries_[index_ - 1].last_push_revision;
+  }
+
   /** @brief Receiver of one journal entry per history mutation. */
   using JournalCallback = std::function<void (const JournalEntry &)>;
 

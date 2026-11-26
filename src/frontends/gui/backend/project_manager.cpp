@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cassert>
 #include <tuple>
 
 #include "utils/format_qt.h"
@@ -184,10 +185,10 @@ ProjectManager::getRecentProjects () const
 std::unique_ptr<plugins::PluginHostWindow>
 ProjectManager::create_window_for_plugin (plugins::Plugin &plugin) const
 {
-  // While a project is being loaded, the active session is null or still
-  // points at the previous project, but a plugin editor restore queued
-  // during deserialization can already arrive here; the track lookup then
-  // misses and the window title falls back to "<no track>"
+  // While a project is being loaded, no session is active, but a plugin
+  // editor restore queued during deserialization can already arrive here;
+  // the track lookup then misses and the window title falls back to
+  // "<no track>"
   const auto track_ref =
     active_session_ != nullptr
       ? active_session_->project ()->tracklist ()->get_track_for_plugin (
@@ -329,6 +330,24 @@ ProjectManager::createNewProject (
   const QString &name,
   const QUrl    &templateUrl)
 {
+  if (active_session_ != nullptr)
+    {
+      z_warning ("A project is open; refusing to create a new project");
+      Q_EMIT projectLoadingFailed (
+        tr ("A project is already open. Close it before creating a new one."));
+      return false;
+    }
+  if (is_project_operation_in_progress ())
+    {
+      z_warning (
+        "A project load or creation is in progress; refusing to create a "
+        "new project");
+      Q_EMIT projectLoadingFailed (tr (
+        "Another project is already being opened or created. Wait for it "
+        "to finish."));
+      return false;
+    }
+
   const auto directory_file = directory.toLocalFile ();
   switch (classifySaveTarget (directory, name))
     {
@@ -377,62 +396,74 @@ ProjectManager::createNewProject (
     utils::Utf8String::from_qstring (directory_file).to_path ()
     / utils::Utf8String::from_qstring (name).to_path ();
 
-  QtConcurrent::run ([directory_file, name, template_file, this] {
-    auto project_session =
-      template_file.isEmpty ()
-        ? create_default (
-            utils::Utf8String::from_qstring (directory_file).to_path (),
-            utils::Utf8String::from_qstring (name), true)
-        : nullptr; // TODO: template handling
-    return project_session;
-  })
-    .then ([this,
-            project_dir_path] (utils::QObjectUniquePtr<ProjectSession> session) {
-      auto future = controllers::ProjectSaver::save (
-        *session->project (), *session->uiState (), *session->undoStack (),
-        utils::get_app_version (), project_dir_path, false);
-      try
-        {
-          // This will throw on failure
-          future.waitForFinished ();
-        }
-      catch (...)
-        {
-          // ... so catch the exception here, delete the ProjectSession object
-          // in the main thread (which owns it), and re-throw to trigger the
-          // onFailed() block.
-          QMetaObject::invokeMethod (this, [session_ptr = session.release ()] () {
-            delete session_ptr;
-          });
-          throw;
-        }
-      const auto saved_path =
-        utils::Utf8String::from_qstring (future.result ()).to_path ();
-      session->setTitle (
-        utils::Utf8String::from_path (utils::io::path_get_basename (saved_path))
-          .to_qstring ());
-      return session;
+  creation_future_ =
+    QtConcurrent::run ([directory_file, name, template_file, this] {
+      auto project_session =
+        template_file.isEmpty ()
+          ? create_default (
+              utils::Utf8String::from_qstring (directory_file).to_path (),
+              utils::Utf8String::from_qstring (name), true)
+          : nullptr; // TODO: template handling
+      return project_session;
     })
-    .then (
-      this,
-      [this, project_dir_path] (
-        utils::QObjectUniquePtr<ProjectSession> session_unique_ptr) {
-        auto * session = session_unique_ptr.release ();
-        session->setParent (this);
-        session->setProjectDirectory (
-          utils::Utf8String::from_path (project_dir_path).to_qstring ());
-        // Add to recent projects
-        recent_projects_model_->addRecentProject (
-          utils::Utf8String::from_path (project_dir_path).to_qstring ());
-        setActiveSession (session);
-        session->project ()->engine ()->graph_dispatcher ().recalc_graph (false);
-        session->project ()->engine ()->set_running (true);
-        Q_EMIT projectLoaded (session);
+      .then ([this, project_dir_path] (
+               utils::QObjectUniquePtr<ProjectSession> session) {
+        auto future = controllers::ProjectSaver::save (
+          *session->project (), *session->uiState (), *session->undoStack (),
+          utils::get_app_version (), project_dir_path, false);
+        try
+          {
+            // This will throw on failure
+            future.waitForFinished ();
+          }
+        catch (...)
+          {
+            // ... so catch the exception here, delete the ProjectSession
+            // object in the main thread (which owns it), and re-throw to
+            // trigger the onFailed() block.
+            QMetaObject::invokeMethod (
+              this,
+              [session_ptr = session.release ()] () { delete session_ptr; });
+            throw;
+          }
+        const auto saved_path =
+          utils::Utf8String::from_qstring (future.result ()).to_path ();
+        session->setTitle (
+          utils::Utf8String::from_path (utils::io::path_get_basename (saved_path))
+            .to_qstring ());
+        return session;
       })
-    .onFailed (this, [this] (const ZrythmException &e) {
-      z_warning ("Failed to create project: {}", e.what ());
-      Q_EMIT projectLoadingFailed (e.what_string ());
-    });
+      .then (
+        this,
+        [this, project_dir_path] (
+          utils::QObjectUniquePtr<ProjectSession> session_unique_ptr) {
+          if (active_session_ != nullptr)
+            {
+              z_warning (
+                "A project became active while another was being created; "
+                "discarding the new project");
+              Q_EMIT projectLoadingFailed (tr (
+                "A project is already open. Close it before creating a "
+                "new one."));
+              return;
+            }
+          auto * session = session_unique_ptr.release ();
+          session->setParent (this);
+          session->setProjectDirectory (
+            utils::Utf8String::from_path (project_dir_path).to_qstring ());
+          // Add to recent projects
+          recent_projects_model_->addRecentProject (
+            utils::Utf8String::from_path (project_dir_path).to_qstring ());
+          setActiveSession (session);
+          session->project ()->engine ()->graph_dispatcher ().recalc_graph (
+            false);
+          session->project ()->engine ()->set_running (true);
+          Q_EMIT projectLoaded (session);
+        })
+      .onFailed (this, [this] (const ZrythmException &e) {
+        z_warning ("Failed to create project: {}", e.what ());
+        Q_EMIT projectLoadingFailed (e.what_string ());
+      });
 
   return true;
 }
@@ -440,9 +471,15 @@ ProjectManager::createNewProject (
 frontends::gui::qquick::QFutureQmlWrapper *
 ProjectManager::loadProject (const QString &filepath)
 {
-  if (load_future_.isRunning ())
+  if (active_session_ != nullptr)
     {
-      z_warning ("A project load is already in progress, ignoring request");
+      z_warning ("A project is open; ignoring request to load another one");
+      return nullptr;
+    }
+  if (is_project_operation_in_progress ())
+    {
+      z_warning (
+        "A project load or creation is already in progress, ignoring request");
       return nullptr;
     }
 
@@ -585,6 +622,18 @@ ProjectManager::loadProject (const QString &filepath)
             // Initialize clip editor
             project_session->uiState ()->clipEditor ()->init ();
 
+            if (active_session_ != nullptr)
+              {
+                z_warning (
+                  "A project became active while another was loading; "
+                  "discarding the loaded project");
+                Q_EMIT projectLoadingFailed (tr (
+                  "A project is already open. Close it before opening "
+                  "another one."));
+                promise.addResult (QString{});
+                return;
+              }
+
             // Set up project
             auto * session = project_session.release ();
             session->setParent (this);
@@ -717,17 +766,9 @@ ProjectManager::setActiveSession (ProjectSession * project)
   if (active_session_.get () == project)
     return;
 
-  if (active_session_)
-    {
-      if (
-        active_session_->project () != nullptr
-        && active_session_->project ()->engine () != nullptr)
-        {
-          active_session_->project ()->engine ()->deactivate ();
-        }
-      active_session_.reset ();
-    }
+  assert (project == nullptr || active_session_ == nullptr);
 
+  active_session_.reset ();
   active_session_ = project;
   if (active_session_)
     {

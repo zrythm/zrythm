@@ -105,7 +105,8 @@ public:
    * @brief Creates a new project in a directory named after the project
    * name, inside the given parent directory.
    *
-   * On a refusal (invalid name, unusable parent, or a target the project
+   * On a refusal (a project is open, another project load or creation is
+   * in progress, invalid name, unusable parent, or a target the project
    * must not write to), projectLoadingFailed is emitted synchronously.
    *
    * @return True when project creation started, false when the call was
@@ -121,14 +122,23 @@ public:
    *
    * @param filepath The project directory path.
    * @return A QFutureQmlWrapper that resolves to the loaded project path on
-   * success, or nullptr if another project load is already in progress.
+   * success, or nullptr when the call was refused: a project is open, or
+   * another project load or creation is already in progress.
    */
   Q_INVOKABLE qquick::QFutureQmlWrapper * loadProject (const QString &filepath);
 
   RecentProjectsModel * getRecentProjects () const;
 
   ProjectSession * activeSession () const;
-  void             setActiveSession (ProjectSession * project);
+
+  /**
+   * @brief Makes @p project the active session, or clears the active
+   * session when @p project is null.
+   *
+   * A non-null @p project requires that no session is active: a new
+   * session becomes active only after the previous one is cleared.
+   */
+  void setActiveSession (ProjectSession * project);
 
   /**
    * @brief Returns the application-wide object clipboard shared by all
@@ -197,6 +207,17 @@ private:
   std::unique_ptr<plugins::PluginHostWindow>
   create_window_for_plugin (plugins::Plugin &plugin) const;
 
+  /**
+   * @brief Whether a project load or creation is in progress.
+   *
+   * A request for a load or a creation is refused while one is in
+   * progress.
+   */
+  bool is_project_operation_in_progress () const
+  {
+    return !load_future_.isFinished () || !creation_future_.isFinished ();
+  }
+
 private:
   utils::AppSettings &app_settings_;
 
@@ -237,6 +258,14 @@ private:
    * A load request is refused while this future is running.
    */
   QFuture<QString> load_future_;
+
+  /**
+   * @brief Future of the project creation currently in progress, if any.
+   *
+   * A load and a creation request are refused while this future or
+   * @ref load_future_ is in progress.
+   */
+  QFuture<void> creation_future_;
 };
 
 } /// namespace zrythm::frontends::gui

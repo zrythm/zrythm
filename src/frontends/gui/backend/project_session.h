@@ -71,6 +71,9 @@ class ProjectSession : public QObject
       FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
   Q_PROPERTY (
+    bool hasUnsavedChanges READ hasUnsavedChanges NOTIFY
+      hasUnsavedChangesChanged FINAL)
+  Q_PROPERTY (
     zrythm::operations::OperationDispatcher * operationDispatcher READ
       operationDispatcher CONSTANT FINAL)
   Q_PROPERTY (
@@ -146,6 +149,15 @@ public:
   structure::project::ProjectUiState * uiState () const;
   undo::UndoStack *                    undoStack () const;
 
+  /**
+   * @brief Whether the project changed since its last successful save.
+   *
+   * A change is an edit in the undo history. The flag clears when the
+   * history is back at the state of the last save, and when a save
+   * succeeds.
+   */
+  bool hasUnsavedChanges () const { return has_unsaved_changes_; }
+
   /** The session's operation dispatcher. */
   operations::OperationDispatcher *          operationDispatcher () const;
   TimelineArrangerObjectsModel *             timelineArrangerObjects () const;
@@ -194,6 +206,9 @@ public:
   /**
    * @brief Saves the project to the current project directory.
    *
+   * On success, the undo history position at the time of the call becomes
+   * the saved state, so hasUnsavedChanges() is false until the next edit.
+   *
    * @return A QFutureQmlWrapper that resolves to the saved project path on
    * success.
    * @pre projectDirectory must be set.
@@ -204,9 +219,10 @@ public:
    * @brief Saves the project to a new directory created inside the given
    * parent directory and named after the project name.
    *
-   * Updates projectDirectory and title on success. The call is refused,
-   * resolving to an empty result, when the name is invalid, the parent
-   * is not an absolute path, the target holds unrelated files, the
+   * Updates projectDirectory and title on success, and makes the undo
+   * history position at the time of the call the saved state. The call is
+   * refused, resolving to an empty result, when the name is invalid, the
+   * parent is not an absolute path, the target holds unrelated files, the
    * target cannot be inspected, or the target holds a project and
    * @p overwrite_existing_project is false.
    *
@@ -234,6 +250,7 @@ public:
 Q_SIGNALS:
   void titleChanged (const QString &title);
   void projectDirectoryChanged (const QString &directory);
+  void hasUnsavedChangesChanged ();
 
 private:
   /**
@@ -243,6 +260,12 @@ private:
    * to handle tracks added later.
    */
   void wire_midi_input_selections_to_tracks ();
+
+  /** @brief Sets the saved state and updates hasUnsavedChanges(). */
+  void set_saved_state (std::uint64_t state_id);
+
+  /** @brief Recomputes hasUnsavedChanges() from the undo history. */
+  void update_has_unsaved_changes ();
 
   /**
    * @brief Wires the chord track's MIDI expansion to the chord pad bank.
@@ -263,6 +286,11 @@ private:
   // Project title and directory
   utils::Utf8String     title_;
   std::filesystem::path project_directory_;
+
+  // UndoStack::stateId() at the last successful save; 0 matches a history
+  // with no applied entry
+  std::uint64_t saved_state_id_{};
+  bool          has_unsaved_changes_{ false };
 
   // Core project data
   utils::QObjectUniquePtr<structure::project::Project> project_;

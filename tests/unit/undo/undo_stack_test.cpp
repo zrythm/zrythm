@@ -1431,4 +1431,98 @@ TEST_F (TransactionTest, SetIndexStopsWhenEngineRefuses)
   EXPECT_EQ (stack.index (), 0);
 }
 
+// ---------------------------------------------------------------------------
+// stateId()
+// ---------------------------------------------------------------------------
+
+TEST_F (TransactionTest, StateIdIsZeroWhenNoEntryIsApplied)
+{
+  EXPECT_EQ (undo_stack_->stateId (), 0);
+
+  undo_stack_->beginMacro (QStringLiteral ("Empty"));
+  undo_stack_->endMacro ();
+  EXPECT_EQ (undo_stack_->stateId (), 0);
+
+  bool flag = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag, QStringLiteral ("Cmd")));
+  undo_stack_->undo ();
+  EXPECT_EQ (undo_stack_->stateId (), 0);
+}
+
+TEST_F (TransactionTest, StateIdIdentifiesTheHistoryPosition)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  const auto after_first = undo_stack_->stateId ();
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+  const auto after_second = undo_stack_->stateId ();
+  EXPECT_NE (after_first, after_second);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (undo_stack_->stateId (), after_first);
+  undo_stack_->redo ();
+  EXPECT_EQ (undo_stack_->stateId (), after_second);
+
+  // a push after an undo discards the redo history: the entry at the
+  // same position is a new state with a new id
+  undo_stack_->undo ();
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 3")));
+  EXPECT_EQ (undo_stack_->index (), 2);
+  EXPECT_NE (undo_stack_->stateId (), after_second);
+}
+
+TEST_F (TransactionTest, MergedPushGivesANewStateIdAndEmitsIndexChanged)
+{
+  QSignalSpy spy (undo_stack_.get (), &UndoStack::indexChanged);
+
+  bool flag_a = false;
+  bool flag_b = false;
+  undo_stack_->push (
+    std::make_unique<MergingCommand> (flag_a, QStringLiteral ("Merge 1")));
+  const auto before_merge = undo_stack_->stateId ();
+  spy.clear ();
+
+  // the index stays the same, so the id change is the only sign of the
+  // new state: the change signal must still be emitted
+  undo_stack_->push (
+    std::make_unique<MergingCommand> (flag_b, QStringLiteral ("Merge 2")));
+
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->index (), 1);
+  EXPECT_NE (undo_stack_->stateId (), before_merge);
+  EXPECT_EQ (spy.size (), 1);
+}
+
+TEST_F (TransactionTest, CommittedGroupIsANewStateAndAbortRestoresTheOldOne)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag1, QStringLiteral ("Cmd 1")));
+  const auto before_group = undo_stack_->stateId ();
+
+  auto group = undo_stack_->begin_transaction (QStringLiteral ("Group"));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 2")));
+  // the group becomes an applied entry when it is committed
+  EXPECT_EQ (undo_stack_->stateId (), before_group);
+  ASSERT_TRUE (group->commit ());
+  EXPECT_NE (undo_stack_->stateId (), before_group);
+  undo_stack_->undo ();
+  EXPECT_EQ (undo_stack_->stateId (), before_group);
+
+  auto doomed = undo_stack_->begin_transaction (QStringLiteral ("Doomed"));
+  undo_stack_->push (
+    std::make_unique<ToggleCommand> (flag2, QStringLiteral ("Cmd 3")));
+  ASSERT_TRUE (doomed->abort ());
+
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (undo_stack_->stateId (), before_group);
+}
+
 } // namespace zrythm::undo

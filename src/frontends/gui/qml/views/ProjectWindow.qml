@@ -19,6 +19,8 @@ ApplicationWindow {
   property ViewContext activeViewContext: null
   required property AppSettings appSettings
   required property ChordPresetManager chordPresetManager
+  // Set while a requested close waits for the end of a save
+  property bool closeAfterSave: false
   required property ControlRoom controlRoom
   readonly property Action copyAction: Action {
     id: copyAction
@@ -80,10 +82,50 @@ ApplicationWindow {
   readonly property Project project: session.project
   required property ProjectSession session
 
+  signal closeApproved()
+  signal closeCancelled()
+
+  /**
+   * Closes the window. Unsaved changes ask the user first. Reports
+   * closeApproved() when the window closes and closeCancelled() when
+   * the user cancels or the save fails. A request that arrives while
+   * a close waits for its save is ignored.
+   */
+  function requestClose() {
+    // A close already waits for a save, and that save decides it
+    if (root.closeAfterSave)
+      return;
+    if (root.session.hasUnsavedChanges) {
+      unsavedChangesDialog.open();
+      return;
+    }
+    root.closeAndDestroy();
+  }
+
+  /**
+   * Saves the project and closes the window when the save succeeded.
+   * Otherwise the window stays open and closeCancelled() is reported.
+   */
+  function saveThenClose() {
+    if (!saveController.save()) {
+      root.closeCancelled();
+      return;
+    }
+    root.closeAfterSave = true;
+  }
+
+  /**
+   * Closes the window without a check for unsaved changes: schedules
+   * the destruction of the window and reports closeApproved().
+   */
   function closeAndDestroy() {
     console.log("Closing and destroying project window");
-    close();
+    root.hide();
+    // destroy() only posts the deletion, and posted steps run in
+    // order: it comes first, so that steps queued by the handlers of
+    // closeApproved() run after the window is deleted
     destroy();
+    root.closeApproved();
     root.project.engine.deactivate();
   }
 
@@ -146,9 +188,10 @@ ApplicationWindow {
       updateActiveViewContext(activeFocusItem);
   }
   onActiveFocusItemChanged: updateActiveViewContext(activeFocusItem)
-  onClosing: {
+  onClosing: close => {
     console.log("Closing project window...");
-    closeAndDestroy();
+    close.accepted = false;
+    root.requestClose();
   }
 
   // Temporary scissors: override the arranger tool with the Cut tool while
@@ -323,6 +366,57 @@ ApplicationWindow {
     buttons: MessageDialog.Ok
   }
 
+  Dialog {
+    id: unsavedChangesDialog
+
+    closePolicy: Popup.NoAutoClose
+    modal: true
+    popupType: Popup.Window
+    title: qsTr("Save Changes?")
+    width: 420
+
+    ColumnLayout {
+      anchors.fill: parent
+      spacing: ZrythmTheme.buttonPadding
+
+      Label {
+        Layout.fillWidth: true
+        color: palette.text
+        text: qsTr("The project has changes that are not saved. Save them before closing?")
+        wrapMode: Text.WordWrap
+      }
+    }
+
+    footer: DialogButtonBox {
+      defaultButton: saveButton
+
+      Button {
+        DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+        text: qsTr("Cancel")
+      }
+
+      DestructiveButton {
+        DialogButtonBox.buttonRole: DialogButtonBox.DestructiveRole
+        text: qsTr("Discard")
+      }
+
+      Button {
+        id: saveButton
+
+        highlighted: true
+        text: qsTr("Save")
+
+        onClicked: {
+          unsavedChangesDialog.close();
+          root.saveThenClose();
+        }
+      }
+    }
+
+    onDiscarded: root.closeAndDestroy()
+    onRejected: root.closeCancelled()
+  }
+
   TrackSelectionModel {
     id: trackSelectionModel
 
@@ -441,6 +535,18 @@ ApplicationWindow {
 
     notificationCenter: root.notificationCenter
     session: root.session
+
+    // Ends a close that waits for this save
+    onSaveEnded: saved => {
+      if (!root.closeAfterSave)
+        return;
+
+      root.closeAfterSave = false;
+      if (saved)
+        root.closeAndDestroy();
+      else
+        root.closeCancelled();
+    }
   }
 
   PlaybackCacheActivityAggregator {

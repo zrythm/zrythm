@@ -120,12 +120,21 @@ public:
   QString pendingProjectFile () const;
 
   /**
+   * @brief Requests that the project at @p path be opened.
+   *
+   * A project file path resolves to its directory. An empty path is
+   * ignored, and so is a request for the directory that is already
+   * pending.
+   */
+  Q_INVOKABLE void setPendingProjectFile (const QString &path);
+
+  /**
    * @brief Returns the project that a request asked to open, and forgets
    * the request.
    *
-   * A request comes from the command line or from the operating system.
-   * pendingProjectFile() gives an empty string afterwards, until another
-   * request arrives.
+   * A request comes from the command line, from the operating system,
+   * or from the user in the application. pendingProjectFile() gives an
+   * empty string afterwards, until another request arrives.
    *
    * @return The directory of the project, or an empty string when no
    * request is pending.
@@ -154,7 +163,6 @@ private:
   void setup_user_directories ();
 
   void process_command_line ();
-  void set_pending_project_file (const QString &path);
   void post_exec_initialization ();
   void setup_device_manager ();
   void setup_control_room ();
@@ -211,8 +219,9 @@ private:
   std::unique_ptr<Impl> impl_;
 
   /**
-   * Project directory pending to be opened, as passed on the command line or
-   * via a file-open request from the OS (eg, double-clicking a .zpj file).
+   * Project directory pending to be opened, as requested on the command
+   * line, by the operating system (eg, double-clicking a .zpj file), or
+   * by the user in the application.
    *
    * Empty while no request is pending.
    */

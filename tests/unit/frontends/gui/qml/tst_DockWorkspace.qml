@@ -13,6 +13,10 @@ TestCase {
 
   name: "DockWorkspace"
 
+  // The floating window of test_floatingWindowIsDestroyedWithItsMainWindow.
+  // It is kept in a property because a property is null once the window
+  // is destroyed; a local variable keeps the last value.
+  property DockWindow floatingWindow: null
   property ApplicationWindow window: null
 
   Component {
@@ -241,5 +245,29 @@ TestCase {
     tryCompare(controller, "floatingWindowCount", 1);
     tryVerify(() => window.alphaPanel.panelHost !== null);
     compare(controller.panelById("alpha"), originalPanel);
+  }
+
+  function test_floatingWindowIsDestroyedWithItsMainWindow() {
+    const controller = window.workspace.dockingController;
+    verify(controller.detachPanel("alpha"));
+    tryVerify(() => window.detachedWindow !== null);
+    test.floatingWindow = window.detachedWindow;
+    verify(test.floatingWindow !== null);
+
+    // The destruction is scheduled first and the check is queued after
+    // it. Posted steps run in order, so the check runs after the deletion.
+    let floatingWindowOutlivedMainWindow = true;
+    let checked = false;
+    Qt.callLater(function () {
+      window.destroy();
+      Qt.callLater(function () {
+        floatingWindowOutlivedMainWindow = test.floatingWindow !== null;
+        checked = true;
+      });
+    });
+
+    tryVerify(() => checked);
+    verify(window === null, "the check ran before the main window was deleted");
+    verify(!floatingWindowOutlivedMainWindow, "the floating window outlived its main window");
   }
 }
