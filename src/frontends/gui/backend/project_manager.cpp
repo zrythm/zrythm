@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <tuple>
+
 #include "utils/format_qt.h"
 #include <fmt/std.h>
 
@@ -241,7 +243,7 @@ throw_if_no_audio_device ()
       try
         {
           // Throws when no device is open
-          zapp->hw_audio_interface ().get_device_info ();
+          std::ignore = zapp->hw_audio_interface ().get_device_info ();
           return;
         }
       catch (const ZrythmException &)
