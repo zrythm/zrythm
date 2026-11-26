@@ -11,14 +11,18 @@
 # Prerequisites:
 #   - CHANGELOG.md must have a ## [v?<version>] section
 #   - Working tree must be clean
+#   - Submodules checked out: git submodule update --init --recursive
+#   - Python 3, as python3 on PATH
 #   - GPG key available for tag signing
 #
 # This script:
-#   1. Validates the version format and changelog entry
+#   1. Validates the version format, changelog entry and submodule
+#      availability for the source tarball
 #   2. Updates VERSION.txt
 #   3. Commits the version bump, with any extra trailers given
 #   4. Creates a GPG-signed annotated tag with changelog excerpt
-#   5. Generates source tarball with GPG signature and SHA-256 checksum
+#   5. Generates source tarball (with submodule contents), GPG signature
+#      and SHA-256 checksum
 #
 # The commit, tag, and tarballs are created locally. Push manually when ready.
 # CI handles binary builds and installer deployment on tag push.
@@ -108,6 +112,17 @@ if git tag -l "${TAG}" | grep -q .; then
     error "Tag ${TAG} already exists."
 fi
 
+# ── Check the source tarball can be generated ────────────────────────────────
+# The tarball includes every submodule at the commit the released tree
+# records, so each of those commits must exist locally.
+
+ARCHIVE_SCRIPT="${SCRIPT_DIR}/git_archive_with_submodules.py"
+RELEASE_TREE="$(git write-tree)"
+info "Checking that the source tarball can be generated"
+if ! python3 "${ARCHIVE_SCRIPT}" --prefix="check/" "${RELEASE_TREE}" > /dev/null; then
+    error "Cannot generate the source tarball. Nothing was changed."
+fi
+
 # ── Update VERSION.txt ───────────────────────────────────────────────────────
 
 if [ "${DRY_RUN}" -eq 1 ]; then
@@ -171,7 +186,7 @@ if [ "${DRY_RUN}" -eq 1 ]; then
     info "[dry-run] Would generate ${TARBALL}, ${TARBALL_ASC}, ${TARBALL_SHA256SUM}"
 else
     info "Generating source tarball ${TARBALL}"
-    git archive --prefix="${TARBALL_NAME}/" --format=tar "${TAG}" | xz -9 > "${TARBALL}"
+    python3 "${ARCHIVE_SCRIPT}" --prefix="${TARBALL_NAME}/" "${TAG}" | xz -9 > "${TARBALL}"
 
     info "Creating GPG detached signature ${TARBALL_ASC}"
     gpg --armor --detach-sign --output "${TARBALL_ASC}" "${TARBALL}"

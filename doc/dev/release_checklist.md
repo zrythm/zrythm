@@ -39,11 +39,12 @@ bash scripts/release.sh --trailer "Assisted-by: <model>" 2.0.0-alpha.1
 
 The script will:
 - Validate the version format and changelog entry
+- Check that every submodule holds the commit the release records
 - Update `VERSION.txt`
 - Commit `VERSION.txt` and `CHANGELOG.md` with message
   `Release v2.0.0-alpha.1`, adding any `--trailer` values
 - Create a GPG-signed annotated tag with the changelog as the tag message
-- Generate source tarball: `zrythm-2.0.0-alpha.1.tar.xz`
+- Generate source tarball with submodule contents: `zrythm-2.0.0-alpha.1.tar.xz`
 - GPG-sign the tarball: `zrythm-2.0.0-alpha.1.tar.xz.asc`
 - Create SHA-256 checksum: `zrythm-2.0.0-alpha.1.tar.xz.sha256sum`
 
