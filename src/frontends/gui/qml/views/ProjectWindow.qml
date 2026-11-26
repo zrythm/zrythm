@@ -141,7 +141,7 @@ ApplicationWindow {
   }
 
   height: 720
-  title: session.title
+  title: session.title + (session.hasUnsavedChanges ? " *" : "")
   visible: true
   width: 1280
 
@@ -369,7 +369,7 @@ ApplicationWindow {
   Dialog {
     id: unsavedChangesDialog
 
-    closePolicy: Popup.NoAutoClose
+    closePolicy: Popup.CloseOnEscape
     modal: true
     popupType: Popup.Window
     title: qsTr("Save Changes?")
