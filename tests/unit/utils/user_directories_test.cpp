@@ -378,8 +378,8 @@ TEST_F (UserDirectoriesTest, DefaultLocationsComeFromTheOperatingSystem)
 
 TEST_F (UserDirectoriesTest, LocationWithoutANamedApplicationThrows)
 {
-  test_helpers::ScopedQCoreApplication app;
-  const UserDirectories                directories;
+  // No application object: Qt gives one the name of its executable
+  const UserDirectories directories;
 
   EXPECT_THROW (directories.check_locations (), ZrythmException);
   EXPECT_THROW (std::ignore = directories.data_dir (), ZrythmException);
