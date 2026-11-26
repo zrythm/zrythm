@@ -169,7 +169,7 @@ detail::SpdlogApi::init (bool for_testing, const std::filesystem::path &log_dir)
     return;
 
   std::call_once (init_flag_, [this, for_testing, &log_dir] {
-    auto * impl = new Logger ();
+    auto impl = std::make_unique<Logger> ();
     impl->for_testing = for_testing;
     impl->log_file_path = make_log_file_path (log_dir);
 
@@ -214,7 +214,7 @@ detail::SpdlogApi::init (bool for_testing, const std::filesystem::path &log_dir)
         abort ();
     });
 
-    logger_.store (impl, std::memory_order_release);
+    logger_.store (impl.release (), std::memory_order_release);
   });
 
   // Started after logger_ is set so early realtime messages are forwarded

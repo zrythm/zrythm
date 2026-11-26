@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <fstream>
+
+#include "utils/exceptions.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 #include "utils/utf8_string.h"
 
@@ -24,6 +28,25 @@ TEST (LoggerTest, UninitializedGettersReturnDefaults)
 {
   EXPECT_TRUE (get_last_log_entries (10).empty ());
   EXPECT_TRUE (get_log_file_path ().empty ());
+}
+
+TEST (LoggerTest, UnusableLogDirectoryThrowsAndLeavesLoggingOff)
+{
+  const auto tmp_dir = io::make_tmp_dir ();
+  const auto blocker =
+    Utf8String::from_qstring (tmp_dir->path ()).to_path () / "blocker";
+  {
+    std::ofstream blocker_file (blocker);
+    blocker_file << "not a directory";
+  }
+
+  EXPECT_THROW (
+    detail::log_api<>.init (false, blocker / "logs"), ZrythmException);
+  EXPECT_FALSE (is_logging_initialized ());
+
+  // A failed call does not consume the one-time initialization
+  init_test_logging ();
+  EXPECT_TRUE (is_logging_initialized ());
 }
 
 TEST (LoggerTest, LogLevelEnumValues)
