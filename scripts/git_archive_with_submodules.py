@@ -6,12 +6,14 @@
 
 git archive leaves submodule directories empty. This script appends the
 archive of each submodule, below the submodule's path, at the commit the
-given tree records. Nested submodules are handled the same way. The
+given tree records. Nested submodules are handled the same way. Paths with
+the export-ignore attribute are left out, as in every git archive. The
 uncompressed tar goes to stdout.
 
 Usage: git_archive_with_submodules.py [--prefix PREFIX/] <tree-ish>
 
-Every submodule must be checked out and have its recorded commit available.
+Every submodule that goes into the archive must be checked out and have its
+recorded commit available. Git 2.40 or newer is required.
 """
 
 from __future__ import annotations
@@ -45,7 +47,8 @@ def write_archive(repo: Path, tree_ish: str, prefix: str, output: BinaryIO) -> N
     """Writes the uncompressed tar of tree_ish, with its submodules, to output.
 
     The output is the git archive of tree_ish with the archive of each
-    submodule placed after it, below the submodule's path.
+    submodule placed after it, below the submodule's path. Submodules under
+    a path with the export-ignore attribute are left out as well.
 
     Args:
         repo: Root of the git checkout holding tree_ish.
@@ -183,7 +186,10 @@ def _content_size(header: bytes) -> int:
 
 
 def _submodules(repo: Path, tree_ish: str) -> list[tuple[str, str]]:
-    """Returns the path and commit of every submodule recorded in tree_ish."""
+    """Returns the path and commit of every submodule the archive holds.
+
+    A submodule under a path with the export-ignore attribute is left out.
+    """
     submodules = []
     for record in _git(repo, "ls-tree", "-r", "-z", tree_ish).split(b"\0"):
         if not record:
@@ -192,13 +198,51 @@ def _submodules(repo: Path, tree_ish: str) -> list[tuple[str, str]]:
         mode, _, commit = metadata.split(b" ")
         if mode == SUBMODULE_MODE:
             submodules.append((os.fsdecode(path), commit.decode("ascii")))
-    return submodules
+    ignored = _export_ignored(repo, tree_ish, [path for path, _ in submodules])
+    return [(path, commit) for path, commit in submodules if path not in ignored]
 
 
-def _git(repo: Path, *args: str) -> bytes:
-    """Runs git in repo and returns its stdout."""
+def _export_ignored(repo: Path, tree_ish: str, paths: list[str]) -> set[str]:
+    """Returns the paths that git archive leaves out of tree_ish.
+
+    A path is left out when it or a directory above it has the export-ignore
+    attribute.
+    """
+    if not paths:
+        return set()
+    queried = set()
+    for path in paths:
+        queried.update(_path_and_directories_above(path))
+    listing = _git(
+        repo,
+        "check-attr",
+        "--source",
+        tree_ish,
+        "-z",
+        "--stdin",
+        "export-ignore",
+        input=b"\0".join(os.fsencode(path) for path in sorted(queried)) + b"\0",
+    )
+    # -z prints path, attribute and value as NUL-separated triples
+    fields = listing.split(b"\0")
+    marked = {
+        os.fsdecode(path)
+        for path, value in zip(fields[0::3], fields[2::3])
+        if value == b"set"
+    }
+    return {path for path in paths if _path_and_directories_above(path) & marked}
+
+
+def _path_and_directories_above(path: str) -> set[str]:
+    """Returns path together with every directory above it."""
+    parts = path.split("/")
+    return {"/".join(parts[:end]) for end in range(1, len(parts) + 1)}
+
+
+def _git(repo: Path, *args: str, input: bytes = b"") -> bytes:
+    """Runs git in repo with input on its stdin and returns its stdout."""
     result = subprocess.run(
-        ["git", *args], cwd=repo, capture_output=True, check=False
+        ["git", *args], cwd=repo, input=input, capture_output=True, check=False
     )
     if result.returncode != 0:
         detail = result.stderr.decode(errors="replace").strip()

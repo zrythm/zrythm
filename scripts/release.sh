@@ -13,6 +13,7 @@
 #   - Working tree must be clean
 #   - Submodules checked out: git submodule update --init --recursive
 #   - Python 3, as python3 on PATH
+#   - Git 2.40 or newer
 #   - GPG key available for tag signing
 #
 # This script:

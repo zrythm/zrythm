@@ -16,3 +16,8 @@ src/plugins/lv2/suil/*.mm linguist-vendored
 
 inc/**/*.h linguist-language=C
 tests/**/*.h linguist-language=C
+
+# left out of source archives: the user manual sources and the API
+# documentation theme
+/doc/user export-ignore
+/doc/dev/doxygen-awesome-css export-ignore

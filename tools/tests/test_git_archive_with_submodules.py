@@ -21,6 +21,8 @@ SYMLINK = "120000"
 SUBMODULE = "160000"
 # Long enough that git archive needs an extra header record for the name.
 LONG_NAME = "f" * 120 + ".txt"
+# A well-formed commit id that exists in no repository.
+ABSENT_COMMIT = "0123456789012345678901234567890123456789"
 
 SCRIPT = ROOT / "scripts" / "git_archive_with_submodules.py"
 
@@ -219,18 +221,60 @@ def test_empty_submodule_is_an_empty_directory(tmp_path):
     assert {name: member for name, member, _ in members}["zrythm-test/ext/sub"].isdir()
 
 
+def test_leaves_out_submodule_with_export_ignore(tmp_path):
+    top = make_repo(tmp_path / "super")
+    top_commit = commit(
+        top,
+        {
+            ".gitattributes": (FILE, b"ext/sub export-ignore\n"),
+            "main.txt": (FILE, b"main\n"),
+        },
+        gitlinks={"ext/sub": ABSENT_COMMIT},
+    )
+
+    members = read_archive(top, top_commit, "zrythm-test/")
+
+    assert names(members) == [
+        "zrythm-test",
+        "zrythm-test/.gitattributes",
+        "zrythm-test/ext",
+        "zrythm-test/main.txt",
+    ]
+
+
+def test_leaves_out_submodule_below_directory_with_export_ignore(tmp_path):
+    kept = make_repo(tmp_path / "super/ext/kept/sub")
+    kept_commit = commit(kept, {"file.txt": (FILE, b"kept\n")})
+    top = make_repo(tmp_path / "super")
+    top_commit = commit(
+        top,
+        {".gitattributes": (FILE, b"ext/ignored export-ignore\n")},
+        gitlinks={"ext/ignored/sub": ABSENT_COMMIT, "ext/kept/sub": kept_commit},
+    )
+
+    members = read_archive(top, top_commit, "zrythm-test/")
+
+    assert names(members) == [
+        "zrythm-test",
+        "zrythm-test/.gitattributes",
+        "zrythm-test/ext",
+        "zrythm-test/ext/kept",
+        "zrythm-test/ext/kept/sub",
+        "zrythm-test/ext/kept/sub/file.txt",
+    ]
+
+
 def test_fails_when_submodule_commit_is_missing(tmp_path):
     sub = make_repo(tmp_path / "super/ext/sub")
     commit(sub, {"sub.txt": (FILE, b"sub\n")})
-    missing_commit = "0123456789012345678901234567890123456789"
     top = make_repo(tmp_path / "super")
-    top_commit = commit(top, gitlinks={"ext/sub": missing_commit})
+    top_commit = commit(top, gitlinks={"ext/sub": ABSENT_COMMIT})
 
     with pytest.raises(ArchiveError) as excinfo:
         read_archive(top, top_commit)
 
     assert "submodule ext/sub" in str(excinfo.value)
-    assert missing_commit in str(excinfo.value)
+    assert ABSENT_COMMIT in str(excinfo.value)
 
 
 def test_fails_when_submodule_is_not_checked_out(tmp_path):
