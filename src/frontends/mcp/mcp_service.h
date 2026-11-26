@@ -18,7 +18,7 @@ namespace zrythm::operations
 {
 class OperationDispatcher;
 class OperationRegistry;
-class OperationReport;
+struct OperationReport;
 } // namespace zrythm::operations
 
 namespace zrythm::undo
