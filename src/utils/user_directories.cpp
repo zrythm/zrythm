@@ -3,6 +3,8 @@
 
 #include <tuple>
 
+#include <fmt/std.h>
+
 #include "utils/exceptions.h"
 #include "utils/user_directories.h"
 
