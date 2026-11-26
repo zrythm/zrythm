@@ -295,6 +295,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 - **Take the settings store, the data directory and the cache directory from `utils::UserDirectories`** (`src/utils/user_directories.h`). Never call `QStandardPaths::writableLocation()` or construct a `QSettings` anywhere else in `src/`. A unit test fails when either appears outside `src/utils/user_directories.cpp`
 - **Prefer cross-platform APIs over per-platform code:** before writing `#ifdef` platform branches, look for a cross-platform API in our dependencies (JUCE, Qt and the C++ standard library cover most needs); use per-platform code only as a last resort
 - **Prefer the cleanest correct approach over quick fixes.** Long-term good design and maintainability always outweigh temporary refactoring costs — take the time to refactor properly rather than layering workarounds on top of a flawed design.
+- Follow the SOLID principles
 
 ### C++23
 
@@ -486,4 +487,4 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 ---
 
-*This document is maintained by the Zrythm development team. Last updated: 2026-11-24*
+*This document is maintained by the Zrythm development team. Last updated: 2026-11-26*
