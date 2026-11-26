@@ -31,6 +31,7 @@ ctest --test-dir conanbuild/Debug --output-on-failure -j$(nproc)
 ctest --test-dir conanbuild/Debug -R "ProjectSerializationTest" --output-on-failure
 ctest --test-dir conanbuild/Debug -R "ProjectLoaderTest" --output-on-failure
 ctest --test-dir conanbuild/Debug -R "TransportControllerTest" --output-on-failure
+ctest --test-dir conanbuild/Debug -R "zrythm_e2e_tests" --output-on-failure
 
 # List all available tests to see test names
 ctest --test-dir conanbuild/Debug -N
@@ -77,6 +78,7 @@ Test binary targets follow a strict naming convention. **Do not guess target nam
 - **Unit tests**: `zrythm_<path_with_underscores>_unit_tests` — where `<path_with_underscores>` is the directory path under `tests/unit/` with `/` replaced by `_` (e.g., `tests/unit/structure/tracks/` → `zrythm_structure_tracks_unit_tests`)
 - **Benchmarks**: `zrythm_<path_with_underscores>_benchmarks` (same pattern, under `tests/benchmarks/`)
 - **Integration tests**: `zrythm_integration_tests`
+- **End-to-end tests**: `zrythm_e2e_tests` (start the application as a subprocess)
 
 When unsure, list all targets with: `ctest --test-dir conanbuild/Debug -N`
 
@@ -146,7 +148,7 @@ zrythm/
 │   ├── structure/      # Project building blocks (tracks, objects, etc.)
 │   └── utils/          # Utility functions
 ├── ext/                # Vendored dependencies
-├── tests/              # Tests (only unit/, integration/ and benchmarks/ are active; other directories are legacy unused code kept for reference)
+├── tests/              # Tests (only unit/, integration/, e2e/ and benchmarks/ are active; other directories are legacy unused code kept for reference)
 │   └── unit/           # Unit tests location
 ├── data/               # Application data (themes, samples, etc.)
 └── i18n/               # Internationalization files

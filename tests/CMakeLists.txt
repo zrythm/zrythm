@@ -6,7 +6,12 @@ if(NOT ZRYTHM_TESTS)
 endif()
 
 include(GoogleTest)
+# Registers the tests of TARGET_NAME with CTest. The other arguments are
+# those of gtest_discover_tests() that gtest_add_tests() also knows on
+# Windows: TEST_PREFIX, TEST_SUFFIX, WORKING_DIRECTORY, EXTRA_ARGS and
+# PROPERTIES.
 function(zrythm_discover_tests TARGET_NAME)
+  cmake_parse_arguments(PARSE_ARGV 1 arg "" "" "PROPERTIES")
   # Disable per-target QT_TESTCASE_SOURCEDIR/BUILDDIR so that test targets with
   # identical precompiled header content can reuse each other's PCH via
   # REUSE_FROM (the compiler rejects PCH reuse when macros differ).
@@ -27,7 +32,13 @@ function(zrythm_discover_tests TARGET_NAME)
   endif()
 
   if(WIN32)
-    gtest_add_tests(TARGET ${TARGET_NAME})
+    # gtest_add_tests() takes no PROPERTIES: the properties are set on
+    # the test names it returns
+    gtest_add_tests(TARGET ${TARGET_NAME} ${arg_UNPARSED_ARGUMENTS}
+      TEST_LIST test_names)
+    if(arg_PROPERTIES)
+      set_tests_properties(${test_names} PROPERTIES ${arg_PROPERTIES})
+    endif()
   else()
     gtest_discover_tests(${TARGET_NAME}
       # Default of 5s is too short on mac; the QML test binary pulls in the
@@ -35,6 +46,7 @@ function(zrythm_discover_tests TARGET_NAME)
       # validation) can exceed 10s on a loaded macOS runner.
       DISCOVERY_TIMEOUT 60
       XML_OUTPUT_DIR "${CMAKE_BINARY_DIR}/test_results"
+      ${ARGN}
     )
   endif()
 endfunction()
@@ -170,3 +182,7 @@ target_compile_definitions(zrythm_test_helpers_lib
 add_dependencies(zrythm_test_helpers_lib zrythm_test_plugins)
 
 add_subdirectory(integration)
+
+if(ZRYTHM_E2E_TESTS)
+  add_subdirectory(e2e)
+endif()
