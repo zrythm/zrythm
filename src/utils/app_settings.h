@@ -192,6 +192,9 @@ public:
    *
    * Settings without a preferences row (e.g. recent projects) and any other
    * application state are preserved.
+   *
+   * The MCP server settings are reset in the order enabled, port and
+   * tokens, which turns the server off before its tokens are deleted.
    */
   Q_INVOKABLE void reset_preference_settings ();
 

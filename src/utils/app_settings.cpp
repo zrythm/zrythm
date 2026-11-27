@@ -41,5 +41,10 @@ AppSettings::reset_preference_settings ()
   reset_vst3SearchPaths ();
   reset_clapSearchPaths ();
   reset_auSearchPaths ();
+  // The MCP server is turned off before its tokens are deleted, so the
+  // endpoint never runs enabled without a token.
+  reset_mcpEnabled ();
+  reset_mcpPort ();
+  reset_mcpTokens ();
 }
 }

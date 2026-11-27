@@ -305,6 +305,10 @@ TEST_F (AppSettingsTest, ResetPreferenceSettingsRestoresOnlyPreferenceRows)
   settings.set_clapSearchPaths ({ u"/tmp/clap"_s });
   settings.set_auSearchPaths ({ u"/tmp/au"_s });
   settings.set_recentProjects ({ u"/tmp/recent.zpj"_s });
+  settings.set_mcpEnabled (true);
+  settings.set_mcpPort (9000);
+  settings.set_mcpTokens (
+    { QStringLiteral ("studio|full|%1").arg (QString (64, u'a')) });
 
   settings.reset_preference_settings ();
 
@@ -327,6 +331,11 @@ TEST_F (AppSettingsTest, ResetPreferenceSettingsRestoresOnlyPreferenceRows)
   EXPECT_TRUE (settings.clapSearchPaths ().isEmpty ());
   EXPECT_TRUE (settings.auSearchPaths ().isEmpty ());
   EXPECT_EQ (settings.recentProjects (), QStringList ({ u"/tmp/recent.zpj"_s }));
+  // The MCP server has rows in the dialog: the reset turns it off,
+  // restores its port and deletes its tokens.
+  EXPECT_FALSE (settings.mcpEnabled ());
+  EXPECT_EQ (settings.mcpPort (), settings.mcpPortDefaultValue ());
+  EXPECT_TRUE (settings.mcpTokens ().isEmpty ());
   EXPECT_EQ (
     backend_ptr->value (QAnyStringView ("recentProjects"), {}),
     QVariant (QStringList ({ u"/tmp/recent.zpj"_s })));
