@@ -48,6 +48,36 @@ TestCase {
     compare(entries[0].title, "LV2 Paths");
   }
 
+  function test_search_finds_the_mcp_rows() {
+    const dialog = makeDialog();
+    const entries = dialog.collectSearchEntries("mcp");
+    compare(entries.length, 3);
+    for (const entry of entries)
+      compare(entry.categoryTitle, "Integrations");
+  }
+
+  function test_search_result_opens_the_integrations_page() {
+    const dialog = makeDialog();
+    dialog.open();
+    tryVerify(() => dialog.visible);
+    const field = findChild(dialog, "preferencesSearchField");
+    const categoryList = findChild(dialog, "preferencesCategoryList");
+    const pageStack = findChild(dialog, "preferencesPageStack");
+    verify(field);
+    verify(categoryList);
+    verify(pageStack);
+
+    field.text = "enable mcp";
+    tryVerify(() => dialog.visibleSearchEntries.length === 1);
+    dialog.selectSearchResult();
+    compare(field.text, "");
+    compare(categoryList.currentIndex, 4);
+    const page = findChild(pageStack, "integrationsPage");
+    verify(page);
+    // The stack shows the new page when it polishes.
+    tryVerify(() => page.visible);
+  }
+
   function test_visible_results_follow_the_search_field() {
     const dialog = makeDialog();
     const field = findChild(dialog, "preferencesSearchField");

@@ -21,7 +21,8 @@ Dialog {
     { iconFile: "sound-wave-symbolic.svg", title: qsTr("Playback & Mixing") },
     { iconFile: "pencil-symbolic.svg", title: qsTr("Editing") },
     { iconFile: "puzzle-piece-symbolic.svg", title: qsTr("Plugins") },
-    { iconFile: "terminal-symbolic.svg", title: qsTr("Advanced") }
+    { iconFile: "terminal-symbolic.svg", title: qsTr("Integrations") },
+    { iconFile: "wrench-wide-symbolic.svg", title: qsTr("Advanced") }
   ]
 
   readonly property var visibleSearchEntries: {
@@ -85,6 +86,7 @@ Dialog {
           clip: true
           keyNavigationWraps: true
           model: root.categories
+          objectName: "preferencesCategoryList"
           spacing: ZrythmTheme.buttonPadding
 
           delegate: ItemDelegate {
@@ -129,6 +131,7 @@ Dialog {
         Layout.fillHeight: true
         Layout.fillWidth: true
         currentIndex: categoryList.currentIndex
+        objectName: "preferencesPageStack"
         visible: searchField.text.trim().length === 0
 
         PreferencesAppearancePage {
@@ -153,6 +156,13 @@ Dialog {
           Layout.fillHeight: true
           Layout.fillWidth: true
           appSettings: root.appSettings
+        }
+
+        PreferencesIntegrationsPage {
+          Layout.fillHeight: true
+          Layout.fillWidth: true
+          appSettings: root.appSettings
+          objectName: "integrationsPage"
         }
 
         PreferencesAdvancedPage {
@@ -186,7 +196,9 @@ Dialog {
     for (let index = 0; index < item.children.length; ++index) {
       const child = item.children[index];
       if (child instanceof ActionRow) {
-        rows.push(child);
+        // A row that is not a setting (e.g. one entry of a list) is skipped.
+        if (child.searchable !== false)
+          rows.push(child);
         continue;
       }
       collectActionRows(child, rows);

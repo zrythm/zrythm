@@ -5,6 +5,8 @@
 
 #include "utils/app_settings.h"
 
+#include <QClipboard>
+#include <QGuiApplication>
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QtQuickTest>
@@ -13,9 +15,28 @@
 
 namespace
 {
+// Exposed to the tests as the context property "testUtils".
 class QmlTestSetup final : public QObject
 {
   Q_OBJECT
+
+public:
+  Q_INVOKABLE static QString clipboardText ()
+  {
+    return QGuiApplication::clipboard ()->text ();
+  }
+
+  Q_INVOKABLE static void
+  setEnvironmentVariable (const QString &name, const QString &value)
+  {
+    const auto name_bytes = name.toUtf8 ();
+    qputenv (name_bytes.constData (), value.toUtf8 ());
+  }
+
+  Q_INVOKABLE static void unsetEnvironmentVariable (const QString &name)
+  {
+    qunsetenv (name.toUtf8 ().constData ());
+  }
 
 private Q_SLOTS:
   void qmlEngineAvailable (QQmlEngine * engine)
@@ -25,6 +46,7 @@ private Q_SLOTS:
       zrythm::utils::UserDirectories{}, this);
     engine->rootContext ()->setContextProperty (
       "testAppSettings", settings_.get ());
+    engine->rootContext ()->setContextProperty ("testUtils", this);
   }
 
 private:

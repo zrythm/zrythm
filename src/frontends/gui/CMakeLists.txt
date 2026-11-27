@@ -294,6 +294,7 @@ set(rel_qml_file_paths
   components/preferences/PreferencesAdvancedPage.qml
   components/preferences/PreferencesAppearancePage.qml
   components/preferences/PreferencesEditingPage.qml
+  components/preferences/PreferencesIntegrationsPage.qml
   components/preferences/PreferencesPathListEditorDialog.qml
   components/preferences/PreferencesPlaybackMixingPage.qml
   components/preferences/PreferencesPluginsPage.qml

@@ -23,6 +23,8 @@ ItemDelegate {
   // Row hover/keyboard-focus state that reveals the list-mode action
   // buttons. Checked actions bypass this and stay visible at rest.
   readonly property bool rowActionsHot: root.interactive && (root.hovered || root.visualFocus || overflowMenu.opened)
+  // Whether the preferences dialog search lists this row
+  property bool searchable: true
   property string subtitle: ""
   // Shown as the subtitle when `subtitle` is empty (e.g. plugin format).
   property string subtitleFallback: ""
