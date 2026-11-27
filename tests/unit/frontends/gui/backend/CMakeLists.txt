@@ -9,7 +9,7 @@ add_executable(zrythm_frontends_gui_backend_unit_tests
   mcp_settings_controller_test.cpp
   modular_project_model_test.cpp
   notification_center_test.cpp
-  project_session_operations_test.cpp
+  project_session_test.cpp
   timeline_arranger_objects_model_test.cpp
   xdg_desktop_portal_test.cpp
 )
