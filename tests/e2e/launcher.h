@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <functional>
 #include <ranges>
 #include <stdexcept>
 #include <string>
@@ -209,13 +210,24 @@ public:
   [[nodiscard]] QString working_dir () const;
 
   /**
+   * @brief Predicate for the entries tree_entries() leaves out.
+   *
+   * Returns true to leave the entry out. The argument is the path of
+   * the entry relative to the listed directory.
+   */
+  using TreeEntryFilter = std::function<bool (const QString &relative_path)>;
+
+  /**
    * @brief Returns one line per entry below @p directory.
    *
    * A line holds the relative path, the size and the modification time
    * in milliseconds of one entry. Hidden entries are included and the
    * lines are sorted.
+   *
+   * @param ignore Entries for which it returns true are left out.
    */
-  [[nodiscard]] static QStringList tree_entries (const QString &directory);
+  [[nodiscard]] static QStringList
+  tree_entries (const QString &directory, const TreeEntryFilter &ignore = {});
 
 private:
   /** Returns the environment of the runs. */
@@ -358,7 +370,9 @@ ZrythmLauncher::working_dir () const
 }
 
 inline QStringList
-ZrythmLauncher::tree_entries (const QString &directory)
+ZrythmLauncher::tree_entries (
+  const QString         &directory,
+  const TreeEntryFilter &ignore)
 {
   QStringList  entries;
   QDirIterator it (
@@ -369,11 +383,14 @@ ZrythmLauncher::tree_entries (const QString &directory)
     {
       it.next ();
       const auto info = it.fileInfo ();
+      const auto relative_path =
+        base.relativeFilePath (info.absoluteFilePath ());
+      if (ignore && ignore (relative_path))
+        continue;
       entries
         << QStringLiteral ("%1, %2, %3")
              .arg (
-               base.relativeFilePath (info.absoluteFilePath ()),
-               QString::number (info.size ()),
+               relative_path, QString::number (info.size ()),
                QString::number (info.lastModified ().toMSecsSinceEpoch ()));
     }
   entries.sort ();

@@ -10,6 +10,23 @@
 namespace zrythm::e2e
 {
 
+namespace
+{
+
+// fontconfig, loaded by the Qt platform plugin, builds its cache below
+// XDG_CACHE_HOME when the system cache is incomplete. Those entries
+// belong to the environment. The .cache entry itself is left out
+// because creating a directory in it changes its modification time.
+bool
+is_system_cache_entry (const QString &relative_path)
+{
+  return relative_path == QStringLiteral (".cache")
+         || relative_path == QStringLiteral (".cache/fontconfig")
+         || relative_path.startsWith (QStringLiteral (".cache/fontconfig/"));
+}
+
+} // namespace
+
 class UserDataDirTest : public ::testing::Test
 {
 protected:
@@ -22,7 +39,8 @@ TEST_F (UserDataDirTest, StartupWritesOnlyInsideTheDirectory)
 {
   const auto working_dir_before =
     ZrythmLauncher::tree_entries (launcher_.working_dir ());
-  const auto home_before = ZrythmLauncher::tree_entries (launcher_.home_dir ());
+  const auto home_before =
+    ZrythmLauncher::tree_entries (launcher_.home_dir (), is_system_cache_entry);
 
   const auto result = launcher_.run (
     { QStringLiteral ("--dummy"), QStringLiteral ("--quit-after-startup") },
@@ -39,7 +57,12 @@ TEST_F (UserDataDirTest, StartupWritesOnlyInsideTheDirectory)
   // Qt takes the locations of the user profile from the operating
   // system on Windows, so the home directory of the runs is not private
   // there
-  EXPECT_EQ (ZrythmLauncher::tree_entries (launcher_.home_dir ()), home_before);
+  const auto home_after =
+    ZrythmLauncher::tree_entries (launcher_.home_dir (), is_system_cache_entry);
+  EXPECT_EQ (home_after, home_before)
+    << "before:\n"
+    << to_utf8 (home_before.join (QStringLiteral ("\n"))) << "\nafter:\n"
+    << to_utf8 (home_after.join (QStringLiteral ("\n")));
 #endif
 }
 
