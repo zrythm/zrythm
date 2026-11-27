@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <ranges>
-#include <span>
 
 #include "frontends/mcp/mcp_json.h"
 #include "frontends/mcp/mcp_service.h"
@@ -20,6 +20,7 @@
 #include <QJsonObject>
 #include <QMetaObject>
 #include <QProcessEnvironment>
+#include <QRandomGenerator>
 #include <QSet>
 #include <QThread>
 #include <QtMcpCommon/QMcpCallToolResult>
@@ -64,6 +65,87 @@ journal_kind_name (undo::JournalEntryKind kind)
       return QStringLiteral ("abort");
     }
   return QStringLiteral ("push");
+}
+
+/** The length of a token secret in bytes. */
+constexpr std::size_t secret_byte_count = 32;
+
+/** Whether @p text is a lowercase hex SHA-256 digest. */
+bool
+is_sha256_hex (const QString &text)
+{
+  return text.size () == 64 && std::ranges::all_of (text, [] (QChar c) {
+           return (c >= u'0' && c <= u'9') || (c >= u'a' && c <= u'f');
+         });
+}
+
+/** A new token secret: random bytes from the operating system, as lowercase
+ * hex. */
+QString
+generate_secret ()
+{
+  std::array<quint32, secret_byte_count / sizeof (quint32)> words{};
+  QRandomGenerator::system ()->fillRange (
+    words.data (), static_cast<qsizetype> (words.size ()));
+  const auto bytes = QByteArray (
+    reinterpret_cast<const char *> (words.data ()),
+    static_cast<qsizetype> (sizeof (words)));
+  return QString::fromLatin1 (bytes.toHex ());
+}
+
+/** What the process environment asks of the endpoint. */
+struct EnvironmentRequest
+{
+  McpEnvironmentOverride state = McpEnvironmentOverride::None;
+
+  /** The configuration to apply when the state is Active. */
+  McpServiceConfig config;
+
+  /** Whether ZRYTHM_MCP_PORT is the part that is not valid. */
+  bool bad_port = false;
+};
+
+/** Reads the endpoint request of the process environment. Logs nothing. */
+EnvironmentRequest
+read_environment_request ()
+{
+  const auto environment = QProcessEnvironment::systemEnvironment ();
+  const auto token_spec =
+    environment.value (QStringLiteral ("ZRYTHM_MCP_TOKEN"));
+  if (token_spec.isEmpty ())
+    {
+      return {};
+    }
+  const auto parts = token_spec.split (u':');
+  const auto grant =
+    parts.size () == 3 ? grant_from_identity (parts.at (1)) : std::nullopt;
+  if (
+    parts.size () != 3 || parts.at (0).isEmpty () || parts.at (2).isEmpty ()
+    || !grant.has_value ())
+    {
+      EnvironmentRequest request;
+      request.state = McpEnvironmentOverride::Malformed;
+      return request;
+    }
+  EnvironmentRequest request;
+  request.state = McpEnvironmentOverride::Active;
+  request.config.enabled = true;
+  request.config.tokens.append (
+    McpToken::from_secret (parts.at (0), *grant, parts.at (2)));
+  const auto port = environment.value (QStringLiteral ("ZRYTHM_MCP_PORT"));
+  if (!port.isEmpty ())
+    {
+      bool       ok = false;
+      const auto value = port.toInt (&ok);
+      if (!ok || !is_valid_mcp_port (value))
+        {
+          request.state = McpEnvironmentOverride::Malformed;
+          request.bad_port = true;
+          return request;
+        }
+      request.config.port = value;
+    }
+  return request;
 }
 
 /** Renders an operation report as the tool result the client sees. */
@@ -155,15 +237,9 @@ parse_token_entries (const QStringList &entries)
         parts.size () == 3 ? grant_from_identity (parts.at (1)) : std::nullopt;
       const auto hash =
         parts.size () == 3 ? parts.at (2).toLower () : QString ();
-      const bool valid_hash =
-        hash.size () == 64
-        && std::ranges::all_of (
-          std::span (hash.utf16 (), hash.size ()), [] (const char16_t c) {
-            return (c >= u'0' && c <= u'9') || (c >= u'a' && c <= u'f');
-          });
       if (
         parts.size () != 3 || parts.at (0).isEmpty () || !grant.has_value ()
-        || !valid_hash)
+        || !is_sha256_hex (hash))
         {
           z_warning (
             "ignoring malformed MCP token entry '{}'",
@@ -186,50 +262,97 @@ parse_token_entries (const QStringList &entries)
   return tokens;
 }
 
+QStringList
+write_token_entries (std::span<const McpToken> tokens)
+{
+  QStringList   entries;
+  QSet<QString> seen_hashes;
+  entries.reserve (static_cast<qsizetype> (tokens.size ()));
+  for (const auto &token : tokens)
+    {
+      // The parser drops an entry that breaks any of these rules.
+      assert (!token.name.isEmpty () && !token.name.contains (u'|'));
+      assert (is_sha256_hex (token.sha256_hex));
+      assert (!seen_hashes.contains (token.sha256_hex));
+      seen_hashes.insert (token.sha256_hex);
+      entries.append (
+        token.name + u'|' + grant_identity (token.grant) + u'|'
+        + token.sha256_hex);
+    }
+  return entries;
+}
+
+std::expected<void, TokenRejection>
+validate_new_token_name (std::span<const McpToken> tokens, const QString &name)
+{
+  if (name.trimmed ().isEmpty ())
+    {
+      return std::unexpected (TokenRejection::EmptyName);
+    }
+  if (name.contains (u'|') || name.contains (u':'))
+    {
+      return std::unexpected (TokenRejection::ForbiddenCharacter);
+    }
+  if (name.front ().isSpace () || name.back ().isSpace ())
+    {
+      return std::unexpected (TokenRejection::SurroundingWhitespace);
+    }
+  if (std::ranges::any_of (tokens, [&name] (const McpToken &token) {
+        return token.name == name;
+      }))
+    {
+      return std::unexpected (TokenRejection::DuplicateName);
+    }
+  return {};
+}
+
+std::expected<QString, TokenRejection>
+add_token (QList<McpToken> &tokens, const QString &name, McpGrant grant)
+{
+  if (const auto valid = validate_new_token_name (tokens, name); !valid)
+    {
+      return std::unexpected (valid.error ());
+    }
+  const auto secret = generate_secret ();
+  tokens.append (McpToken::from_secret (name, grant, secret));
+  return secret;
+}
+
+McpEnvironmentOverride
+mcp_environment_override ()
+{
+  return read_environment_request ().state;
+}
+
 std::optional<McpServiceConfig>
 mcp_config_from_environment ()
 {
-  const auto environment = QProcessEnvironment::systemEnvironment ();
-  const auto token_spec =
-    environment.value (QStringLiteral ("ZRYTHM_MCP_TOKEN"));
-  if (token_spec.isEmpty ())
+  const auto request = read_environment_request ();
+  switch (request.state)
     {
+    case McpEnvironmentOverride::None:
       return std::nullopt;
+    case McpEnvironmentOverride::Active:
+      return request.config;
+    case McpEnvironmentOverride::Malformed:
+      break;
     }
-  const auto parts = token_spec.split (u':');
-  const auto grant =
-    parts.size () == 3 ? grant_from_identity (parts.at (1)) : std::nullopt;
-  if (
-    parts.size () != 3 || parts.at (0).isEmpty () || parts.at (2).isEmpty ()
-    || !grant.has_value ())
+  if (request.bad_port)
     {
-      // A malformed specification is authoritative: the settings
-      // configuration must not take over with different credentials.
+      z_warning (
+        "ZRYTHM_MCP_PORT must be a TCP port number; the endpoint stays "
+        "off");
+    }
+  else
+    {
+      // The settings configuration must not take over with different
+      // credentials.
       z_warning (
         "ZRYTHM_MCP_TOKEN must be 'name:grant:secret' with a non-empty "
         "secret and a grant of query, control or full; the endpoint stays "
         "off");
-      return McpServiceConfig{};
     }
-  McpServiceConfig config;
-  config.enabled = true;
-  config.tokens.append (
-    McpToken::from_secret (parts.at (0), *grant, parts.at (2)));
-  const auto port = environment.value (QStringLiteral ("ZRYTHM_MCP_PORT"));
-  if (!port.isEmpty ())
-    {
-      bool       ok = false;
-      const auto value = port.toInt (&ok);
-      if (!ok || value <= 0 || value > 65535)
-        {
-          z_warning (
-            "ZRYTHM_MCP_PORT must be a TCP port number; the endpoint stays "
-            "off");
-          return McpServiceConfig{};
-        }
-      config.port = value;
-    }
-  return config;
+  return McpServiceConfig{};
 }
 
 McpService::McpService (
@@ -250,7 +373,7 @@ McpService::~McpService ()
 void
 McpService::apply_config (const McpServiceConfig &config)
 {
-  const bool valid_port = config.port > 0 && config.port <= 65535;
+  const bool valid_port = is_valid_mcp_port (config.port);
   if (config.enabled && !valid_port)
     {
       z_warning (

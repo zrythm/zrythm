@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+#include <array>
 #include <ranges>
 #include <utility>
 
@@ -22,6 +24,7 @@
 #include <QJsonDocument>
 #include <QSignalSpy>
 
+#include "helpers/scoped_env_var.h"
 #include "helpers/scoped_qcoreapplication.h"
 
 #include "mcp_test_client.h"
@@ -44,6 +47,15 @@ parse_json_object (const QByteArray &bytes)
   const auto document = QJsonDocument::fromJson (bytes);
   EXPECT_TRUE (document.isObject ());
   return document.object ();
+}
+
+/** Whether @p text is made of lowercase hex characters only. */
+bool
+is_lowercase_hex (const QString &text)
+{
+  return std::ranges::all_of (text, [] (QChar c) {
+    return (c >= u'0' && c <= u'9') || (c >= u'a' && c <= u'f');
+  });
 }
 } // namespace
 
@@ -124,17 +136,12 @@ protected:
   }
 
   /** Starts the endpoint with the given tokens and waits for it. */
-  void
-  start_service (const QList<std::pair<QString, McpGrant>> &tokens, quint16 port)
+  void start_service (const QList<McpToken> &tokens, quint16 port)
   {
     McpServiceConfig config;
     config.enabled = true;
     config.port = int (port);
-    for (const auto &[name, grant] : tokens)
-      {
-        config.tokens.append (
-          McpToken::from_secret (name, grant, name + "-secret"));
-      }
+    config.tokens = tokens;
     service_ = std::make_unique<McpService> (
       operation_registry_, *dispatcher_, *undo_stack_);
     QSignalSpy started (service_.get (), &McpService::started);
@@ -266,6 +273,173 @@ TEST_F (McpFrontendTest, EnvironmentConfig)
   EXPECT_FALSE (mcp_config_from_environment ().has_value ());
 }
 
+TEST_F (McpFrontendTest, EnvironmentOverride)
+{
+  // Restores the variables on any exit, including assertion failures.
+  test_helpers::ScopedEnvVar token_guard ("ZRYTHM_MCP_TOKEN");
+  test_helpers::ScopedEnvVar port_guard ("ZRYTHM_MCP_PORT");
+
+  qunsetenv ("ZRYTHM_MCP_TOKEN");
+  qunsetenv ("ZRYTHM_MCP_PORT");
+  EXPECT_EQ (mcp_environment_override (), McpEnvironmentOverride::None);
+
+  qputenv ("ZRYTHM_MCP_TOKEN", QByteArray ("ci:full:hunter2"));
+  EXPECT_EQ (mcp_environment_override (), McpEnvironmentOverride::Active);
+  qputenv ("ZRYTHM_MCP_PORT", QByteArray ("8123"));
+  EXPECT_EQ (mcp_environment_override (), McpEnvironmentOverride::Active);
+
+  qputenv ("ZRYTHM_MCP_PORT", QByteArray ("70000"));
+  EXPECT_EQ (mcp_environment_override (), McpEnvironmentOverride::Malformed);
+  qunsetenv ("ZRYTHM_MCP_PORT");
+  qputenv ("ZRYTHM_MCP_TOKEN", QByteArray ("ci:full:"));
+  EXPECT_EQ (mcp_environment_override (), McpEnvironmentOverride::Malformed);
+}
+
+// ============================================================================
+// Token creation and entry writing
+// ============================================================================
+
+TEST_F (McpFrontendTest, TokenEntriesRoundTrip)
+{
+  QList<McpToken> tokens;
+  ASSERT_TRUE (
+    add_token (tokens, QStringLiteral ("Studio Desk"), McpGrant::Full)
+      .has_value ());
+  ASSERT_TRUE (
+    add_token (tokens, QStringLiteral ("Café"), McpGrant::Query).has_value ());
+  tokens.append (
+    McpToken::from_secret (
+      QStringLiteral ("laptop:browser"), McpGrant::Control,
+      QStringLiteral ("typed-secret")));
+
+  const auto entries = write_token_entries (tokens);
+  ASSERT_EQ (entries.size (), tokens.size ());
+  EXPECT_EQ (parse_token_entries (entries), tokens);
+
+  EXPECT_EQ (
+    entries.front (),
+    QStringLiteral ("Studio Desk|full|%1").arg (tokens.front ().sha256_hex));
+  EXPECT_EQ (write_token_entries (parse_token_entries (entries)), entries);
+}
+
+TEST_F (McpFrontendTest, AddTokenRejectsInvalidNames)
+{
+  QList<McpToken> tokens;
+  ASSERT_TRUE (
+    add_token (tokens, QStringLiteral ("studio"), McpGrant::Full).has_value ());
+  const auto before = tokens;
+
+  const auto rejected = std::array{
+    std::pair{ QString (),                 TokenRejection::EmptyName             },
+    std::pair{ QStringLiteral ("   "),     TokenRejection::EmptyName             },
+    std::pair{ QStringLiteral ("a|b"),     TokenRejection::ForbiddenCharacter    },
+    std::pair{ QStringLiteral ("a:b"),     TokenRejection::ForbiddenCharacter    },
+    std::pair{
+              QStringLiteral (" studio"),  TokenRejection::SurroundingWhitespace },
+    std::pair{
+              QStringLiteral ("studio\t"), TokenRejection::SurroundingWhitespace },
+  };
+  for (const auto &[name, rejection] : rejected)
+    {
+      const auto result = add_token (tokens, name, McpGrant::Query);
+      ASSERT_FALSE (result.has_value ());
+      EXPECT_EQ (result.error (), rejection);
+      EXPECT_EQ (tokens, before);
+      EXPECT_EQ (validate_new_token_name (tokens, name).error (), rejection);
+    }
+}
+
+TEST_F (McpFrontendTest, AddTokenRejectsDuplicateName)
+{
+  QList<McpToken> tokens;
+  ASSERT_TRUE (
+    add_token (tokens, QStringLiteral ("studio"), McpGrant::Full).has_value ());
+
+  const auto duplicate =
+    add_token (tokens, QStringLiteral ("studio"), McpGrant::Query);
+  ASSERT_FALSE (duplicate.has_value ());
+  EXPECT_EQ (duplicate.error (), TokenRejection::DuplicateName);
+  ASSERT_EQ (tokens.size (), 1);
+  EXPECT_EQ (tokens.front ().grant, McpGrant::Full);
+
+  // Names compare case-sensitively.
+  EXPECT_TRUE (
+    add_token (tokens, QStringLiteral ("Studio"), McpGrant::Query).has_value ());
+}
+
+TEST_F (McpFrontendTest, AddTokenReturnsTheSecretItHashes)
+{
+  QList<McpToken> tokens;
+  const auto secret = add_token (tokens, QStringLiteral ("one"), McpGrant::Full);
+  const auto other = add_token (tokens, QStringLiteral ("two"), McpGrant::Query);
+  ASSERT_TRUE (secret.has_value ());
+  ASSERT_TRUE (other.has_value ());
+  EXPECT_NE (*secret, *other);
+
+  for (const auto &value : { *secret, *other })
+    {
+      EXPECT_EQ (value.size (), 64);
+      EXPECT_TRUE (is_lowercase_hex (value));
+    }
+  ASSERT_EQ (tokens.size (), 2);
+  EXPECT_EQ (
+    McpToken::from_secret (QStringLiteral ("one"), McpGrant::Full, *secret),
+    tokens.front ());
+  EXPECT_EQ (
+    McpToken::from_secret (QStringLiteral ("two"), McpGrant::Query, *other),
+    tokens.back ());
+}
+
+TEST_F (McpFrontendTest, GeneratedSecretAuthenticates)
+{
+  QList<McpToken> tokens;
+  const auto      secret =
+    add_token (tokens, QStringLiteral ("generated"), McpGrant::Full);
+  ASSERT_TRUE (secret.has_value ());
+
+  const auto port = test::McpHttpClient::pick_free_port ();
+  start_service (tokens, port);
+
+  test::McpHttpClient client (port, *secret);
+  client.set_protocol_version ("2026-07-28");
+  const auto response = client.post (
+    {
+      { "jsonrpc", "2.0"        },
+      { "id",      1            },
+      { "method",  "tools/list" },
+      { "params",
+       QJsonObject{
+          { "_meta",
+            QJsonObject{
+              { "io.modelcontextprotocol/protocolVersion", "2026-07-28" } } },
+        }                       },
+  },
+    "tools/list");
+  EXPECT_EQ (response.status, 200)
+    << utils::Utf8String::from_qstring (response.body);
+
+  test::McpHttpClient anonymous (port, QString{});
+  anonymous.set_protocol_version ("2026-07-28");
+  const auto unauthenticated = anonymous.post (
+    {
+      { "jsonrpc", "2.0"         },
+      { "id",      2             },
+      { "method",  "tools/list"  },
+      { "params",  QJsonObject{} },
+  },
+    "tools/list");
+  EXPECT_EQ (unauthenticated.status, 401);
+}
+
+TEST_F (McpFrontendTest, McpPortRange)
+{
+  EXPECT_TRUE (is_valid_mcp_port (1));
+  EXPECT_TRUE (is_valid_mcp_port (65535));
+  EXPECT_FALSE (is_valid_mcp_port (0));
+  EXPECT_FALSE (is_valid_mcp_port (65536));
+  EXPECT_FALSE (is_valid_mcp_port (-1));
+}
+
 // ============================================================================
 // Tool publication
 // ============================================================================
@@ -372,10 +546,11 @@ TEST_F (McpFrontendTest, StatelessEraListsAndCallsTools)
 {
   const auto port = test::McpHttpClient::pick_free_port ();
   start_service (
-    {
-      { QStringLiteral ("query"), McpGrant::Query },
-      { QStringLiteral ("full"),  McpGrant::Full  }
-  },
+    { McpToken::from_secret (
+        QStringLiteral ("query"), McpGrant::Query,
+        QStringLiteral ("query-secret")),
+      McpToken::from_secret (
+        QStringLiteral ("full"), McpGrant::Full, QStringLiteral ("full-secret")) },
     port);
 
   test::McpHttpClient full_client (port, QStringLiteral ("full-secret"));
@@ -590,9 +765,8 @@ TEST_F (McpFrontendTest, LegacyEraForwardsJournalEntries)
 {
   const auto port = test::McpHttpClient::pick_free_port ();
   start_service (
-    {
-      { QStringLiteral ("full"), McpGrant::Full }
-  },
+    { McpToken::from_secret (
+      QStringLiteral ("full"), McpGrant::Full, QStringLiteral ("full-secret")) },
     port);
 
   test::McpHttpClient client (port, QStringLiteral ("full-secret"));
