@@ -12,10 +12,12 @@
 #include <utility>
 #include <vector>
 
+#include <QAbstractSocket>
 #include <QByteArray>
 #include <QFuture>
 #include <QHostAddress>
 #include <QPromise>
+#include <QTcpServer>
 #include <QTest>
 
 #include "helpers/mcp_http_test_client.h"
@@ -377,7 +379,7 @@ protected:
   void start ()
   {
     const auto listening = server_->listen (QHostAddress::LocalHost, 0);
-    ASSERT_TRUE (listening.has_value ()) << listening.error ();
+    ASSERT_TRUE (listening.has_value ()) << listening.error ().message ();
     client_ = std::make_unique<McpHttpClient> (server_->listening_port ());
   }
 
@@ -491,7 +493,8 @@ TEST_F (McpServerTest, ListenNeedsAnAuthenticator)
   McpServer<TestIdentity> server (std::move (options));
   const auto              refused = server.listen (QHostAddress::LocalHost, 0);
   ASSERT_FALSE (refused.has_value ());
-  EXPECT_NE (refused.error ().find ("authenticator"), std::string::npos);
+  EXPECT_NE (
+    refused.error ().message ().find ("authenticator"), std::string::npos);
   EXPECT_FALSE (server.is_listening ());
   EXPECT_EQ (server.listening_port (), 0);
 }
@@ -511,7 +514,7 @@ TEST_F (McpServerTest, ListenRefusesTwoProvidersOfTheSameResource)
   server_->add_resource_provider (*other);
   const auto refused = server_->listen (QHostAddress::LocalHost, 0);
   ASSERT_FALSE (refused.has_value ());
-  EXPECT_NE (refused.error ().find (kNotesUri), std::string::npos);
+  EXPECT_NE (refused.error ().message ().find (kNotesUri), std::string::npos);
   EXPECT_FALSE (server_->is_listening ());
 }
 
@@ -522,8 +525,24 @@ TEST_F (McpServerTest, ListenRefusesAConnectionLimitBelowTheStreams)
   make_server ({ .max_connections = 79 });
   const auto refused = server_->listen (QHostAddress::LocalHost, 0);
   ASSERT_FALSE (refused.has_value ());
-  EXPECT_NE (refused.error ().find ("max_connections"), std::string::npos);
+  EXPECT_NE (
+    refused.error ().message ().find ("max_connections"), std::string::npos);
   EXPECT_FALSE (server_->is_listening ());
+}
+
+TEST_F (McpServerTest, ListenReportsAPortThatIsInUse)
+{
+  // A second TCP server keeps the port busy for this test.
+  QTcpServer holder;
+  ASSERT_TRUE (holder.listen (QHostAddress::LocalHost, 0));
+  const auto refused =
+    server_->listen (QHostAddress::LocalHost, holder.serverPort ());
+  ASSERT_FALSE (refused.has_value ());
+  EXPECT_EQ (
+    refused.error ().socket_error (), QAbstractSocket::AddressInUseError);
+  EXPECT_FALSE (refused.error ().message ().empty ());
+  EXPECT_FALSE (server_->is_listening ());
+  EXPECT_EQ (server_->listening_port (), 0);
 }
 
 // ============================================================================

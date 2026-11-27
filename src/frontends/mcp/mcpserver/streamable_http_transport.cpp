@@ -6,6 +6,7 @@
 #include <chrono>
 #include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -315,24 +316,26 @@ StreamableHttpTransport::~StreamableHttpTransport ()
 
 auto
 StreamableHttpTransport::listen (const QHostAddress &address, const quint16 port)
-  -> std::expected<void, std::string>
+  -> std::expected<void, ListenError>
 {
   if (tcp_server_ == nullptr)
     {
-      return std::unexpected ("The transport stopped, so it cannot serve again");
+      return std::unexpected (
+        ListenError ("The transport stopped, so it cannot serve again"));
     }
   if (tcp_server_->isListening ())
-    return std::unexpected ("The transport already serves");
+    return std::unexpected (ListenError ("The transport already serves"));
   if (!tcp_server_->listen (address, port))
     {
-      return std::unexpected (
+      return std::unexpected (ListenError (
+        tcp_server_->serverError (),
         std::string (
-          utils::Utf8String::from_qstring (tcp_server_->errorString ()).view ()));
+          utils::Utf8String::from_qstring (tcp_server_->errorString ()).view ())));
     }
   if (!http_server_->bind (tcp_server_.get ()))
     {
       return std::unexpected (
-        "The HTTP server could not bind to the TCP server");
+        ListenError ("The HTTP server could not bind to the TCP server"));
     }
   liveness_timer_->start ();
   keep_alive_timer_->start ();

@@ -93,7 +93,7 @@ public:
 
 Q_SIGNALS:
   void started ();
-  void error_occurred (const QString &message);
+  void error_occurred (const QString &message, McpStartError reason);
   void stopped ();
 
 private:

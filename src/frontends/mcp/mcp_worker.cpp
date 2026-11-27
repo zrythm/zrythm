@@ -12,6 +12,7 @@
 #include "utils/utf8_string.h"
 #include "utils/version.h"
 
+#include <QAbstractSocket>
 #include <QCryptographicHash>
 #include <QFuture>
 #include <QHostAddress>
@@ -86,6 +87,17 @@ parse_expected_revision (const nlohmann::json &value)
     std::string ("'expected_revision' must be a non-negative integer"));
 }
 
+/** Maps a failed listen() of the server to the reason the endpoint reports. */
+McpStartError
+start_error_reason (const zrythm::mcp::ListenError &error)
+{
+  if (!error.socket_error ().has_value ())
+    return McpStartError::Other;
+  return *error.socket_error () == QAbstractSocket::AddressInUseError
+           ? McpStartError::PortInUse
+           : McpStartError::PortRefused;
+}
+
 } // namespace
 
 /**
@@ -150,6 +162,8 @@ private:
 McpWorkerController::McpWorkerController (McpDispatchFn dispatch_fn)
     : dispatch_fn_ (std::move (dispatch_fn))
 {
+  // server_error crosses a thread boundary, so its reason must be a metatype.
+  qRegisterMetaType<McpStartError> ();
 }
 
 McpWorkerController::~McpWorkerController () = default;
@@ -170,7 +184,7 @@ McpWorkerController::start_server (Config config)
         "refusing to start without a token: the endpoint would accept "
         "unauthenticated callers");
       z_warning ("{}", utils::Utf8String::from_qstring (message).view ());
-      Q_EMIT server_error (message);
+      Q_EMIT server_error (message, McpStartError::Other);
       return;
     }
 
@@ -268,7 +282,7 @@ McpWorkerController::start_server (Config config)
               fmt::format ("the tool catalog is not valid: {}", added.error ()))
               .to_qstring ();
           z_warning ("{}", utils::Utf8String::from_qstring (message).view ());
-          Q_EMIT server_error (message);
+          Q_EMIT server_error (message, McpStartError::Other);
           return;
         }
     }
@@ -278,13 +292,14 @@ McpWorkerController::start_server (Config config)
     server->listen (QHostAddress (QHostAddress::LocalHost), config_.port);
   if (!listening.has_value ())
     {
-      const auto message =
-        utils::Utf8String::from_utf8_encoded_string (listening.error ())
+      const auto &error = listening.error ();
+      const auto  message =
+        utils::Utf8String::from_utf8_encoded_string (error.message ())
           .to_qstring ();
       z_warning (
         "MCP endpoint error: {}",
         utils::Utf8String::from_qstring (message).view ());
-      Q_EMIT server_error (message);
+      Q_EMIT server_error (message, start_error_reason (error));
       return;
     }
   server_ = std::move (server);

@@ -12,9 +12,11 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <utility>
 
 #include <QtCore/QFuture>
 #include <QtCore/QObject>
+#include <QtNetwork/QAbstractSocket>
 #include <QtNetwork/QHostAddress>
 
 #include <mcpserver/mcp_types.h>
@@ -65,6 +67,44 @@ struct ServerOptions
   std::string endpoint_path{ "/mcp" };
   /** The limits of the server. */
   ServerLimits limits;
+};
+
+/**
+ * @brief Why a server could not start to serve.
+ *
+ * The message says what failed. The socket error is present exactly when
+ * the TCP server could not listen on the address.
+ */
+class ListenError
+{
+public:
+  /** A failure before the TCP server listened. */
+  explicit ListenError (std::string message)
+      : message_ (std::move (message)) { }
+
+  /** The TCP server could not listen on the address. @p code is its error. */
+  ListenError (const QAbstractSocket::SocketError code, std::string message)
+      : message_ (std::move (message)), socket_error_ (code)
+  {
+  }
+
+  /** What failed, as text for a log or for the user. */
+  [[nodiscard]] auto message () const -> const std::string &
+  {
+    return message_;
+  }
+
+  /** The error of the TCP server. It has a value exactly when the TCP server
+   * could not listen on the address. */
+  [[nodiscard]] auto
+  socket_error () const -> std::optional<QAbstractSocket::SocketError>
+  {
+    return socket_error_;
+  }
+
+private:
+  std::string                                 message_;
+  std::optional<QAbstractSocket::SocketError> socket_error_;
 };
 
 /**
@@ -129,11 +169,13 @@ public:
    *
    * The port may be 0 to choose a free port. Returns an error when the
    * server has no authenticator, when it has tools but no tool handler,
-   * when two providers serve the same URI, or when max_connections covers
-   * fewer connections than the limits on streams and sessions allow.
+   * when two providers serve the same URI, when max_connections covers
+   * fewer connections than the limits on streams and sessions allow, or
+   * when the TCP server could not listen on the address. The error
+   * carries the socket error in the last case.
    */
   [[nodiscard]] auto listen (const QHostAddress &address, quint16 port)
-    -> std::expected<void, std::string>;
+    -> std::expected<void, ListenError>;
 
   /** Ends every stream and session and stops serving. */
   auto stop () -> void;

@@ -303,19 +303,20 @@ public:
   }
 
   [[nodiscard]] auto listen (const QHostAddress &address, const quint16 port)
-    -> std::expected<void, std::string>
+    -> std::expected<void, ListenError>
   {
     if (transport_ != nullptr)
-      return std::unexpected ("The server already listens");
+      return std::unexpected (ListenError ("The server already listens"));
     if (!authenticator_)
       {
         return std::unexpected (
-          "The server needs an authenticator before it listens");
+          ListenError ("The server needs an authenticator before it listens"));
       }
     if (!tools_.empty () && !call_tool_handler_)
       {
-        return std::unexpected (
-          "The server has tools, so it needs a tool handler before it listens");
+        return std::unexpected (ListenError (
+          "The server has tools, so it needs a tool handler before it "
+          "listens"));
       }
     // Every stream holds a connection, so a smaller cap would refuse streams
     // that the limits below allow.
@@ -325,9 +326,9 @@ public:
           * options_.limits.max_streams_per_legacy_session;
     if (options_.limits.max_connections < streams_allowed)
       {
-        return std::unexpected (
+        return std::unexpected (ListenError (
           "max_connections covers fewer connections than the limits on "
-          "streams and sessions allow");
+          "streams and sessions allow"));
       }
     std::erase_if (providers_, [] (const auto &provider) {
       return provider.isNull ();
@@ -335,13 +336,19 @@ public:
     std::set<ResourceUri> uris;
     for (const auto &provider : providers_)
       {
-        for (const auto &resource : provider->resources ())
+        auto resources = resources_of (*provider);
+        if (!resources.has_value ())
+          {
+            return std::unexpected (
+              ListenError (std::move (resources).error ()));
+          }
+        for (const auto &resource : *resources)
           {
             if (!uris.insert (resource.uri).second)
               {
-                return std::unexpected (
+                return std::unexpected (ListenError (
                   "Two providers serve the resource '" + resource.uri.str ()
-                  + "'");
+                  + "'"));
               }
           }
       }
@@ -1506,7 +1513,7 @@ ProtocolEngine::add_resource_provider (ResourceProvider &provider) -> void
 
 auto
 ProtocolEngine::listen (const QHostAddress &address, const quint16 port)
-  -> std::expected<void, std::string>
+  -> std::expected<void, ListenError>
 {
   return impl_->listen (address, port);
 }

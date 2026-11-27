@@ -101,10 +101,12 @@ stateDiagram-v2
    second tool with the same name.
 2. `listen ()` starts to serve on the address and port. The port 0
    chooses a free port, which `listening_port ()` then reports.
-   `listen ()` returns an error when the server has no authenticator,
-   when it has tools but no call handler, when two providers serve
-   the same URI, or when `max_connections` covers fewer connections
-   than the limits on streams and sessions allow.
+   `listen ()` returns a `ListenError` when the server has no
+   authenticator, when it has tools but no call handler, when two
+   providers serve the same URI, when `max_connections` covers fewer
+   connections than the limits on streams and sessions allow, or when
+   the TCP server could not listen on the address. The error holds the
+   message and, in the last case, the socket error of the TCP server.
 3. `stop ()` ends every stream and session and stops serving. The
    server can listen again afterwards.
 

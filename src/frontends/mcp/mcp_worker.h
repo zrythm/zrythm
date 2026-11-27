@@ -13,6 +13,7 @@
 #include "frontends/mcp/mcp_tool_catalog.h"
 
 #include <QHash>
+#include <QMetaType>
 #include <QObject>
 #include <QPromise>
 #include <QString>
@@ -45,6 +46,18 @@ struct McpDispatchRequest
 };
 
 using McpDispatchFn = std::function<void (const McpDispatchRequest &)>;
+
+/** Why the endpoint could not start. */
+enum class McpStartError
+{
+  /** Another process holds the port. */
+  PortInUse,
+  /** The port cannot be served for another reason, for example a missing
+   * privilege. */
+  PortRefused,
+  /** Any other failure. The message of the error says what failed. */
+  Other,
+};
 
 /**
  * Runs the MCP server and its streamable HTTP transport on the endpoint's
@@ -100,7 +113,8 @@ public:
 
 Q_SIGNALS:
   void server_started ();
-  void server_error (const QString &message);
+  /** The endpoint could not start. @p message says what failed. */
+  void server_error (const QString &message, McpStartError reason);
 
 private:
   using Server = zrythm::mcp::McpServer<TokenIdentity>;
@@ -117,3 +131,5 @@ private:
 };
 
 } // namespace zrythm::frontends::mcp
+
+Q_DECLARE_METATYPE (zrythm::frontends::mcp::McpStartError)

@@ -389,7 +389,7 @@ McpService::start ()
         utils::Utf8String::from_utf8_encoded_string (catalog.error ())
           .to_qstring ();
       z_warning ("{}", utils::Utf8String::from_qstring (message).view ());
-      Q_EMIT error_occurred (message);
+      Q_EMIT error_occurred (message, McpStartError::Other);
       return;
     }
 
@@ -428,13 +428,13 @@ McpService::start ()
   });
   connect (
     worker_, &McpWorkerController::server_error, this,
-    [this] (const QString &message) {
+    [this] (const QString &message, const McpStartError reason) {
       // A failed endpoint stops: it reports not running, and applying
       // the same configuration again can restart it.
       z_warning (
         "MCP endpoint error: {}",
         utils::Utf8String::from_qstring (message).view ());
-      Q_EMIT error_occurred (message);
+      Q_EMIT error_occurred (message, reason);
       stop ();
     });
 

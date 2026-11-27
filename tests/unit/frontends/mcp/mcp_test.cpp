@@ -20,7 +20,9 @@
 #include "utils/object_registry.h"
 #include "utils/utf8_string.h"
 
+#include <QHostAddress>
 #include <QSignalSpy>
+#include <QTcpServer>
 
 #include "helpers/mcp_http_test_client.h"
 #include "helpers/scoped_env_var.h"
@@ -501,6 +503,7 @@ TEST_F (McpFrontendTest, WorkerRefusesTokenlessStartAndKeepsJournalEntries)
   McpWorkerController::Config config;
   worker.start_server (config);
   EXPECT_EQ (errors.size (), 1);
+  EXPECT_EQ (errors.at (0).at (1).value<McpStartError> (), McpStartError::Other);
   EXPECT_EQ (started.size (), 0);
 
   // Journal entries that arrive while no server exists are kept.
@@ -549,6 +552,29 @@ TEST_F (McpFrontendTest, WorkerRefusesTokenlessStartAndKeepsJournalEntries)
   ASSERT_EQ (entries.size (), 2);
   EXPECT_EQ (entries.at (0).at ("revision"), 1);
   EXPECT_EQ (entries.at (1).at ("kind"), "undo");
+}
+
+TEST_F (McpFrontendTest, WorkerReportsAPortThatIsInUse)
+{
+  // A second TCP server keeps the port busy for this test.
+  QTcpServer holder;
+  ASSERT_TRUE (holder.listen (QHostAddress::LocalHost, 0));
+
+  McpWorkerController worker ([] (const McpDispatchRequest &) { });
+  QSignalSpy          errors (&worker, &McpWorkerController::server_error);
+  QSignalSpy          started (&worker, &McpWorkerController::server_started);
+  McpWorkerController::Config config;
+  config.port = holder.serverPort ();
+  config.token_hashes.insert (
+    McpToken::from_secret (
+      QStringLiteral ("full"), McpGrant::Full, QStringLiteral ("full-secret"))
+      .sha256_hex,
+    McpGrant::Full);
+  worker.start_server (std::move (config));
+  EXPECT_EQ (errors.size (), 1);
+  EXPECT_EQ (
+    errors.at (0).at (1).value<McpStartError> (), McpStartError::PortInUse);
+  EXPECT_EQ (started.size (), 0);
 }
 
 // ============================================================================

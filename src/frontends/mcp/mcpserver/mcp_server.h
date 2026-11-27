@@ -121,7 +121,7 @@ public:
   /** Starts to serve on @p address and @p port. The port may be 0 to choose a
    * free port. */
   [[nodiscard]] auto listen (const QHostAddress &address, quint16 port)
-    -> std::expected<void, std::string>
+    -> std::expected<void, ListenError>
   {
     return engine_->listen (address, port);
   }
