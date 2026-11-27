@@ -56,6 +56,115 @@ TEST_F (StartupTest, MissingProjectExitsWithFailure)
     << result.describe ();
 }
 
+// --project with --new-project is refused before a project is opened
+TEST_F (StartupTest, ProjectOptionConflictsWithNewProject)
+{
+  const auto project =
+    launcher_.make_directory (QStringLiteral ("project"))
+    + QStringLiteral ("/missing.zpj");
+  const auto parent_dir = launcher_.make_directory (QStringLiteral ("projects"));
+  const auto result = launcher_.run (
+    {
+      QStringLiteral ("--dummy"),
+      QStringLiteral ("--quit-after-startup"),
+      QStringLiteral ("--project"),
+      project,
+      QStringLiteral ("--new-project"),
+      parent_dir,
+    },
+    kExitsWithoutEventLoop);
+  expect_exit_code (result, EXIT_FAILURE);
+  EXPECT_TRUE (result.standard_error.contains (QStringLiteral ("--project")))
+    << result.describe ();
+  EXPECT_TRUE (result.standard_error.contains (QStringLiteral ("--new-project")))
+    << result.describe ();
+  EXPECT_EQ (
+    count_lines_holding (
+      result.standard_output, QStringLiteral ("Loading project from")),
+    0)
+    << result.describe ();
+  EXPECT_TRUE (ZrythmLauncher::tree_entries (parent_dir).isEmpty ())
+    << to_utf8 (parent_dir);
+}
+
+// --new-project given twice is refused before a project is created
+TEST_F (StartupTest, NewProjectOptionGivenTwiceExitsWithFailure)
+{
+  const auto parent_dir = launcher_.make_directory (QStringLiteral ("projects"));
+  const auto result = launcher_.run (
+    {
+      QStringLiteral ("--dummy"),
+      QStringLiteral ("--quit-after-startup"),
+      QStringLiteral ("--new-project"),
+      parent_dir,
+      QStringLiteral ("--new-project"),
+      parent_dir + QStringLiteral ("/again"),
+    },
+    kExitsWithoutEventLoop);
+  expect_exit_code (result, EXIT_FAILURE);
+  EXPECT_TRUE (result.standard_error.contains (QStringLiteral ("--new-project")))
+    << result.describe ();
+  EXPECT_TRUE (ZrythmLauncher::tree_entries (parent_dir).isEmpty ())
+    << to_utf8 (parent_dir);
+}
+
+// An empty or blank directory of --new-project is refused before a
+// project is created
+TEST_F (StartupTest, NewProjectOptionWithoutDirectoryExitsWithFailure)
+{
+  for (
+    const auto &directory : {
+      QString{},
+      QStringLiteral ("   "),
+    })
+    {
+      const auto result = launcher_.run (
+        {
+          QStringLiteral ("--dummy"),
+          QStringLiteral ("--quit-after-startup"),
+          QStringLiteral ("--new-project"),
+          directory,
+        },
+        kExitsWithoutEventLoop);
+      expect_exit_code (result, EXIT_FAILURE);
+      EXPECT_TRUE (
+        result.standard_error.contains (QStringLiteral ("--new-project")))
+        << result.describe ();
+      EXPECT_TRUE (
+        ZrythmLauncher::tree_entries (launcher_.working_dir ()).isEmpty ())
+        << to_utf8 (launcher_.working_dir ());
+    }
+}
+
+// A project argument with --new-project is refused before a project is
+// opened
+TEST_F (StartupTest, PositionalProjectConflictsWithNewProject)
+{
+  const auto project =
+    launcher_.make_directory (QStringLiteral ("project"))
+    + QStringLiteral ("/missing.zpj");
+  const auto parent_dir = launcher_.make_directory (QStringLiteral ("projects"));
+  const auto result = launcher_.run (
+    {
+      QStringLiteral ("--dummy"),
+      QStringLiteral ("--quit-after-startup"),
+      QStringLiteral ("--new-project"),
+      parent_dir,
+      project,
+    },
+    kExitsWithoutEventLoop);
+  expect_exit_code (result, EXIT_FAILURE);
+  EXPECT_TRUE (result.standard_error.contains (QStringLiteral ("--new-project")))
+    << result.describe ();
+  EXPECT_EQ (
+    count_lines_holding (
+      result.standard_output, QStringLiteral ("Loading project from")),
+    0)
+    << result.describe ();
+  EXPECT_TRUE (ZrythmLauncher::tree_entries (parent_dir).isEmpty ())
+    << to_utf8 (parent_dir);
+}
+
 // The launcher ends an application that does not exit
 TEST (LauncherTest, EndsAChildThatKeepsRunning)
 {

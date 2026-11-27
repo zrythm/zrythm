@@ -210,7 +210,7 @@ ApplicationWindow {
     id: stack
 
     anchors.fill: parent
-    initialItem: (root.appSettings?.firstRun && root.pendingProjectPath.length === 0) ? firstRunPage : projectSelectorPage
+    initialItem: (root.appSettings?.firstRun && !root.app.startupProjectRequested) ? firstRunPage : projectSelectorPage
 
     popEnter: FadeInTransition {
     }

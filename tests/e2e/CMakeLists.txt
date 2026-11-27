@@ -10,6 +10,7 @@ add_executable(zrythm_e2e_tests
   e2e_test_main.cpp
   command_line_test.cpp
   startup_test.cpp
+  new_project_test.cpp
   user_data_dir_test.cpp
   launcher.h
 )

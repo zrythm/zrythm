@@ -8,6 +8,7 @@
 #include <expected>
 #include <filesystem>
 #include <ranges>
+#include <utility>
 
 #include "utils/format_qt.h"
 #include <fmt/std.h>
@@ -157,10 +158,19 @@ public:
   /** DSP context (disables denormals) for the main thread. */
   std::unique_ptr<DspContextRAII> dsp_context_;
 
-  /** Whether the command line requested a project to open. */
+  /** Whether the command line requested a project to open or to create. */
   bool startup_project_requested_{};
 
-  /** EXIT_FAILURE when a project load failed or startup timed out. */
+  /**
+   * Parent directory of the project requested with --new-project. Empty
+   * without the request and once the creation started.
+   */
+  QString new_project_parent_dir_;
+
+  /**
+   * EXIT_FAILURE when a project load or creation failed or startup timed
+   * out.
+   */
   int exit_status_{};
 
   /**
@@ -263,11 +273,12 @@ ZrythmApplication::initialize ()
   // Register meta-types
   qRegisterMetaType<utils::ExpandableTickRange> ();
 
-  // Parsed before anything below is created: --help and --version exit
-  // here, and the user directories decide where the settings and the log
-  // are written
+  // Parsed before anything below is created: --help, --version and an
+  // invalid command line exit here, and the user directories decide
+  // where the settings and the log are written
   setup_command_line_options ();
   cmd_line_parser_.process (*this);
+  validate_command_line ();
   setup_user_directories ();
 
   impl_->app_settings_ = utils::make_qobject_unique<utils::AppSettings> (
@@ -417,6 +428,16 @@ ZrythmApplication::initialize ()
 void
 ZrythmApplication::post_exec_initialization ()
 {
+  // The creation ends through projectLoaded or projectLoadingFailed
+  const auto new_project_parent_dir =
+    std::exchange (impl_->new_project_parent_dir_, QString{});
+  if (!new_project_parent_dir.isEmpty ())
+    {
+      // The project name is also the name of the project directory
+      impl_->project_manager_->createNewProject (
+        QUrl::fromLocalFile (new_project_parent_dir), u"Untitled Project"_s);
+    }
+
   setup_ipc ();
 
   // With no requested project, the first event loop iteration ends
@@ -430,7 +451,6 @@ ZrythmApplication::post_exec_initialization ()
 void
 ZrythmApplication::setup_quit_after_startup ()
 {
-  impl_->startup_project_requested_ = !pending_project_file_.isEmpty ();
   z_info (
     "Quitting {} seconds after startup; a project was requested: {}",
     kQuitAfterStartupDelay.count (), impl_->startup_project_requested_);
@@ -706,8 +726,9 @@ ZrythmApplication::setup_command_line_options ()
   cmd_line_parser_.addOptions (
     {
       { u"project"_s, tr ("Open project"), u"project"_s, u"project"_s },
-      { u"new-project"_s, tr ("Create new project"), u"new-project"_s,
-       u"new-project"_s },
+      {
+       u"new-project"_s, tr ("Create a new project in the given directory, then open it"),
+       u"directory"_s, },
       { u"new-project-with-template"_s, tr ("Create new project with template"),
        u"new-project-with-template"_s, u"new-project-with-template"_s },
       { u"user-data-dir"_s,
@@ -721,8 +742,8 @@ ZrythmApplication::setup_command_line_options ()
       {
        u"quit-after-startup"_s, tr (
           "Exit %1 seconds after startup. Exit with status 1 when the "
-          "project could not be loaded, or when startup is not finished "
-          "after %2 seconds")
+          "project could not be loaded or created, or when startup is not "
+          "finished after %2 seconds")
           .arg (static_cast<int> (kQuitAfterStartupDelay.count ()))
           .arg (static_cast<int> (kStartupTimeLimit.count ())),
        },
@@ -731,6 +752,40 @@ ZrythmApplication::setup_command_line_options ()
   cmd_line_parser_.addPositionalArgument (
     u"project"_s, tr ("Project file (.zpj) or project directory to open"),
     u"[project]"_s);
+}
+
+void
+ZrythmApplication::validate_command_line () const
+{
+  const auto exit_with_error = [] (const QString &message) {
+    QCommandLineParser::showMessageAndExit (
+      QCommandLineParser::MessageType::Error,
+      applicationName () + ": " + message + '\n', EXIT_FAILURE);
+  };
+
+  const auto new_project_dirs = cmd_line_parser_.values (u"new-project"_s);
+  if (new_project_dirs.size () > 1)
+    {
+      exit_with_error (tr ("Give --new-project only once."));
+    }
+  if (new_project_dirs.isEmpty ())
+    {
+      return;
+    }
+  if (new_project_dirs.front ().trimmed ().isEmpty ())
+    {
+      exit_with_error (tr ("Option --new-project needs a directory."));
+    }
+  if (cmd_line_parser_.isSet (u"project"_s))
+    {
+      exit_with_error (
+        tr ("Options --project and --new-project cannot be used together."));
+    }
+  if (!cmd_line_parser_.positionalArguments ().isEmpty ())
+    {
+      exit_with_error (
+        tr ("A project argument cannot be used together with --new-project."));
+    }
 }
 
 void
@@ -760,7 +815,15 @@ ZrythmApplication::setup_user_directories ()
 void
 ZrythmApplication::process_command_line ()
 {
-  if (cmd_line_parser_.isSet (u"project"_s))
+  // validate_command_line() admits at most one project request
+  if (cmd_line_parser_.isSet (u"new-project"_s))
+    {
+      // A relative directory is taken from the working directory
+      impl_->new_project_parent_dir_ =
+        QFileInfo (cmd_line_parser_.value (u"new-project"_s).trimmed ())
+          .absoluteFilePath ();
+    }
+  else if (cmd_line_parser_.isSet (u"project"_s))
     {
       setPendingProjectFile (cmd_line_parser_.value (u"project"_s));
     }
@@ -768,6 +831,9 @@ ZrythmApplication::process_command_line ()
     {
       setPendingProjectFile (cmd_line_parser_.positionalArguments ().front ());
     }
+  impl_->startup_project_requested_ =
+    !pending_project_file_.isEmpty ()
+    || !impl_->new_project_parent_dir_.isEmpty ();
 }
 
 void
@@ -796,6 +862,12 @@ QString
 ZrythmApplication::pendingProjectFile () const
 {
   return pending_project_file_;
+}
+
+bool
+ZrythmApplication::startupProjectRequested () const
+{
+  return impl_->startup_project_requested_;
 }
 
 QString

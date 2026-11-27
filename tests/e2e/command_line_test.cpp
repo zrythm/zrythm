@@ -36,6 +36,7 @@ TEST_F (CommandLineTest, HelpListsTheOptions)
   for (
     const auto &option : {
       "--project <project>",
+      "--new-project <directory>",
       "--user-data-dir <directory>",
       "--dummy",
       "--quit-after-startup",

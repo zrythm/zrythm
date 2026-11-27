@@ -65,6 +65,9 @@ class ZrythmApplication final : public QApplication
   Q_PROPERTY (
     QString pendingProjectFile READ pendingProjectFile NOTIFY
       pendingProjectFileChanged FINAL)
+  /** Whether the command line requested a project to open or to create. */
+  Q_PROPERTY (
+    bool startupProjectRequested READ startupProjectRequested CONSTANT FINAL)
   /** Whether the engine runs on the dummy audio and MIDI hardware. */
   Q_PROPERTY (bool dummyEngine READ dummyEngine CONSTANT FINAL)
   QML_ELEMENT
@@ -120,6 +123,14 @@ public:
   QString pendingProjectFile () const;
 
   /**
+   * @brief Whether the command line requested a project at startup.
+   *
+   * @return True when the command line holds --project, a project
+   * argument or --new-project.
+   */
+  bool startupProjectRequested () const;
+
+  /**
    * @brief Requests that the project at @p path be opened.
    *
    * A project file path resolves to its directory. An empty path is
@@ -154,6 +165,16 @@ private:
   void setup_command_line_options ();
 
   /**
+   * @brief Checks the project options of the command line.
+   *
+   * --new-project takes one non-empty directory, and it cannot be
+   * combined with --project or a project argument. On an invalid command
+   * line, the application prints a message to standard error and exits
+   * with EXIT_FAILURE.
+   */
+  void validate_command_line () const;
+
+  /**
    * @brief Uses the private directory requested with --user-data-dir, then
    * requests every location once.
    *
@@ -171,9 +192,10 @@ private:
    * @brief Makes the application quit a fixed delay after startup.
    *
    * Startup ends when the project requested on the command line is
-   * loaded or refused, or with the first event loop iteration when no
-   * project was requested. The application quits with EXIT_FAILURE
-   * when startup has not ended within the startup time limit.
+   * loaded or created, or its load or creation is refused, or with the
+   * first event loop iteration when no project was requested. The
+   * application quits with EXIT_FAILURE when startup has not ended
+   * within the startup time limit.
    */
   void setup_quit_after_startup ();
 
@@ -194,9 +216,9 @@ private:
   /**
    * @brief Leaves the event loop.
    *
-   * The exit status is EXIT_FAILURE when loading a project failed since
-   * startup or startup did not end within its time limit, EXIT_SUCCESS
-   * otherwise.
+   * The exit status is EXIT_FAILURE when loading or creating a project
+   * failed since startup or startup did not end within its time limit,
+   * EXIT_SUCCESS otherwise.
    */
   void request_quit ();
 
