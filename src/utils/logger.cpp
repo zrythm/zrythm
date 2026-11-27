@@ -12,6 +12,7 @@
 
 #include <juce_core/juce_core.h>
 #include <spdlog/pattern_formatter.h>
+#include <spdlog/sinks/ansicolor_sink.h>
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
@@ -179,8 +180,10 @@ detail::SpdlogApi::init (bool for_testing, const std::filesystem::path &log_dir)
       1024 * 1024 * 10, 5);
     set_sink_pattern (file_sink, true);
 
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt> ();
-    console_sink->set_color_mode (spdlog::color_mode::always);
+    // Writes through the C runtime, so the output also reaches pipes
+    // that need overlapped I/O.
+    auto console_sink = std::make_shared<
+      spdlog::sinks::ansicolor_stdout_sink_mt> (spdlog::color_mode::automatic);
     set_sink_pattern (console_sink, false);
 
 #ifdef _MSC_VER
