@@ -441,6 +441,7 @@ qt_add_qml_module(zrythm_frontends_gui_qml_lib
     TARGET zrythm_frontends_gui_lib
     TARGET zrythm_docking
     TARGET zrythm_style
+    TARGET zrythm_frontends_mcp_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Zrythm
   QML_FILES
     ${qml_file_paths}

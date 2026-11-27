@@ -184,7 +184,7 @@ McpWorkerController::start_server (Config config)
         "refusing to start without a token: the endpoint would accept "
         "unauthenticated callers");
       z_warning ("{}", utils::Utf8String::from_qstring (message).view ());
-      Q_EMIT server_error (message, McpStartError::Other);
+      Q_EMIT server_error (message, McpStartError::NoToken);
       return;
     }
 

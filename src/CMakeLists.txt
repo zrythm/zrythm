@@ -46,6 +46,7 @@ qt_add_qml_module(zrythm_frontends_gui_lib
     TARGET zrythm_controllers_lib
     TARGET zrythm_operations_lib
     TARGET zrythm_actions_lib
+    TARGET zrythm_frontends_mcp_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmGui
 )
 set_target_properties(zrythm_frontends_gui_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

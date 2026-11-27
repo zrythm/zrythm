@@ -55,6 +55,10 @@ enum class McpStartError
   /** The port cannot be served for another reason, for example a missing
    * privilege. */
   PortRefused,
+  /** The endpoint is enabled without a token. */
+  NoToken,
+  /** The port of the configuration is not a TCP port number. */
+  InvalidPort,
   /** Any other failure. The message of the error says what failed. */
   Other,
 };

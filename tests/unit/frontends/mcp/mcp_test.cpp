@@ -5,6 +5,7 @@
 #include <array>
 #include <ranges>
 #include <utility>
+#include <vector>
 
 #include "dsp/transport.h"
 #include "frontends/mcp/mcp_service.h"
@@ -69,6 +70,10 @@ class McpFrontendTest
 protected:
   void SetUp () override
   {
+    // error_occurred carries McpStartError without a worker that
+    // registers it.
+    qRegisterMetaType<McpStartError> ();
+
     singleton_tracks_ = std::make_unique<structure::tracks::SingletonTracks> ();
     track_collection_ =
       std::make_unique<structure::tracks::TrackCollection> (registry_);
@@ -150,6 +155,18 @@ protected:
     QSignalSpy started (service_.get (), &McpService::started);
     service_->apply_config (config);
     ASSERT_TRUE (started.wait (10000)) << "the endpoint did not start";
+  }
+
+  /** A configuration that enables the endpoint on @p port with one
+   * token. */
+  static McpServiceConfig enabled_config (int port)
+  {
+    McpServiceConfig config;
+    config.enabled = true;
+    config.port = port;
+    config.tokens = { McpToken::from_secret (
+      QStringLiteral ("full"), McpGrant::Full, QStringLiteral ("full-secret")) };
+    return config;
   }
 
   structure::tracks::Track * add_audio_track ()
@@ -503,7 +520,8 @@ TEST_F (McpFrontendTest, WorkerRefusesTokenlessStartAndKeepsJournalEntries)
   McpWorkerController::Config config;
   worker.start_server (config);
   EXPECT_EQ (errors.size (), 1);
-  EXPECT_EQ (errors.at (0).at (1).value<McpStartError> (), McpStartError::Other);
+  EXPECT_EQ (
+    errors.at (0).at (1).value<McpStartError> (), McpStartError::NoToken);
   EXPECT_EQ (started.size (), 0);
 
   // Journal entries that arrive while no server exists are kept.
@@ -575,6 +593,159 @@ TEST_F (McpFrontendTest, WorkerReportsAPortThatIsInUse)
   EXPECT_EQ (
     errors.at (0).at (1).value<McpStartError> (), McpStartError::PortInUse);
   EXPECT_EQ (started.size (), 0);
+}
+
+// ============================================================================
+// Service state
+// ============================================================================
+
+TEST_F (McpFrontendTest, ServiceIsOffWhenDisabled)
+{
+  McpService service (operation_registry_, *dispatcher_, *undo_stack_);
+  service.apply_config (McpServiceConfig ());
+  EXPECT_EQ (service.state (), McpEndpoint::State::Off);
+  EXPECT_TRUE (service.errorText ().isEmpty ());
+  EXPECT_FALSE (service.is_running ());
+}
+
+TEST_F (McpFrontendTest, ServiceFailsWhenEnabledWithoutAToken)
+{
+  McpService service (operation_registry_, *dispatcher_, *undo_stack_);
+  QSignalSpy errors (&service, &McpService::error_occurred);
+
+  McpServiceConfig config;
+  config.enabled = true;
+  service.apply_config (config);
+  ASSERT_EQ (errors.size (), 1);
+  EXPECT_EQ (
+    errors.at (0).at (1).value<McpStartError> (), McpStartError::NoToken);
+  EXPECT_EQ (service.state (), McpEndpoint::State::Failed);
+  EXPECT_FALSE (service.errorText ().isEmpty ());
+  EXPECT_FALSE (service.is_running ());
+}
+
+TEST_F (McpFrontendTest, ServiceFailsOnAPortThatIsNotAPortNumber)
+{
+  McpService service (operation_registry_, *dispatcher_, *undo_stack_);
+  QSignalSpy errors (&service, &McpService::error_occurred);
+
+  service.apply_config (enabled_config (70000));
+  ASSERT_EQ (errors.size (), 1);
+  EXPECT_EQ (
+    errors.at (0).at (1).value<McpStartError> (), McpStartError::InvalidPort);
+  EXPECT_EQ (service.state (), McpEndpoint::State::Failed);
+  EXPECT_TRUE (service.errorText ().contains (QStringLiteral ("70000")));
+}
+
+TEST_F (McpFrontendTest, ServiceReportsAPortThatIsInUse)
+{
+  // A second TCP server keeps the port busy for this test.
+  QTcpServer holder;
+  ASSERT_TRUE (holder.listen (QHostAddress::LocalHost, 0));
+  const auto port = holder.serverPort ();
+
+  McpService service (operation_registry_, *dispatcher_, *undo_stack_);
+  QSignalSpy errors (&service, &McpService::error_occurred);
+  service.apply_config (enabled_config (port));
+  ASSERT_TRUE (errors.wait (10000)) << "the endpoint did not report the failure";
+  ASSERT_EQ (errors.size (), 1);
+  EXPECT_EQ (
+    errors.at (0).at (1).value<McpStartError> (), McpStartError::PortInUse);
+  EXPECT_EQ (service.state (), McpEndpoint::State::Failed);
+  EXPECT_TRUE (service.errorText ().contains (QString::number (port)));
+  EXPECT_FALSE (service.is_running ());
+}
+
+TEST_F (McpFrontendTest, ServiceListensAfterThePortIsFree)
+{
+  // A second TCP server keeps the port busy until the endpoint failed.
+  QTcpServer holder;
+  ASSERT_TRUE (holder.listen (QHostAddress::LocalHost, 0));
+  const auto port = holder.serverPort ();
+
+  McpService service (operation_registry_, *dispatcher_, *undo_stack_);
+  QSignalSpy errors (&service, &McpService::error_occurred);
+  QSignalSpy started (&service, &McpService::started);
+  service.apply_config (enabled_config (port));
+  ASSERT_TRUE (errors.wait (10000)) << "the endpoint did not report the failure";
+
+  // The same configuration starts the endpoint once the port is free.
+  holder.close ();
+  service.apply_config (enabled_config (port));
+  EXPECT_EQ (service.state (), McpEndpoint::State::Starting);
+  ASSERT_TRUE (started.wait (10000)) << "the endpoint did not start";
+  EXPECT_EQ (service.state (), McpEndpoint::State::Listening);
+  EXPECT_TRUE (service.errorText ().isEmpty ());
+}
+
+TEST_F (McpFrontendTest, ServiceForgetsAFailureWhenDisabled)
+{
+  // A second TCP server keeps the port busy for this test.
+  QTcpServer holder;
+  ASSERT_TRUE (holder.listen (QHostAddress::LocalHost, 0));
+
+  McpService service (operation_registry_, *dispatcher_, *undo_stack_);
+  QSignalSpy errors (&service, &McpService::error_occurred);
+  service.apply_config (enabled_config (holder.serverPort ()));
+  ASSERT_TRUE (errors.wait (10000)) << "the endpoint did not report the failure";
+  EXPECT_EQ (service.state (), McpEndpoint::State::Failed);
+
+  service.apply_config (McpServiceConfig ());
+  EXPECT_EQ (service.state (), McpEndpoint::State::Off);
+  EXPECT_TRUE (service.errorText ().isEmpty ());
+}
+
+TEST_F (McpFrontendTest, ServiceIsOffWhenItReportsThatItStopped)
+{
+  McpService service (operation_registry_, *dispatcher_, *undo_stack_);
+  QSignalSpy started (&service, &McpService::started);
+  service.apply_config (
+    enabled_config (int (http_test::McpHttpClient::pick_free_port ())));
+  ASSERT_TRUE (started.wait (10000)) << "the endpoint did not start";
+
+  // What state() and is_running() are when stopped is emitted.
+  std::vector<std::pair<McpEndpoint::State, bool>> seen;
+  QObject::connect (
+    &service, &McpService::stopped, &service, [&service, &seen] () {
+      seen.emplace_back (service.state (), service.is_running ());
+    });
+
+  service.apply_config (McpServiceConfig ());
+  EXPECT_EQ (service.state (), McpEndpoint::State::Off);
+  ASSERT_EQ (seen.size (), 1);
+  EXPECT_EQ (seen.front ().first, McpEndpoint::State::Off);
+  EXPECT_FALSE (seen.front ().second);
+}
+
+TEST_F (McpFrontendTest, ServiceIsNotRunningWhenItReportsAFailure)
+{
+  // A second TCP server keeps the port busy for this test.
+  QTcpServer holder;
+  ASSERT_TRUE (holder.listen (QHostAddress::LocalHost, 0));
+
+  McpService service (operation_registry_, *dispatcher_, *undo_stack_);
+  QSignalSpy errors (&service, &McpService::error_occurred);
+  // What state() and is_running() are when error_occurred and stopped
+  // are emitted.
+  std::vector<std::pair<McpEndpoint::State, bool>> seen;
+  QObject::connect (
+    &service, &McpService::error_occurred, &service,
+    [&service, &seen] (const QString &, McpStartError) {
+      seen.emplace_back (service.state (), service.is_running ());
+    });
+  QObject::connect (
+    &service, &McpService::stopped, &service, [&service, &seen] () {
+      seen.emplace_back (service.state (), service.is_running ());
+    });
+
+  service.apply_config (enabled_config (holder.serverPort ()));
+  ASSERT_TRUE (errors.wait (10000)) << "the endpoint did not report the failure";
+  ASSERT_EQ (seen.size (), 2);
+  for (const auto &[state, running] : seen)
+    {
+      EXPECT_EQ (state, McpEndpoint::State::Failed);
+      EXPECT_FALSE (running);
+    }
 }
 
 // ============================================================================

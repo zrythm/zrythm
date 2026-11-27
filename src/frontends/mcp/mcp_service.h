@@ -3,10 +3,12 @@
 
 #pragma once
 
+#include <cstdint>
 #include <expected>
 #include <optional>
 #include <span>
 
+#include "frontends/mcp/mcp_endpoint.h"
 #include "frontends/mcp/mcp_grant.h"
 #include "frontends/mcp/mcp_worker.h"
 
@@ -66,8 +68,11 @@ struct McpServiceConfig
  * HTTP transport run on, marshals every tool call to the main thread for
  * dispatch through the operation dispatcher, and forwards undo stack
  * journal entries to the connected clients.
+ *
+ * It reports the state of the endpoint: the state is Failed, with the
+ * reason in errorText, when the endpoint could not start.
  */
-class McpService : public QObject
+class McpService : public McpEndpoint
 {
   Q_OBJECT
 
@@ -83,23 +88,41 @@ public:
    * Applies the configuration, starting, restarting or stopping the
    * endpoint as needed.
    *
-   * The endpoint starts only when enabled with at least one token; an
-   * enabled configuration without tokens is refused with a warning,
-   * because a tokenless endpoint would accept unauthenticated callers.
+   * The endpoint starts only when it is enabled with at least one token
+   * and a valid port. Any other enabled configuration is refused with a
+   * warning and leaves the endpoint in the Failed state. A configuration
+   * without a token is refused because the endpoint would accept
+   * unauthenticated callers.
    */
   void apply_config (const McpServiceConfig &config);
 
+  /** Whether the worker thread runs. The state is Starting or
+   * Listening while it does. */
   [[nodiscard]] bool is_running () const { return worker_ != nullptr; }
 
 Q_SIGNALS:
+  /** The endpoint listens. state() is Listening. */
   void started ();
+  /** The endpoint could not start and is not running. state() is
+   * Failed, and @p message says what failed. */
   void error_occurred (const QString &message, McpStartError reason);
+  /** The endpoint stopped and is not running. state() is Off, or Failed
+   * when a failure stopped it. */
   void stopped ();
 
 private:
   void start ();
+  /** Stops the worker thread. The state and the error text are
+   * unchanged. */
   void stop ();
   void run_dispatch (const McpDispatchRequest &request);
+  /** Sets the error text for @p error, sets the state to Failed, and
+   * emits error_occurred with @p message. */
+  void fail (McpStartError error, const QString &message);
+  /** The sentence for the failure @p error of an endpoint on @p port.
+   * @p message completes the sentence for McpStartError::Other. */
+  [[nodiscard]] static QString
+  start_error_text (McpStartError error, int port, const QString &message);
 
   const operations::OperationRegistry &registry_;
   operations::OperationDispatcher     &dispatcher_;
@@ -108,6 +131,9 @@ private:
   McpServiceConfig            config_;
   QThread *                   thread_ = nullptr;
   class McpWorkerController * worker_ = nullptr;
+  /** The number of the latest start. Each worker carries the number of
+   * its own start. */
+  std::uint64_t start_count_{};
 };
 
 /**

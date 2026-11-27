@@ -333,7 +333,7 @@ McpService::McpService (
   operations::OperationDispatcher     &dispatcher,
   undo::UndoStack                     &undo_stack,
   QObject *                            parent)
-    : QObject (parent), registry_ (registry), dispatcher_ (dispatcher),
+    : McpEndpoint (parent), registry_ (registry), dispatcher_ (dispatcher),
       undo_stack_ (undo_stack)
 {
 }
@@ -347,12 +347,6 @@ void
 McpService::apply_config (const McpServiceConfig &config)
 {
   const bool valid_port = is_valid_mcp_port (config.port);
-  if (config.enabled && !valid_port)
-    {
-      z_warning (
-        "MCP port {} is not a TCP port number; the endpoint stays off",
-        config.port);
-    }
   const bool should_run =
     config.enabled && valid_port && !config.tokens.isEmpty ();
   if (
@@ -361,24 +355,51 @@ McpService::apply_config (const McpServiceConfig &config)
     {
       return;
     }
-  if (config.enabled && config.tokens.isEmpty ())
-    {
-      z_warning (
-        "MCP is enabled but no tokens are configured; the endpoint stays "
-        "off because it would accept unauthenticated callers");
-    }
+  // The worker stops before the state changes, so that stopped finds
+  // the endpoint off and not running.
+  const bool was_running = is_running ();
   stop ();
+  set_state (State::Off);
+  if (was_running)
+    {
+      Q_EMIT stopped ();
+    }
   config_ = config;
   if (should_run)
     {
       start ();
+      return;
     }
+  if (!config.enabled)
+    {
+      return;
+    }
+  if (!valid_port)
+    {
+      z_warning (
+        "MCP port {} is not a TCP port number; the endpoint stays off",
+        config.port);
+      fail (
+        McpStartError::InvalidPort,
+        QStringLiteral ("the port is not a TCP port number"));
+      return;
+    }
+  z_warning (
+    "MCP is enabled but no tokens are configured; the endpoint stays "
+    "off because it would accept unauthenticated callers");
+  fail (
+    McpStartError::NoToken,
+    QStringLiteral (
+      "refusing to start without a token: the endpoint would accept "
+      "unauthenticated callers"));
 }
 
 void
 McpService::start ()
 {
   assert (!is_running ());
+
+  set_state (State::Starting);
 
   auto catalog = make_tool_catalog (registry_);
   if (!catalog.has_value ())
@@ -389,7 +410,7 @@ McpService::start ()
         utils::Utf8String::from_utf8_encoded_string (catalog.error ())
           .to_qstring ();
       z_warning ("{}", utils::Utf8String::from_qstring (message).view ());
-      Q_EMIT error_occurred (message, McpStartError::Other);
+      fail (McpStartError::Other, message);
       return;
     }
 
@@ -422,20 +443,36 @@ McpService::start ()
       worker->start_server (config);
     },
     Qt::QueuedConnection);
-  connect (worker_, &McpWorkerController::server_started, this, [this] () {
-    z_info ("MCP endpoint listening on 127.0.0.1:{}", config_.port);
-    Q_EMIT started ();
-  });
+  // Each worker carries the number of its start. A report whose number
+  // is not the latest one belongs to a worker that is gone because the
+  // endpoint stopped or restarted, and it is ignored.
+  const auto start_count = ++start_count_;
+  connect (
+    worker_, &McpWorkerController::server_started, this, [this, start_count] () {
+      if (start_count != start_count_)
+        {
+          return;
+        }
+      z_info ("MCP endpoint listening on 127.0.0.1:{}", config_.port);
+      set_state (State::Listening);
+      Q_EMIT started ();
+    });
   connect (
     worker_, &McpWorkerController::server_error, this,
-    [this] (const QString &message, const McpStartError reason) {
-      // A failed endpoint stops: it reports not running, and applying
-      // the same configuration again can restart it.
+    [this, start_count] (const QString &message, const McpStartError reason) {
+      if (start_count != start_count_)
+        {
+          return;
+        }
+      // A failed endpoint stops before the failure is reported, so that
+      // error_occurred and stopped find it not running. Applying the
+      // same configuration again can restart it.
       z_warning (
         "MCP endpoint error: {}",
         utils::Utf8String::from_qstring (message).view ());
-      Q_EMIT error_occurred (message, reason);
       stop ();
+      fail (reason, message);
+      Q_EMIT stopped ();
     });
 
   // The journal callback runs synchronously on the main thread after each
@@ -473,7 +510,45 @@ McpService::stop ()
   thread_->wait ();
   thread_->deleteLater ();
   thread_ = nullptr;
-  Q_EMIT stopped ();
+}
+
+void
+McpService::fail (const McpStartError error, const QString &message)
+{
+  set_error_text (start_error_text (error, config_.port, message));
+  set_state (State::Failed);
+  Q_EMIT error_occurred (message, error);
+}
+
+QString
+McpService::start_error_text (
+  const McpStartError error,
+  const int           port,
+  const QString      &message)
+{
+  switch (error)
+    {
+    case McpStartError::PortInUse:
+      return tr (
+               "Port %1 is already in use by another program. Choose another "
+               "port, or close the program that uses this one.")
+        .arg (port);
+    case McpStartError::PortRefused:
+      return tr (
+               "The system does not let Zrythm listen on port %1. Choose "
+               "another port.")
+        .arg (port);
+    case McpStartError::NoToken:
+      return tr (
+        "The server is enabled without an access token, so it stays off. "
+        "Add a token.");
+    case McpStartError::InvalidPort:
+      return tr ("%1 is not a port number. Enter a port from 1 to 65535.")
+        .arg (port);
+    case McpStartError::Other:
+      return tr ("The MCP server could not start: %1").arg (message);
+    }
+  return message;
 }
 
 void

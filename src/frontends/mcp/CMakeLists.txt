@@ -7,6 +7,7 @@ qt_add_library(zrythm_frontends_mcp_lib STATIC)
 
 target_sources(zrythm_frontends_mcp_lib
   PRIVATE
+    mcp_endpoint.cpp
     mcp_service.cpp
     mcp_tool_catalog.cpp
     mcp_worker.cpp
@@ -14,6 +15,7 @@ target_sources(zrythm_frontends_mcp_lib
     FILE_SET HEADERS
     BASE_DIRS ".."
     FILES
+      mcp_endpoint.h
       mcp_grant.h
       mcp_service.h
       mcp_tool_catalog.h
@@ -35,3 +37,10 @@ target_link_libraries(zrythm_frontends_mcp_lib
     zrythm::all_compile_options
     zrythm_mcp_server_lib
 )
+
+qt_add_qml_module(zrythm_frontends_mcp_lib
+  URI ZrythmMcp
+  VERSION 1.0
+  OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmMcp
+)
+set_target_properties(zrythm_frontends_mcp_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
