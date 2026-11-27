@@ -109,6 +109,16 @@ RUN wget https://sourceware.org/pub/valgrind/valgrind-3.25.1.tar.bz2 && \
     rm -rf valgrind-3.25.1.tar.bz2 valgrind-3.25.1 && \
     valgrind --version
 
+# Git 2.40+ (Ubuntu 22.04 ships 2.34; the tools tests use
+# git check-attr --source). This runs before the Python 3.12 block
+# points /usr/bin/python3 at 3.12: add-apt-repository imports
+# apt_pkg, which the distro python3 (3.10) provides.
+RUN apt-get install -y software-properties-common && \
+    add-apt-repository -y ppa:git-core/ppa && \
+    apt-get update && \
+    apt-get install -y --only-upgrade git && \
+    git --version
+
 # Python 3.12 (from deadsnakes PPA — Sphinx 9.x requires Python 3.11+)
 RUN apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
