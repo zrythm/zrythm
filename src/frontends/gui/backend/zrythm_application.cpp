@@ -990,32 +990,31 @@ ZrythmApplication::setup_ui ()
   impl_->qml_engine_->load (url);
   // qml_engine_->loadFromModule ("Zrythm", "greeter");
 
-  if (!impl_->qml_engine_->rootObjects ().isEmpty ())
+  if (impl_->qml_engine_->rootObjects ().isEmpty ())
     {
-      z_debug ("QML file loaded successfully");
+      throw utils::ZrythmException (
+        fmt::format ("Failed to load the QML file {}", url.toString ()));
+    }
 
-      // QML_ELEMENT doesn't work as expected in these Q_GADGET's so register
-      // manually
-      qmlRegisterUncreatableType<structure::arrangement::ArrangerObject> (
-        "Zrythm", 1, 0, "ArrangerObject", "Cannot create ArrangerObject");
+  z_debug ("QML file loaded successfully");
+
+  // QML_ELEMENT doesn't work as expected in these Q_GADGET's so register
+  // manually
+  qmlRegisterUncreatableType<structure::arrangement::ArrangerObject> (
+    "Zrythm", 1, 0, "ArrangerObject", "Cannot create ArrangerObject");
 
 #if 0
-      qmlRegisterSingletonType (
-        QUrl (QStringLiteral ("qrc:/qt/qml/ZrythmStyle/Style.qml")),
-        "ZrythmStyle", 1, 0, "Style");
-      QQmlComponent component (
-        impl_->qml_engine_, QUrl ("qrc:/qt/qml/ZrythmStyle/Style.qml"),
-        QQmlComponent::PreferSynchronous);
-      auto * obj = component.create ();
-      auto palette = QQmlProperty::read (obj, "colorPalette").value<QPalette> ();
-      // doesn't work as expected, accent color becomes green
-      // setPalette (palette);
+  qmlRegisterSingletonType (
+    QUrl (QStringLiteral ("qrc:/qt/qml/ZrythmStyle/Style.qml")),
+    "ZrythmStyle", 1, 0, "Style");
+  QQmlComponent component (
+    impl_->qml_engine_, QUrl ("qrc:/qt/qml/ZrythmStyle/Style.qml"),
+    QQmlComponent::PreferSynchronous);
+  auto * obj = component.create ();
+  auto palette = QQmlProperty::read (obj, "colorPalette").value<QPalette> ();
+  // doesn't work as expected, accent color becomes green
+  // setPalette (palette);
 #endif
-    }
-  else
-    {
-      z_critical ("Failed to load QML file");
-    }
 }
 
 void
