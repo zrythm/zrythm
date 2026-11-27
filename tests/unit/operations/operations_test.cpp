@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <ranges>
 #include <set>
 #include <string>
@@ -301,6 +302,54 @@ TEST_F (OperationsTest, ToolDefinitionsDescribeTheirInput)
   EXPECT_TRUE (
     list.at ("inputSchema").at ("properties").at ("limit").contains ("default"));
   EXPECT_TRUE (list.at ("inputSchema").at ("required").empty ());
+}
+
+TEST_F (OperationsTest, ToolDefinitionsMatchTheirOperationKind)
+{
+  for (const auto &op : operation_registry_.operations ())
+    {
+      const auto &def = op.tool_definition ();
+      const auto  annotations = def.find ("annotations");
+      const auto  expected_revision =
+        def.at ("inputSchema").at ("properties").find ("expected_revision");
+      if (op.kind () == OperationKind::Query)
+        {
+          ASSERT_NE (annotations, def.end ()) << op.name ();
+          EXPECT_EQ (
+            *annotations,
+            (nlohmann::json{
+              { "readOnlyHint",    true  },
+              { "destructiveHint", false },
+              { "idempotentHint",  true  }
+          }))
+            << op.name ();
+        }
+      else
+        {
+          EXPECT_EQ (annotations, def.end ()) << op.name ();
+        }
+      if (op.kind () == OperationKind::Edit)
+        {
+          ASSERT_NE (
+            expected_revision, def.at ("inputSchema").at ("properties").end ())
+            << op.name ();
+          EXPECT_EQ (
+            expected_revision->at ("type").get<std::string> (), "integer")
+            << op.name ();
+          EXPECT_EQ (expected_revision->at ("minimum").get<int> (), 0)
+            << op.name ();
+          const auto &required = def.at ("inputSchema").at ("required");
+          EXPECT_EQ (
+            std::ranges::find (required, "expected_revision"), required.end ())
+            << op.name ();
+        }
+      else
+        {
+          EXPECT_EQ (
+            expected_revision, def.at ("inputSchema").at ("properties").end ())
+            << op.name ();
+        }
+    }
 }
 
 // ============================================================================

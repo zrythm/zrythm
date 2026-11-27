@@ -36,6 +36,7 @@ class Component:
     shipped: bool = True
     version: str | None = None
     note: str | None = None
+    part_of: str | None = None
 
 
 @dataclass(frozen=True)
@@ -94,6 +95,7 @@ def load_manifest(path: Path, licenses_dirs: list[Path]) -> Manifest:
                 shipped=raw.get("shipped", True),
                 version=raw.get("version"),
                 note=raw.get("note"),
+                part_of=raw.get("part_of"),
             )
         except KeyError as exc:
             raise ValueError(f"missing required field {exc}") from exc
@@ -102,6 +104,8 @@ def load_manifest(path: Path, licenses_dirs: list[Path]) -> Manifest:
         seen_ids.add(comp.id)
         if comp.tier not in VALID_TIERS:
             raise ValueError(f"{comp.id}: invalid tier {comp.tier!r}")
+        if comp.part_of is not None and comp.tier != "conan":
+            raise ValueError(f"{comp.id}: part_of is only valid for tier conan")
         if comp.tier == "conan" and comp.version is not None:
             raise ValueError(
                 f"{comp.id}: conan components must not pin a version"
@@ -118,6 +122,20 @@ def load_manifest(path: Path, licenses_dirs: list[Path]) -> Manifest:
                     f" {', '.join(str(d) for d in licenses_dirs)}"
                 )
         components.append(comp)
+    by_id = {c.id: c for c in components}
+    for comp in components:
+        if comp.part_of is None:
+            continue
+        parent = by_id.get(comp.part_of)
+        if (
+            parent is None
+            or parent.tier != "conan"
+            or parent.part_of is not None
+        ):
+            raise ValueError(
+                f"{comp.id}: part_of {comp.part_of!r} must name a conan "
+                f"component that is not itself a part"
+            )
     return Manifest(components=tuple(components))
 
 
@@ -143,6 +161,37 @@ def scan_conan_requirements(conanfile_path: Path) -> set[str]:
         if node.args and isinstance(node.args[0], ast.Constant):
             names.add(str(node.args[0].value).split("/")[0])
     return names
+
+
+def scan_conan_enabled_options(conanfile_path: Path) -> set[tuple[str, str]]:
+    """Collect (package, option) pairs from self.options["pkg"].opt = True.
+
+    Only literal True assignments in bracket syntax are collected.
+    """
+    tree = ast.parse(conanfile_path.read_text())
+    pairs: set[tuple[str, str]] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        if not (
+            isinstance(node.value, ast.Constant) and node.value.value is True
+        ):
+            continue
+        for target in node.targets:
+            # The target has the shape self.options["pkg"].opt.
+            if not (
+                isinstance(target, ast.Attribute)
+                and isinstance(target.value, ast.Subscript)
+                and isinstance(target.value.value, ast.Attribute)
+                and target.value.value.attr == "options"
+                and isinstance(target.value.value.value, ast.Name)
+                and target.value.value.value.id == "self"
+                and isinstance(target.value.slice, ast.Constant)
+                and isinstance(target.value.slice.value, str)
+            ):
+                continue
+            pairs.add((target.value.slice.value, target.attr))
+    return pairs
 
 
 _CPM_FETCH_RE = re.compile(r"^\s*CPMGetPackage\(\s*([A-Za-z0-9_.-]+)")

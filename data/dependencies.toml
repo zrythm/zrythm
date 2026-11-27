@@ -15,6 +15,10 @@
 #          LICENSES/ or data/licenses/
 # shipped: false for build-only/test-only components (excluded from SBOM and
 #          the attribution display)
+# part_of: conan tier only: id of the conan package that ships this component
+#          as one of its modules although it is its own upstream project
+#          with its own license; the entry id is the Conan option that
+#          conanfile.py enables for the module
 
 # ---------- Conan (direct requirements; versions come from the graph) ----------
 
@@ -25,6 +29,15 @@ tier = "conan"
 spdx = "LicenseRef-Qt-Commercial OR LGPL-3.0-only"
 copyright = "The Qt Company Ltd. and Qt contributors"
 homepage = "https://www.qt.io"
+
+[[component]]
+id = "qthttpserver"
+name = "Qt HTTP Server"
+tier = "conan"
+part_of = "qt"
+spdx = "LicenseRef-Qt-Commercial OR GPL-3.0-only"
+copyright = "The Qt Company Ltd."
+homepage = "https://doc.qt.io/qt-6/qthttpserver-index.html"
 
 [[component]]
 id = "magic_enum"
@@ -177,14 +190,6 @@ tier = "conan"
 spdx = "MIT"
 copyright = "Fontconfig authors"
 homepage = "https://www.freedesktop.org/wiki/Software/fontconfig/"
-
-[[component]]
-id = "qtmcp"
-name = "QtMcp"
-tier = "conan"
-spdx = "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"
-copyright = "2025 Signal Slot Inc."
-homepage = "https://github.com/signal-slot/qtmcp"
 
 # ---------- Conan build/test tools (not shipped) ----------
 

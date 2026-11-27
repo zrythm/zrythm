@@ -2,26 +2,22 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
-#include <cstring>
+#include <iterator>
 #include <ranges>
+#include <utility>
+#include <vector>
 
-#include "frontends/mcp/mcp_json.h"
-#include "frontends/mcp/mcp_qtmcp_includes.h"
 #include "frontends/mcp/mcp_worker.h"
 #include "utils/logger.h"
 #include "utils/utf8_string.h"
+#include "utils/version.h"
 
 #include <QCryptographicHash>
-#include <QJsonDocument>
-#include <QNetworkRequest>
-#include <QtMcpCommon/QMcpCallToolRequest>
-#include <QtMcpCommon/QMcpJSONRPCErrorError>
-#include <QtMcpCommon/QMcpListToolsRequest>
-#include <QtMcpCommon/QMcpListToolsResult>
-#include <QtMcpCommon/QMcpReadResourceResultContents>
-#include <QtMcpCommon/QMcpResource>
-#include <QtMcpCommon/QMcpTextContent>
-#include <QtMcpCommon/QMcpTextResourceContents>
+#include <QFuture>
+#include <QHostAddress>
+
+#include <fmt/format.h>
+#include <mcpserver/resource_provider.h>
 
 namespace zrythm::frontends::mcp
 {
@@ -29,56 +25,127 @@ namespace zrythm::frontends::mcp
 namespace
 {
 
-constexpr auto kJournalResourceUri = "zrythm://journal";
+constexpr std::string_view kJournalResourceUri = "zrythm://journal";
 
 /** Entries kept in the journal resource, oldest dropped first. */
-constexpr int kJournalTailLength = 256;
+constexpr std::size_t kJournalTailLength = 256;
 
-QMcpCallToolResult
-error_result (const QString &message)
+/**
+ * Largest whole number that a double holds exactly.
+ *
+ * A JSON client may send an integer as a floating point number. A larger
+ * one stands for several integers, so it cannot name a revision.
+ */
+constexpr double kMaxExactFloatInteger = 9007199254740992.0;
+
+/** A future that is finished with @p result. */
+QFuture<zrythm::mcp::CallToolResult>
+finished_with (zrythm::mcp::CallToolResult result)
 {
-  QMcpCallToolResult result;
-  QMcpTextContent    content;
-  content.setText (message);
-  result.setContent ({ content });
-  result.setIsError (true);
-  return result;
+  return QtFuture::makeReadyValueFuture (std::move (result));
 }
 
-QMcpResource
-make_journal_resource ()
+/** The URI of the journal resource. */
+zrythm::mcp::ResourceUri
+journal_uri ()
 {
-  QMcpResource resource;
-  resource.setUri (QUrl (QString::fromUtf8 (kJournalResourceUri)));
-  resource.setName (QStringLiteral ("journal"));
-  resource.setDescription (
-    QStringLiteral ("Undo history journal, newest entry last"));
-  return resource;
+  // The constant is not empty, so parse() returns a value.
+  return *zrythm::mcp::ResourceUri::parse (kJournalResourceUri);
 }
 
-QMcpReadResourceResultContents
-make_journal_contents (const QMcpResource &resource, const QString &text)
+/**
+ * Reads the value of the expected-revision argument.
+ *
+ * The value must be a non-negative integer. A floating point number is
+ * accepted when it is a whole number that a double holds exactly.
+ */
+std::expected<std::uint64_t, std::string>
+parse_expected_revision (const nlohmann::json &value)
 {
-  QMcpReadResourceResultContents contents;
-  QMcpTextResourceContents       text_contents;
-  text_contents.setUri (resource.uri ());
-  text_contents.setText (text);
-  contents.setTextResourceContents (text_contents);
-  return contents;
-}
-
-QString
-journal_text (const QJsonArray &entries)
-{
-  return QString::fromUtf8 (
-    QJsonDocument (
-      QJsonObject{
-        { "entries", entries },
-  })
-      .toJson (QJsonDocument::Compact));
+  if (value.is_number_unsigned ())
+    {
+      return value.get<std::uint64_t> ();
+    }
+  if (value.is_number_integer ())
+    {
+      const auto number = value.get<std::int64_t> ();
+      if (number >= 0)
+        return static_cast<std::uint64_t> (number);
+    }
+  else if (value.is_number_float ())
+    {
+      const auto number = value.get<double> ();
+      if (
+        number >= 0 && number == std::floor (number)
+        && number <= kMaxExactFloatInteger)
+        {
+          return static_cast<std::uint64_t> (number);
+        }
+    }
+  return std::unexpected (
+    std::string ("'expected_revision' must be a non-negative integer"));
 }
 
 } // namespace
+
+/**
+ * The undo history journal as one MCP resource.
+ *
+ * The text of the resource is a JSON object with one member "entries":
+ * the last entries, oldest first.
+ */
+class McpWorkerController::JournalResource final
+    : public zrythm::mcp::ResourceProvider
+{
+public:
+  JournalResource () = default;
+
+  auto resources () const -> std::vector<zrythm::mcp::Resource> override
+  {
+    return {
+      zrythm::mcp::Resource{
+                            journal_uri (), "journal", "Undo history journal, newest entry last",
+                            "application/json", std::nullopt }
+    };
+  }
+
+  auto read (const zrythm::mcp::ResourceUri &uri)
+    -> QFuture<zrythm::mcp::ResourceContents> override
+  {
+    // The server reads only the URIs that resources() lists.
+    z_return_val_if_fail (
+      uri == journal_uri (), QFuture<zrythm::mcp::ResourceContents>{});
+    return QtFuture::makeReadyValueFuture (
+      zrythm::mcp::ResourceContents{
+        zrythm::mcp::TextResourceContents{
+                                          journal_uri (), text (), "application/json" }
+    });
+  }
+
+  /** Appends @p entry, drops the entries past the tail length, and reports the
+   * change. */
+  auto push (nlohmann::json entry) -> void
+  {
+    entries_.push_back (std::move (entry));
+    if (entries_.size () > kJournalTailLength)
+      {
+        entries_.erase (
+          entries_.begin (),
+          std::ranges::prev (entries_.end (), kJournalTailLength));
+      }
+    Q_EMIT resource_updated (journal_uri ());
+  }
+
+private:
+  auto text () const -> std::string
+  {
+    return nlohmann::json{
+      { "entries", entries_ }
+    }.dump ();
+  }
+
+  std::vector<nlohmann::json> entries_;
+};
 
 McpWorkerController::McpWorkerController (McpDispatchFn dispatch_fn)
     : dispatch_fn_ (std::move (dispatch_fn))
@@ -87,22 +154,15 @@ McpWorkerController::McpWorkerController (McpDispatchFn dispatch_fn)
 
 McpWorkerController::~McpWorkerController () = default;
 
-QMcpServerSession *
-McpWorkerController::find_session (const QUuid &session_id) const
-{
-  const auto sessions = server_->sessions ();
-  const auto it = std::ranges::find_if (
-    sessions, [session_id] (const QMcpServerSession * session) {
-      return session->sessionId () == session_id;
-    });
-  return it != sessions.end () ? *it : nullptr;
-}
-
 void
 McpWorkerController::start_server (Config config)
 {
   config_ = std::move (config);
-  journal_entries_ = config_.initial_journal_entries;
+  // The journal keeps the entries that arrived while no server existed.
+  if (journal_ == nullptr)
+    {
+      journal_ = std::make_unique<JournalResource> ();
+    }
 
   if (config_.token_hashes.isEmpty ())
     {
@@ -114,205 +174,139 @@ McpWorkerController::start_server (Config config)
       return;
     }
 
-  auto * backend = new QMcpServerStreamableHttp (this);
-  backend->setAuthenticator ([this] (const QNetworkRequest &request) {
-    const auto header =
-      QString::fromUtf8 (request.rawHeader ("Authorization")).trimmed ();
-    if (!header.startsWith (QStringLiteral ("Bearer "), Qt::CaseInsensitive))
-      {
-        return QString{};
-      }
-    const auto token = header.mid (strlen ("Bearer ")).trimmed ();
-    const auto digest = QString::fromLatin1 (
-      QCryptographicHash::hash (token.toUtf8 (), QCryptographicHash::Sha256)
-        .toHex ());
-    const auto grant = config_.token_hashes.constFind (digest);
-    return grant != config_.token_hashes.constEnd ()
-             ? grant_identity (grant.value ())
-             : QString{};
-  });
-
-  connect (
-    backend, &QMcpServerStreamableHttp::authenticated, this,
-    [this] (const QUuid &session, const QString &identity) {
-      const auto grant = grant_from_identity (identity);
-      if (!grant.has_value ())
-        {
-          // The identity comes from this object's own authenticator, so an
-          // unknown name is a programming error.
-          z_warning (
-            "MCP session {} authenticated with unknown grant '{}'",
-            utils::Utf8String::from_qstring (session.toString ()).view (),
-            utils::Utf8String::from_qstring (identity).view ());
-          return;
-        }
-      session_grants_.insert (session, *grant);
-    });
-
-  auto * server = new QMcpServer (backend, this);
-  server_ = server;
-  server->setInstructions (QStringLiteral (
+  zrythm::mcp::ServerOptions options;
+  options.server = {
+    "zrythm", std::string (utils::get_app_version_string (false).view ())
+  };
+  options.instructions =
     "Zrythm operations. Tools map one-to-one to operations. Every tool "
     "call returns a JSON report with the project revision before and "
     "after. Edit tools accept an optional 'expected_revision' argument: "
     "when it does not match the current revision the edit is refused and "
     "the report carries the current revision. Journal entries are "
-    "published as updates of the zrythm://journal resource."));
+    "published as updates of the zrythm://journal resource.";
+  auto server = std::make_unique<Server> (std::move (options));
 
-  server->addRequestHandler (
-    [this] (
-      const QUuid            &session_id, const QMcpListToolsRequest &,
-      QMcpJSONRPCErrorError * error) {
-      const auto * session = find_session (session_id);
-      if (session == nullptr || !session->isInitialized ())
+  server->set_authenticator (
+    [this] (const zrythm::mcp::HttpRequest &request)
+      -> std::expected<TokenIdentity, std::string> {
+      const auto header = request.header ("Authorization").trimmed ();
+      const auto prefix = QByteArrayView ("Bearer ");
+      if (
+        header.size () < prefix.size ()
+        || header.left (prefix.size ()).compare (prefix, Qt::CaseInsensitive) != 0)
         {
-          error->setCode (-32000);
-          error->setMessage (QStringLiteral ("Session not initialized"));
-          return QMcpListToolsResult{};
+          return std::unexpected (
+            std::string ("the request carries no bearer token"));
         }
-      QMcpListToolsResult result;
-      result.setTools (config_.catalog.tools);
-      return result;
+      const auto token = header.mid (prefix.size ()).trimmed ();
+      const auto digest = QString::fromLatin1 (
+        QCryptographicHash::hash (token, QCryptographicHash::Sha256).toHex ());
+      const auto grant = config_.token_hashes.constFind (digest);
+      if (grant == config_.token_hashes.constEnd ())
+        {
+          return std::unexpected (
+            std::string ("the bearer token is not accepted"));
+        }
+      return TokenIdentity{ grant.value () };
     });
 
-  server->addRequestHandler (
+  server->set_call_tool_handler (
     [this] (
-      const QUuid &session, const QMcpCallToolRequest &request,
-      QMcpJSONRPCErrorError *) -> QFuture<QMcpCallToolResult> {
-      const auto completion = std::make_shared<QPromise<QMcpCallToolResult>> ();
-      completion->start ();
-      const auto future = completion->future ();
-
-      const auto * session_object = find_session (session);
-      if (session_object == nullptr || !session_object->isInitialized ())
+      const zrythm::mcp::ToolCall &call, const Server::RequestContext &context)
+      -> QFuture<zrythm::mcp::CallToolResult> {
+      const auto kind = config_.catalog.kinds_by_name.find (call.name);
+      // The catalog holds a kind for every tool that it publishes.
+      z_return_val_if_fail (
+        kind != config_.catalog.kinds_by_name.end (),
+        finished_with (
+          zrythm::mcp::CallToolResult::error ("the tool has no operation kind")));
+      if (!grant_allows (context.identity.grant, kind->second))
         {
-          completion->addResult (
-            error_result (QStringLiteral ("session not initialized")));
-          completion->finish ();
-          return future;
+          return finished_with (
+            zrythm::mcp::CallToolResult::error (
+              fmt::format (
+                "the '{}' grant does not allow '{}'",
+                utils::Utf8String::from_qstring (
+                  grant_identity (context.identity.grant))
+                  .view (),
+                call.name)));
         }
 
-      const auto &tool = request.params ().name ();
-      const auto  kind = config_.catalog.kinds_by_name.constFind (tool);
-      if (kind == config_.catalog.kinds_by_name.constEnd ())
-        {
-          completion->addResult (
-            error_result (QStringLiteral ("unknown tool '%1'").arg (tool)));
-          completion->finish ();
-          return future;
-        }
-
-      const auto grant = session_grants_.constFind (session);
-      if (grant == session_grants_.constEnd ())
-        {
-          // A session without a recorded grant is refused rather than
-          // downgraded: permission lookups fail closed.
-          completion->addResult (error_result (QStringLiteral (
-            "the session holds no grant; the call is refused")));
-          completion->finish ();
-          return future;
-        }
-      if (!grant_allows (grant.value (), kind.value ()))
-        {
-          completion->addResult (error_result (
-            QStringLiteral ("the '%1' grant does not allow '%2'")
-              .arg (grant_identity (grant.value ()), tool)));
-          completion->finish ();
-          return future;
-        }
-
+      auto arguments = call.arguments.value_or (nlohmann::json::object ());
       McpDispatchRequest dispatch;
-      dispatch.tool = tool;
-      dispatch.arguments = request.params ().arguments ();
-      dispatch.completion = completion;
-      if (dispatch.arguments.contains (QStringLiteral ("expected_revision")))
+      dispatch.tool = call.name;
+      if (
+        const auto expected = arguments.find ("expected_revision");
+        expected != arguments.end ())
         {
-          const auto expected =
-            dispatch.arguments.value (QStringLiteral ("expected_revision"));
-          const auto number = expected.toDouble ();
-          if (
-            expected.isDouble () && number >= 0 && number == std::floor (number)
-            && number <= kMaxExactJsonInteger)
+          const auto revision = parse_expected_revision (*expected);
+          if (!revision.has_value ())
             {
-              dispatch.expected_revision = static_cast<std::uint64_t> (number);
+              return finished_with (
+                zrythm::mcp::CallToolResult::error (revision.error ()));
             }
-          else
-            {
-              completion->addResult (error_result (QStringLiteral (
-                "'expected_revision' must be a non-negative "
-                "integer")));
-              completion->finish ();
-              return future;
-            }
-          dispatch.arguments.remove (QStringLiteral ("expected_revision"));
+          dispatch.expected_revision = *revision;
+          arguments.erase (expected);
         }
+      dispatch.arguments = std::move (arguments);
+      const auto completion =
+        std::make_shared<QPromise<zrythm::mcp::CallToolResult>> ();
+      completion->start ();
+      dispatch.completion = completion;
       dispatch_fn_ (dispatch);
-      return future;
+      return completion->future ();
     });
 
-  connect (
-    server, &QMcpServer::newSession, this,
-    [this] (QMcpServerSession * session) { append_journal_resource (session); });
-  connect (
-    server, &QMcpServer::sessionDestroyed, this,
-    [this] (QMcpServerSession * session) {
-      session_grants_.remove (session->sessionId ());
-    });
-  connect (server, &QMcpServer::started, this, [this] () {
-    Q_EMIT server_started ();
-  });
-  connect (
-    server, &QMcpServer::errorOccurred, this,
-    [this] (const QString &message) { Q_EMIT server_error (message); });
+  for (const auto &tool : config_.catalog.tools)
+    {
+      const auto added = server->add_tool (tool);
+      if (!added.has_value ())
+        {
+          const auto message =
+            utils::Utf8String::from_utf8_encoded_string (
+              fmt::format ("the tool catalog is not valid: {}", added.error ()))
+              .to_qstring ();
+          z_warning ("{}", utils::Utf8String::from_qstring (message).view ());
+          Q_EMIT server_error (message);
+          return;
+        }
+    }
+  server->add_resource_provider (*journal_);
 
-  server->start (QStringLiteral ("127.0.0.1:%1").arg (config_.port));
+  const auto listening =
+    server->listen (QHostAddress (QHostAddress::LocalHost), config_.port);
+  if (!listening.has_value ())
+    {
+      const auto message =
+        utils::Utf8String::from_utf8_encoded_string (listening.error ())
+          .to_qstring ();
+      z_warning (
+        "MCP endpoint error: {}",
+        utils::Utf8String::from_qstring (message).view ());
+      Q_EMIT server_error (message);
+      return;
+    }
+  server_ = std::move (server);
+  Q_EMIT server_started ();
 }
 
 void
 McpWorkerController::fulfill_call (
-  std::shared_ptr<QPromise<QMcpCallToolResult>> completion,
-  QMcpCallToolResult                            result)
+  std::shared_ptr<QPromise<zrythm::mcp::CallToolResult>> completion,
+  zrythm::mcp::CallToolResult                            result)
 {
   completion->addResult (std::move (result));
   completion->finish ();
 }
 
 void
-McpWorkerController::push_journal_entry (QJsonObject entry)
+McpWorkerController::push_journal_entry (nlohmann::json entry)
 {
-  journal_entries_.append (entry);
-  while (journal_entries_.size () > kJournalTailLength)
-    {
-      journal_entries_.removeAt (0);
-    }
-  update_journal_resources ();
-}
-
-void
-McpWorkerController::append_journal_resource (QMcpServerSession * session)
-{
-  const auto resource = make_journal_resource ();
-  session->appendResource (
-    resource, make_journal_contents (resource, journal_text (journal_entries_)));
-}
-
-void
-McpWorkerController::update_journal_resources ()
-{
-  // Journal entries can queue before the server exists; they stay in
-  // journal_entries_ and publish when a session connects.
-  if (server_ == nullptr)
-    return;
-  const auto sessions = server_->sessions ();
-  if (sessions.isEmpty ())
-    return;
-  const auto text = journal_text (journal_entries_);
-  for (auto * session : sessions)
-    {
-      const auto resource = make_journal_resource ();
-      session->replaceResource (
-        resource.uri (), resource, make_journal_contents (resource, text));
-    }
+  // Entries can queue before the server exists; they stay in the
+  // resource and are served once a client reads it.
+  z_return_if_fail (journal_ != nullptr);
+  journal_->push (std::move (entry));
 }
 
 } // namespace zrythm::frontends::mcp

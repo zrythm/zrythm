@@ -15,6 +15,7 @@ qt/*:qtlanguageserver=True
 qt/*:qttasktree=True
 qt/*:qtsvg=True
 qt/*:qtshadertools=True
+qt/*:qthttpserver=True
 qt/*:with_pq=False
 qt/*:with_odbc=False
 qt/*:with_glib=False

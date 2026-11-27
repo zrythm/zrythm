@@ -55,8 +55,6 @@ class Zrythm(ConanFile):
         # lilv + its lv2/serd/sord/sratom/zix chain for native LV2
         # plugin discovery/hosting
         self.requires("lilv/0.28.0")
-        # MCP server frontend for the operations API
-        self.requires("qtmcp/2026.7.28-z3")
 
         if self.settings.os in ["Linux", "FreeBSD"]:
             self.requires("freetype/[>=2.14]")
@@ -72,7 +70,7 @@ class Zrythm(ConanFile):
     def configure(self):
         # Conan 2 does not propagate consumer options to build-context
         # tool_requires, so the options the build-context qt also needs are
-        # mirrored in conan/profiles/_qt_common: the 9 enabled qt modules,
+        # mirrored in conan/profiles/_qt_common: the 10 enabled qt modules,
         # with_pq/with_odbc and with_glib. Keep in sync. (with_dbus needs no
         # mirror - our qt recipe forwards it to its self-tool_requires.)
         self.options["qt"].shared = True
@@ -100,6 +98,7 @@ class Zrythm(ConanFile):
         self.options["qt"].qttasktree = True
         self.options["qt"].qtsvg = True
         self.options["qt"].qtshadertools = True
+        self.options["qt"].qthttpserver = True
 
         # Modules skipped in manual builds (-skip ...)
         self.options["qt"].qtgrpc = False

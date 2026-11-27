@@ -173,3 +173,72 @@ def test_output_passes_cyclonedx_validation(tmp_path):
     validator = JsonStrictValidator(SchemaVersion.V1_6)
     result = validator.validate_str(json.dumps(bom))
     assert result is None, result
+
+
+PART_MANIFEST_TEXT = """
+[[component]]
+id = "qt"
+name = "Qt"
+tier = "conan"
+spdx = "LicenseRef-Qt-Commercial OR LGPL-3.0-only"
+copyright = "The Qt Company Ltd. and Qt contributors"
+homepage = "https://www.qt.io"
+
+[[component]]
+id = "qthttpserver"
+name = "Qt HTTP Server"
+tier = "conan"
+part_of = "qt"
+spdx = "LicenseRef-Qt-Commercial OR GPL-3.0-only"
+copyright = "The Qt Company Ltd."
+homepage = "https://doc.qt.io/qt-6/qthttpserver-index.html"
+"""
+
+QT_FRAGMENT = {
+    "metadata": {"component": {"bom-ref": "special-root"}},
+    "components": [
+        {
+            "bom-ref": "pkg:conan/qt@6.12.0?rref=abc",
+            "name": "qt",
+            "purl": "pkg:conan/qt@6.12.0",
+            "type": "library",
+            "version": "6.12.0",
+            "licenses": [{"license": {"id": "LGPL-3.0-only"}}],
+        },
+    ],
+    "dependencies": [
+        {"ref": "special-root", "dependsOn": ["pkg:conan/qt@6.12.0?rref=abc"]},
+    ],
+}
+
+
+def test_part_is_listed_with_its_own_license(tmp_path):
+    # The fragment lists only the package, with the recipe's license. A part
+    # is added as its own component with the curated license and the
+    # package's version.
+    licenses_dir = tmp_path / "LICENSES"
+    licenses_dir.mkdir()
+    for lic in ("LicenseRef-Qt-Commercial", "LGPL-3.0-only", "GPL-3.0-only"):
+        (licenses_dir / f"{lic}.txt").write_text("text")
+    path = tmp_path / "dependencies.toml"
+    path.write_text(PART_MANIFEST_TEXT)
+    manifest = load_manifest(path, [licenses_dir])
+    bom = build_sbom(manifest, QT_FRAGMENT, zrythm_version="2.0.0")
+    by_name = {c["name"]: c for c in bom["components"]}
+    # The fragment names the package by its Conan name.
+    assert set(by_name) == {"qt", "Qt HTTP Server"}
+    assert by_name["qt"]["licenses"] == [{"license": {"id": "LGPL-3.0-only"}}]
+    part = by_name["Qt HTTP Server"]
+    assert part["version"] == "6.12.0"
+    assert part["licenses"] == [
+        {"expression": "LicenseRef-Qt-Commercial OR GPL-3.0-only"}
+    ]
+    root_ref = bom["metadata"]["component"]["bom-ref"]
+    root_dep = next(d for d in bom["dependencies"] if d["ref"] == root_ref)
+    assert part["bom-ref"] in root_dep["dependsOn"]
+    from cyclonedx.schema import SchemaVersion
+    from cyclonedx.validation.json import JsonStrictValidator
+
+    validator = JsonStrictValidator(SchemaVersion.V1_6)
+    result = validator.validate_str(json.dumps(bom))
+    assert result is None, result

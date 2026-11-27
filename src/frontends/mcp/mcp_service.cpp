@@ -6,7 +6,6 @@
 #include <cassert>
 #include <ranges>
 
-#include "frontends/mcp/mcp_json.h"
 #include "frontends/mcp/mcp_service.h"
 #include "frontends/mcp/mcp_tool_catalog.h"
 #include "undo/journal.h"
@@ -16,18 +15,16 @@
 
 #include <QByteArray>
 #include <QCryptographicHash>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QMetaObject>
 #include <QProcessEnvironment>
 #include <QRandomGenerator>
 #include <QSet>
 #include <QThread>
-#include <QtMcpCommon/QMcpCallToolResult>
-#include <QtMcpCommon/QMcpTextContent>
 
 #include "operations/operation_dispatcher.h"
 #include "operations/operation_registry.h"
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::frontends::mcp
 {
@@ -35,36 +32,36 @@ namespace zrythm::frontends::mcp
 namespace
 {
 
-QString
+std::string_view
 status_name (operations::OperationStatus status)
 {
   switch (status)
     {
     case operations::OperationStatus::Applied:
-      return QStringLiteral ("applied");
+      return "applied";
     case operations::OperationStatus::Refused:
-      return QStringLiteral ("refused");
+      return "refused";
     case operations::OperationStatus::Error:
-      return QStringLiteral ("error");
+      return "error";
     }
-  return QStringLiteral ("error");
+  return "error";
 }
 
-QString
+std::string_view
 journal_kind_name (undo::JournalEntryKind kind)
 {
   switch (kind)
     {
     case undo::JournalEntryKind::Push:
-      return QStringLiteral ("push");
+      return "push";
     case undo::JournalEntryKind::Undo:
-      return QStringLiteral ("undo");
+      return "undo";
     case undo::JournalEntryKind::Redo:
-      return QStringLiteral ("redo");
+      return "redo";
     case undo::JournalEntryKind::Abort:
-      return QStringLiteral ("abort");
+      return "abort";
     }
-  return QStringLiteral ("push");
+  return "push";
 }
 
 /** The length of a token secret in bytes. */
@@ -149,65 +146,41 @@ read_environment_request ()
 }
 
 /** Renders an operation report as the tool result the client sees. */
-QMcpCallToolResult
+zrythm::mcp::CallToolResult
 render_report (const operations::OperationReport &report)
 {
-  QJsonObject json;
-  json.insert (QStringLiteral ("status"), status_name (report.status));
+  nlohmann::json json = nlohmann::json::object ();
+  json["status"] = status_name (report.status);
   if (!report.message.empty ())
     {
-      json.insert (
-        QStringLiteral ("message"),
-        utils::Utf8String::from_utf8_encoded_string (report.message)
-          .to_qstring ());
+      json["message"] = report.message;
     }
   if (report.status == operations::OperationStatus::Refused)
     {
-      json.insert (
-        QStringLiteral ("refusal_kind"),
-        utils::Utf8String::from_utf8_encoded_string (
-          utils::to_string (report.refusal_kind))
-          .to_qstring ());
+      json["refusal_kind"] =
+        std::string (utils::to_string (report.refusal_kind));
     }
   if (!report.result.is_null ())
     {
-      json.insert (
-        QStringLiteral ("result"), qjson_from_nlohmann (report.result));
+      json["result"] = report.result;
     }
-  auto command_texts = QJsonArray{};
-  for (const auto &text : report.command_texts)
-    {
-      command_texts.append (
-        utils::Utf8String::from_utf8_encoded_string (text).to_qstring ());
-    }
-  json.insert (QStringLiteral ("command_texts"), command_texts);
-  auto affected = QJsonArray{};
+  json["command_texts"] = report.command_texts;
+  auto affected = nlohmann::json::array ();
   for (const auto &object : report.affected_objects)
     {
-      affected.append (
-        QJsonObject{
-          { "uuid",
-           utils::Utf8String::from_utf8_encoded_string (object.uuid)
-              .to_qstring () },
-          { "kind",
-           utils::Utf8String::from_utf8_encoded_string (object.kind)
-              .to_qstring () },
+      affected.push_back (
+        nlohmann::json{
+          { "uuid", object.uuid },
+          { "kind", object.kind }
       });
     }
-  json.insert (QStringLiteral ("affected_objects"), affected);
-  json.insert (
-    QStringLiteral ("revision_before"),
-    static_cast<double> (report.revision_before));
-  json.insert (
-    QStringLiteral ("revision_after"),
-    static_cast<double> (report.revision_after));
+  json["affected_objects"] = std::move (affected);
+  json["revision_before"] = report.revision_before;
+  json["revision_after"] = report.revision_after;
 
-  QMcpCallToolResult result;
-  QMcpTextContent    content;
-  content.setText (
-    QString::fromUtf8 (QJsonDocument (json).toJson (QJsonDocument::Compact)));
-  result.setContent ({ content });
-  result.setIsError (report.status != operations::OperationStatus::Applied);
+  zrythm::mcp::CallToolResult result;
+  result.content = { zrythm::mcp::TextContent{ json.dump () } };
+  result.is_error = report.status != operations::OperationStatus::Applied;
   return result;
 }
 
@@ -407,14 +380,26 @@ McpService::start ()
 {
   assert (!is_running ());
 
+  auto catalog = make_tool_catalog (registry_);
+  if (!catalog.has_value ())
+    {
+      // The catalog comes from the registry, so an invalid tool
+      // definition is a programming error.
+      const auto message =
+        utils::Utf8String::from_utf8_encoded_string (catalog.error ())
+          .to_qstring ();
+      z_warning ("{}", utils::Utf8String::from_qstring (message).view ());
+      Q_EMIT error_occurred (message);
+      return;
+    }
+
   McpWorkerController::Config worker_config;
-  worker_config.port = config_.port;
+  worker_config.port = static_cast<quint16> (config_.port);
   for (const auto &token : config_.tokens)
     {
       worker_config.token_hashes.insert (token.sha256_hex, token.grant);
     }
-  worker_config.catalog = make_tool_catalog (registry_);
-  worker_config.initial_journal_entries = QJsonArray{};
+  worker_config.catalog = std::move (*catalog);
 
   thread_ = new QThread (this);
   worker_ = new McpWorkerController ([this] (const McpDispatchRequest &request) {
@@ -456,20 +441,15 @@ McpService::start ()
   // The journal callback runs synchronously on the main thread after each
   // undo stack mutation; entries are queued to the worker thread.
   undo_stack_.set_journal_callback ([this] (const undo::JournalEntry &entry) {
-    QJsonObject json;
-    json.insert (
-      QStringLiteral ("revision"), static_cast<double> (entry.revision));
-    json.insert (QStringLiteral ("kind"), journal_kind_name (entry.kind));
-    auto command_texts = QJsonArray{};
-    for (const auto &text : entry.command_texts)
-      {
-        command_texts.append (
-          utils::Utf8String::from_utf8_encoded_string (text).to_qstring ());
-      }
-    json.insert (QStringLiteral ("command_texts"), command_texts);
+    nlohmann::json json = nlohmann::json::object ();
+    json["revision"] = entry.revision;
+    json["kind"] = journal_kind_name (entry.kind);
+    json["command_texts"] = entry.command_texts;
     QMetaObject::invokeMethod (
       worker_,
-      [worker = worker_, json] () mutable { worker->push_journal_entry (json); },
+      [worker = worker_, json = std::move (json)] () mutable {
+        worker->push_journal_entry (std::move (json));
+      },
       Qt::QueuedConnection);
   });
 
@@ -506,13 +486,10 @@ McpService::run_dispatch (const McpDispatchRequest &request)
       // promise stays unresolved and the edit is not applied.
       return;
     }
-  const auto report = [&] {
-    operations::DispatchOptions options;
-    options.expected_revision = request.expected_revision;
-    return dispatcher_.dispatch (
-      std::string (utils::Utf8String::from_qstring (request.tool).view ()),
-      nlohmann_from_qjson (request.arguments), options);
-  }();
+  operations::DispatchOptions options;
+  options.expected_revision = request.expected_revision;
+  const auto report =
+    dispatcher_.dispatch (request.tool, request.arguments, options);
   const auto result = render_report (report);
   QMetaObject::invokeMethod (
     worker_,

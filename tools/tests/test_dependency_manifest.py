@@ -145,3 +145,55 @@ def test_invalid_tier_rejected(tmp_path):
     )
     with pytest.raises(ValueError, match="tier"):
         load_manifest(manifest, _dirs(tmp_path))
+
+
+_PART_MANIFEST = (
+    '[[component]]\nid="qt"\nname="Qt"\ntier="conan"\nspdx="MIT"\n'
+    'copyright="c"\nhomepage="https://x"\n'
+    '[[component]]\nid="mod"\nname="Mod"\ntier="conan"\npart_of="qt"\n'
+    'spdx="MIT"\ncopyright="c"\nhomepage="https://x"\n'
+)
+
+
+def test_part_of_accepted_for_conan_tier(tmp_path):
+    manifest = _write(tmp_path, _PART_MANIFEST, licenses=["MIT"])
+    loaded = load_manifest(manifest, _dirs(tmp_path))
+    by_id = loaded.by_id()
+    assert by_id["mod"].part_of == "qt"
+    assert by_id["qt"].part_of is None
+
+
+def test_part_of_rejected_outside_conan_tier(tmp_path):
+    manifest = _write(
+        tmp_path,
+        '[[component]]\nid="x"\nname="X"\ntier="asset"\npart_of="qt"\n'
+        'spdx="MIT"\ncopyright="c"\nhomepage="https://x"\n',
+        licenses=["MIT"],
+    )
+    with pytest.raises(ValueError, match="part_of is only valid for tier conan"):
+        load_manifest(manifest, _dirs(tmp_path))
+
+
+@pytest.mark.parametrize(
+    "parent_entry",
+    [
+        "",
+        '[[component]]\nid="qt"\nname="Qt"\ntier="asset"\nspdx="MIT"\n'
+        'copyright="c"\nhomepage="https://x"\n',
+        # A parent that is itself a part, under a valid root.
+        '[[component]]\nid="base"\nname="Base"\ntier="conan"\nspdx="MIT"\n'
+        'copyright="c"\nhomepage="https://x"\n'
+        '[[component]]\nid="qt"\nname="Qt"\ntier="conan"\npart_of="base"\n'
+        'spdx="MIT"\ncopyright="c"\nhomepage="https://x"\n',
+    ],
+)
+def test_part_of_must_name_a_plain_conan_component(tmp_path, parent_entry):
+    manifest = _write(
+        tmp_path,
+        parent_entry
+        + '[[component]]\nid="mod"\nname="Mod"\ntier="conan"\npart_of="qt"\n'
+        'spdx="MIT"\ncopyright="c"\nhomepage="https://x"\n',
+        licenses=["MIT"],
+    )
+    with pytest.raises(ValueError, match="part_of 'qt' must name a conan component"):
+        load_manifest(manifest, _dirs(tmp_path))

@@ -205,3 +205,47 @@ def test_missing_fragment_degrades(tmp_path):
     by_id = {c["id"]: c for c in result["components"]}
     assert by_id["qt"]["version"] is None
     assert by_id["rubberband"]["version"] == "4.0.0"
+
+
+PART_MANIFEST_TEXT = """
+[[component]]
+id = "qt"
+name = "Qt"
+tier = "conan"
+spdx = "LGPL-3.0-only OR LicenseRef-Qt-Commercial"
+copyright = "The Qt Company Ltd."
+homepage = "https://www.qt.io"
+
+[[component]]
+id = "qthttpserver"
+name = "Qt HTTP Server"
+tier = "conan"
+part_of = "qt"
+spdx = "LicenseRef-Qt-Commercial OR GPL-3.0-only"
+copyright = "The Qt Company Ltd."
+homepage = "https://doc.qt.io/qt-6/qthttpserver-index.html"
+"""
+
+
+def test_part_takes_package_version_and_keeps_own_details(tmp_path):
+    licenses_dir = tmp_path / "LICENSES"
+    licenses_dir.mkdir()
+    for lic in ("LGPL-3.0-only", "LicenseRef-Qt-Commercial", "GPL-3.0-only"):
+        (licenses_dir / f"{lic}.txt").write_text("text")
+    path = tmp_path / "dependencies.toml"
+    path.write_text(PART_MANIFEST_TEXT)
+    manifest = load_manifest(path, [licenses_dir])
+    result = build_attributions(
+        manifest, FRAGMENT, DIRECT_REQUIRES,
+        zrythm_version="2.0.0", licenses_dirs=[licenses_dir],
+    )
+    by_id = {c["id"]: c for c in result["components"]}
+    part = by_id["qthttpserver"]
+    assert part["version"] == "6.11.1"
+    assert part["tier"] == "conan"
+    assert part["license"] == "LicenseRef-Qt-Commercial OR GPL-3.0-only"
+    assert part["licenseFiles"] == [
+        "LicenseRef-Qt-Commercial.txt", "GPL-3.0-only.txt",
+    ]
+    assert part["homepage"] == "https://doc.qt.io/qt-6/qthttpserver-index.html"
+    assert part["via"] is None

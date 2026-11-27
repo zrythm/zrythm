@@ -1,9 +1,10 @@
 # SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+add_subdirectory(mcpserver)
+
 add_executable(zrythm_frontends_mcp_unit_tests
   mcp_test.cpp
-  mcp_test_client.h
 )
 
 set_target_properties(zrythm_frontends_mcp_unit_tests PROPERTIES

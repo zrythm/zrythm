@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+add_subdirectory(mcpserver)
+
 qt_add_library(zrythm_frontends_mcp_lib STATIC)
 
 target_sources(zrythm_frontends_mcp_lib
   PRIVATE
-    mcp_json.cpp
-    mcp_qtmcp_includes.h
     mcp_service.cpp
     mcp_tool_catalog.cpp
     mcp_worker.cpp
@@ -15,7 +15,6 @@ target_sources(zrythm_frontends_mcp_lib
     BASE_DIRS ".."
     FILES
       mcp_grant.h
-      mcp_json.h
       mcp_service.h
       mcp_tool_catalog.h
       mcp_worker.h
@@ -34,5 +33,5 @@ target_link_libraries(zrythm_frontends_mcp_lib
     zrythm_undo_lib
     zrythm::include_dirs
     zrythm::all_compile_options
-    QtMcp::StreamableHttp
+    zrythm_mcp_server_lib
 )

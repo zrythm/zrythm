@@ -1,29 +1,30 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "frontends/mcp/mcp_json.h"
 #include "frontends/mcp/mcp_tool_catalog.h"
-#include "utils/utf8_string.h"
+
+#include <fmt/format.h>
 
 namespace zrythm::frontends::mcp
 {
 
-McpToolCatalog
+std::expected<McpToolCatalog, std::string>
 make_tool_catalog (const operations::OperationRegistry &registry)
 {
   McpToolCatalog catalog;
-  catalog.tools.reserve (
-    static_cast<qsizetype> (registry.operations ().size ()));
+  catalog.tools.reserve (registry.operations ().size ());
   for (const auto &operation : registry.operations ())
     {
-      QMcpTool tool;
-      tool.fromJsonObject (
-        qjson_from_nlohmann (operation.tool_definition ()).toObject ());
-      catalog.tools.append (std::move (tool));
-      catalog.kinds_by_name.insert (
-        utils::Utf8String::from_utf8_encoded_string (operation.name ())
-          .to_qstring (),
-        operation.kind ());
+      auto tool = zrythm::mcp::Tool::from_json (operation.tool_definition ());
+      if (!tool.has_value ())
+        {
+          return std::unexpected (
+            fmt::format (
+              "the tool definition of the operation '{}' is not valid: {}",
+              operation.name (), tool.error ()));
+        }
+      catalog.kinds_by_name.emplace (operation.name (), operation.kind ());
+      catalog.tools.push_back (std::move (*tool));
     }
   return catalog;
 }

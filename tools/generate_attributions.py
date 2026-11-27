@@ -126,12 +126,15 @@ def build_attributions(
             "licenseFiles": _license_files(comp.spdx, licenses_dirs),
         }
         if comp.tier == "conan":
-            frag = fragment_by_name.get(comp.id)
+            # A part is released with the package that ships it, so it takes
+            # that package's graph version and keeps its own homepage.
+            frag = fragment_by_name.get(comp.part_of or comp.id)
             if frag is not None:
                 entry["version"] = frag.get("version")
-                website = _website_url(frag.get("externalReferences", []))
-                if website is not None:
-                    entry["homepage"] = website
+                if comp.part_of is None:
+                    website = _website_url(frag.get("externalReferences", []))
+                    if website is not None:
+                        entry["homepage"] = website
         components.append(entry)
     if fragment is not None:
         skipped = {c.id for c in manifest.components if not c.shipped}

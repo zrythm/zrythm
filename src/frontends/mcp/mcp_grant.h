@@ -15,8 +15,8 @@ namespace zrythm::frontends::mcp
 /**
  * What a connection may do.
  *
- * Each token carries one grant; the connection authenticated with that
- * token holds it for its lifetime.
+ * Each token carries one grant; a request that authenticates with that
+ * token is held to it.
  */
 enum class McpGrant
 {
@@ -28,7 +28,7 @@ enum class McpGrant
   Full,
 };
 
-/** The wire name of the grant, used as the authentication identity. */
+/** The wire name of the grant, as a token entry spells it. */
 inline QString
 grant_identity (McpGrant grant)
 {

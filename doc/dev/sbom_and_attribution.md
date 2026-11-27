@@ -46,6 +46,13 @@ Each `[[component]]` entry carries `id`, `name`, `tier` (`conan`, `cpm`,
 - `version`: required for tier `cpm` (must match `package-lock.cmake`),
   forbidden for tier `conan` (comes from the resolved graph), optional
   otherwise.
+- `part_of` (tier `conan` only): the component ships inside another Conan
+  package as one of its modules but is its own upstream project with its own
+  license (Qt HTTP Server inside `qt`). The value is the `id` of the package's
+  entry, and the entry's own `id` is the Conan option that `conanfile.py`
+  enables for the module; the drift checker rejects a part whose option is
+  not enabled. Both generators list a part as its own component, with the
+  curated `spdx` and the graph version of the package.
 - License texts are never duplicated: SPDX ids refer to `LICENSES/`
   (licenses also used by in-repo files, maintained for REUSE) or
   `data/licenses/` (runtime-only texts for external dependencies). Both

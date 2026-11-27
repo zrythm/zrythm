@@ -3,13 +3,14 @@
 
 #pragma once
 
-#include <QHash>
-#include <QList>
-#include <QString>
-#include <QtMcpCommon/QMcpTool>
+#include <expected>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "operations/operation.h"
 #include "operations/operation_registry.h"
+#include <mcpserver/mcp_types.h>
 
 namespace zrythm::frontends::mcp
 {
@@ -25,14 +26,19 @@ namespace zrythm::frontends::mcp
 struct McpToolCatalog
 {
   /** One tool per operation, in registration order. */
-  QList<QMcpTool> tools;
+  std::vector<zrythm::mcp::Tool> tools;
 
   /** The operation kind of each tool, by operation name. */
-  QHash<QString, operations::OperationKind> kinds_by_name;
+  std::unordered_map<std::string, operations::OperationKind> kinds_by_name;
 };
 
-/** Snapshots the registry's operations as the tool catalog. */
-McpToolCatalog
+/**
+ * @brief Snapshots the operations of @p registry as the tool catalog.
+ *
+ * Returns an error that names the operation when its tool definition is
+ * not valid for the MCP server.
+ */
+std::expected<McpToolCatalog, std::string>
 make_tool_catalog (const operations::OperationRegistry &registry);
 
 } // namespace zrythm::frontends::mcp

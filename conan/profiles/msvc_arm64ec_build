@@ -3,9 +3,7 @@
 #
 # Build profile for the Windows on ARM (ARM64EC) jobs.
 #
-# The build tools are plain x64 binaries. qtmcp has no arch here: Conan
-# selects the ARM64-targeting compiler for a package only when its arch
-# differs from the build arch.
+# The build tools are plain x64 binaries.
 #
 # compiler.march is deliberately not set here, as in the ARM64EC host
 # profiles.

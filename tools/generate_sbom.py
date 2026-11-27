@@ -5,8 +5,9 @@
 """Generate sbom.cdx.json (CycloneDX 1.6).
 
 Merges the Conan-tier fragment emitted during `conan install` (see
-conanfile.py generate()) with the cpm/vendored/asset entries from
-data/dependencies.toml. Validates the result against the CycloneDX schema.
+conanfile.py generate()) with the manifest entries the fragment does not
+list: cpm, vendored, asset, and Conan-tier components that ship as a part
+of another package. Validates the result against the CycloneDX schema.
 Unlike the attribution generator, a requested fragment must exist: the
 SBOM must be complete.
 """
@@ -23,12 +24,13 @@ from dependency_manifest import Manifest, load_manifest
 ROOT_BOM_REF_PREFIX = "pkg:gitlab/zrythm/zrythm@"
 
 
-def _manifest_component(comp) -> dict:
+def _manifest_component(comp, version: str | None = None) -> dict:
+    version = version or comp.version or "unknown"
     return {
-        "bom-ref": f"zrythm:{comp.tier}:{comp.id}@{comp.version or 'unknown'}",
+        "bom-ref": f"zrythm:{comp.tier}:{comp.id}@{version}",
         "type": "file" if comp.tier == "asset" else "library",
         "name": comp.name,
-        "version": comp.version or "unknown",
+        "version": version,
         "copyright": comp.copyright,
         "licenses": [{"expression": comp.spdx}],
         "externalReferences": [{"type": "website", "url": comp.homepage}],
@@ -81,11 +83,20 @@ def build_sbom(
                 {"type": "application", "name": "zrythm-sbom-generator"}
             ]
         }
+    graph_versions: dict[str, str] = {
+        c.get("name"): c.get("version") for c in bom["components"]
+    }
     added_refs = []
     for comp in manifest.components:
-        if comp.tier == "conan" or not comp.shipped:
+        if not comp.shipped:
             continue
-        entry = _manifest_component(comp)
+        if comp.tier == "conan" and comp.part_of is None:
+            # The fragment already lists every Conan requirement. A part is
+            # only listed through the package that ships it.
+            continue
+        entry = _manifest_component(
+            comp, graph_versions.get(comp.part_of) if comp.part_of else None
+        )
         bom["components"].append(entry)
         added_refs.append(entry["bom-ref"])
     root_ref = f"{ROOT_BOM_REF_PREFIX}{zrythm_version}"

@@ -993,6 +993,8 @@ find_package(Qt6 6.12
     # for QRhi (offscreen QML rendering for X11 plugin window headers);
     # limited-compatibility API - fine since we pin the Qt version
     GuiPrivate
+    # HTTP server of the MCP frontend
+    HttpServer
   REQUIRED
 )
 qt_standard_project_setup(
@@ -1029,8 +1031,6 @@ target_link_libraries(qt_libs
   Qt6::Svg
 )
 add_library(zrythm::qt_libs ALIAS qt_libs)
-
-find_package(QtMcp REQUIRED)
 
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler

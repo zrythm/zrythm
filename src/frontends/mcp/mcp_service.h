@@ -10,7 +10,6 @@
 #include "frontends/mcp/mcp_grant.h"
 #include "frontends/mcp/mcp_worker.h"
 
-#include <QJsonArray>
 #include <QList>
 #include <QObject>
 #include <QString>

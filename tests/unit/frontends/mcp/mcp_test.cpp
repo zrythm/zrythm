@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "dsp/transport.h"
-#include "frontends/mcp/mcp_json.h"
 #include "frontends/mcp/mcp_service.h"
 #include "frontends/mcp/mcp_tool_catalog.h"
 #include "structure/project/port_connections_manager.h"
@@ -21,13 +20,12 @@
 #include "utils/object_registry.h"
 #include "utils/utf8_string.h"
 
-#include <QJsonDocument>
 #include <QSignalSpy>
 
+#include "helpers/mcp_http_test_client.h"
 #include "helpers/scoped_env_var.h"
 #include "helpers/scoped_qcoreapplication.h"
 
-#include "mcp_test_client.h"
 #include "operations/builtin_operations.h"
 #include "operations/operation_dispatcher.h"
 #include "operations/operation_environment.h"
@@ -40,13 +38,16 @@ namespace zrythm::frontends::mcp
 
 namespace
 {
-/** Parses tool-result text and fails the test on malformed JSON. */
-QJsonObject
-parse_json_object (const QByteArray &bytes)
+namespace http_test = zrythm::mcp::test;
+
+/** The JSON report in the first text block of a tool call result. */
+nlohmann::json
+report_of (const nlohmann::json &result)
 {
-  const auto document = QJsonDocument::fromJson (bytes);
-  EXPECT_TRUE (document.isObject ());
-  return document.object ();
+  const auto text = result.at ("content").at (0).at ("text").get<std::string> ();
+  const auto report = nlohmann::json::parse (text, nullptr, false);
+  EXPECT_FALSE (report.is_discarded ()) << text;
+  return report;
 }
 
 /** Whether @p text is made of lowercase hex characters only. */
@@ -156,6 +157,32 @@ protected:
     auto * track = ref.get ();
     track_collection_->add_track (ref);
     return track;
+  }
+
+  /**
+   * Sends a tools/call in the stateless revision and returns the result
+   * that the server sent.
+   */
+  nlohmann::json stateless_call (
+    http_test::McpHttpClient &client,
+    const QByteArray         &token,
+    int                       id,
+    const std::string_view    tool,
+    nlohmann::json            arguments = nlohmann::json::object ())
+  {
+    const auto response = client.send (
+      http_test::McpHttpClient::Request{
+    }
+        .json_body (
+          http_test::rpc_request (
+            id, "tools/call",
+            http_test::stateless_params (
+              { { "name", std::string (tool) },
+                { "arguments", std::move (arguments) } })))
+        .stateless ("tools/call", tool)
+        .bearer (token));
+    EXPECT_EQ (response.status, 200) << response.body.toStdString ();
+    return response.json ().value ("result", nlohmann::json ());
   }
 
   std::string uuid_of (const structure::tracks::Track &track) const
@@ -397,37 +424,28 @@ TEST_F (McpFrontendTest, GeneratedSecretAuthenticates)
     add_token (tokens, QStringLiteral ("generated"), McpGrant::Full);
   ASSERT_TRUE (secret.has_value ());
 
-  const auto port = test::McpHttpClient::pick_free_port ();
+  const auto port = http_test::McpHttpClient::pick_free_port ();
   start_service (tokens, port);
 
-  test::McpHttpClient client (port, *secret);
-  client.set_protocol_version ("2026-07-28");
-  const auto response = client.post (
-    {
-      { "jsonrpc", "2.0"        },
-      { "id",      1            },
-      { "method",  "tools/list" },
-      { "params",
-       QJsonObject{
-          { "_meta",
-            QJsonObject{
-              { "io.modelcontextprotocol/protocolVersion", "2026-07-28" } } },
-        }                       },
-  },
-    "tools/list");
-  EXPECT_EQ (response.status, 200)
-    << utils::Utf8String::from_qstring (response.body);
+  http_test::McpHttpClient client (port);
+  const auto               response = client.send (
+    http_test::McpHttpClient::Request{}
+      .json_body (
+        http_test::rpc_request (
+          1, "tools/list",
+          http_test::stateless_params (nlohmann::json::object ())))
+      .stateless ("tools/list")
+      .bearer (secret->toUtf8 ()));
+  EXPECT_EQ (response.status, 200) << response.body.toStdString ();
 
-  test::McpHttpClient anonymous (port, QString{});
-  anonymous.set_protocol_version ("2026-07-28");
-  const auto unauthenticated = anonymous.post (
-    {
-      { "jsonrpc", "2.0"         },
-      { "id",      2             },
-      { "method",  "tools/list"  },
-      { "params",  QJsonObject{} },
-  },
-    "tools/list");
+  http_test::McpHttpClient anonymous (port);
+  const auto               unauthenticated = anonymous.send (
+    http_test::McpHttpClient::Request{}
+      .json_body (
+        http_test::rpc_request (
+          2, "tools/list",
+          http_test::stateless_params (nlohmann::json::object ())))
+      .stateless ("tools/list"));
   EXPECT_EQ (unauthenticated.status, 401);
 }
 
@@ -447,104 +465,99 @@ TEST_F (McpFrontendTest, McpPortRange)
 TEST_F (McpFrontendTest, ToolCatalogMatchesRegistry)
 {
   const auto catalog = make_tool_catalog (operation_registry_);
-  ASSERT_EQ (
-    catalog.tools.size (),
-    static_cast<qsizetype> (operation_registry_.operations ().size ()));
+  ASSERT_TRUE (catalog.has_value ()) << catalog.error ();
+  ASSERT_EQ (catalog->tools.size (), operation_registry_.operations ().size ());
 
   for (const auto &operation : operation_registry_.operations ())
     {
-      const auto kind = catalog.kinds_by_name.constFind (
-        utils::Utf8String::from_utf8_encoded_string (operation.name ())
-          .to_qstring ());
-      ASSERT_NE (kind, catalog.kinds_by_name.constEnd ())
+      const auto kind = catalog->kinds_by_name.find (operation.name ());
+      ASSERT_NE (kind, catalog->kinds_by_name.end ())
         << "missing kind for " << operation.name ();
-      EXPECT_EQ (kind.value (), operation.kind ());
+      EXPECT_EQ (kind->second, operation.kind ());
 
       const auto tool = std::ranges::find_if (
-        catalog.tools, [&operation] (const QMcpTool &candidate) {
-          return utils::Utf8String::from_qstring (candidate.name ())
-                 == operation.name ();
+        catalog->tools, [&operation] (const zrythm::mcp::Tool &candidate) {
+          return candidate.name () == operation.name ();
         });
-      ASSERT_NE (tool, catalog.tools.end ());
-      EXPECT_EQ (
-        utils::Utf8String::from_qstring (tool->description ()),
-        operation.summary ());
-
-      const auto definition = operation.tool_definition ();
-      auto       expected_schema =
-        qjson_from_nlohmann (definition.at ("inputSchema")).toObject ();
-      // The gadget schema omits an empty required list; type and
-      // properties round-trip the registry declaration verbatim.
-      if (
-        expected_schema.value (QStringLiteral ("required")).toArray ().isEmpty ())
-        {
-          expected_schema.remove (QStringLiteral ("required"));
-        }
-      EXPECT_EQ (tool->inputSchema ().toJsonObject (), expected_schema)
-        << operation.name () << "\n gadget:  "
-        << utils::Utf8String::from_qstring (
-             QString::fromUtf8 (
-               QJsonDocument (tool->inputSchema ().toJsonObject ())
-                 .toJson (QJsonDocument::Compact)))
-        << "\n expected: "
-        << utils::Utf8String::from_qstring (
-             QString::fromUtf8 (
-               QJsonDocument (expected_schema).toJson (QJsonDocument::Compact)));
+      ASSERT_NE (tool, catalog->tools.end ());
+      // The server publishes the definition of the registry unchanged.
+      EXPECT_EQ (tool->to_json (), operation.tool_definition ())
+        << operation.name ();
     }
-}
-
-// ============================================================================
-// JSON bridge number handling
-// ============================================================================
-
-TEST_F (McpFrontendTest, JsonNumberNarrowing)
-{
-  // Integral doubles within the exact range narrow to integers.
-  const auto small = nlohmann_from_qjson (QJsonValue (42.0));
-  EXPECT_TRUE (small.is_number_unsigned ());
-  const auto negative = nlohmann_from_qjson (QJsonValue (-42.0));
-  EXPECT_TRUE (negative.is_number_integer ());
-  EXPECT_FALSE (negative.is_number_unsigned ());
-  // 2^53 is the largest exactly representable integer and still narrows.
-  const auto largest = nlohmann_from_qjson (QJsonValue (9007199254740992.0));
-  EXPECT_TRUE (largest.is_number_unsigned ());
-  // Larger integral doubles stay doubles; schema validation rejects
-  // them downstream.
-  const auto huge = nlohmann_from_qjson (QJsonValue (1e300));
-  EXPECT_TRUE (huge.is_number_float ());
 }
 
 // ============================================================================
 // Worker lifecycle
 // ============================================================================
 
-TEST_F (McpFrontendTest, WorkerRefusesTokenlessStartAndQueuesJournalEntries)
+TEST_F (McpFrontendTest, WorkerRefusesTokenlessStartAndKeepsJournalEntries)
 {
   McpWorkerController worker ([] (const McpDispatchRequest &) { });
   QSignalSpy          errors (&worker, &McpWorkerController::server_error);
+  QSignalSpy          started (&worker, &McpWorkerController::server_started);
 
   // An empty token map refuses to start instead of serving
   // unauthenticated callers.
   McpWorkerController::Config config;
-  worker.start_server (std::move (config));
+  worker.start_server (config);
   EXPECT_EQ (errors.size (), 1);
+  EXPECT_EQ (started.size (), 0);
 
-  // Journal entries queued before any server exists are kept, not
-  // dereferenced.
-  QJsonObject entry;
-  entry.insert (QStringLiteral ("revision"), 1.0);
-  entry.insert (QStringLiteral ("kind"), QStringLiteral ("push"));
-  worker.push_journal_entry (entry);
-  worker.push_journal_entry (entry);
+  // Journal entries that arrive while no server exists are kept.
+  worker.push_journal_entry (
+    {
+      { "revision", 1      },
+      { "kind",     "push" }
+  });
+  worker.push_journal_entry (
+    {
+      { "revision", 2      },
+      { "kind",     "undo" }
+  });
+
+  const auto port = http_test::McpHttpClient::pick_free_port ();
+  config.port = port;
+  config.token_hashes.insert (
+    McpToken::from_secret (
+      QStringLiteral ("full"), McpGrant::Full, QStringLiteral ("full-secret"))
+      .sha256_hex,
+    McpGrant::Full);
+  config.catalog = std::move (*make_tool_catalog (operation_registry_));
+  worker.start_server (std::move (config));
+  EXPECT_EQ (started.size (), 1);
+
+  // Both entries are served once the server runs.
+  http_test::McpHttpClient client (port);
+  const auto               response = client.send (
+    http_test::McpHttpClient::Request{
+  }
+      .json_body (
+        http_test::rpc_request (
+          1, "resources/read",
+          http_test::stateless_params ({ { "uri", "zrythm://journal" } })))
+      .stateless ("resources/read", "zrythm://journal")
+      .bearer ("full-secret"));
+  ASSERT_EQ (response.status, 200) << response.body.toStdString ();
+  const auto text =
+    response.json ()
+      .at ("result")
+      .at ("contents")
+      .at (0)
+      .at ("text")
+      .get<std::string> ();
+  const auto entries = nlohmann::json::parse (text).at ("entries");
+  ASSERT_EQ (entries.size (), 2);
+  EXPECT_EQ (entries.at (0).at ("revision"), 1);
+  EXPECT_EQ (entries.at (1).at ("kind"), "undo");
 }
 
 // ============================================================================
 // Endpoint: stateless revision (2026-07-28)
 // ============================================================================
 
-TEST_F (McpFrontendTest, StatelessEraListsAndCallsTools)
+TEST_F (McpFrontendTest, StatelessRevisionListsAndCallsTools)
 {
-  const auto port = test::McpHttpClient::pick_free_port ();
+  const auto port = http_test::McpHttpClient::pick_free_port ();
   start_service (
     { McpToken::from_secret (
         QStringLiteral ("query"), McpGrant::Query,
@@ -553,207 +566,100 @@ TEST_F (McpFrontendTest, StatelessEraListsAndCallsTools)
         QStringLiteral ("full"), McpGrant::Full, QStringLiteral ("full-secret")) },
     port);
 
-  test::McpHttpClient full_client (port, QStringLiteral ("full-secret"));
-  full_client.set_protocol_version ("2026-07-28");
+  http_test::McpHttpClient full_client (port);
+  const QByteArray         full_token ("full-secret");
 
   // tools/list publishes the registry's operations.
-  const auto list_response = full_client.post (
-    {
-      { "jsonrpc", "2.0"        },
-      { "id",      1            },
-      { "method",  "tools/list" },
-      { "params",
-       QJsonObject{
-          { "_meta",
-            QJsonObject{
-              { "io.modelcontextprotocol/protocolVersion", "2026-07-28" } } },
-        }                       },
-  },
-    "tools/list");
-  ASSERT_EQ (list_response.status, 200)
-    << utils::Utf8String::from_qstring (list_response.body);
-  const auto tools =
-    list_response.json ().value ("result").toObject ().value ("tools").toArray ();
-  ASSERT_FALSE (tools.isEmpty ())
-    << utils::Utf8String::from_qstring (list_response.body);
-  ASSERT_EQ (
-    tools.size (),
-    static_cast<qsizetype> (operation_registry_.operations ().size ()));
+  const auto list_response = full_client.send (
+    http_test::McpHttpClient::Request{}
+      .json_body (
+        http_test::rpc_request (
+          1, "tools/list",
+          http_test::stateless_params (nlohmann::json::object ())))
+      .stateless ("tools/list")
+      .bearer (full_token));
+  ASSERT_EQ (list_response.status, 200) << list_response.body.toStdString ();
+  const auto tools = list_response.json ().at ("result").at ("tools");
+  ASSERT_EQ (tools.size (), operation_registry_.operations ().size ());
 
   // A query tool call returns an applied report.
   auto *     track = add_audio_track ();
-  const auto track_uuid =
-    utils::Utf8String::from_utf8_encoded_string (uuid_of (*track)).to_qstring ();
-  full_client.set_name_header ("track.list");
-  const auto list_call = full_client.post (
-    {
-      { "jsonrpc", "2.0"        },
-      { "id",      2            },
-      { "method",  "tools/call" },
-      { "params",
-       QJsonObject{
-          { "name", "track.list" },
-          { "arguments", QJsonObject{} },
-          { "_meta",
-            QJsonObject{
-              { "io.modelcontextprotocol/protocolVersion", "2026-07-28" } } },
-        }                       },
-  },
-    "tools/call");
-  ASSERT_EQ (list_call.status, 200)
-    << utils::Utf8String::from_qstring (list_call.body);
-  EXPECT_FALSE (
-    list_call.json ().value ("result").toObject ().value ("isError").toBool ());
+  const auto track_uuid = uuid_of (*track);
+  const auto list_result =
+    stateless_call (full_client, full_token, 2, "track.list");
+  EXPECT_FALSE (list_result.value ("isError", false));
+  EXPECT_EQ (report_of (list_result).at ("status"), "applied");
 
   // An edit with the matching expected revision is applied and lands in
   // the undo history.
   const auto revision = undo_stack_->revision ();
-  full_client.set_name_header ("track.set_name");
-  const auto edit_call = full_client.post (
+  const auto edit_result = stateless_call (
+    full_client, full_token, 3, "track.set_name",
     {
-      { "jsonrpc", "2.0"        },
-      { "id",      3            },
-      { "method",  "tools/call" },
-      { "params",
-       QJsonObject{
-          { "name", "track.set_name" },
-          { "arguments",
-            QJsonObject{
-              { "track", track_uuid },
-              { "new_name", "Renamed" },
-              { "expected_revision", static_cast<double> (revision) },
-            } },
-          { "_meta",
-            QJsonObject{
-              { "io.modelcontextprotocol/protocolVersion", "2026-07-28" } } },
-        }                       },
-  },
-    "tools/call");
-  ASSERT_EQ (edit_call.status, 200)
-    << utils::Utf8String::from_qstring (edit_call.body);
-  const auto edit_result = edit_call.json ().value ("result").toObject ();
-  ASSERT_FALSE (edit_result.value ("isError").toBool ());
-  const auto report = parse_json_object (
-    edit_result.value ("content")
-      .toArray ()
-      .at (0)
-      .toObject ()
-      .value ("text")
-      .toString ()
-      .toUtf8 ());
-  EXPECT_EQ (report.value ("status").toString (), QStringLiteral ("applied"));
-  EXPECT_GT (
-    static_cast<std::uint64_t> (report.value ("revision_after").toDouble ()),
-    revision);
+      { "track",             track_uuid },
+      { "new_name",          "Renamed"  },
+      { "expected_revision", revision   }
+  });
+  EXPECT_FALSE (edit_result.value ("isError", false));
+  const auto report = report_of (edit_result);
+  EXPECT_EQ (report.at ("status"), "applied");
+  EXPECT_GT (report.at ("revision_after").get<std::uint64_t> (), revision);
   EXPECT_EQ (undo_stack_->count (), 1);
 
   // The same edit with the stale revision is refused with the current
   // revision in the report.
-  const auto stale_call = full_client.post (
+  const auto stale_result = stateless_call (
+    full_client, full_token, 4, "track.set_name",
     {
-      { "jsonrpc", "2.0"        },
-      { "id",      4            },
-      { "method",  "tools/call" },
-      { "params",
-       QJsonObject{
-          { "name", "track.set_name" },
-          { "arguments",
-            QJsonObject{
-              { "track", track_uuid },
-              { "new_name", "Stale" },
-              { "expected_revision", static_cast<double> (revision) },
-            } },
-          { "_meta",
-            QJsonObject{
-              { "io.modelcontextprotocol/protocolVersion", "2026-07-28" } } },
-        }                       },
-  },
-    "tools/call");
-  ASSERT_EQ (stale_call.status, 200)
-    << utils::Utf8String::from_qstring (stale_call.body);
-  const auto stale_result = stale_call.json ().value ("result").toObject ();
-  EXPECT_TRUE (stale_result.value ("isError").toBool ());
-  const auto stale_report = parse_json_object (
-    stale_result.value ("content")
-      .toArray ()
-      .at (0)
-      .toObject ()
-      .value ("text")
-      .toString ()
-      .toUtf8 ());
-  EXPECT_EQ (
-    stale_report.value ("status").toString (), QStringLiteral ("refused"));
-  EXPECT_EQ (
-    stale_report.value ("refusal_kind").toString (),
-    QStringLiteral ("stale_revision"));
+      { "track",             track_uuid },
+      { "new_name",          "Stale"    },
+      { "expected_revision", revision   }
+  });
+  EXPECT_TRUE (stale_result.at ("isError").get<bool> ());
+  const auto stale_report = report_of (stale_result);
+  EXPECT_EQ (stale_report.at ("status"), "refused");
+  EXPECT_EQ (stale_report.at ("refusal_kind"), "stale_revision");
+  EXPECT_EQ (stale_report.at ("revision_after"), report.at ("revision_after"));
+  EXPECT_EQ (undo_stack_->count (), 1);
 
-  // A revision a double cannot represent exactly is rejected instead of
-  // being narrowed to an integer.
-  full_client.set_name_header ("track.set_name");
-  const auto huge_call = full_client.post (
+  // An expected revision that is not a non-negative integer is refused
+  // instead of being narrowed to one.
+  for (
+    const auto &invalid :
+    { nlohmann::json (-1), nlohmann::json (1.5), nlohmann::json (1e300),
+      nlohmann::json ("1") })
     {
-      { "jsonrpc", "2.0"        },
-      { "id",      7            },
-      { "method",  "tools/call" },
-      { "params",
-       QJsonObject{
-          { "name", "track.set_name" },
-          { "arguments",
-            QJsonObject{
-              { "track", track_uuid },
-              { "new_name", "Huge" },
-              { "expected_revision", 1e300 },
-            } },
-          { "_meta",
-            QJsonObject{
-              { "io.modelcontextprotocol/protocolVersion", "2026-07-28" } } },
-        }                       },
-  },
-    "tools/call");
-  ASSERT_EQ (huge_call.status, 200)
-    << utils::Utf8String::from_qstring (huge_call.body);
-  EXPECT_TRUE (
-    huge_call.json ().value ("result").toObject ().value ("isError").toBool ());
+      const auto result = stateless_call (
+        full_client, full_token, 7, "track.set_name",
+        {
+          { "track",             track_uuid },
+          { "new_name",          "Invalid"  },
+          { "expected_revision", invalid    }
+      });
+      EXPECT_TRUE (result.at ("isError").get<bool> ()) << invalid;
+    }
+  EXPECT_EQ (undo_stack_->count (), 1);
 
   // A query grant cannot edit.
-  test::McpHttpClient query_client (port, QStringLiteral ("query-secret"));
-  query_client.set_protocol_version ("2026-07-28");
-  query_client.set_name_header ("track.set_name");
-  const auto refused_call = query_client.post (
+  http_test::McpHttpClient query_client (port);
+  const auto               refused_result = stateless_call (
+    query_client, QByteArray ("query-secret"), 5, "track.set_name",
     {
-      { "jsonrpc", "2.0"        },
-      { "id",      5            },
-      { "method",  "tools/call" },
-      { "params",
-       QJsonObject{
-          { "name", "track.set_name" },
-          { "arguments",
-            QJsonObject{
-              { "track", track_uuid },
-              { "new_name", "Nope" },
-            } },
-          { "_meta",
-            QJsonObject{
-              { "io.modelcontextprotocol/protocolVersion", "2026-07-28" } } },
-        }                       },
-  },
-    "tools/call");
-  ASSERT_EQ (refused_call.status, 200)
-    << utils::Utf8String::from_qstring (refused_call.body);
-  const auto refused_result = refused_call.json ().value ("result").toObject ();
-  EXPECT_TRUE (refused_result.value ("isError").toBool ());
+      { "track",    track_uuid },
+      { "new_name", "Nope"     }
+  });
+  EXPECT_TRUE (refused_result.at ("isError").get<bool> ());
+  EXPECT_EQ (undo_stack_->count (), 1);
 
   // A request without a token is rejected by the transport.
-  test::McpHttpClient anonymous_client (port, QString{});
-  anonymous_client.set_protocol_version ("2026-07-28");
-  const auto unauthenticated = anonymous_client.post (
-    {
-      { "jsonrpc", "2.0"         },
-      { "id",      6             },
-      { "method",  "tools/list"  },
-      { "params",  QJsonObject{} },
-  },
-    "tools/list");
+  http_test::McpHttpClient anonymous_client (port);
+  const auto               unauthenticated = anonymous_client.send (
+    http_test::McpHttpClient::Request{}
+      .json_body (
+        http_test::rpc_request (
+          6, "tools/list",
+          http_test::stateless_params (nlohmann::json::object ())))
+      .stateless ("tools/list"));
   EXPECT_EQ (unauthenticated.status, 401);
 }
 
@@ -761,52 +667,57 @@ TEST_F (McpFrontendTest, StatelessEraListsAndCallsTools)
 // Endpoint: legacy revision, journal notifications
 // ============================================================================
 
-TEST_F (McpFrontendTest, LegacyEraForwardsJournalEntries)
+TEST_F (McpFrontendTest, LegacyRevisionForwardsJournalEntries)
 {
-  const auto port = test::McpHttpClient::pick_free_port ();
+  const auto port = http_test::McpHttpClient::pick_free_port ();
   start_service (
     { McpToken::from_secret (
       QStringLiteral ("full"), McpGrant::Full, QStringLiteral ("full-secret")) },
     port);
 
-  test::McpHttpClient client (port, QStringLiteral ("full-secret"));
+  http_test::McpHttpClient client (port);
+  const QByteArray         token ("full-secret");
 
   // Legacy initialize handshake.
-  const auto initialize = client.post (
-    QJsonObject{
-      { "jsonrpc", "2.0"        },
-      { "id",      1            },
-      { "method",  "initialize" },
-      { "params",
-       QJsonObject{
-          { "protocolVersion", "2025-11-25" },
-          { "capabilities", QJsonObject{} },
-          { "clientInfo", QJsonObject{ { "name", "test" }, { "version", "1" } } },
-        }                       },
-  });
-  ASSERT_EQ (initialize.status, 200)
-    << utils::Utf8String::from_qstring (initialize.body);
-  const auto session_id = initialize.headers.value ("Mcp-Session-Id");
+  const auto initialize = client.send (
+    http_test::McpHttpClient::Request{
+  }
+      .json_body (
+        http_test::rpc_request (
+          1, "initialize",
+          nlohmann::json{
+            { "protocolVersion", "2025-11-25" },
+            { "capabilities", nlohmann::json::object () },
+            { "clientInfo", { { "name", "test" }, { "version", "1" } } } }))
+      .bearer (token));
+  ASSERT_EQ (initialize.status, 200) << initialize.body.toStdString ();
+  const auto session_id = initialize.header ("Mcp-Session-Id");
   ASSERT_FALSE (session_id.isEmpty ());
-  client.set_session_id (session_id);
 
-  client.post (
-    QJsonObject{
-      { "jsonrpc", "2.0"                       },
-      { "method",  "notifications/initialized" },
-  });
+  const auto initialized = client.send (
+    http_test::McpHttpClient::Request{}
+      .json_body (http_test::rpc_notification ("notifications/initialized"))
+      .session (session_id)
+      .bearer (token));
+  EXPECT_EQ (initialized.status, 202);
 
   // Subscribe to the journal resource on its own stream.
-  client.open_stream ();
-  const auto subscribe = client.post (
-    QJsonObject{
-      { "jsonrpc", "2.0"                                        },
-      { "id",      2                                            },
-      { "method",  "resources/subscribe"                        },
-      { "params",  QJsonObject{ { "uri", "zrythm://journal" } } },
-  });
-  ASSERT_EQ (subscribe.status, 200)
-    << utils::Utf8String::from_qstring (subscribe.body);
+  auto stream = client.open_stream (
+    http_test::McpHttpClient::Request{ .method = "GET" }
+      .accept ("text/event-stream")
+      .session (session_id)
+      .bearer (token));
+  ASSERT_EQ (stream->response ().status, 200);
+  const auto subscribe = client.send (
+    http_test::McpHttpClient::Request{
+  }
+      .json_body (
+        http_test::rpc_request (
+          2, "resources/subscribe",
+          nlohmann::json{ { "uri", "zrythm://journal" } }))
+      .session (session_id)
+      .bearer (token));
+  ASSERT_EQ (subscribe.status, 200) << subscribe.body.toStdString ();
 
   // A real edit through the operation registry pushes onto the real undo
   // stack; its journal entry must reach the subscribed client.
@@ -820,14 +731,34 @@ TEST_F (McpFrontendTest, LegacyEraForwardsJournalEntries)
   ASSERT_TRUE (report.applied ());
   ASSERT_EQ (undo_stack_->count (), 1);
 
-  const auto event = client.wait_for_event ([] (const QJsonObject &json) {
-    return json.value ("method").toString ()
-           == QStringLiteral ("notifications/resources/updated");
-  });
-  ASSERT_FALSE (event.isEmpty ()) << "no journal notification arrived";
+  const auto event = stream->next_event ();
+  ASSERT_TRUE (event.has_value ()) << "no journal notification arrived";
+  EXPECT_EQ (event->json ().at ("method"), "notifications/resources/updated");
+  EXPECT_EQ (event->json ().at ("params").at ("uri"), "zrythm://journal");
+
+  // The resource carries the entry of the edit.
+  const auto resource_response = client.send (
+    http_test::McpHttpClient::Request{
+  }
+      .json_body (
+        http_test::rpc_request (
+          3, "resources/read", nlohmann::json{ { "uri", "zrythm://journal" } }))
+      .session (session_id)
+      .bearer (token));
+  ASSERT_EQ (resource_response.status, 200)
+    << resource_response.body.toStdString ();
+  const auto text =
+    resource_response.json ()
+      .at ("result")
+      .at ("contents")
+      .at (0)
+      .at ("text")
+      .get<std::string> ();
+  const auto entries = nlohmann::json::parse (text).at ("entries");
+  ASSERT_EQ (entries.size (), 1);
+  EXPECT_EQ (entries.at (0).at ("kind"), "push");
   EXPECT_EQ (
-    event.value ("params").toObject ().value ("uri").toString (),
-    QStringLiteral ("zrythm://journal"));
+    entries.at (0).at ("revision").get<std::uint64_t> (), report.revision_after);
 }
 
 } // namespace zrythm::frontends::mcp

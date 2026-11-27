@@ -6,7 +6,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from check_dependencies import find_drift
 from dependency_manifest import (
+    scan_conan_enabled_options,
     scan_conan_requirements,
     scan_cpm_declared_versions,
     scan_cpm_fetches,
@@ -103,3 +105,59 @@ def test_real_repo_scans_match_manifest():
         assert name in by_id and by_id[name].tier == "cpm", name
     for name in vendored:
         assert name in by_id and by_id[name].tier == "vendored", name
+
+
+def test_scan_conan_enabled_options(tmp_path):
+    conanfile = tmp_path / "conanfile.py"
+    conanfile.write_text(
+        "class Z(ConanFile):\n"
+        "    def requirements(self):\n"
+        "        self.options['qt'].qthttpserver = True\n"
+        '        self.options["qt"].qtgrpc = False\n'
+        "        self.options['qt'].multithreaded = enabled\n"
+        "        self.conf['user.pkg:skip'] = True\n"
+        "        other.options['qt'].qtsvg = True\n"
+    )
+    assert scan_conan_enabled_options(conanfile) == {("qt", "qthttpserver")}
+
+
+def _manifest_with_part(tmp_path: Path):
+    from dependency_manifest import load_manifest
+
+    (tmp_path / "MIT.txt").write_text("text")
+    manifest = tmp_path / "dependencies.toml"
+    manifest.write_text(
+        '[[component]]\nid="qt"\nname="Qt"\ntier="conan"\nspdx="MIT"\n'
+        'copyright="c"\nhomepage="https://x"\n'
+        '[[component]]\nid="qthttpserver"\nname="Qt HTTP Server"\n'
+        'tier="conan"\npart_of="qt"\nspdx="MIT"\ncopyright="c"\n'
+        'homepage="https://x"\n'
+    )
+    return load_manifest(manifest, [tmp_path])
+
+
+def _part_scans() -> dict[str, set[str]]:
+    return {"conan": {"qt"}, "cpm": set(), "vendored": set()}
+
+
+def test_part_with_enabled_module_option_has_no_drift(tmp_path):
+    errors = find_drift(
+        _manifest_with_part(tmp_path),
+        _part_scans(),
+        enabled_options={("qt", "qthttpserver")},
+        declared_versions={},
+    )
+    assert errors == []
+
+
+def test_part_without_enabled_module_option_is_drift(tmp_path):
+    errors = find_drift(
+        _manifest_with_part(tmp_path),
+        _part_scans(),
+        enabled_options=set(),
+        declared_versions={},
+    )
+    assert errors == [
+        "'qthttpserver' is part of 'qt' but conanfile.py does not set "
+        'self.options["qt"].qthttpserver = True'
+    ]

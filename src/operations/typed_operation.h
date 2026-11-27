@@ -137,6 +137,12 @@ public:
 
   /**
    * The MCP-style tool definition derived from this declaration.
+   *
+   * A query carries the annotations that it changes nothing, so no call of it
+   * destroys anything and a repeated call has no further effect. An edit also
+   * takes the optional argument expected_revision: the project revision the
+   * caller last saw. The other kinds carry no annotations, so each hint keeps
+   * its default.
    */
   nlohmann::json make_tool_definition () const
   {
@@ -144,7 +150,17 @@ public:
     nlohmann::json required = nlohmann::json::array ();
     add_param_schemas (
       std::make_index_sequence<NumParams>{}, properties, required);
-    return {
+    if (kind_ == OperationKind::Edit)
+      {
+        properties["expected_revision"] = {
+          { "type",        "integer"                     },
+          { "minimum",     0                             },
+          { "description",
+           "The project revision the caller last saw. The edit is refused "
+            "when the current revision differs from it." },
+        };
+      }
+    nlohmann::json definition{
       { "name",        name_    },
       { "description", summary_ },
       { "inputSchema",
@@ -154,6 +170,15 @@ public:
           { "required", std::move (required) },
         }                       },
     };
+    if (kind_ == OperationKind::Query)
+      {
+        definition["annotations"] = {
+          { "readOnlyHint",    true  },
+          { "destructiveHint", false },
+          { "idempotentHint",  true  },
+        };
+      }
+    return definition;
   }
 
 private:

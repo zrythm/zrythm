@@ -283,6 +283,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 - [project_serialization_flow.md](doc/dev/project_serialization_flow.md): Project save/load format
 - [scenes_architecture.md](doc/dev/scenes_architecture.md): Scene system design
 - [plugin_group_architecture.md](doc/dev/plugin_group_architecture.md): Plugin grouping
+- [mcp_server.md](doc/dev/mcp_server.md): MCP server library architecture (layers, life cycle, protocol revisions, request flow, state and limits)
 
 ---
 
