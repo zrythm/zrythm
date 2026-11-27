@@ -18,6 +18,8 @@ target_sources(zrythm_frontends_gui_lib
     global_state.h
     juce_event_loop_bridge.h
     juce_event_loop_bridge.cpp
+    mcp_settings_controller.h
+    mcp_settings_controller.cpp
     modular_project_model.h
     modular_project_model.cpp
     notification.h
