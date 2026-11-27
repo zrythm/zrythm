@@ -55,6 +55,13 @@ elseif(APPLE)
   # Copy required executables for debugging
   add_custom_command(TARGET zrythm POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS $<TARGET_FILE:plugin-scanner>
+    # The application looks for the LV2 spec bundles in the Resources
+    # directory of its bundle, and only the install step puts them
+    # there. Copy them into the bundle of the build tree so the tests
+    # can run before packaging.
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${lv2_RES_DIRS}/lv2"
+      "$<TARGET_BUNDLE_CONTENT_DIR:zrythm>/Resources/lv2-specs"
     COMMAND_EXPAND_LISTS
   )
 endif()
