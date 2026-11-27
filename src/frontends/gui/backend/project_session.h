@@ -129,6 +129,9 @@ class ProjectSession : public QObject
       NOTIFY projectDirectoryChanged FINAL)
   Q_PROPERTY (
     zrythm::controllers::Clipboard * clipboard READ clipboard CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::frontends::mcp::McpEndpoint * mcpEndpoint READ mcpEndpoint CONSTANT
+      FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -193,6 +196,9 @@ public:
    * @brief Returns the application-wide object clipboard.
    */
   controllers::Clipboard * clipboard () const { return &clipboard_; }
+
+  /** The MCP endpoint of the session. */
+  mcp::McpEndpoint * mcpEndpoint () const { return mcp_service_.get (); }
 
   /**
    * @brief Returns the session's arranger object selection operator.

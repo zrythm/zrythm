@@ -5,6 +5,7 @@
 #include "dsp/parameter.h"
 #include "frontends/gui/backend/project_session.h"
 #include "frontends/gui/qquick/qfuture_qml_wrapper.h"
+#include "frontends/mcp/mcp_service.h"
 #include "utils/object_registry.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
@@ -12,6 +13,7 @@
 #include <QSignalSpy>
 
 #include "helpers/project_fixture.h"
+#include "helpers/scoped_env_var.h"
 
 #include "operations/operation.h"
 #include "operations/operation_registry.h"
@@ -168,6 +170,51 @@ TEST_F (ProjectSessionOperationsTest, SessionTracksUnsavedChanges)
   ASSERT_TRUE (saved.wait (5000));
   EXPECT_FALSE (session->hasUnsavedChanges ());
   EXPECT_EQ (changed.size (), 4);
+}
+
+class ProjectSessionMcpTest : public test_helpers::ProjectTestFixture
+{
+protected:
+  void SetUp () override
+  {
+    ProjectTestFixture::SetUp ();
+    // The settings decide whether the endpoint starts.
+    qunsetenv ("ZRYTHM_MCP_TOKEN");
+    qunsetenv ("ZRYTHM_MCP_PORT");
+  }
+
+  /** Creates the session. Its endpoint follows the MCP settings. */
+  void make_session ()
+  {
+    // The provider constructor never touches the OS clipboard, which
+    // this test environment does not provide
+    clipboard_ = utils::make_qobject_unique<controllers::Clipboard> (
+      [] () -> QString { return {}; }, [] (const QString &) { });
+    auto project = create_minimal_project_without_recording_callback ();
+    utils::QObjectUniquePtr<structure::project::Project> project_ptr (
+      project.release ());
+    session_ = utils::make_qobject_unique<ProjectSession> (
+      *app_settings_, *clipboard_, app_registry_, std::move (project_ptr));
+  }
+
+  test_helpers::ScopedEnvVar token_guard_{ "ZRYTHM_MCP_TOKEN" };
+  test_helpers::ScopedEnvVar port_guard_{ "ZRYTHM_MCP_PORT" };
+  utils::ObjectRegistry      app_registry_;
+  utils::QObjectUniquePtr<controllers::Clipboard> clipboard_;
+  utils::QObjectUniquePtr<ProjectSession>         session_;
+};
+
+// The session exposes its endpoint, and the endpoint follows the MCP
+// settings: enabling the setting without a token leaves it Failed
+TEST_F (ProjectSessionMcpTest, SessionExposesAnEndpointThatFollowsTheSettings)
+{
+  app_settings_->set_mcpEnabled (true);
+
+  make_session ();
+  ASSERT_NE (session_->mcpEndpoint (), nullptr);
+  EXPECT_EQ (
+    session_->mcpEndpoint ()->state (), mcp::McpEndpoint::State::Failed);
+  EXPECT_FALSE (session_->mcpEndpoint ()->errorText ().isEmpty ());
 }
 
 } // namespace zrythm::frontends::gui
