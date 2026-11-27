@@ -8,6 +8,7 @@ import QtQuick.Controls
 import QtQuick.Dialogs
 import QtQuick.Layouts
 import Zrythm
+import ZrythmMcp
 import ZrythmStyle
 import "../config.js" as Config
 
@@ -84,6 +85,17 @@ ApplicationWindow {
 
   signal closeApproved()
   signal closeCancelled()
+
+  /**
+   * Posts an error notification with the reason of the session's MCP
+   * endpoint while its state is Failed.
+   */
+  function reportFailedMcpEndpoint() {
+    const endpoint = root.session.mcpEndpoint;
+    if (endpoint.state === McpEndpoint.Failed)
+      root.notificationCenter.postError(
+        qsTr("MCP Server Failed to Start"), endpoint.errorText, "mcp-endpoint");
+  }
 
   /**
    * Closes the window. Unsaved changes ask the user first. Reports
@@ -175,6 +187,8 @@ ApplicationWindow {
   Component.onCompleted: {
     console.log("ApplicationWindow created on platform", Qt.platform.os);
     project.engine.activate();
+    // The endpoint can fail before this window exists
+    root.reportFailedMcpEndpoint();
   }
 
   // Resolves the view context from focus: the nearest ancestor of the
@@ -274,6 +288,14 @@ ApplicationWindow {
     }
 
     target: root.session.pluginImporter
+  }
+
+  Connections {
+    function onStateChanged() {
+      root.reportFailedMcpEndpoint();
+    }
+
+    target: root.session.mcpEndpoint
   }
 
   Connections {
