@@ -254,7 +254,7 @@ private:
     OperationContext     &ctx,
     std::index_sequence<I...>) const
   {
-    std::optional<Refusal> failure = std::nullopt;
+    std::optional<Refusal> failure;
     auto                   parsed = std::tuple{
       parse_one<param_at<I>> (args, specs_[I], ctx.environment (), failure)...
     };
@@ -279,7 +279,7 @@ private:
       (std::is_same_v<Values, typename param_at<I>::ValueType> && ...),
       "each argument must be its parameter's ValueType, in declaration "
       "order");
-    std::optional<Refusal> failure = std::nullopt;
+    std::optional<Refusal> failure;
     auto                   parsed = std::tuple{
       from_value_one<param_at<I>> (std::move (values), specs_[I], failure)...
     };

@@ -326,6 +326,8 @@ Zrythm makes extensive use of modern C++ features:
 - Use west const style for simple const qualifiers (e.g., `const int x`, not `int const x`)
 - Use `auto` for type-deduced variable declarations where the type is obvious from the initializer (e.g., `const auto &changes = tracker.changes();`, `auto * port = ...`)
 - Use brace initialization for member initializers, with `{}` when the value is the type's default (e.g., `std::size_t count{};`, `QObject * owner_{};`, `std::atomic<bool> running_{ false };`)
+- A default-constructed `std::optional` is empty, so its declaration carries no initializer, neither as a local nor as a member (e.g. `std::optional<std::string> title;`). Use `std::nullopt` for an absent return value (e.g. `return std::nullopt;`)
+- Add `{}` to a member declaration only when it is needed, which is when the member would stay uninitialized without it (e.g. `std::size_t count{};`, `QObject * owner_{};`). A member of a class type with a default constructor gets no initializer (e.g. `std::string name;`, `std::optional<std::string> title;`, `std::vector<int> values;`)
 - Prefer an immediately invoked lambda over a mutable variable pre-instantiated with a placeholder value and assigned inside a nested scope (e.g. `const auto status = [&] { std::lock_guard lock (m); return iface->work (...); } ();` instead of declaring `LV2_Worker_Status status = SUCCESS;` and assigning it in a brace block) — the result stays `const` and needs no dummy initializer
 - Prefer pimpl (pointer to implementation) for non-trivial class members that don't need to be exposed in the header, to reduce include dependencies and improve compile times
 - API doc comments (Doxygen `@brief`, `@param`, `@return`) must describe the contract — what the function does, its parameters, return value, preconditions, and edge cases — not who calls it or why it was introduced. Mentioning specific callers (e.g. "exposed for use by X") couples the docs to internal architecture and goes stale when those callers change; design rationale belongs in commit messages or architecture docs, not the method's API comment
@@ -491,4 +493,4 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 ---
 
-*This document is maintained by the Zrythm development team. Last updated: 2026-11-26*
+*This document is maintained by the Zrythm development team. Last updated: 2026-11-28*

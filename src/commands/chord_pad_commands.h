@@ -16,7 +16,7 @@ struct ChordPadState
   dsp::ChordType                  type = dsp::ChordType::None;
   dsp::ChordAccent                accent = dsp::ChordAccent::None;
   int                             inversion = 0;
-  std::optional<dsp::MusicalNote> bass = std::nullopt;
+  std::optional<dsp::MusicalNote> bass;
 
   static ChordPadState from_descriptor (const dsp::ChordDescriptor &d)
   {

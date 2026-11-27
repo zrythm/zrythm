@@ -61,7 +61,7 @@ template <typename... Results>
 [[nodiscard]] auto
 first_error (const Results &... results) -> std::optional<std::string>
 {
-  std::optional<std::string> error = std::nullopt;
+  std::optional<std::string> error;
   const auto                 take = [&error] (const auto &result) {
     if (!result.has_value () && !error.has_value ())
       error = result.error ();
