@@ -30,6 +30,7 @@ TestCase {
     testAppSettings.reset_mcpEnabled();
     testAppSettings.reset_mcpPort();
     testAppSettings.reset_mcpTokens();
+    testMcpEndpoint.turnOff();
     testUtils.unsetEnvironmentVariable("ZRYTHM_MCP_TOKEN");
   }
 
@@ -49,9 +50,21 @@ TestCase {
     return collectItems(page).filter((item) => item.objectName === "tokenRow");
   }
 
-  function makePage(): PreferencesIntegrationsPage {
-    const page = createTemporaryObject(pageComponent, test);
+  // Makes the page. It gets @p endpoint when the test passes one.
+  function makePage(endpoint = null): PreferencesIntegrationsPage {
+    const page = createTemporaryObject(pageComponent, test, {
+      "mcpEndpoint": endpoint
+    });
     verify(page);
+    return page;
+  }
+
+  // Makes the page with a token and the server on, as an endpoint that
+  // runs or fails needs.
+  function makeEnabledPage(endpoint = null): PreferencesIntegrationsPage {
+    const page = makePage(endpoint);
+    verify(controllerOf(page).addToken("studio", "full") !== "");
+    verify(controllerOf(page).setEnabled(true));
     return page;
   }
 
@@ -131,6 +144,58 @@ TestCase {
     mouseClick(enableSwitch);
     verify(!testAppSettings.mcpEnabled);
     compare(enableSwitch.checked, false);
+  }
+
+  function test_failed_endpoint_shows_the_reason_and_keeps_the_switch_on() {
+    testMcpEndpoint.fail("Port 7777 is already in use by another program.");
+    const page = makeEnabledPage(testMcpEndpoint);
+    const notice = findChild(page, "mcpFailureNotice");
+    const label = findChild(page, "mcpFailureLabel");
+    verify(notice);
+    verify(label);
+
+    compare(findChild(page, "mcpEnabledSwitch").checked, true);
+    compare(notice.visible, true);
+    compare(label.text, "Port 7777 is already in use by another program.");
+    compare(findChild(page, "mcpEnabledRow").subtitle, "The server is not running.");
+  }
+
+  function test_endpoint_names_its_state_while_it_is_on() {
+    testMcpEndpoint.start();
+    const page = makeEnabledPage(testMcpEndpoint);
+    const row = findChild(page, "mcpEnabledRow");
+    const notice = findChild(page, "mcpFailureNotice");
+    verify(row);
+    verify(notice);
+
+    compare(notice.visible, false);
+    compare(row.subtitle, "Starting…");
+
+    testMcpEndpoint.listen();
+    compare(notice.visible, false);
+    compare(row.subtitle, "Clients connect to http://127.0.0.1:7777/mcp");
+  }
+
+  function test_notice_disappears_when_the_endpoint_starts() {
+    testMcpEndpoint.fail("Port 7777 is already in use by another program.");
+    const page = makeEnabledPage(testMcpEndpoint);
+    const row = findChild(page, "mcpEnabledRow");
+    const notice = findChild(page, "mcpFailureNotice");
+    verify(row);
+    verify(notice);
+    compare(notice.visible, true);
+
+    testMcpEndpoint.listen();
+    compare(notice.visible, false);
+    compare(row.subtitle, "Clients connect to http://127.0.0.1:7777/mcp");
+  }
+
+  function test_page_without_an_endpoint_says_where_clients_connect() {
+    const page = makeEnabledPage();
+    compare(findChild(page, "mcpFailureNotice").visible, false);
+    compare(
+      findChild(page, "mcpEnabledRow").subtitle,
+      "Clients connect to http://127.0.0.1:7777/mcp");
   }
 
   function test_remove_rewrites_the_tokens() {

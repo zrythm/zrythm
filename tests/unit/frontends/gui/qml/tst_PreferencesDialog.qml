@@ -40,6 +40,17 @@ TestCase {
     compare(entries[0].title, "Return To Cue");
   }
 
+  function test_integrations_page_gets_the_endpoint() {
+    const dialog = createTemporaryObject(dialogComponent, test, {
+      "appSettings": testAppSettings,
+      "mcpEndpoint": testMcpEndpoint
+    });
+    verify(dialog);
+    const page = findChild(dialog, "integrationsPage");
+    verify(page);
+    compare(page.mcpEndpoint, testMcpEndpoint);
+  }
+
   function test_search_matches_row_terms() {
     const dialog = makeDialog();
     const entries = dialog.collectSearchEntries("lv2");

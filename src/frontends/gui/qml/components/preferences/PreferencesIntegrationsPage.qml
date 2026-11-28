@@ -8,6 +8,7 @@ import QtQuick.Controls
 import QtQuick.Controls.impl
 import QtQuick.Layouts
 import Zrythm
+import ZrythmMcp
 import ZrythmStyle
 
 ZrythmPreferencesPage {
@@ -32,6 +33,23 @@ ZrythmPreferencesPage {
       "title": qsTr("Full Access")
     }
   ]
+  property McpEndpoint mcpEndpoint: null
+
+  // The subtitle of the enable row. While the endpoint starts, listens
+  // or has failed it names that state; otherwise it says what the
+  // settings allow.
+  readonly property string serverSubtitle: {
+    const endpoint = root.mcpEndpoint;
+    if (endpoint !== null) {
+      if (endpoint.state === McpEndpoint.Starting)
+        return qsTr("Starting…");
+      if (endpoint.state === McpEndpoint.Failed)
+        return qsTr("The server is not running.");
+    }
+    if (!controller.canEnable)
+      return qsTr("Add an access token to enable the server.");
+    return qsTr("Clients connect to %1").arg(controller.endpointUrl);
+  }
   title: qsTr("Integrations")
 
   McpSettingsController {
@@ -82,9 +100,11 @@ ZrythmPreferencesPage {
     subtitle: qsTr("Let AI assistants and other MCP clients connect to Zrythm on this computer")
 
     ActionRow {
+      id: enabledRow
+
       hoverBaseColor: ZrythmTheme.cardColor
       objectName: "mcpEnabledRow"
-      subtitle: controller.canEnable ? qsTr("Clients connect to %1").arg(controller.endpointUrl) : qsTr("Add an access token to enable the server.")
+      subtitle: root.serverSubtitle
       title: qsTr("Enable MCP Server")
 
       Switch {
@@ -98,6 +118,36 @@ ZrythmPreferencesPage {
           if (!controller.setEnabled(enableSwitch.checked))
             enableSwitch.checked = Qt.binding(() => controller.enabled);
         }
+      }
+    }
+
+    // Shown while the endpoint reports why it could not start.
+    RowLayout {
+      Layout.fillWidth: true
+      Layout.leftMargin: enabledRow.leftPadding
+      Layout.rightMargin: enabledRow.rightPadding
+      objectName: "mcpFailureNotice"
+      spacing: ZrythmTheme.buttonPadding
+      visible: root.mcpEndpoint !== null && root.mcpEndpoint.state === McpEndpoint.Failed
+
+      IconImage {
+        Layout.alignment: Qt.AlignTop
+        Layout.preferredHeight: 16
+        Layout.preferredWidth: 16
+        color: ZrythmTheme.errorTextColor
+        source: ResourceManager.getIconUrl("gnome-icon-library", "warning-outline-symbolic.svg")
+        sourceSize.height: 16
+        sourceSize.width: 16
+      }
+
+      Label {
+        id: failureLabel
+
+        Layout.fillWidth: true
+        color: ZrythmTheme.errorTextColor
+        objectName: "mcpFailureLabel"
+        text: root.mcpEndpoint?.errorText ?? ""
+        wrapMode: Text.WordWrap
       }
     }
 

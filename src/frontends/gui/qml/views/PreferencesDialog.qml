@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
+import ZrythmMcp
 import ZrythmStyle
 
 Dialog {
@@ -24,6 +25,7 @@ Dialog {
     { iconFile: "terminal-symbolic.svg", title: qsTr("Integrations") },
     { iconFile: "wrench-wide-symbolic.svg", title: qsTr("Advanced") }
   ]
+  property McpEndpoint mcpEndpoint: null
 
   readonly property var visibleSearchEntries: {
     const query = searchField.text.trim().toLowerCase();
@@ -162,6 +164,7 @@ Dialog {
           Layout.fillHeight: true
           Layout.fillWidth: true
           appSettings: root.appSettings
+          mcpEndpoint: root.mcpEndpoint
           objectName: "integrationsPage"
         }
 

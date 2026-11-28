@@ -360,6 +360,7 @@ ApplicationWindow {
     id: preferencesDialog
 
     appSettings: root.appSettings
+    mcpEndpoint: root.session.mcpEndpoint
   }
 
   FileDialog {

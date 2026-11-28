@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "frontends/mcp/mcp_endpoint.h"
 #include "utils/app_settings.h"
 
 #include <QClipboard>
@@ -15,6 +16,28 @@
 
 namespace
 {
+// An endpoint the tests put in a state by hand. Exposed to the tests as
+// the context property "testMcpEndpoint".
+class FakeMcpEndpoint final : public zrythm::frontends::mcp::McpEndpoint
+{
+  Q_OBJECT
+
+public:
+  explicit FakeMcpEndpoint (QObject * parent = nullptr) : McpEndpoint (parent)
+  {
+  }
+
+  Q_INVOKABLE void start () { set_state (State::Starting); }
+  Q_INVOKABLE void listen () { set_state (State::Listening); }
+  Q_INVOKABLE void turnOff () { set_state (State::Off); }
+  /** The reason goes first: a state other than Failed clears it. */
+  Q_INVOKABLE void fail (const QString &reason)
+  {
+    set_error_text (reason);
+    set_state (State::Failed);
+  }
+};
+
 // Exposed to the tests as the context property "testUtils".
 class QmlTestSetup final : public QObject
 {
@@ -44,13 +67,17 @@ private Q_SLOTS:
     settings_ = std::make_unique<zrythm::utils::AppSettings> (
       std::make_unique<zrythm::test_helpers::InMemorySettingsBackend> (),
       zrythm::utils::UserDirectories{}, this);
+    endpoint_ = std::make_unique<FakeMcpEndpoint> (this);
     engine->rootContext ()->setContextProperty (
       "testAppSettings", settings_.get ());
+    engine->rootContext ()->setContextProperty (
+      "testMcpEndpoint", endpoint_.get ());
     engine->rootContext ()->setContextProperty ("testUtils", this);
   }
 
 private:
   std::unique_ptr<zrythm::utils::AppSettings> settings_;
+  std::unique_ptr<FakeMcpEndpoint>            endpoint_;
 };
 }
 

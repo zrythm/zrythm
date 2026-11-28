@@ -13,6 +13,7 @@ qt_add_qml_module(zrythm_frontends_gui_qml_unit_tests
 
 target_link_libraries(zrythm_frontends_gui_qml_unit_tests PRIVATE
   Qt6::QuickTest
+  zrythm_frontends_mcp_lib
   zrythm_utils_lib
 )
 

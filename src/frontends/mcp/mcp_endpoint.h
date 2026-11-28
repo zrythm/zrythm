@@ -22,7 +22,9 @@ class McpEndpoint : public QObject
   QML_ELEMENT
   QML_UNCREATABLE ("Owned by the project session")
 
-  Q_PROPERTY (McpEndpoint::State state READ state NOTIFY stateChanged FINAL)
+  Q_PROPERTY (
+    zrythm::frontends::mcp::McpEndpoint::State state READ state NOTIFY
+      stateChanged FINAL)
   Q_PROPERTY (QString errorText READ errorText NOTIFY errorTextChanged FINAL)
 
 public:
