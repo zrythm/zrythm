@@ -342,7 +342,9 @@ protected:
 
     server_->set_authenticator (
       [] (const HttpRequest &request) -> std::expected<TestIdentity, std::string> {
-        if (request.header ("Authorization") == "Bearer secret-token")
+        if (
+          request.header ("Authorization")
+          == "Bearer " + http_test::to_bytes (kToken))
           {
             return TestIdentity{ std::string (kIdentity) };
           }
@@ -394,7 +396,7 @@ protected:
     return McpHttpClient::Request{}
       .json_body (message)
       .stateless (method, name, version)
-      .bearer ("secret-token");
+      .bearer (http_test::to_bytes (kToken));
   }
 
   /**
@@ -453,7 +455,7 @@ protected:
             { "protocolVersion", "2025-11-25" },
             { "capabilities", nlohmann::json::object () },
             { "clientInfo", { { "name", "test" }, { "version", "1" } } } }))
-      .bearer ("secret-token");
+      .bearer (http_test::to_bytes (kToken));
   }
 
   /** A POST of @p message that belongs to the legacy session @p session_id. */
@@ -464,7 +466,7 @@ protected:
     return McpHttpClient::Request{}
       .json_body (message)
       .session (session_id)
-      .bearer ("secret-token");
+      .bearer (http_test::to_bytes (kToken));
   }
 
   /** Starts a legacy session and returns its id. */
@@ -560,7 +562,7 @@ TEST_F (McpServerTest, RequestWithAnOriginIsRefused)
           http_test::stateless_params (nlohmann::json::object ())))
       .stateless ("tools/list")
       .header ("Origin", "https://example.com")
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   EXPECT_EQ (response.status, 403);
 }
 
@@ -606,7 +608,7 @@ TEST_F (McpServerTest, RequestNeedsBothResponseMediaTypes)
           .header ("Content-Type", "application/json")
           .header ("Accept", accept)
           .stateless ("tools/list")
-          .bearer ("secret-token"));
+          .bearer (http_test::to_bytes (kToken)));
       EXPECT_EQ (response.status, 406) << accept;
     }
   // The wildcard of a type stands for every subtype of the type.
@@ -629,7 +631,7 @@ TEST_F (McpServerTest, RequestNeedsAJsonContentType)
       .header ("Content-Type", "text/plain")
       .header ("Accept", "application/json, text/event-stream")
       .stateless ("tools/list")
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   EXPECT_EQ (response.status, 415);
 }
 
@@ -675,14 +677,14 @@ TEST_F (McpServerTest, GetAndDeleteAreNotAllowed)
     McpHttpClient::Request{ .method = "GET" }
       .header ("Accept", "text/event-stream")
       .header ("MCP-Protocol-Version", version)
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   EXPECT_EQ (get.status, 405);
   EXPECT_TRUE (get.allows ("POST"));
   EXPECT_FALSE (get.allows ("GET"));
   const auto deleted = client_->send (
     McpHttpClient::Request{ .method = "DELETE" }
       .header ("MCP-Protocol-Version", version)
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   EXPECT_EQ (deleted.status, 405);
 }
 
@@ -860,7 +862,7 @@ TEST_F (McpServerTest, MethodHeaderMustMatchTheBody)
       .header (
         "MCP-Protocol-Version",
         http_test::to_bytes (http_test::kStatelessRevision))
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   EXPECT_EQ (missing.status, 400);
   EXPECT_EQ (error_code (missing), -32020);
   // The header names another method.
@@ -880,7 +882,7 @@ TEST_F (McpServerTest, MethodHeaderMustMatchTheBody)
         http_test::to_bytes (
           std::string ("=?base64?")
           + QByteArray ("tools/list").toBase64 ().toStdString () + "?="))
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   EXPECT_EQ (error_code (encoded_method), -32020);
 }
 
@@ -895,7 +897,7 @@ TEST_F (McpServerTest, NameHeaderMustMatchTheBody)
           http_test::rpc_request (
             1, "tools/call", http_test::stateless_params ({ { "name", "echo" } })))
         .stateless ("tools/call")
-        .bearer ("secret-token");
+        .bearer (http_test::to_bytes (kToken));
     if (name.has_value ())
       {
         request.header ("Mcp-Name", http_test::to_bytes (*name));
@@ -980,7 +982,7 @@ TEST_F (McpServerTest, MalformedMessageIsRefused)
         .header ("Content-Type", "application/json")
         .header ("Accept", "application/json, text/event-stream")
         .stateless ("tools/list")
-        .bearer ("secret-token"));
+        .bearer (http_test::to_bytes (kToken)));
   };
   // Text that is not JSON is a parse error.
   const auto parse_error = post_raw ("{not json");
@@ -1027,7 +1029,9 @@ TEST_F (McpServerTest, ClientResponseIsRefusedInTheStatelessRevision)
   EXPECT_TRUE (stateless.json ().at ("id").is_null ());
   // The session-based revision takes responses.
   const auto legacy = client_->send (
-    McpHttpClient::Request{}.json_body (client_response).bearer ("secret-token"));
+    McpHttpClient::Request{}
+      .json_body (client_response)
+      .bearer (http_test::to_bytes (kToken)));
   EXPECT_EQ (legacy.status, 202);
 }
 
@@ -1343,7 +1347,7 @@ TEST_F (McpServerTest, LegacyInitializeStartsASession)
             { "protocolVersion", "1999-01-01" },
             { "capabilities", nlohmann::json::object () },
             { "clientInfo", { { "name", "test" }, { "version", "1" } } } }))
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   ASSERT_EQ (negotiated.status, 200) << negotiated.body.toStdString ();
   EXPECT_NE (negotiated.header ("Mcp-Session-Id"), session_id);
   EXPECT_EQ (
@@ -1355,7 +1359,8 @@ TEST_F (McpServerTest, LegacyRequestsNeedTheSession)
   start ();
   const auto message = http_test::rpc_request (1, "tools/list");
   const auto missing = client_->send (
-    McpHttpClient::Request{}.json_body (message).bearer ("secret-token"));
+    McpHttpClient::Request{}.json_body (message).bearer (
+      http_test::to_bytes (kToken)));
   EXPECT_EQ (missing.status, 400);
   EXPECT_EQ (error_code (missing), -32600);
   const auto unknown = client_->send (legacy_post (message, "no-such-session"));
@@ -1373,7 +1378,7 @@ TEST_F (McpServerTest, LegacyStreamCarriesTheSubscribedUpdates)
     McpHttpClient::Request{ .method = "GET" }
       .header ("Accept", "text/event-stream")
       .session (session_id)
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   ASSERT_EQ (stream->response ().status, 200);
   EXPECT_TRUE (
     stream->response ().header ("Content-Type").contains ("text/event-stream"));
@@ -1458,7 +1463,7 @@ TEST_F (McpServerTest, LegacyDeleteEndsTheSession)
   const auto deleted = client_->send (
     McpHttpClient::Request{ .method = "DELETE" }
       .session (session_id)
-      .bearer ("secret-token"));
+      .bearer (http_test::to_bytes (kToken)));
   EXPECT_EQ (deleted.status, 200);
   const auto after = client_->send (
     legacy_post (http_test::rpc_request (2, "ping"), session_id));
