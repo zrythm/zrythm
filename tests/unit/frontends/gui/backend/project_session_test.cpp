@@ -30,11 +30,18 @@ class ProjectSessionOperationsTest : public test_helpers::ProjectTestFixture
 namespace
 {
 
+/**
+ * Dispatches @p id with the current revision of the session's undo
+ * stack.
+ */
 operations::OperationReport
 dispatch (ProjectSession &session, operations::OperationId id, nlohmann::json args)
 {
+  const operations::DispatchOptions options{
+    .expected_revision = session.undoStack ()->revision ()
+  };
   return session.operation_registry ()->dispatch (
-    id, args, *session.operation_environment ());
+    id, args, *session.operation_environment (), options);
 }
 
 } // namespace

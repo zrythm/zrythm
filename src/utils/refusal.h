@@ -43,6 +43,9 @@ enum class RefusalKind
   /** The caller's expected revision does not match the current one. */
   StaleRevision,
 
+  /** The caller gave no expected revision where one is required. */
+  MissingRevision,
+
   /** The request would create a routing loop. */
   CyclicRoute,
 
@@ -86,6 +89,8 @@ to_string (RefusalKind kind)
       return "unavailable";
     case RefusalKind::StaleRevision:
       return "stale_revision";
+    case RefusalKind::MissingRevision:
+      return "missing_revision";
     case RefusalKind::CyclicRoute:
       return "cyclic_route";
     case RefusalKind::TypeMismatch:

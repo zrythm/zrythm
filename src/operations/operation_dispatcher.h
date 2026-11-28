@@ -36,7 +36,8 @@ public:
    * Looks up the operation by id and runs it against the environment.
    *
    * An unknown id is an Error report; anything the operation rejects
-   * is a Refused report.
+   * is a Refused report. An Edit without an expected revision is refused
+   * with MissingRevision.
    */
   [[nodiscard]] OperationReport dispatch (
     OperationId            id,

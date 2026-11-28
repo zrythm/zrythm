@@ -510,6 +510,26 @@ TEST_F (McpFrontendTest, ToolCatalogMatchesRegistry)
     }
 }
 
+TEST_F (McpFrontendTest, EditToolsRequireAnExpectedRevision)
+{
+  const auto catalog = make_tool_catalog (operation_registry_);
+  ASSERT_TRUE (catalog.has_value ()) << catalog.error ();
+  for (const auto &tool : catalog->tools)
+    {
+      const auto  definition = tool.to_json ();
+      const auto &required = definition.at ("inputSchema").at ("required");
+      const auto  is_edit =
+        catalog->by_name.at (tool.name ()).kind
+        == operations::OperationKind::Edit;
+      // An edit tool lists the revision as required; the others do not
+      // list it.
+      EXPECT_EQ (
+        std::ranges::find (required, "expected_revision") != required.end (),
+        is_edit)
+        << tool.name ();
+    }
+}
+
 TEST_F (McpFrontendTest, ToolNamesFollowTheClientContract)
 {
   const auto catalog = make_tool_catalog (operation_registry_);
@@ -881,15 +901,20 @@ TEST_F (McpFrontendTest, StatelessRevisionListsAndCallsTools)
     }
   EXPECT_EQ (undo_stack_->count (), 1);
 
-  // A query grant cannot edit.
+  // A query grant cannot edit. The call carries the current revision, so
+  // only the grant can refuse it.
   http_test::McpHttpClient query_client (port);
   const auto               refused_result = stateless_call (
     query_client, QByteArray ("query-secret"), 5, "track_set_name",
     {
-      { "track",    track_uuid },
-      { "new_name", "Nope"     }
+      { "track",             track_uuid                   },
+      { "new_name",          "Nope"                       },
+      { "expected_revision", report.at ("revision_after") }
   });
   EXPECT_TRUE (refused_result.at ("isError").get<bool> ());
+  const auto refused_text =
+    refused_result.at ("content").at (0).at ("text").get<std::string> ();
+  EXPECT_NE (refused_text.find ("grant"), std::string::npos);
   EXPECT_EQ (undo_stack_->count (), 1);
 
   // A request without a token is rejected by the transport.
@@ -902,6 +927,57 @@ TEST_F (McpFrontendTest, StatelessRevisionListsAndCallsTools)
           http_test::stateless_params (nlohmann::json::object ())))
       .stateless ("tools/list"));
   EXPECT_EQ (unauthenticated.status, 401);
+}
+
+TEST_F (McpFrontendTest, StatelessRevisionRefusesAnEditWithoutExpectedRevision)
+{
+  const auto port = http_test::McpHttpClient::pick_free_port ();
+  start_service (
+    { McpToken::from_secret (
+      QStringLiteral ("full"), McpGrant::Full, QStringLiteral ("full-secret")) },
+    port);
+
+  http_test::McpHttpClient client (port);
+  const QByteArray         token ("full-secret");
+  auto *                   track = add_audio_track ();
+  track->setName ("Original");
+  const auto track_uuid = uuid_of (*track);
+
+  // An edit without expected_revision is refused, and the report carries
+  // the current revision.
+  const auto revision = undo_stack_->revision ();
+  const auto refused_result = stateless_call (
+    client, token, 1, "track_set_name",
+    {
+      { "track",    track_uuid },
+      { "new_name", "Renamed"  }
+  });
+  EXPECT_TRUE (refused_result.at ("isError").get<bool> ());
+  const auto refused_report = report_of (refused_result);
+  EXPECT_EQ (refused_report.at ("status"), "refused");
+  EXPECT_EQ (refused_report.at ("refusal_kind"), "missing_revision");
+  EXPECT_NE (
+    refused_report.at ("message").get<std::string> ().find ("expected_revision"),
+    std::string::npos);
+  EXPECT_EQ (
+    refused_report.at ("revision_before").get<std::uint64_t> (), revision);
+  EXPECT_EQ (
+    refused_report.at ("revision_after").get<std::uint64_t> (), revision);
+  EXPECT_EQ (track->name (), QString ("Original"));
+  EXPECT_EQ (undo_stack_->count (), 0);
+
+  // The same edit with that revision is applied.
+  const auto applied_result = stateless_call (
+    client, token, 2, "track_set_name",
+    {
+      { "track",             track_uuid },
+      { "new_name",          "Renamed"  },
+      { "expected_revision", revision   }
+  });
+  EXPECT_FALSE (applied_result.value ("isError", false));
+  EXPECT_EQ (report_of (applied_result).at ("status"), "applied");
+  EXPECT_EQ (track->name (), QString ("Renamed"));
+  EXPECT_EQ (undo_stack_->count (), 1);
 }
 
 // ============================================================================
@@ -970,7 +1046,8 @@ TEST_F (McpFrontendTest, LegacyRevisionForwardsJournalEntries)
     nlohmann::json{
       { "track", uuid_of (*track) },
       { "new_name", "Journal Test" },
-    });
+    },
+    operations::DispatchOptions{ .expected_revision = undo_stack_->revision () });
   ASSERT_TRUE (report.applied ());
   ASSERT_EQ (undo_stack_->count (), 1);
 

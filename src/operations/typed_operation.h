@@ -140,7 +140,7 @@ public:
    *
    * A query carries the annotations that it changes nothing, so no call of it
    * destroys anything and a repeated call has no further effect. An edit also
-   * takes the optional argument expected_revision: the project revision the
+   * takes the required argument expected_revision: the project revision the
    * caller last saw. The other kinds carry no annotations, so each hint keeps
    * its default.
    */
@@ -159,6 +159,7 @@ public:
            "The project revision the caller last saw. The edit is refused "
             "when the current revision differs from it." },
         };
+        required.push_back ("expected_revision");
       }
     nlohmann::json definition{
       { "name",        std::string (tool_name) },

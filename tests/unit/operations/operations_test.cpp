@@ -185,11 +185,25 @@ protected:
         .view ());
   }
 
+  /**
+   * Dispatches @p id. An Edit whose options carry no expected revision
+   * gets the current one.
+   */
   OperationReport dispatch (
     OperationId            id,
     nlohmann::json         args = nlohmann::json::object (),
     const DispatchOptions &options = {})
   {
+    const auto * op = operation_registry_.find (id);
+    if (
+      !options.expected_revision.has_value () && op != nullptr
+      && op->kind () == OperationKind::Edit)
+      {
+        auto with_revision = options;
+        with_revision.expected_revision = undo_stack_->revision ();
+        return operation_registry_.dispatch (
+          id, args, *environment_, with_revision);
+      }
     return operation_registry_.dispatch (id, args, *environment_, options);
   }
 
@@ -356,8 +370,12 @@ TEST_F (OperationsTest, ToolDefinitionsDescribeTheirInput)
   ASSERT_TRUE (props.contains ("new_name"));
   EXPECT_EQ (props.at ("new_name").at ("minLength").get<int> (), 1);
   EXPECT_EQ (props.at ("new_name").at ("maxLength").get<int> (), 128);
-  const auto &required = set_name.at ("inputSchema").at ("required");
-  ASSERT_EQ (required.size (), 2);
+  auto required =
+    set_name.at ("inputSchema").at ("required").get<std::vector<std::string>> ();
+  std::ranges::sort (required);
+  EXPECT_EQ (
+    required,
+    (std::vector<std::string>{ "expected_revision", "new_name", "track" }));
 
   const auto list =
     operation_registry_.find ({ "track", "list" })
@@ -402,7 +420,7 @@ TEST_F (OperationsTest, ToolDefinitionsMatchTheirOperationKind)
           EXPECT_EQ (expected_revision->at ("minimum").get<int> (), 0)
             << op.id ().to_string ();
           const auto &required = def.at ("inputSchema").at ("required");
-          EXPECT_EQ (
+          EXPECT_NE (
             std::ranges::find (required, "expected_revision"), required.end ())
             << op.id ().to_string ();
         }
@@ -410,6 +428,10 @@ TEST_F (OperationsTest, ToolDefinitionsMatchTheirOperationKind)
         {
           EXPECT_EQ (
             expected_revision, def.at ("inputSchema").at ("properties").end ())
+            << op.id ().to_string ();
+          const auto &required = def.at ("inputSchema").at ("required");
+          EXPECT_EQ (
+            std::ranges::find (required, "expected_revision"), required.end ())
             << op.id ().to_string ();
         }
     }
@@ -1576,6 +1598,13 @@ TEST_F (OperationsTest, EditRefusesStaleExpectedRevision)
   EXPECT_EQ (track->name (), QString ("Intro"));
   EXPECT_EQ (undo_stack_->count (), 1);
 
+  // the stale revision is reported before the missing arguments
+  report = dispatch (
+    OperationId{ "track", "set_name" }, {},
+    DispatchOptions{ .expected_revision = first.revision_before });
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::StaleRevision);
+
   // with the revision it was told about, the same edit applies
   auto retry = dispatch (
     OperationId{
@@ -1599,6 +1628,64 @@ TEST_F (OperationsTest, QueryAndControlIgnoreExpectedRevision)
       "transport", "set_play_state"
   },
     { { "state", "Rolling" } }, DispatchOptions{ .expected_revision = 99 });
+  EXPECT_TRUE (report.applied ());
+}
+
+TEST_F (OperationsTest, EditRefusesAMissingExpectedRevision)
+{
+  auto * track = add_audio_track_directly ();
+  track->setName ("Original");
+
+  auto first = dispatch (
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Intro" } });
+  ASSERT_TRUE (first.applied ()) << first.message;
+
+  auto report = operation_registry_.dispatch (
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Drums" } }, *environment_);
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::MissingRevision);
+  EXPECT_NE (report.message.find ("expected_revision"), std::string::npos);
+  EXPECT_NE (report.message.find ("Re-read"), std::string::npos);
+  EXPECT_EQ (report.revision_before, first.revision_after);
+  EXPECT_EQ (report.revision_after, report.revision_before);
+  EXPECT_EQ (track->name (), QString ("Intro"));
+  EXPECT_EQ (undo_stack_->count (), 1);
+
+  // the missing revision is reported before the missing arguments
+  report = operation_registry_.dispatch (
+    OperationId{ "track", "set_name" }, {}, *environment_);
+  ASSERT_TRUE (report.refused ());
+  EXPECT_EQ (report.refusal_kind, utils::RefusalKind::MissingRevision);
+
+  // with the current revision, the same edit applies
+  auto retry = dispatch (
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Drums" } },
+    DispatchOptions{ .expected_revision = first.revision_after });
+  ASSERT_TRUE (retry.applied ()) << retry.message;
+  EXPECT_EQ (track->name (), QString ("Drums"));
+  EXPECT_EQ (undo_stack_->count (), 2);
+}
+
+TEST_F (OperationsTest, QueryAndControlNeedNoExpectedRevision)
+{
+  auto report =
+    operation_registry_.dispatch ({ "track", "list" }, {}, *environment_);
+  EXPECT_TRUE (report.applied ());
+
+  report = operation_registry_.dispatch (
+    OperationId{
+      "transport", "set_play_state"
+  },
+    { { "state", "Rolling" } }, *environment_);
   EXPECT_TRUE (report.applied ());
 }
 
@@ -2327,8 +2414,7 @@ TEST_F (OperationsTest, EveryOperationHandlesEmptyArguments)
 {
   for (const auto &op : operation_registry_.operations ())
     {
-      auto report = operation_registry_.dispatch (
-        op.id (), nlohmann::json::object (), *environment_);
+      auto report = dispatch (op.id (), nlohmann::json::object ());
       if (report.refused ())
         {
           EXPECT_FALSE (report.message.empty ())

@@ -65,7 +65,7 @@ private:
 };
 
 /**
- * Optional dispatch policies, applied by the registry before the operation
+ * Options of a dispatch, checked by the registry before the operation
  * runs.
  */
 struct DispatchOptions
@@ -73,10 +73,8 @@ struct DispatchOptions
   /**
    * The project revision the caller last saw.
    *
-   * Edit operations are refused when this does not match the undo stack's
-   * current revision, so a client working from stale state cannot
-   * overwrite another client's changes unnoticed. Query and Control
-   * operations ignore it.
+   * An Edit is refused when this is not set or does not match the undo
+   * stack's current revision. Query and Control operations ignore it.
    */
   std::optional<std::uint64_t> expected_revision;
 };
@@ -134,9 +132,10 @@ public:
    * Looks up the operation by id and runs it.
    *
    * An unknown id is an Error report; anything the operation rejects is a
-   * Refused report. The expected-revision check runs before argument
-   * validation. Dispatch is not synchronized: every call must happen on
-   * one thread.
+   * Refused report. An Edit is refused with MissingRevision when it carries
+   * no expected revision, and with StaleRevision when the revision is not
+   * the current one. Both checks run before argument validation. Dispatch
+   * is not synchronized: every call must happen on one thread.
    */
   OperationReport dispatch (
     OperationId            id,
@@ -148,32 +147,69 @@ public:
     const auto * op = find (id);
     if (op == nullptr)
       {
-        OperationReport report;
-        report.status = OperationStatus::Error;
-        report.message = fmt::format ("unknown operation '{}'", id.to_string ());
-        report.revision_before = current_revision;
-        report.revision_after = current_revision;
-        return report;
+        return unchanged_report (
+          OperationStatus::Error,
+          fmt::format ("unknown operation '{}'", id.to_string ()),
+          current_revision);
+      }
+    if (
+      op->kind () == OperationKind::Edit
+      && !options.expected_revision.has_value ())
+      {
+        return refused_report (
+          utils::RefusalKind::MissingRevision,
+          fmt::format (
+            "expected_revision is required; the current revision is {}. "
+            "Re-read the state, then retry with expected_revision set to "
+            "it.",
+            current_revision),
+          current_revision);
       }
     if (
       options.expected_revision.has_value () && op->kind () == OperationKind::Edit
       && *options.expected_revision != current_revision)
       {
-        OperationReport report;
-        report.status = OperationStatus::Refused;
-        report.refusal_kind = utils::RefusalKind::StaleRevision;
-        report.message = fmt::format (
-          "expected revision {} but the current revision is {}; re-read and "
-          "retry",
-          *options.expected_revision, current_revision);
-        report.revision_before = current_revision;
-        report.revision_after = current_revision;
-        return report;
+        return refused_report (
+          utils::RefusalKind::StaleRevision,
+          fmt::format (
+            "expected revision {} but the current revision is {}; re-read and "
+            "retry",
+            *options.expected_revision, current_revision),
+          current_revision);
       }
     return op->invoke (args, env);
   }
 
 private:
+  /**
+   * A report of a request that changed nothing: @p status, @p message,
+   * and @p revision before and after.
+   */
+  static OperationReport unchanged_report (
+    OperationStatus status,
+    std::string     message,
+    std::uint64_t   revision)
+  {
+    OperationReport report;
+    report.status = status;
+    report.message = std::move (message);
+    report.revision_before = revision;
+    report.revision_after = revision;
+    return report;
+  }
+
+  /** A refused report that carries @p kind and changed nothing. */
+  static OperationReport refused_report (
+    utils::RefusalKind kind,
+    std::string        message,
+    std::uint64_t      revision)
+  {
+    auto report = unchanged_report (
+      OperationStatus::Refused, std::move (message), revision);
+    report.refusal_kind = kind;
+    return report;
+  }
+
   std::vector<Operation> operations_;
 };
 

@@ -18,6 +18,7 @@ TEST (RefusalKindTest, WireNamesAreStable)
   EXPECT_EQ (to_string (RefusalKind::InvalidState), "invalid_state");
   EXPECT_EQ (to_string (RefusalKind::Unavailable), "unavailable");
   EXPECT_EQ (to_string (RefusalKind::StaleRevision), "stale_revision");
+  EXPECT_EQ (to_string (RefusalKind::MissingRevision), "missing_revision");
   EXPECT_EQ (to_string (RefusalKind::CyclicRoute), "cyclic_route");
   EXPECT_EQ (to_string (RefusalKind::TypeMismatch), "type_mismatch");
   EXPECT_EQ (to_string (RefusalKind::AlreadyExists), "already_exists");

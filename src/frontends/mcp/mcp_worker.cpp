@@ -195,9 +195,10 @@ McpWorkerController::start_server (Config config)
   options.instructions =
     "Zrythm operations. Tools map one-to-one to operations. Every tool "
     "call returns a JSON report with the project revision before and "
-    "after. Edit tools accept an optional 'expected_revision' argument: "
-    "when it does not match the current revision the edit is refused and "
-    "the report carries the current revision. Journal entries are "
+    "after. Edit tools require an 'expected_revision' argument: when it "
+    "is missing or does not match the current revision the edit is "
+    "refused and the report carries the current revision; re-read the "
+    "state and send the edit again with that value. Journal entries are "
     "published as updates of the zrythm://journal resource.";
   auto server = std::make_unique<Server> (std::move (options));
 
