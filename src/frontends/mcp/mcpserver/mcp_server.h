@@ -71,9 +71,9 @@ public:
   {
     z_return_if_fail (authenticator != nullptr);
     engine_->set_authenticator (
-      [authenticator = std::move (authenticator)] (
+      [inner_authenticator = std::move (authenticator)] (
         const HttpRequest &request) -> ProtocolEngine::Identity {
-        auto identity = authenticator (request);
+        auto identity = inner_authenticator (request);
         if (!identity.has_value ())
           {
             z_warning ("MCP request refused: {}", identity.error ());
@@ -100,14 +100,14 @@ public:
   {
     z_return_if_fail (handler != nullptr);
     engine_->set_call_tool_handler (
-      [handler = std::move (handler)] (
+      [inner_handler = std::move (handler)] (
         const ToolCall &call, const ProtocolRevision revision,
         const ProtocolEngine::Identity &identity) -> QFuture<CallToolResult> {
         const auto client_identity = std::any_cast<Identity> (&identity);
         z_return_val_if_fail (
           client_identity != nullptr, QFuture<CallToolResult>{});
         const RequestContext context{ *client_identity, revision };
-        return handler (call, context);
+        return inner_handler (call, context);
       });
   }
 
