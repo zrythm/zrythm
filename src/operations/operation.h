@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -54,29 +55,43 @@ struct OperationId
   }
 };
 
+namespace detail
+{
+constexpr auto is_lowercase_letter = [] (char c) {
+  return c >= 'a' && c <= 'z';
+};
+constexpr auto is_digit = [] (char c) { return c >= '0' && c <= '9'; };
+} // namespace detail
+
+/**
+ * Whether @p name is lowercase snake_case: a lowercase letter, then
+ * lowercase letters, digits and underscores.
+ */
+[[nodiscard]] inline bool
+is_lowercase_snake_case (std::string_view name)
+{
+  return !name.empty () && detail::is_lowercase_letter (name.front ())
+         && std::ranges::all_of (name, [] (char c) {
+              return detail::is_lowercase_letter (c) || detail::is_digit (c)
+                     || c == '_';
+            });
+}
+
 /** The naming rule @p id breaks, or no value when the id is valid. */
 [[nodiscard]] inline std::optional<std::string_view>
 check_operation_id (OperationId id)
 {
-  const auto is_letter = [] (char c) { return c >= 'a' && c <= 'z'; };
-  const auto is_digit = [] (char c) { return c >= '0' && c <= '9'; };
-  if (id.group.empty () || !is_letter (id.group.front ()))
+  if (id.group.empty () || !detail::is_lowercase_letter (id.group.front ()))
     {
       return "the group must start with a lowercase letter";
     }
-  if (!std::ranges::all_of (id.group, [&] (char c) {
-        return is_letter (c) || is_digit (c);
+  if (!std::ranges::all_of (id.group, [] (char c) {
+        return detail::is_lowercase_letter (c) || detail::is_digit (c);
       }))
     {
       return "the group must be one lowercase word";
     }
-  if (id.function.empty () || !is_letter (id.function.front ()))
-    {
-      return "the function must start with a lowercase letter";
-    }
-  if (!std::ranges::all_of (id.function, [&] (char c) {
-        return is_letter (c) || is_digit (c) || c == '_';
-      }))
+  if (!is_lowercase_snake_case (id.function))
     {
       return "the function must be lowercase snake_case";
     }
@@ -159,12 +174,47 @@ struct OperationReport
 /**
  * Name and documentation of one operation parameter.
  *
- * Both strings must have static storage duration, like string literals.
+ * The name is lowercase snake_case. Both strings must have static
+ * storage duration, like string literals.
  */
 struct ParamSpec
 {
   std::string_view name;
   std::string_view description;
 };
+
+/**
+ * The name of the expected revision argument, in a tool definition and in
+ * a tool call.
+ */
+inline constexpr std::string_view kExpectedRevisionArgument =
+  "expected_revision";
+
+/**
+ * The naming rule @p names break, or no value when every name is allowed.
+ *
+ * Each name is lowercase snake_case, no name repeats, and no parameter
+ * carries the name of the expected revision argument.
+ */
+[[nodiscard]] inline std::optional<std::string_view>
+check_parameter_names (std::span<const std::string_view> names)
+{
+  if (std::ranges::contains (names, kExpectedRevisionArgument))
+    {
+      return "the parameter name 'expected_revision' is reserved";
+    }
+  for (const auto &name : names)
+    {
+      if (!is_lowercase_snake_case (name))
+        {
+          return "a parameter name must be lowercase snake_case";
+        }
+      if (std::ranges::count (names, name) > 1)
+        {
+          return "a parameter name repeats";
+        }
+    }
+  return std::nullopt;
+}
 
 } // namespace zrythm::operations

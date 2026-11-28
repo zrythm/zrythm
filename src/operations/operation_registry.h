@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <functional>
 #include <optional>
+#include <ranges>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -30,6 +32,7 @@ public:
   template <typename Handler, std::size_t NumParams>
   Operation (const TypedOperation<Handler, NumParams> &op)
       : kind_ (op.kind ()), id_ (op.id ()), summary_ (op.summary ()),
+        parameter_names_ (parameter_names_of (op)),
         make_tool_definition_ ([op] (std::string_view tool_name) -> nlohmann::json {
           return op.make_tool_definition (tool_name);
         }),
@@ -42,6 +45,12 @@ public:
   OperationKind      kind () const { return kind_; }
   const OperationId &id () const { return id_; }
   const std::string &summary () const { return summary_; }
+
+  /** The names of the operation's parameters, in declaration order. */
+  std::span<const std::string_view> parameter_names () const
+  {
+    return parameter_names_;
+  }
 
   /** The tool definition of the operation, published under @p tool_name. */
   nlohmann::json tool_definition (std::string_view tool_name) const
@@ -56,9 +65,22 @@ public:
   }
 
 private:
+  /** The names of the parameters of @p op, in declaration order. */
+  template <typename Handler, std::size_t NumParams>
+  static std::vector<std::string_view>
+  parameter_names_of (const TypedOperation<Handler, NumParams> &op)
+  {
+    return op.parameter_specs ()
+           | std::views::transform ([] (const ParamSpec &spec) {
+               return spec.name;
+             })
+           | std::ranges::to<std::vector> ();
+  }
+
   OperationKind                                    kind_;
   OperationId                                      id_;
   std::string                                      summary_;
+  std::vector<std::string_view>                    parameter_names_;
   std::function<nlohmann::json (std::string_view)> make_tool_definition_;
   std::function<OperationReport (const nlohmann::json &, OperationEnvironment &)>
     invoke_;
@@ -87,7 +109,8 @@ class OperationRegistry
 public:
   /**
    * Registers an operation, or ignores it with a warning when its id
-   * breaks a naming rule or is already registered.
+   * breaks a naming rule, is already registered, or one of its parameter
+   * names breaks a naming rule.
    */
   void register_operation (Operation op)
   {
@@ -104,6 +127,14 @@ public:
         z_warning (
           "Ignoring operation '{}': this id is already registered",
           op.id ().to_string ());
+        return;
+      }
+    if (
+      const auto broken_rule = check_parameter_names (op.parameter_names ());
+      broken_rule.has_value ())
+      {
+        z_warning (
+          "Ignoring operation '{}': {}", op.id ().to_string (), *broken_rule);
         return;
       }
     operations_.push_back (std::move (op));

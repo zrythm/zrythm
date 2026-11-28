@@ -17,6 +17,7 @@
 #include <QFuture>
 #include <QHostAddress>
 
+#include "operations/operation.h"
 #include <fmt/format.h>
 #include <mcpserver/resource_provider.h>
 
@@ -252,7 +253,8 @@ McpWorkerController::start_server (Config config)
       McpDispatchRequest dispatch;
       dispatch.operation = tool->second.id;
       if (
-        const auto expected = arguments.find ("expected_revision");
+        const auto expected =
+          arguments.find (operations::kExpectedRevisionArgument);
         expected != arguments.end ())
         {
           const auto revision = parse_expected_revision (*expected);

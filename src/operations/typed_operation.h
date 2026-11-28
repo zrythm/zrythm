@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <functional>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -97,6 +98,9 @@ public:
   const OperationId &id () const { return id_; }
   const std::string &summary () const { return summary_; }
 
+  /** The parameter specs, in declaration order. */
+  std::span<const ParamSpec> parameter_specs () const { return specs_; }
+
   /**
    * Validates the arguments and runs the handler.
    *
@@ -152,14 +156,14 @@ public:
       std::make_index_sequence<NumParams>{}, properties, required);
     if (kind_ == OperationKind::Edit)
       {
-        properties["expected_revision"] = {
+        properties[kExpectedRevisionArgument] = {
           { "type",        "integer"                     },
           { "minimum",     0                             },
           { "description",
            "The project revision the caller last saw. The edit is refused "
             "when the current revision differs from it." },
         };
-        required.push_back ("expected_revision");
+        required.push_back (kExpectedRevisionArgument);
       }
     nlohmann::json definition{
       { "name",        std::string (tool_name) },

@@ -321,6 +321,43 @@ TEST_F (OperationsTest, CheckOperationIdReportsTheBrokenRule)
     }
 }
 
+TEST_F (OperationsTest, CheckParameterNamesReportsTheBrokenRule)
+{
+  const auto valid = std::vector<std::vector<std::string_view>>{
+    {},
+    { "track" },
+    { "track", "new_name" },
+    { "revision", "expected" },
+    { "is_prefader", "target_port" },
+    { "a1" },
+  };
+  for (const auto &names : valid)
+    {
+      EXPECT_FALSE (check_parameter_names (names).has_value ())
+        << testing::PrintToString (names);
+    }
+
+  const auto invalid = std::vector<std::vector<std::string_view>>{
+    { "expected_revision" },
+    { "track", "expected_revision" },
+    { "expected_revision", "track" },
+    { "track", "track" },
+    { "track", "name", "track" },
+    { "" },
+    { "track", "" },
+    { "New Name" },
+    { "newName" },
+    { "new-name" },
+    { "_track" },
+    { "1track" },
+  };
+  for (const auto &names : invalid)
+    {
+      EXPECT_TRUE (check_parameter_names (names).has_value ())
+        << testing::PrintToString (names);
+    }
+}
+
 TEST_F (OperationsTest, RegistrationIgnoresAnInvalidId)
 {
   const auto        count_before = operation_registry_.operations ().size ();
@@ -346,6 +383,124 @@ TEST_F (OperationsTest, DuplicateRegistrationKeepsTheFirstOperation)
 
   EXPECT_EQ (operation_registry_.find ({ "track", "set_name" }), original);
   EXPECT_EQ (operation_registry_.operations ().size (), count_before);
+}
+
+TEST_F (OperationsTest, RegistrationIgnoresAReservedParameterName)
+{
+  const auto count_before = operation_registry_.operations ().size ();
+  const auto register_with_parameters =
+    [&] (OperationKind kind, OperationId id, std::array<ParamSpec, 2> specs) {
+      operation_registry_.register_operation (Operation (TypedOperation (
+        kind, id, "An operation with two parameters", specs,
+        [] (OperationContext &ctx, StringParam<1, 128>, StringParam<1, 128>)
+          -> OperationReport { return ctx.applied (); })));
+    };
+  const OperationId query_id{ "track", "revision_query" };
+  const OperationId edit_id{ "track", "revision_edit" };
+  const OperationId control_id{ "track", "revision_control" };
+
+  register_with_parameters (
+    OperationKind::Query, query_id,
+    {
+      { { "expected_revision", "A revision" }, { "track", "A track" } }
+  });
+  register_with_parameters (
+    OperationKind::Edit, edit_id,
+    {
+      { { "track", "A track" }, { "expected_revision", "A revision" } }
+  });
+  register_with_parameters (
+    OperationKind::Control, control_id,
+    {
+      { { "expected_revision", "A revision" }, { "track", "A track" } }
+  });
+
+  EXPECT_EQ (operation_registry_.find (query_id), nullptr);
+  EXPECT_EQ (operation_registry_.find (edit_id), nullptr);
+  EXPECT_EQ (operation_registry_.find (control_id), nullptr);
+  EXPECT_EQ (operation_registry_.operations ().size (), count_before);
+
+  register_with_parameters (
+    OperationKind::Query, query_id,
+    {
+      { { "revision", "A revision" }, { "track", "A track" } }
+  });
+  EXPECT_NE (operation_registry_.find (query_id), nullptr);
+}
+
+TEST_F (OperationsTest, RegistrationIgnoresARepeatedParameterName)
+{
+  const auto        count_before = operation_registry_.operations ().size ();
+  const OperationId id{ "track", "rename_twice" };
+  operation_registry_.register_operation (Operation (TypedOperation (
+    OperationKind::Edit, id, "An operation with two parameters",
+    std::array<ParamSpec, 2>{
+      { { "track", "A track" }, { "track", "A track" } }
+  },
+    [] (OperationContext &ctx, StringParam<1, 128>, StringParam<1, 128>)
+      -> OperationReport { return ctx.applied (); })));
+
+  EXPECT_EQ (operation_registry_.find (id), nullptr);
+  EXPECT_EQ (operation_registry_.operations ().size (), count_before);
+}
+
+TEST_F (OperationsTest, RegistrationIgnoresAParameterNameThatIsNotSnakeCase)
+{
+  const auto count_before = operation_registry_.operations ().size ();
+  const auto register_with_parameter_name =
+    [&] (OperationId id, std::string_view parameter_name) {
+      operation_registry_.register_operation (Operation (TypedOperation (
+        OperationKind::Query, id, "An operation with one parameter",
+        std::array<ParamSpec, 1>{ { { parameter_name, "A parameter" } } },
+        [] (OperationContext &ctx, StringParam<1, 128>) -> OperationReport {
+          return ctx.applied ();
+        })));
+    };
+  const OperationId empty_id{ "track", "empty_name" };
+  const OperationId camel_id{ "track", "camel_name" };
+  register_with_parameter_name (empty_id, "");
+  register_with_parameter_name (camel_id, "newName");
+
+  EXPECT_EQ (operation_registry_.find (empty_id), nullptr);
+  EXPECT_EQ (operation_registry_.find (camel_id), nullptr);
+  EXPECT_EQ (operation_registry_.operations ().size (), count_before);
+}
+
+TEST_F (OperationsTest, OperationsExposeTheirParameterNames)
+{
+  const auto * set_name_op = operation_registry_.find ({ "track", "set_name" });
+  ASSERT_NE (set_name_op, nullptr);
+  auto set_name_names =
+    set_name_op->parameter_names ()
+    | std::ranges::to<std::vector<std::string_view>> ();
+  EXPECT_EQ (
+    set_name_names, (std::vector<std::string_view>{ "track", "new_name" }));
+
+  // a tool definition describes each parameter under its name, and an
+  // edit adds the expected revision
+  for (const auto &op : operation_registry_.operations ())
+    {
+      const auto               def = op.tool_definition ("tool");
+      std::vector<std::string> described;
+      for (
+        const auto &property : def.at ("inputSchema").at ("properties").items ())
+        {
+          described.emplace_back (property.key ());
+        }
+      auto names =
+        op.parameter_names ()
+        | std::views::transform ([] (std::string_view name) {
+            return std::string (name);
+          })
+        | std::ranges::to<std::vector> ();
+      if (op.kind () == OperationKind::Edit)
+        {
+          names.push_back ("expected_revision");
+        }
+      std::ranges::sort (names);
+      std::ranges::sort (described);
+      EXPECT_EQ (described, names) << op.id ().to_string ();
+    }
 }
 
 TEST_F (OperationsTest, ToolDefinitionsDescribeTheirInput)
