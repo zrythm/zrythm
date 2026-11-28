@@ -24,7 +24,9 @@ namespace zrythm::frontends::gui::backend
  * Must be created after JUCE is initialized and destroyed before JUCE
  * shuts down (before juce::ScopedJuceInitialiser_GUI is destroyed).
  *
- * All methods must be called on the main thread.
+ * Must be created and destroyed on the thread that runs the Qt event loop
+ * dispatching JUCE events. JUCE registers and unregisters descriptors on
+ * any thread; the bridge applies those changes on its own thread.
  */
 class JuceEventLoopBridge final
 {

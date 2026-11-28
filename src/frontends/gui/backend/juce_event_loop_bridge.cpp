@@ -11,6 +11,7 @@
 #  include "utils/qt.h"
 
 #  include <QSocketNotifier>
+#  include <QThread>
 
 #  include <juce_events/native/juce_EventLoopInternal_linux.h>
 
@@ -22,7 +23,8 @@ namespace zrythm::frontends::gui::backend
 #ifdef __linux__
 
 class JuceEventLoopBridge::Impl final
-    : public juce::LinuxEventLoopInternal::Listener
+    : public QObject,
+      public juce::LinuxEventLoopInternal::Listener
 {
 public:
   Impl ()
@@ -31,33 +33,30 @@ public:
     sync_notifiers ();
   }
 
+  // The notifiers belong to the thread of this object and are deleted with it
   ~Impl () override
   {
+    Q_ASSERT (QThread::currentThread () == thread ());
     juce::LinuxEventLoopInternal::deregisterLinuxEventLoopListener (*this);
   }
 
-  void fdCallbacksChanged () override { sync_notifiers (); }
+  // JUCE calls this on the thread that registers or unregisters a
+  // descriptor; the notifiers live on the thread of this object
+  void fdCallbacksChanged () override
+  {
+    QMetaObject::invokeMethod (this, [this] () { sync_notifiers (); });
+  }
 
 private:
   void sync_notifiers ()
   {
     const auto fds = juce::LinuxEventLoopInternal::getRegisteredFds ();
 
-    for (auto it = notifiers_.begin (); it != notifiers_.end ();)
-      {
-        if (std::ranges::contains (fds, it->first))
-          {
-            ++it;
-            continue;
-          }
-        // Deferred deletion: this runs during JUCE callbacks that may
-        // unregister descriptors, and a notifier must not be deleted while
-        // its activated signal is being emitted
-        auto * notifier = it->second.release ();
-        notifier->setEnabled (false);
-        notifier->deleteLater ();
-        it = notifiers_.erase (it);
-      }
+    // Erasing deletes the notifier, also while it emits activated() (a JUCE
+    // callback may unregister its own descriptor)
+    std::erase_if (notifiers_, [&] (const auto &notifier) {
+      return !std::ranges::contains (fds, notifier.first);
+    });
 
     for (const int fd : fds)
       {
@@ -67,7 +66,7 @@ private:
         auto notifier = utils::make_qobject_unique<QSocketNotifier> (
           static_cast<qintptr> (fd), QSocketNotifier::Read);
         QObject::connect (
-          notifier.get (), &QSocketNotifier::activated, notifier.get (), [fd] () {
+          notifier.get (), &QSocketNotifier::activated, this, [fd] () {
             juce::LinuxEventLoopInternal::invokeEventLoopCallbackForFd (fd);
           });
         notifiers_.emplace (fd, std::move (notifier));
