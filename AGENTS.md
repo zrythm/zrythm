@@ -22,25 +22,27 @@ cmake --build conanbuild/Debug --config Debug
 
 **IMPORTANT:** Always use `ctest --test-dir conanbuild/Debug` rather than `cd conanbuild/Debug && ctest`. The `--test-dir` flag allows running tests from any directory without changing the working directory.
 
+**Run tests the way CI runs them** (`.gitlab-ci.yml`): source the Conan run environment of the build directory before `ctest` or a test binary. It sets the sanitizer options, `QV4_FORCE_INTERPRETER=1` and the library and plugin paths of the build. Without it a run can end with a leak report or with another exit status, and the failure points the wrong way.
+
 ```bash
 # Run all tests via CTest
-ctest --test-dir conanbuild/Debug --output-on-failure -j$(nproc)
+source conanbuild/Debug/generators/conanrun.sh && ctest --test-dir conanbuild/Debug --output-on-failure -j$(nproc)
 
 # Run specific tests by pattern (uses regex matching on test names)
 # Test names follow the pattern: TestClassName.TestMethodName
-ctest --test-dir conanbuild/Debug -R "ProjectSerializationTest" --output-on-failure
-ctest --test-dir conanbuild/Debug -R "ProjectLoaderTest" --output-on-failure
-ctest --test-dir conanbuild/Debug -R "TransportControllerTest" --output-on-failure
-ctest --test-dir conanbuild/Debug -R "zrythm_e2e_tests" --output-on-failure
+source conanbuild/Debug/generators/conanrun.sh && ctest --test-dir conanbuild/Debug -R "ProjectSerializationTest" --output-on-failure
+source conanbuild/Debug/generators/conanrun.sh && ctest --test-dir conanbuild/Debug -R "ProjectLoaderTest" --output-on-failure
+source conanbuild/Debug/generators/conanrun.sh && ctest --test-dir conanbuild/Debug -R "TransportControllerTest" --output-on-failure
+source conanbuild/Debug/generators/conanrun.sh && ctest --test-dir conanbuild/Debug -R "zrythm_e2e_tests" --output-on-failure
 
 # List all available tests to see test names
 ctest --test-dir conanbuild/Debug -N
 
 # Run specific test binary directly (used when we want to run the full module test suite)
-./conanbuild/Debug/products/bin/zrythm_dsp_unit_tests
+source conanbuild/Debug/generators/conanrun.sh && ./conanbuild/Debug/products/bin/zrythm_dsp_unit_tests
 
 # Run specific test case with filter
-./conanbuild/Debug/products/bin/zrythm_dsp_unit_tests --gtest_filter=TempoMapTest.testCaseName
+source conanbuild/Debug/generators/conanrun.sh && ./conanbuild/Debug/products/bin/zrythm_dsp_unit_tests --gtest_filter=TempoMapTest.testCaseName
 ```
 
 When investigating a test failure, run the failing test alone with `--output-on-failure` and **do not clip the output** — the full output (including ASan stack traces, assertion messages, and gtest logs) is often needed to diagnose the root cause. Use `-R "<TestName>"` to isolate a single test.
