@@ -13,6 +13,7 @@
 #include <QSignalSpy>
 
 #include "helpers/project_fixture.h"
+#include "helpers/qt_helpers.h"
 #include "helpers/scoped_env_var.h"
 
 #include "operations/operation.h"
@@ -176,7 +177,7 @@ TEST_F (ProjectSessionOperationsTest, SessionTracksUnsavedChanges)
     utils::Utf8String::from_path (project_dir_).to_qstring ());
   const std::unique_ptr<qquick::QFutureQmlWrapper> wrapper (session->save ());
   QSignalSpy saved (wrapper.get (), &qquick::QFutureQmlWrapper::succeeded);
-  ASSERT_TRUE (saved.wait (5000));
+  ASSERT_TRUE (saved.wait (test_helpers::kFutureWaitTimeout));
   EXPECT_FALSE (session->hasUnsavedChanges ());
   EXPECT_EQ (changed.size (), 4);
 }
