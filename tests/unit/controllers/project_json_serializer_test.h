@@ -8,6 +8,7 @@
 #include <regex>
 #include <set>
 #include <string>
+#include <utility>
 
 #include "controllers/project_json_serializer.h"
 #include "structure/project/project.h"
@@ -230,17 +231,29 @@ protected:
     return project;
   }
 
-  void create_ui_state_and_undo_stack (structure::project::Project &project)
+  /** A UI state and an undo stack for @p project. */
+  [[nodiscard]] std::pair<
+    utils::QObjectUniquePtr<structure::project::ProjectUiState>,
+    utils::QObjectUniquePtr<undo::UndoStack>>
+  make_ui_state_and_undo_stack (structure::project::Project &project)
   {
-    ui_state = utils::make_qobject_unique<structure::project::ProjectUiState> (
-      project, *app_settings);
-
-    undo_stack = utils::make_qobject_unique<undo::UndoStack> (
+    auto new_ui_state = utils::make_qobject_unique<
+      structure::project::ProjectUiState> (project, *app_settings);
+    auto new_undo_stack = utils::make_qobject_unique<undo::UndoStack> (
       [&project] (auto action, bool recalculate_graph) {
         project.engine ()->with_paused_processing (
           std::move (action), recalculate_graph);
       },
       nullptr);
+    return { std::move (new_ui_state), std::move (new_undo_stack) };
+  }
+
+  /** Makes the fixture's UI state and undo stack for @p project. */
+  void create_ui_state_and_undo_stack (structure::project::Project &project)
+  {
+    auto [new_ui_state, new_undo_stack] = make_ui_state_and_undo_stack (project);
+    ui_state = std::move (new_ui_state);
+    undo_stack = std::move (new_undo_stack);
   }
 
   // Helper to verify a UUID string format

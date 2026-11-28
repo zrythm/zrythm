@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
 #include "project_json_serializer_test.h"
@@ -208,14 +210,8 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
 
   // Load the project into a new Project instance
   auto loaded_project = create_minimal_project ();
-  auto loaded_ui_state = utils::make_qobject_unique<
-    structure::project::ProjectUiState> (*loaded_project, *app_settings);
-  auto loaded_undo_stack = utils::make_qobject_unique<undo::UndoStack> (
-    [&] (auto action, bool recalculate_graph) {
-      loaded_project->engine ()->with_paused_processing (
-        std::move (action), recalculate_graph);
-    },
-    nullptr);
+  auto [loaded_ui_state, loaded_undo_stack] =
+    make_ui_state_and_undo_stack (*loaded_project);
 
   auto load_result = ProjectLoader::load_from_directory (project_dir);
   load_result.waitForFinished ();
@@ -247,6 +243,83 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
   EXPECT_FLOAT_EQ (frames.getSample (0, 0), 0.5f);
 }
 
+// A project that reads the file of another directory finds the audio of
+// its sources in its own pool; the pool of the other directory is only
+// read
+TEST_F (ProjectLoaderTest, LoadsAudioFromAnotherProjectDirectory)
+{
+  auto project = create_minimal_project ();
+  create_ui_state_and_undo_stack (*project);
+
+  utils::audio::AudioBuffer buffer (2, 100);
+  for (int ch = 0; ch < 2; ++ch)
+    {
+      for (int i = 0; i < 100; ++i)
+        {
+          buffer.setSample (ch, i, 0.5f);
+        }
+    }
+  auto clip_ref = utils::create_object<dsp::FileAudioSource> (
+    project->get_registry (), buffer,
+    dsp::FileAudioSource::BitDepth::BIT_DEPTH_32,
+    project->engine ()->sample_rate (), units::bpm (120.0),
+    utils::Utf8String::from_utf8_encoded_string ("test_clip"));
+  auto clip_id = clip_ref.id ();
+
+  auto save_future = ProjectSaver::save (
+    *project, *ui_state, *undo_stack, TEST_APP_VERSION, project_dir, false);
+  test_helpers::waitForFutureWithEvents (save_future);
+
+  const auto pool_path = structure::project::ProjectPathProvider::get_path (
+    structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir);
+  const auto source_pool = project_dir / pool_path;
+  const auto file_entries = [] (const std::filesystem::path &directory) {
+    std::vector<std::string> entries;
+    for (
+      const auto &entry :
+      std::filesystem::recursive_directory_iterator{ directory })
+      {
+        entries.push_back (
+          utils::Utf8String::from_path (
+            entry.path ().lexically_relative (directory))
+            .str ()
+          + " "
+          + (entry.is_directory ()
+               ? std::string ("<dir>")
+               : std::to_string (entry.file_size ())));
+      }
+    std::ranges::sort (entries);
+    return entries;
+  };
+  const auto entries_before = file_entries (source_pool);
+
+  // The project that reads the file lives in another directory
+  const auto other_dir = project_dir / "other-project";
+  auto       loaded_project = create_minimal_project ();
+  loaded_project->set_project_directory (other_dir);
+  auto [loaded_ui_state, loaded_undo_stack] =
+    make_ui_state_and_undo_stack (*loaded_project);
+
+  const auto json = ProjectLoader::parse_and_validate (
+    ProjectLoader::get_uncompressed_project_text (project_dir));
+  ProjectLoader::deserialize (
+    json, *loaded_project, *loaded_ui_state, *loaded_undo_stack, project_dir);
+
+  // The block of the source is in the pool of the reading project
+  auto &loaded_clip = utils::get_typed<dsp::FileAudioSource> (
+    loaded_project->get_registry (), clip_id);
+  const auto block_hex = loaded_clip.get_spans ().front ().block.hex;
+  EXPECT_TRUE (
+    std::filesystem::exists (other_dir / pool_path / "blocks" / block_hex));
+  utils::audio::AudioBuffer frames (2, 100);
+  ASSERT_NO_THROW (
+    loaded_clip.read_span (units::samples (0), units::samples (100), frames));
+  EXPECT_FLOAT_EQ (frames.getSample (0, 0), 0.5f);
+
+  // The pool of the file's directory is only read
+  EXPECT_EQ (file_entries (source_pool), entries_before);
+}
+
 // A source whose BPM is unknown (0) round-trips through save and load.
 TEST_F (ProjectLoaderTest, LoadsSourceWithUnknownBpm)
 {
@@ -269,14 +342,8 @@ TEST_F (ProjectLoaderTest, LoadsSourceWithUnknownBpm)
   test_helpers::waitForFutureWithEvents (save_future);
 
   auto loaded_project = create_minimal_project ();
-  auto loaded_ui_state = utils::make_qobject_unique<
-    structure::project::ProjectUiState> (*loaded_project, *app_settings);
-  auto loaded_undo_stack = utils::make_qobject_unique<undo::UndoStack> (
-    [&] (auto action, bool recalculate_graph) {
-      loaded_project->engine ()->with_paused_processing (
-        std::move (action), recalculate_graph);
-    },
-    nullptr);
+  auto [loaded_ui_state, loaded_undo_stack] =
+    make_ui_state_and_undo_stack (*loaded_project);
 
   auto load_result = ProjectLoader::load_from_directory (project_dir);
   load_result.waitForFinished ();

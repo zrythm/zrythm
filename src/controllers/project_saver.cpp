@@ -9,6 +9,7 @@
 
 #include "controllers/project_json_serializer.h"
 #include "controllers/project_saver.h"
+#include "dsp/audio_pool.h"
 #include "structure/project/project.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
@@ -360,11 +361,10 @@ ProjectSaver::save (
     // pool of a backup save is pruned as well; the main pool's sweep is
     // deferred to after the save (see below).
     project.pool_->flush_pending_tails ();
-    const auto target_blocks_dir =
+    const auto target_blocks_dir = dsp::AudioPool::blocks_directory_of (
       path
       / structure::project::ProjectPathProvider::get_path (
-        structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir)
-      / "blocks";
+        structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir));
     project.pool_->copy_blocks_to_directory (target_blocks_dir);
     if (is_backup)
       {

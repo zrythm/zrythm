@@ -6,6 +6,7 @@
 #include "controllers/project_json_serializer.h"
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
+#include "dsp/audio_pool.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_instantiation_wait.h"
 #include "structure/project/project_path_provider.h"
@@ -118,9 +119,20 @@ ProjectLoader::deserialize (
   const nlohmann::json               &j,
   structure::project::Project        &project,
   structure::project::ProjectUiState &ui_state,
-  undo::UndoStack                    &undo_stack)
+  undo::UndoStack                    &undo_stack,
+  const std::filesystem::path        &source_project_dir)
 {
   ProjectJsonSerializer::deserialize (j, project, ui_state, undo_stack);
+
+  if (!source_project_dir.empty ())
+    {
+      const auto source_pool_dir =
+        source_project_dir
+        / structure::project::ProjectPathProvider::get_path (
+          structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir);
+      project.pool_->import_referenced_blocks_from (
+        dsp::AudioPool::blocks_directory_of (source_pool_dir));
+    }
 
   // Load audio files for each FileAudioSource
   project.pool_->init_loaded ();

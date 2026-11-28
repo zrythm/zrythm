@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <filesystem>
 #include <mutex>
 #include <unordered_set>
 
@@ -36,6 +37,10 @@ public:
     SampleRateGetter        sr_getter);
 
 public:
+  /** Returns the directory that holds the blocks of the pool at @p pool_dir. */
+  [[nodiscard]] static std::filesystem::path
+  blocks_directory_of (const std::filesystem::path &pool_dir);
+
   /**
    * @brief The pool's block store, created lazily at the pool's current
    * path.
@@ -78,6 +83,23 @@ public:
   copy_blocks_to_directory (const std::filesystem::path &dest_blocks_dir) const;
 
   /**
+   * @brief Copies the blocks referenced by the registry's sources from
+   * the given blocks directory into the pool's own store.
+   *
+   * A directory equal to the pool's own blocks directory is a no-op, and
+   * so is a registry without referenced blocks. The given directory is
+   * only read; the pool's directory is created once every referenced
+   * block was found in the given directory. The pending tail data of a
+   * source is not part of the import: it is written to the pool's own
+   * store when the source is flushed.
+   *
+   * @throw ZrythmException when a referenced block is missing from the
+   * given directory, and on I/O error.
+   */
+  void import_referenced_blocks_from (
+    const std::filesystem::path &source_blocks_dir) const;
+
+  /**
    * @brief Deletes block files not referenced by any source from the
    * pool's own store.
    *
@@ -114,6 +136,16 @@ private:
     AudioPool             &obj,
     const AudioPool       &other,
     utils::ObjectCloneType clone_type);
+
+  /**
+   * Copies every block of @p referenced that is missing from
+   * @p dest_blocks_dir from @p src_blocks_dir. The destination
+   * directory is created if needed.
+   */
+  void copy_referenced_blocks (
+    const std::unordered_set<BlockId, BlockIdHash> &referenced,
+    const std::filesystem::path                    &src_blocks_dir,
+    const std::filesystem::path                    &dest_blocks_dir) const;
 
   /**
    * Copies every referenced block missing from @p dest_blocks_dir from

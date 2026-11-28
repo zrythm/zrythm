@@ -255,4 +255,67 @@ TEST_F (AudioPoolTest, RebuildMigratesBlocksWrittenAfterPoolCopy)
     audio_pool->copy_blocks_to_directory (temp_dir / "other-pool" / "blocks"));
 }
 
+// A project that starts from the file of another project directory reads
+// the blocks of its sources from its own pool; the other directory is
+// only read
+TEST_F (AudioPoolTest, ImportReferencedBlocksFromAnotherPool)
+{
+  auto ref = make_source (u8"test_clip", 100);
+  audio_pool->flush_pending_tails ();
+  auto *     source = ref.get_object_as<FileAudioSource> ();
+  const auto block_hex = source->get_spans ().front ().block.hex;
+
+  // A fresh pool in another directory, as after a load
+  const auto other_dir = temp_dir / "other-project" / "pool";
+  AudioPool  new_pool (
+    registry, [other_dir] { return other_dir; }, sample_rate_getter);
+  new_pool.import_referenced_blocks_from (pool_dir / "blocks");
+
+  EXPECT_TRUE (std::filesystem::exists (other_dir / "blocks" / block_hex));
+  // The source directory is only read
+  EXPECT_TRUE (std::filesystem::exists (pool_dir / "blocks" / block_hex));
+
+  // The source reads through the new pool
+  EXPECT_NO_THROW (new_pool.init_loaded ());
+  utils::audio::AudioBuffer frames (2, 100);
+  EXPECT_NO_THROW (
+    source->read_span (units::samples (0), units::samples (100), frames));
+}
+
+// A source pool without a referenced block is refused, and the importing
+// pool's directory stays uncreated
+TEST_F (AudioPoolTest, ImportRefusesABlockMissingFromTheSourcePool)
+{
+  const auto ref = make_source (u8"test_clip", 100);
+  audio_pool->flush_pending_tails ();
+  const auto block_hex =
+    ref.get_object_as<FileAudioSource> ()->get_spans ().front ().block.hex;
+  // The block of the source is in the pool of the source, so only the
+  // incomplete directory lacks it
+  ASSERT_TRUE (std::filesystem::exists (pool_dir / "blocks" / block_hex));
+
+  const auto other_dir = temp_dir / "other-project" / "pool";
+  AudioPool  new_pool (
+    registry, [other_dir] { return other_dir; }, sample_rate_getter);
+  const auto incomplete_dir = temp_dir / "incomplete-pool" / "blocks";
+  std::filesystem::create_directories (incomplete_dir);
+
+  EXPECT_THROW (
+    new_pool.import_referenced_blocks_from (incomplete_dir), ZrythmException);
+  EXPECT_FALSE (std::filesystem::exists (other_dir));
+}
+
+// A registry without blocks imports nothing and creates no directory
+TEST_F (AudioPoolTest, ImportWithNoReferencedBlocksCreatesNothing)
+{
+  utils::ObjectRegistry empty_registry;
+  const auto            other_dir = temp_dir / "other-project" / "pool";
+  AudioPool             new_pool (
+    empty_registry, [other_dir] { return other_dir; }, sample_rate_getter);
+
+  EXPECT_NO_THROW (new_pool.import_referenced_blocks_from (
+    temp_dir / "no-such-pool" / "blocks"));
+  EXPECT_FALSE (std::filesystem::exists (other_dir));
+}
+
 } // namespace zrythm::dsp

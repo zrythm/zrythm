@@ -94,13 +94,18 @@ public:
    * @param project The project instance to populate.
    * @param ui_state The UI state instance to populate.
    * @param undo_stack The undo stack instance to populate.
+   * @param source_project_dir The directory of the project file that @p j
+   * was read from, when it differs from the directory of @p project. The
+   * audio blocks of the sources are then copied from that directory's
+   * pool into the pool of @p project. That directory is only read.
    * @throw ZrythmException on deserialization error.
    */
   static void deserialize (
     const nlohmann::json               &j,
     structure::project::Project        &project,
     structure::project::ProjectUiState &ui_state,
-    undo::UndoStack                    &undo_stack);
+    undo::UndoStack                    &undo_stack,
+    const std::filesystem::path        &source_project_dir = {});
 
 private:
 };

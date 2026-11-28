@@ -31,6 +31,12 @@ AudioPool::AudioPool (
 {
 }
 
+std::filesystem::path
+AudioPool::blocks_directory_of (const std::filesystem::path &pool_dir)
+{
+  return pool_dir / "blocks";
+}
+
 void
 AudioPool::for_each_clip (
   std::function<void (dsp::FileAudioSource &)> visitor) const
@@ -108,7 +114,7 @@ AudioPool::get_block_store ()
   if (!store_)
     {
       store_ = std::make_shared<AudioBlockStore> (
-        project_pool_path_getter_ () / "blocks");
+        blocks_directory_of (project_pool_path_getter_ ()));
     }
   return store_;
 }
@@ -117,8 +123,8 @@ void
 AudioPool::rebuild_block_store ()
 {
   const std::lock_guard lock (store_init_mutex_);
-  const auto            replacement =
-    std::make_shared<AudioBlockStore> (project_pool_path_getter_ () / "blocks");
+  const auto            replacement = std::make_shared<AudioBlockStore> (
+    blocks_directory_of (project_pool_path_getter_ ()));
 
   // Pending data is flushed to the previous store and each source is
   // rewired, so the migration below sees every block the sources
@@ -174,7 +180,7 @@ void
 AudioPool::copy_blocks_to_directory (
   const std::filesystem::path &dest_blocks_dir) const
 {
-  const auto main_dir = project_pool_path_getter_ () / "blocks";
+  const auto main_dir = blocks_directory_of (project_pool_path_getter_ ());
   if (dest_blocks_dir == main_dir)
     {
       return;
@@ -194,12 +200,43 @@ AudioPool::copy_blocks_to_directory (
 }
 
 void
+AudioPool::import_referenced_blocks_from (
+  const std::filesystem::path &source_blocks_dir) const
+{
+  const auto blocks_dir = blocks_directory_of (project_pool_path_getter_ ());
+  if (blocks_dir == source_blocks_dir)
+    {
+      return;
+    }
+
+  const auto referenced = collect_referenced_blocks ();
+  if (referenced.empty ())
+    {
+      return;
+    }
+  // The pool's directory stays uncreated unless every referenced block
+  // is in the source directory
+  for (const auto &id : referenced)
+    {
+      if (!std::filesystem::exists (source_blocks_dir / id.hex))
+        {
+          throw ZrythmException (
+            fmt::format (
+              "Block {} is missing from the pool directory {}", id.hex,
+              source_blocks_dir));
+        }
+    }
+  copy_referenced_blocks (referenced, source_blocks_dir, blocks_dir);
+}
+
+void
 AudioPool::copy_referenced_blocks (
-  const std::filesystem::path &src_blocks_dir,
-  const std::filesystem::path &dest_blocks_dir) const
+  const std::unordered_set<BlockId, BlockIdHash> &referenced,
+  const std::filesystem::path                    &src_blocks_dir,
+  const std::filesystem::path                    &dest_blocks_dir) const
 {
   std::filesystem::create_directories (dest_blocks_dir);
-  for (const auto &id : collect_referenced_blocks ())
+  for (const auto &id : referenced)
     {
       const auto dest_path = dest_blocks_dir / id.hex;
       if (std::filesystem::exists (dest_path))
@@ -212,6 +249,15 @@ AudioPool::copy_referenced_blocks (
           utils::io::copy_file (dest_path, src_path);
         }
     }
+}
+
+void
+AudioPool::copy_referenced_blocks (
+  const std::filesystem::path &src_blocks_dir,
+  const std::filesystem::path &dest_blocks_dir) const
+{
+  copy_referenced_blocks (
+    collect_referenced_blocks (), src_blocks_dir, dest_blocks_dir);
 }
 
 void
