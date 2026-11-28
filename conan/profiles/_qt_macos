@@ -3,7 +3,6 @@
 include(_qt_common)
 [options]
 qt/*:bundled_libs=True
-qt/*:disabled_features=assistant designer
 # No-ops while bundled_libs=True (Qt builds these internally).
 # Kept as hints if bundled_libs is ever removed.
 harfbuzz/*:with_freetype=False
