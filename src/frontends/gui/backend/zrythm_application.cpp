@@ -998,11 +998,6 @@ ZrythmApplication::setup_ui ()
 
   z_debug ("QML file loaded successfully");
 
-  // QML_ELEMENT doesn't work as expected in these Q_GADGET's so register
-  // manually
-  qmlRegisterUncreatableType<structure::arrangement::ArrangerObject> (
-    "Zrythm", 1, 0, "ArrangerObject", "Cannot create ArrangerObject");
-
 #if 0
   qmlRegisterSingletonType (
     QUrl (QStringLiteral ("qrc:/qt/qml/ZrythmStyle/Style.qml")),

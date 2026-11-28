@@ -14,7 +14,8 @@ protected:
   ZrythmLauncher launcher_;
 };
 
-// A run with no requested project ends by itself and logs no error
+// A run with no requested project ends by itself, logs no error and
+// prints no warning about a QML type registration on standard error
 TEST_F (StartupTest, GreeterOnlyRunExitsWithSuccess)
 {
   const auto result = launcher_.run (
@@ -27,6 +28,9 @@ TEST_F (StartupTest, GreeterOnlyRunExitsWithSuccess)
     1)
     << result.describe ();
   EXPECT_FALSE (has_error_lines (result.standard_output)) << result.describe ();
+  EXPECT_FALSE (
+    result.standard_error.contains (QStringLiteral ("Cannot install element")))
+    << result.describe ();
 }
 
 // A missing project is loaded once, the run reports the failure and ends
