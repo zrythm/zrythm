@@ -180,10 +180,12 @@ detail::SpdlogApi::init (bool for_testing, const std::filesystem::path &log_dir)
       1024 * 1024 * 10, 5);
     set_sink_pattern (file_sink, true);
 
-    // Writes through the C runtime, so the output also reaches pipes
-    // that need overlapped I/O.
-    auto console_sink = std::make_shared<
-      spdlog::sinks::ansicolor_stdout_sink_mt> (spdlog::color_mode::automatic);
+    // stdout_color_sink_mt is the Windows console sink on Windows and the
+    // ANSI sink on other platforms. The compiled spdlog library exports
+    // only the sinks of its platform. In automatic color mode the Windows
+    // sink colors the output only when stdout is a console.
+    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt> (
+      spdlog::color_mode::automatic);
     set_sink_pattern (console_sink, false);
 
 #ifdef _MSC_VER
