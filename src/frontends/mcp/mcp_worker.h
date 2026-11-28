@@ -33,7 +33,8 @@ struct TokenIdentity
 /** One call routed to the main thread, as the worker hands it over. */
 struct McpDispatchRequest
 {
-  std::string tool;
+  /** The operation of the called tool. */
+  operations::OperationId operation;
 
   /** The arguments of the call, without the expected-revision argument. */
   nlohmann::json arguments;

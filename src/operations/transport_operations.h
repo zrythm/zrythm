@@ -21,7 +21,7 @@ inline const auto &
 transport_set_play_state_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Control, "transport.set_play_state",
+    OperationKind::Control, { "transport", "set_play_state" },
     "Set the transport play state (rolling, pause requested, ...)",
     std::array<ParamSpec, 1>{ { { "state", "Requested play state" } } },
     [] (OperationContext &ctx, EnumParam<dsp::Transport::PlayState> state)

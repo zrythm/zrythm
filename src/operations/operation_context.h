@@ -6,7 +6,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "undo/undo_stack.h"
@@ -102,13 +101,13 @@ public:
    * The undo history is project-scoped: an object that resolves through
    * the session but not through the project registry is application
    * state, and an object that resolves through neither is not
-   * registered. @p alternative names the Control operation to suggest
-   * for application state, when one exists.
+   * registered. @p alternative is the Control operation to suggest for
+   * application state, when one exists.
    */
   [[nodiscard]] std::optional<utils::RefusalReason> edit_target_refusal (
-    const QUuid             &id,
-    const utils::Utf8String &label,
-    std::string_view         alternative = {}) const
+    const QUuid               &id,
+    const utils::Utf8String   &label,
+    std::optional<OperationId> alternative = std::nullopt) const
   {
     const auto &env = environment ();
     if (env.project_object_registry ().contains (id))
@@ -122,9 +121,9 @@ public:
           utils::Utf8String::from_qstring (id.toString (QUuid::WithoutBraces));
       }
     std::string hint;
-    if (!alternative.empty ())
+    if (alternative.has_value ())
       {
-        hint = fmt::format (", use {}", alternative);
+        hint = fmt::format (", use {}", alternative->to_string ());
       }
     if (env.object_registry ().contains (id))
       {

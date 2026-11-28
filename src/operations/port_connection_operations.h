@@ -48,11 +48,14 @@ inline const auto &
 port_connect_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "port.connect", "Connect two ports",
+    OperationKind::Edit,
+    OperationId{
+      "port", "connect"
+  },
+    "Connect two ports",
     std::array<ParamSpec, 2>{
       { { "source", "UUID of the source (output) port" },
-       { "destination", "UUID of the destination (input) port" } }
-  },
+        { "destination", "UUID of the destination (input) port" } } },
     [] (OperationContext &ctx, PortParam source, PortParam destination)
       -> OperationReport {
       if (
@@ -93,11 +96,14 @@ inline const auto &
 port_disconnect_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "port.disconnect", "Remove a port connection",
+    OperationKind::Edit,
+    OperationId{
+      "port", "disconnect"
+  },
+    "Remove a port connection",
     std::array<ParamSpec, 2>{
       { { "source", "UUID of the source port" },
-       { "destination", "UUID of the destination port" } }
-  },
+        { "destination", "UUID of the destination port" } } },
     [] (OperationContext &ctx, PortParam source, PortParam destination)
       -> OperationReport {
       if (
@@ -137,15 +143,17 @@ inline const auto &
 port_set_connection_multiplier_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "port.set_connection_multiplier",
+    OperationKind::Edit,
+    OperationId{
+      "port", "set_connection_multiplier"
+  },
     "Change a port connection's strength",
     std::array<ParamSpec, 3>{
       { { "source", "UUID of the source port" },
-       { "destination", "UUID of the destination port" },
-       { "multiplier",
+        { "destination", "UUID of the destination port" },
+        { "multiplier",
           "New strength (-2.0 to 2.0; CV destinations "
-          "accept -1.0 to 1.0)" } }
-  },
+          "accept -1.0 to 1.0)" } } },
     [] (
       OperationContext &ctx, PortParam source, PortParam destination,
       BoundedFloatParam<-2.0, 2.0> multiplier) -> OperationReport {
@@ -192,13 +200,15 @@ inline const auto &
 port_set_connection_enabled_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "port.set_connection_enabled",
+    OperationKind::Edit,
+    OperationId{
+      "port", "set_connection_enabled"
+  },
     "Enable or disable a port connection",
     std::array<ParamSpec, 3>{
       { { "source", "UUID of the source port" },
-       { "destination", "UUID of the destination port" },
-       { "enabled", "Whether the connection processes signal" } }
-  },
+        { "destination", "UUID of the destination port" },
+        { "enabled", "Whether the connection processes signal" } } },
     [] (
       OperationContext &ctx, PortParam source, PortParam destination,
       BoolParam enabled) -> OperationReport {

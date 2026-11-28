@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <array>
 #include <ranges>
 #include <set>
 #include <string>
@@ -185,11 +186,11 @@ protected:
   }
 
   OperationReport dispatch (
-    std::string_view       name,
+    OperationId            id,
     nlohmann::json         args = nlohmann::json::object (),
     const DispatchOptions &options = {})
   {
-    return operation_registry_.dispatch (name, args, *environment_, options);
+    return operation_registry_.dispatch (id, args, *environment_, options);
   }
 
   dsp::TempoMap         tempo_map_{ units::sample_rate (44100.0) };
@@ -232,46 +233,104 @@ protected:
 
 TEST_F (OperationsTest, BuiltinOperationsAreRegistered)
 {
-  const auto expected = std::vector<std::string>{
-    "track.set_name",
-    "track.set_color",
-    "track.unset_color",
-    "track.set_comment",
-    "track.set_timebase",
-    "track.route",
-    "track.unroute",
-    "track.add_send",
-    "track.remove_send",
-    "track.set_send_prefader",
-    "track.set_send_target_track",
-    "track.set_send_target_port",
-    "track.clear_send_target",
-    "track.add",
-    "track.list",
-    "transport.set_play_state",
-    "port.connect",
-    "port.disconnect",
-    "port.set_connection_multiplier",
-    "port.set_connection_enabled",
-    "parameter.set_value",
-    "parameter.set_value_live",
+  const auto expected = std::vector<OperationId>{
+    { "track",     "set_name"                  },
+    { "track",     "set_color"                 },
+    { "track",     "unset_color"               },
+    { "track",     "set_comment"               },
+    { "track",     "set_timebase"              },
+    { "track",     "route"                     },
+    { "track",     "unroute"                   },
+    { "track",     "add_send"                  },
+    { "track",     "remove_send"               },
+    { "track",     "set_send_prefader"         },
+    { "track",     "set_send_target_track"     },
+    { "track",     "set_send_target_port"      },
+    { "track",     "clear_send_target"         },
+    { "track",     "add"                       },
+    { "track",     "list"                      },
+    { "transport", "set_play_state"            },
+    { "port",      "connect"                   },
+    { "port",      "disconnect"                },
+    { "port",      "set_connection_multiplier" },
+    { "port",      "set_connection_enabled"    },
+    { "parameter", "set_value"                 },
+    { "parameter", "set_value_live"            },
   };
-  for (const auto &name : expected)
+  for (const auto &id : expected)
     {
-      EXPECT_NE (operation_registry_.find (name), nullptr)
-        << "missing operation " << name;
+      EXPECT_NE (operation_registry_.find (id), nullptr)
+        << "missing operation " << id.to_string ();
     }
+}
+
+TEST_F (OperationsTest, OperationIdsFollowTheNamingRules)
+{
+  ASSERT_FALSE (operation_registry_.operations ().empty ());
+  for (const auto &op : operation_registry_.operations ())
+    {
+      const auto broken_rule = check_operation_id (op.id ());
+      EXPECT_FALSE (broken_rule.has_value ())
+        << op.id ().to_string () << ": " << broken_rule.value_or ("");
+    }
+}
+
+TEST_F (OperationsTest, CheckOperationIdReportsTheBrokenRule)
+{
+  const auto valid = std::vector<OperationId>{
+    { "track",     "set_name"       },
+    { "parameter", "set_value_live" },
+    { "midi2",     "go"             },
+    { "track",     "list"           },
+  };
+  for (const auto &id : valid)
+    {
+      EXPECT_FALSE (check_operation_id (id).has_value ()) << id.to_string ();
+    }
+
+  const auto invalid = std::vector<OperationId>{
+    { "",          "set_name"  },
+    { "Track",     "set_name"  },
+    { "track_set", "name"      },
+    { "2track",    "set_name"  },
+    { "track",     ""          },
+    { "track",     "Set_name"  },
+    { "track",     "set-name"  },
+    { "track",     "set.name"  },
+    { "track",     "set name"  },
+    { "track",     "_set_name" },
+    { "track",     "2set_name" },
+  };
+  for (const auto &id : invalid)
+    {
+      EXPECT_TRUE (check_operation_id (id).has_value ()) << id.to_string ();
+    }
+}
+
+TEST_F (OperationsTest, RegistrationIgnoresAnInvalidId)
+{
+  const auto        count_before = operation_registry_.operations ().size ();
+  const OperationId invalid_id{ "track_set", "list" };
+  operation_registry_.register_operation (Operation (TypedOperation (
+    OperationKind::Query, invalid_id, "Lists tracks under a broken id",
+    std::array<ParamSpec, 1>{ { { "name", "A name" } } },
+    [] (OperationContext &ctx, StringParam<1, 128>) -> OperationReport {
+      return ctx.applied ();
+    })));
+
+  EXPECT_EQ (operation_registry_.find (invalid_id), nullptr);
+  EXPECT_EQ (operation_registry_.operations ().size (), count_before);
 }
 
 TEST_F (OperationsTest, DuplicateRegistrationKeepsTheFirstOperation)
 {
-  const auto * original = operation_registry_.find ("track.set_name");
+  const auto * original = operation_registry_.find ({ "track", "set_name" });
   ASSERT_NE (original, nullptr);
   const auto count_before = operation_registry_.operations ().size ();
 
   operation_registry_.register_operation (*original);
 
-  EXPECT_EQ (operation_registry_.find ("track.set_name"), original);
+  EXPECT_EQ (operation_registry_.find ({ "track", "set_name" }), original);
   EXPECT_EQ (operation_registry_.operations ().size (), count_before);
 }
 
@@ -279,8 +338,8 @@ TEST_F (OperationsTest, ToolDefinitionsDescribeTheirInput)
 {
   for (const auto &op : operation_registry_.operations ())
     {
-      const auto &def = op.tool_definition ();
-      EXPECT_EQ (def.at ("name").get<std::string> (), op.name ());
+      const auto &def = op.tool_definition ("published_name");
+      EXPECT_EQ (def.at ("name").get<std::string> (), "published_name");
       EXPECT_TRUE (def.contains ("description"));
       const auto &schema = def.at ("inputSchema");
       EXPECT_EQ (schema.at ("type").get<std::string> (), "object");
@@ -288,8 +347,10 @@ TEST_F (OperationsTest, ToolDefinitionsDescribeTheirInput)
       EXPECT_TRUE (schema.contains ("required"));
     }
 
-  const auto &set_name =
-    operation_registry_.find ("track.set_name")->tool_definition ();
+  const auto * set_name_op = operation_registry_.find ({ "track", "set_name" });
+  ASSERT_NE (set_name_op, nullptr);
+  const auto set_name = set_name_op->tool_definition ("track_set_name");
+  EXPECT_EQ (set_name.at ("name").get<std::string> (), "track_set_name");
   const auto &props = set_name.at ("inputSchema").at ("properties");
   ASSERT_TRUE (props.contains ("track"));
   ASSERT_TRUE (props.contains ("new_name"));
@@ -298,7 +359,9 @@ TEST_F (OperationsTest, ToolDefinitionsDescribeTheirInput)
   const auto &required = set_name.at ("inputSchema").at ("required");
   ASSERT_EQ (required.size (), 2);
 
-  const auto &list = operation_registry_.find ("track.list")->tool_definition ();
+  const auto list =
+    operation_registry_.find ({ "track", "list" })
+      ->tool_definition ("track_list");
   EXPECT_TRUE (
     list.at ("inputSchema").at ("properties").at ("limit").contains ("default"));
   EXPECT_TRUE (list.at ("inputSchema").at ("required").empty ());
@@ -308,13 +371,13 @@ TEST_F (OperationsTest, ToolDefinitionsMatchTheirOperationKind)
 {
   for (const auto &op : operation_registry_.operations ())
     {
-      const auto &def = op.tool_definition ();
-      const auto  annotations = def.find ("annotations");
-      const auto  expected_revision =
+      const auto def = op.tool_definition ("tool");
+      const auto annotations = def.find ("annotations");
+      const auto expected_revision =
         def.at ("inputSchema").at ("properties").find ("expected_revision");
       if (op.kind () == OperationKind::Query)
         {
-          ASSERT_NE (annotations, def.end ()) << op.name ();
+          ASSERT_NE (annotations, def.end ()) << op.id ().to_string ();
           EXPECT_EQ (
             *annotations,
             (nlohmann::json{
@@ -322,32 +385,32 @@ TEST_F (OperationsTest, ToolDefinitionsMatchTheirOperationKind)
               { "destructiveHint", false },
               { "idempotentHint",  true  }
           }))
-            << op.name ();
+            << op.id ().to_string ();
         }
       else
         {
-          EXPECT_EQ (annotations, def.end ()) << op.name ();
+          EXPECT_EQ (annotations, def.end ()) << op.id ().to_string ();
         }
       if (op.kind () == OperationKind::Edit)
         {
           ASSERT_NE (
             expected_revision, def.at ("inputSchema").at ("properties").end ())
-            << op.name ();
+            << op.id ().to_string ();
           EXPECT_EQ (
             expected_revision->at ("type").get<std::string> (), "integer")
-            << op.name ();
+            << op.id ().to_string ();
           EXPECT_EQ (expected_revision->at ("minimum").get<int> (), 0)
-            << op.name ();
+            << op.id ().to_string ();
           const auto &required = def.at ("inputSchema").at ("required");
           EXPECT_EQ (
             std::ranges::find (required, "expected_revision"), required.end ())
-            << op.name ();
+            << op.id ().to_string ();
         }
       else
         {
           EXPECT_EQ (
             expected_revision, def.at ("inputSchema").at ("properties").end ())
-            << op.name ();
+            << op.id ().to_string ();
         }
     }
 }
@@ -362,11 +425,10 @@ TEST_F (OperationsTest, TrackSetNameAppliesAndUndoes)
   track->setName ("Original");
 
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Intro"          }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Intro" } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_EQ (track->name (), QString ("Intro"));
@@ -386,10 +448,10 @@ TEST_F (OperationsTest, TrackSetNameRefusesMissingParameter)
   track->setName ("Original");
 
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track", uuid_of (*track) }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("new_name"), std::string::npos);
@@ -403,11 +465,10 @@ TEST_F (OperationsTest, TrackSetNameRefusesEmptyName)
   auto * track = add_audio_track_directly ();
 
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", ""               }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "" } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("new_name"), std::string::npos);
@@ -418,11 +479,10 @@ TEST_F (OperationsTest, TrackSetNameRefusesWrongValueType)
   auto * track = add_audio_track_directly ();
 
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", 42               }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", 42 } });
 
   ASSERT_TRUE (report.refused ());
 }
@@ -433,11 +493,11 @@ TEST_F (OperationsTest, TrackSetNameRefusesInvalidUtf8)
   track->setName ("Original");
 
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track)                 },
-      { "new_name", std::string ("Bad\xC3\x28 name") }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) },
+      { "new_name", std::string ("Bad\xC3\x28 name") } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("UTF-8"), std::string::npos);
@@ -448,11 +508,11 @@ TEST_F (OperationsTest, TrackSetNameRefusesInvalidUtf8)
 TEST_F (OperationsTest, TrackSetNameRefusesUnknownTrack)
 {
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track",    "123e4567-e89b-12d3-a456-426614174000" },
-      { "new_name", "Intro"                                }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", "123e4567-e89b-12d3-a456-426614174000" },
+      { "new_name", "Intro" } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("no track with UUID"), std::string::npos);
@@ -461,11 +521,10 @@ TEST_F (OperationsTest, TrackSetNameRefusesUnknownTrack)
 TEST_F (OperationsTest, TrackSetNameRefusesNonUuidTrack)
 {
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track",    "not-a-uuid" },
-      { "new_name", "Intro"      }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", "not-a-uuid" }, { "new_name", "Intro" } });
 
   ASSERT_TRUE (report.refused ());
 }
@@ -479,11 +538,10 @@ TEST_F (OperationsTest, TrackSetColorAppliesAndUndoes)
   auto * track = add_audio_track_directly ();
 
   auto report = dispatch (
-    "track.set_color",
-    {
-      { "track", uuid_of (*track) },
-      { "color", "#00ff88"        }
-  });
+    OperationId{
+      "track", "set_color"
+  },
+    { { "track", uuid_of (*track) }, { "color", "#00ff88" } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_TRUE (track->useColor ());
@@ -497,19 +555,17 @@ TEST_F (OperationsTest, TrackSetColorIsIdempotentForSameColor)
 {
   auto * track = add_audio_track_directly ();
   dispatch (
-    "track.set_color",
-    {
-      { "track", uuid_of (*track) },
-      { "color", "#00ff88"        }
-  });
+    OperationId{
+      "track", "set_color"
+  },
+    { { "track", uuid_of (*track) }, { "color", "#00ff88" } });
   ASSERT_EQ (undo_stack_->count (), 1);
 
   auto report = dispatch (
-    "track.set_color",
-    {
-      { "track", uuid_of (*track) },
-      { "color", "#00ff88"        }
-  });
+    OperationId{
+      "track", "set_color"
+  },
+    { { "track", uuid_of (*track) }, { "color", "#00ff88" } });
 
   ASSERT_TRUE (report.applied ());
   EXPECT_TRUE (report.command_texts.empty ());
@@ -523,11 +579,10 @@ TEST_F (OperationsTest, TrackSetColorRefusesInvalidColor)
   auto * track = add_audio_track_directly ();
 
   auto report = dispatch (
-    "track.set_color",
-    {
-      { "track", uuid_of (*track) },
-      { "color", "#00ff"          }
-  });
+    OperationId{
+      "track", "set_color"
+  },
+    { { "track", uuid_of (*track) }, { "color", "#00ff" } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("color"), std::string::npos);
@@ -542,18 +597,17 @@ TEST_F (OperationsTest, TrackUnsetColorAppliesAndUndoes)
 {
   auto * track = add_audio_track_directly ();
   dispatch (
-    "track.set_color",
-    {
-      { "track", uuid_of (*track) },
-      { "color", "#00ff88"        }
-  });
+    OperationId{
+      "track", "set_color"
+  },
+    { { "track", uuid_of (*track) }, { "color", "#00ff88" } });
   ASSERT_TRUE (track->useColor ());
 
   auto report = dispatch (
-    "track.unset_color",
-    {
-      { "track", uuid_of (*track) }
-  });
+    OperationId{
+      "track", "unset_color"
+  },
+    { { "track", uuid_of (*track) } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_FALSE (track->useColor ());
@@ -569,10 +623,10 @@ TEST_F (OperationsTest, TrackUnsetColorIsIdempotentForDefaultColor)
   ASSERT_FALSE (track->useColor ());
 
   auto report = dispatch (
-    "track.unset_color",
-    {
-      { "track", uuid_of (*track) }
-  });
+    OperationId{
+      "track", "unset_color"
+  },
+    { { "track", uuid_of (*track) } });
 
   ASSERT_TRUE (report.applied ());
   EXPECT_TRUE (report.command_texts.empty ());
@@ -590,11 +644,10 @@ TEST_F (OperationsTest, TrackSetCommentAppliesAndUndoes)
   auto * track = add_audio_track_directly ();
 
   auto report = dispatch (
-    "track.set_comment",
-    {
-      { "track",   uuid_of (*track) },
-      { "comment", "hello world"    }
-  });
+    OperationId{
+      "track", "set_comment"
+  },
+    { { "track", uuid_of (*track) }, { "comment", "hello world" } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_EQ (track->comment (), QString ("hello world"));
@@ -607,19 +660,17 @@ TEST_F (OperationsTest, TrackSetCommentClearsWithEmptyString)
 {
   auto * track = add_audio_track_directly ();
   dispatch (
-    "track.set_comment",
-    {
-      { "track",   uuid_of (*track) },
-      { "comment", "hello world"    }
-  });
+    OperationId{
+      "track", "set_comment"
+  },
+    { { "track", uuid_of (*track) }, { "comment", "hello world" } });
   ASSERT_EQ (track->comment (), QString ("hello world"));
 
   auto report = dispatch (
-    "track.set_comment",
-    {
-      { "track",   uuid_of (*track) },
-      { "comment", ""               }
-  });
+    OperationId{
+      "track", "set_comment"
+  },
+    { { "track", uuid_of (*track) }, { "comment", "" } });
 
   ASSERT_TRUE (report.applied ());
   EXPECT_TRUE (track->comment ().isEmpty ());
@@ -636,11 +687,10 @@ TEST_F (OperationsTest, TrackSetTimebaseAppliesAndUndoes)
     track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
 
   auto report = dispatch (
-    "track.set_timebase",
-    {
-      { "track",    uuid_of (*track) },
-      { "timebase", "Musical"        }
-  });
+    OperationId{
+      "track", "set_timebase"
+  },
+    { { "track", uuid_of (*track) }, { "timebase", "Musical" } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_EQ (
@@ -669,11 +719,10 @@ TEST_F (OperationsTest, TrackRouteAppliesAndUndoes)
   track_collection_->add_track (group_ref);
 
   auto report = dispatch (
-    "track.route",
-    {
-      { "track",  uuid_of (*track)            },
-      { "target", uuid_of (*group_ref.get ()) }
-  });
+    OperationId{
+      "track", "route"
+  },
+    { { "track", uuid_of (*track) }, { "target", uuid_of (*group_ref.get ()) } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   const auto output = track_routing_->get_output_track (track->get_uuid ());
@@ -696,24 +745,24 @@ TEST_F (OperationsTest, TrackRouteRefusesCycleWithReason)
   track_collection_->add_track (group1_ref);
   track_collection_->add_track (group2_ref);
   dispatch (
-    "track.route",
-    {
-      { "track",  uuid_of (*track)             },
-      { "target", uuid_of (*group1_ref.get ()) }
-  });
+    OperationId{
+      "track", "route"
+  },
+    { { "track", uuid_of (*track) },
+      { "target", uuid_of (*group1_ref.get ()) } });
   dispatch (
-    "track.route",
-    {
-      { "track",  uuid_of (*group1_ref.get ()) },
-      { "target", uuid_of (*group2_ref.get ()) }
-  });
+    OperationId{
+      "track", "route"
+  },
+    { { "track", uuid_of (*group1_ref.get ()) },
+      { "target", uuid_of (*group2_ref.get ()) } });
 
   auto report = dispatch (
-    "track.route",
-    {
-      { "track",  uuid_of (*group2_ref.get ()) },
-      { "target", uuid_of (*group1_ref.get ()) }
-  });
+    OperationId{
+      "track", "route"
+  },
+    { { "track", uuid_of (*group2_ref.get ()) },
+      { "target", uuid_of (*group1_ref.get ()) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::CyclicRoute);
@@ -729,11 +778,11 @@ TEST_F (OperationsTest, TrackRouteRefusesSignalTypeMismatchWithReason)
   track_collection_->add_track (midi_group_ref);
 
   auto report = dispatch (
-    "track.route",
-    {
-      { "track",  uuid_of (*track)                 },
-      { "target", uuid_of (*midi_group_ref.get ()) }
-  });
+    OperationId{
+      "track", "route"
+  },
+    { { "track", uuid_of (*track) },
+      { "target", uuid_of (*midi_group_ref.get ()) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::TypeMismatch);
@@ -750,11 +799,11 @@ TEST_F (OperationsTest, TrackRouteRefusesMasterSourceWithReason)
   track_collection_->add_track (group_ref);
 
   auto report = dispatch (
-    "track.route",
-    {
-      { "track",  uuid_of (*master)           },
-      { "target", uuid_of (*group_ref.get ()) }
-  });
+    OperationId{
+      "track", "route"
+  },
+    { { "track", uuid_of (*master) },
+      { "target", uuid_of (*group_ref.get ()) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::Unsupported);
@@ -768,19 +817,18 @@ TEST_F (OperationsTest, TrackUnrouteRemovesRouteAndUndoes)
     track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
   track_collection_->add_track (group_ref);
   dispatch (
-    "track.route",
-    {
-      { "track",  uuid_of (*track)            },
-      { "target", uuid_of (*group_ref.get ()) }
-  });
+    OperationId{
+      "track", "route"
+  },
+    { { "track", uuid_of (*track) }, { "target", uuid_of (*group_ref.get ()) } });
   ASSERT_TRUE (
     track_routing_->get_output_track (track->get_uuid ()).has_value ());
 
   auto report = dispatch (
-    "track.unroute",
-    {
-      { "track", uuid_of (*track) }
-  });
+    OperationId{
+      "track", "unroute"
+  },
+    { { "track", uuid_of (*track) } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_FALSE (
@@ -801,11 +849,10 @@ TEST_F (OperationsTest, TrackAddSendReturnsSendUuidAndUndoes)
   auto * track = add_audio_track_directly ();
 
   auto report = dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track) },
-      { "is_prefader", false            }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track) }, { "is_prefader", false } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_EQ (track->channel ()->sends ()->get_sends ().size (), 1);
@@ -821,11 +868,10 @@ TEST_F (OperationsTest, TrackAddSendRefusesTrackWithoutChannel)
   ASSERT_NE (marker, nullptr);
 
   auto report = dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*marker) },
-      { "is_prefader", false             }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*marker) }, { "is_prefader", false } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("channel"), std::string::npos);
@@ -835,22 +881,20 @@ TEST_F (OperationsTest, TrackSetSendPrefaderAppliesAndUndoes)
 {
   auto * track = add_audio_track_directly ();
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track) },
-      { "is_prefader", false            }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
   auto * send = track->channel ()->sends ()->get_sends ().front ().get ();
   ASSERT_FALSE (send->isPrefader ());
 
   auto report = dispatch (
-    "track.set_send_prefader",
-    {
-      { "send",        send_uuid },
-      { "is_prefader", true      }
-  });
+    OperationId{
+      "track", "set_send_prefader"
+  },
+    { { "send", send_uuid }, { "is_prefader", true } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_TRUE (send->isPrefader ());
@@ -863,21 +907,19 @@ TEST_F (OperationsTest, TrackSetSendPrefaderElidesSameTapPoint)
 {
   auto * track = add_audio_track_directly ();
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track) },
-      { "is_prefader", false            }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track) }, { "is_prefader", false } });
   ASSERT_EQ (undo_stack_->count (), 1);
   const auto send_uuid = uuid_to_string (
     type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
 
   auto report = dispatch (
-    "track.set_send_prefader",
-    {
-      { "send",        send_uuid },
-      { "is_prefader", false     }
-  });
+    OperationId{
+      "track", "set_send_prefader"
+  },
+    { { "send", send_uuid }, { "is_prefader", false } });
 
   ASSERT_TRUE (report.applied ());
   EXPECT_TRUE (report.command_texts.empty ());
@@ -889,20 +931,18 @@ TEST_F (OperationsTest, TrackRemoveSendRefusesForeignSend)
   auto * track_a = add_audio_track_directly ();
   auto * track_b = add_audio_track_directly ();
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track_a) },
-      { "is_prefader", false              }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track_a) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (track_a->channel ()->sends ()->get_sends ().front ().id ()));
 
   auto report = dispatch (
-    "track.remove_send",
-    {
-      { "track", uuid_of (*track_b) },
-      { "send",  send_uuid          }
-  });
+    OperationId{
+      "track", "remove_send"
+  },
+    { { "track", uuid_of (*track_b) }, { "send", send_uuid } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("belong"), std::string::npos);
@@ -922,22 +962,21 @@ TEST_F (OperationsTest, TrackSetSendTargetTrackRoutesAndUndoes)
   auto * group = group_ref.get ();
   track_collection_->add_track (group_ref);
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track) },
-      { "is_prefader", false            }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
   auto * send = track->channel ()->sends ()->get_sends ().front ().get ();
 
   auto report = dispatch (
-    "track.set_send_target_track",
-    {
-      { "track",        uuid_of (*track) },
-      { "send",         send_uuid        },
-      { "target_track", uuid_of (*group) }
-  });
+    OperationId{
+      "track", "set_send_target_track"
+  },
+    { { "track", uuid_of (*track) },
+      { "send", send_uuid },
+      { "target_track", uuid_of (*group) } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   ASSERT_TRUE (send->destination_port ().has_value ());
@@ -956,21 +995,20 @@ TEST_F (OperationsTest, TrackSetSendTargetTrackRefusesSignalMismatch)
     track_factory_->create_empty_track<structure::tracks::MidiGroupTrack> ();
   track_collection_->add_track (midi_group_ref);
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track) },
-      { "is_prefader", false            }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
 
   auto report = dispatch (
-    "track.set_send_target_track",
-    {
-      { "track",        uuid_of (*track)                 },
-      { "send",         send_uuid                        },
-      { "target_track", uuid_of (*midi_group_ref.get ()) }
-  });
+    OperationId{
+      "track", "set_send_target_track"
+  },
+    { { "track", uuid_of (*track) },
+      { "send", send_uuid },
+      { "target_track", uuid_of (*midi_group_ref.get ()) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("outputs Audio but"), std::string::npos);
@@ -983,29 +1021,28 @@ TEST_F (OperationsTest, TrackSetSendTargetTrackElidesSameDestination)
     track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
   track_collection_->add_track (group_ref);
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track) },
-      { "is_prefader", false            }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
   dispatch (
-    "track.set_send_target_track",
-    {
-      { "track",        uuid_of (*track)            },
-      { "send",         send_uuid                   },
-      { "target_track", uuid_of (*group_ref.get ()) }
-  });
+    OperationId{
+      "track", "set_send_target_track"
+  },
+    { { "track", uuid_of (*track) },
+      { "send", send_uuid },
+      { "target_track", uuid_of (*group_ref.get ()) } });
   ASSERT_EQ (undo_stack_->count (), 2);
 
   auto report = dispatch (
-    "track.set_send_target_track",
-    {
-      { "track",        uuid_of (*track)            },
-      { "send",         send_uuid                   },
-      { "target_track", uuid_of (*group_ref.get ()) }
-  });
+    OperationId{
+      "track", "set_send_target_track"
+  },
+    { { "track", uuid_of (*track) },
+      { "send", send_uuid },
+      { "target_track", uuid_of (*group_ref.get ()) } });
 
   ASSERT_TRUE (report.applied ());
   EXPECT_TRUE (report.command_texts.empty ());
@@ -1020,21 +1057,20 @@ TEST_F (OperationsTest, TrackSetSendTargetTrackRefusesForeignSend)
     track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
   track_collection_->add_track (group_ref);
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track_b) },
-      { "is_prefader", false              }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track_b) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (track_b->channel ()->sends ()->get_sends ().front ().id ()));
 
   auto report = dispatch (
-    "track.set_send_target_track",
-    {
-      { "track",        uuid_of (*track_a)          },
-      { "send",         send_uuid                   },
-      { "target_track", uuid_of (*group_ref.get ()) }
-  });
+    OperationId{
+      "track", "set_send_target_track"
+  },
+    { { "track", uuid_of (*track_a) },
+      { "send", send_uuid },
+      { "target_track", uuid_of (*group_ref.get ()) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("belong"), std::string::npos);
@@ -1048,11 +1084,10 @@ TEST_F (OperationsTest, TrackSetSendTargetTrackPassesQueryRefusalThrough)
     track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
   track_collection_->add_track (group_ref);
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track) },
-      { "is_prefader", false            }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
 
@@ -1071,12 +1106,12 @@ TEST_F (OperationsTest, TrackSetSendTargetTrackPassesQueryRefusalThrough)
 
   const auto undo_count_before = undo_stack_->count ();
   auto       report = dispatch (
-    "track.set_send_target_track",
-    {
-      { "track",        uuid_of (*track)            },
-      { "send",         send_uuid                   },
-      { "target_track", uuid_of (*group_ref.get ()) }
-  });
+    OperationId{
+      "track", "set_send_target_track"
+  },
+    { { "track", uuid_of (*track) },
+      { "send", send_uuid },
+      { "target_track", uuid_of (*group_ref.get ()) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::CyclicRoute);
@@ -1091,40 +1126,37 @@ TEST_F (OperationsTest, TrackClearSendTargetClearsAndUndoes)
     track_factory_->create_empty_track<structure::tracks::AudioGroupTrack> ();
   track_collection_->add_track (group_ref);
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*track) },
-      { "is_prefader", false            }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*track) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (track->channel ()->sends ()->get_sends ().front ().id ()));
   auto * send = track->channel ()->sends ()->get_sends ().front ().get ();
   dispatch (
-    "track.set_send_target_track",
-    {
-      { "track",        uuid_of (*track)            },
-      { "send",         send_uuid                   },
-      { "target_track", uuid_of (*group_ref.get ()) }
-  });
+    OperationId{
+      "track", "set_send_target_track"
+  },
+    { { "track", uuid_of (*track) },
+      { "send", send_uuid },
+      { "target_track", uuid_of (*group_ref.get ()) } });
   ASSERT_TRUE (send->has_destination ());
 
   auto report = dispatch (
-    "track.clear_send_target",
-    {
-      { "track", uuid_of (*track) },
-      { "send",  send_uuid        }
-  });
+    OperationId{
+      "track", "clear_send_target"
+  },
+    { { "track", uuid_of (*track) }, { "send", send_uuid } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_FALSE (send->has_destination ());
 
   // clearing a send with no destination elides
   report = dispatch (
-    "track.clear_send_target",
-    {
-      { "track", uuid_of (*track) },
-      { "send",  send_uuid        }
-  });
+    OperationId{
+      "track", "clear_send_target"
+  },
+    { { "track", uuid_of (*track) }, { "send", send_uuid } });
   ASSERT_TRUE (report.applied ());
   EXPECT_TRUE (report.command_texts.empty ());
   EXPECT_EQ (report.revision_after, report.revision_before);
@@ -1146,23 +1178,22 @@ TEST_F (OperationsTest, TrackSetSendTargetPortRoutesSidechainAndUndoes)
   auto * sidechain_in =
     plugin_ref->get_all_input_ports ().at (1).get_object_as<dsp::AudioPort> ();
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*source) },
-      { "is_prefader", false             }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*source) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (source->channel ()->sends ()->get_sends ().front ().id ()));
   auto * send = source->channel ()->sends ()->get_sends ().front ().get ();
 
   auto report = dispatch (
-    "track.set_send_target_port",
-    {
-      { "track",       uuid_of (*source)                           },
-      { "send",        send_uuid                                   },
+    OperationId{
+      "track", "set_send_target_port"
+  },
+    { { "track", uuid_of (*source) },
+      { "send", send_uuid },
       { "target_port",
-       uuid_to_string (type_safe::get (sidechain_in->get_uuid ())) }
-  });
+        uuid_to_string (type_safe::get (sidechain_in->get_uuid ())) } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   ASSERT_TRUE (send->destination_port ().has_value ());
@@ -1180,25 +1211,24 @@ TEST_F (OperationsTest, TrackSetSendTargetPortRefusesNonSidechainPort)
   auto * group = group_ref.get ();
   track_collection_->add_track (group_ref);
   dispatch (
-    "track.add_send",
-    {
-      { "track",       uuid_of (*source) },
-      { "is_prefader", false             }
-  });
+    OperationId{
+      "track", "add_send"
+  },
+    { { "track", uuid_of (*source) }, { "is_prefader", false } });
   const auto send_uuid = uuid_to_string (
     type_safe::get (source->channel ()->sends ()->get_sends ().front ().id ()));
 
   // the group's own input is an audio input port, but not a sidechain
   auto report = dispatch (
-    "track.set_send_target_port",
-    {
-      { "track",       uuid_of (*source)                                       },
-      { "send",        send_uuid                                               },
+    OperationId{
+      "track", "set_send_target_port"
+  },
+    { { "track", uuid_of (*source) },
+      { "send", send_uuid },
       { "target_port",
-       uuid_to_string (
+        uuid_to_string (
           type_safe::get (
-            group->get_track_processor ()->get_stereo_in_port ().get_uuid ())) }
-  });
+            group->get_track_processor ()->get_stereo_in_port ().get_uuid ())) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("not a sidechain input"), std::string::npos);
@@ -1213,10 +1243,10 @@ TEST_F (OperationsTest, TrackAddCreatesAndRoutesAudioTrack)
   const auto count_before = track_collection_->track_count ();
 
   auto report = dispatch (
-    "track.add",
-    {
-      { "type", "Audio" }
-  });
+    OperationId{
+      "track", "add"
+  },
+    { { "type", "Audio" } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_EQ (track_collection_->track_count (), count_before + 1);
@@ -1246,10 +1276,10 @@ TEST_F (OperationsTest, TrackAddCreatesAndRoutesAudioTrack)
 TEST_F (OperationsTest, TrackAddRefusesSingletonType)
 {
   auto report = dispatch (
-    "track.add",
-    {
-      { "type", "Master" }
-  });
+    OperationId{
+      "track", "add"
+  },
+    { { "type", "Master" } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("singleton"), std::string::npos);
@@ -1259,10 +1289,10 @@ TEST_F (OperationsTest, TrackAddRefusesSingletonType)
 TEST_F (OperationsTest, TrackAddRefusesUnknownType)
 {
   auto report = dispatch (
-    "track.add",
-    {
-      { "type", "audio" }
-  });
+    OperationId{
+      "track", "add"
+  },
+    { { "type", "audio" } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("'audio'"), std::string::npos);
@@ -1271,10 +1301,10 @@ TEST_F (OperationsTest, TrackAddRefusesUnknownType)
 TEST_F (OperationsTest, TrackAddRefusesNumericType)
 {
   auto report = dispatch (
-    "track.add",
-    {
-      { "type", ENUM_VALUE_TO_INT (structure::tracks::Track::Type::Midi) }
-  });
+    OperationId{
+      "track", "add"
+  },
+    { { "type", ENUM_VALUE_TO_INT (structure::tracks::Track::Type::Midi) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("expected a name"), std::string::npos);
@@ -1292,10 +1322,10 @@ TEST_F (OperationsTest, TrackAddRefusesWhenNoMasterTrack)
 
   const auto count_before = track_collection_->track_count ();
   auto       report = dispatch (
-    "track.add",
-    {
-      { "type", "Audio" }
-  });
+    OperationId{
+      "track", "add"
+  },
+    { { "type", "Audio" } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("master track"), std::string::npos);
@@ -1311,7 +1341,7 @@ TEST_F (OperationsTest, TrackListReturnsSummaries)
 {
   add_audio_track_directly ()->setName ("Drums");
 
-  auto report = dispatch ("track.list");
+  auto report = dispatch ({ "track", "list" });
 
   ASSERT_TRUE (report.applied ());
   ASSERT_TRUE (report.result.contains ("items"));
@@ -1334,10 +1364,10 @@ TEST_F (OperationsTest, TrackListHonorsLimit)
   add_audio_track_directly ();
 
   auto report = dispatch (
-    "track.list",
-    {
-      { "limit", 2 }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "limit", 2 } });
 
   ASSERT_TRUE (report.applied ());
   EXPECT_EQ (report.result.at ("items").size (), 2);
@@ -1349,10 +1379,10 @@ TEST_F (OperationsTest, TrackListHonorsLimit)
 TEST_F (OperationsTest, TrackListRefusesBadLimit)
 {
   auto report = dispatch (
-    "track.list",
-    {
-      { "limit", 0 }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "limit", 0 } });
 
   ASSERT_TRUE (report.refused ());
 }
@@ -1367,10 +1397,10 @@ TEST_F (OperationsTest, TrackListPaginatesThroughAllPages)
 
   std::vector<std::string> uuids;
   auto                     report = dispatch (
-    "track.list",
-    {
-      { "limit", 2 }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "limit", 2 } });
   for (int page = 0;; ++page)
     {
       ASSERT_LT (page, 8) << "pagination did not terminate";
@@ -1384,11 +1414,11 @@ TEST_F (OperationsTest, TrackListPaginatesThroughAllPages)
           break;
         }
       report = dispatch (
-        "track.list",
-        {
-          { "limit",  2                                                    },
-          { "cursor", report.result.at ("next_cursor").get<std::string> () }
-      });
+        OperationId{
+          "track", "list"
+      },
+        { { "limit", 2 },
+          { "cursor", report.result.at ("next_cursor").get<std::string> () } });
     }
 
   EXPECT_EQ (report.result.at ("total_count").get<int> (), 6);
@@ -1401,10 +1431,10 @@ TEST_F (OperationsTest, TrackListPaginatesThroughAllPages)
 TEST_F (OperationsTest, TrackListCursorStatesRevisionChange)
 {
   const auto first = dispatch (
-    "track.list",
-    {
-      { "limit", 1 }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "limit", 1 } });
   ASSERT_TRUE (first.applied ());
   ASSERT_FALSE (first.result.at ("next_cursor").is_null ());
 
@@ -1412,29 +1442,28 @@ TEST_F (OperationsTest, TrackListCursorStatesRevisionChange)
   auto * track = add_audio_track_directly ();
   ASSERT_TRUE (
     dispatch (
-      "track.set_name",
-      {
-        { "track",    uuid_of (*track) },
-        { "new_name", "Renamed"        }
-  })
+      OperationId{
+        "track", "set_name"
+  },
+      { { "track", uuid_of (*track) }, { "new_name", "Renamed" } })
       .applied ());
 
   const auto second = dispatch (
-    "track.list",
-    {
-      { "limit",  1                                                   },
-      { "cursor", first.result.at ("next_cursor").get<std::string> () }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "limit", 1 },
+      { "cursor", first.result.at ("next_cursor").get<std::string> () } });
   ASSERT_TRUE (second.applied ());
   EXPECT_TRUE (second.result.at ("revision_changed").get<bool> ());
 
   // the second page mints its cursor at the current revision
   const auto third = dispatch (
-    "track.list",
-    {
-      { "limit",  1                                                    },
-      { "cursor", second.result.at ("next_cursor").get<std::string> () }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "limit", 1 },
+      { "cursor", second.result.at ("next_cursor").get<std::string> () } });
   ASSERT_TRUE (third.applied ());
   EXPECT_FALSE (third.result.at ("revision_changed").get<bool> ());
 }
@@ -1443,19 +1472,19 @@ TEST_F (OperationsTest, TrackListRefusesMalformedCursor)
 {
   // valid base64url, but the decoded bytes are not a cursor payload
   auto report = dispatch (
-    "track.list",
-    {
-      { "cursor", "aGVsbG8=" }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "cursor", "aGVsbG8=" } });
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::InvalidParameter);
 
   // characters outside the base64url alphabet
   report = dispatch (
-    "track.list",
-    {
-      { "cursor", "???" }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "cursor", "???" } });
   ASSERT_TRUE (report.refused ());
 }
 
@@ -1478,10 +1507,10 @@ TEST_F (OperationsTest, TrackListRefusesOverlongCursor)
   ASSERT_GT (cursor.size (), CursorParam::maximum_length);
 
   auto report = dispatch (
-    "track.list",
-    {
-      { "cursor", cursor }
-  });
+    OperationId{
+      "track", "list"
+  },
+    { { "cursor", cursor } });
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::InvalidParameter);
 }
@@ -1493,10 +1522,10 @@ TEST_F (OperationsTest, TrackListRefusesOverlongCursor)
 TEST_F (OperationsTest, TransportSetPlayStateAppliesWithoutCommands)
 {
   auto report = dispatch (
-    "transport.set_play_state",
-    {
-      { "state", "Rolling" }
-  });
+    OperationId{
+      "transport", "set_play_state"
+  },
+    { { "state", "Rolling" } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_EQ (transport_->getPlayState (), dsp::Transport::PlayState::Rolling);
@@ -1508,10 +1537,10 @@ TEST_F (OperationsTest, TransportSetPlayStateAppliesWithoutCommands)
 TEST_F (OperationsTest, TransportSetPlayStateRefusesUnknownState)
 {
   auto report = dispatch (
-    "transport.set_play_state",
-    {
-      { "state", "Faster" }
-  });
+    OperationId{
+      "transport", "set_play_state"
+  },
+    { { "state", "Faster" } });
 
   ASSERT_TRUE (report.refused ());
 }
@@ -1526,20 +1555,18 @@ TEST_F (OperationsTest, EditRefusesStaleExpectedRevision)
   track->setName ("Original");
 
   auto first = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Intro"          }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Intro" } });
   ASSERT_TRUE (first.applied ()) << first.message;
   ASSERT_GT (first.revision_after, first.revision_before);
 
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Drums"          }
+    OperationId{
+      "track", "set_name"
   },
+    { { "track", uuid_of (*track) }, { "new_name", "Drums" } },
     DispatchOptions{ .expected_revision = first.revision_before });
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::StaleRevision);
@@ -1551,11 +1578,10 @@ TEST_F (OperationsTest, EditRefusesStaleExpectedRevision)
 
   // with the revision it was told about, the same edit applies
   auto retry = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Drums"          }
+    OperationId{
+      "track", "set_name"
   },
+    { { "track", uuid_of (*track) }, { "new_name", "Drums" } },
     DispatchOptions{ .expected_revision = first.revision_after });
   ASSERT_TRUE (retry.applied ()) << retry.message;
   EXPECT_GT (retry.revision_after, retry.revision_before);
@@ -1564,16 +1590,15 @@ TEST_F (OperationsTest, EditRefusesStaleExpectedRevision)
 
 TEST_F (OperationsTest, QueryAndControlIgnoreExpectedRevision)
 {
-  auto report =
-    dispatch ("track.list", {}, DispatchOptions{ .expected_revision = 99 });
+  auto report = dispatch (
+    { "track", "list" }, {}, DispatchOptions{ .expected_revision = 99 });
   EXPECT_TRUE (report.applied ());
 
   report = dispatch (
-    "transport.set_play_state",
-    {
-      { "state", "Rolling" }
+    OperationId{
+      "transport", "set_play_state"
   },
-    DispatchOptions{ .expected_revision = 99 });
+    { { "state", "Rolling" } }, DispatchOptions{ .expected_revision = 99 });
   EXPECT_TRUE (report.applied ());
 }
 
@@ -1583,22 +1608,20 @@ TEST_F (OperationsTest, EditRefusesExpectedRevisionFromBeforeAnUndo)
   track->setName ("Original");
 
   auto edit = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Intro"          }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Intro" } });
   ASSERT_TRUE (edit.applied ()) << edit.message;
   undo_stack_->undo ();
   ASSERT_EQ (track->name (), QString ("Original"));
 
   // the undo moved the revision, so the revision from before it is stale
   auto report = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Drums"          }
+    OperationId{
+      "track", "set_name"
   },
+    { { "track", uuid_of (*track) }, { "new_name", "Drums" } },
     DispatchOptions{ .expected_revision = edit.revision_after });
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("expected revision"), std::string::npos);
@@ -1615,18 +1638,16 @@ TEST_F (OperationsTest, DispatchedEditsCommitAsOneUndoStep)
 
   auto tx = undo_stack_->begin_transaction (QStringLiteral ("Batch rename"));
   auto first = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Intro"          }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Intro" } });
   ASSERT_TRUE (first.applied ()) << first.message;
   auto second = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Drums"          }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Drums" } });
   ASSERT_TRUE (second.applied ()) << second.message;
   ASSERT_TRUE (tx->commit ());
 
@@ -1643,11 +1664,10 @@ TEST_F (OperationsTest, DispatchedEditsAbortLeavesProjectUnchanged)
 
   auto tx = undo_stack_->begin_transaction (QStringLiteral ("Batch rename"));
   dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Intro"          }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Intro" } });
   const auto revision_before_abort = undo_stack_->revision ();
   ASSERT_TRUE (tx->abort ());
 
@@ -1664,18 +1684,17 @@ TEST_F (OperationsTest, TransactionAbortsAfterMidwayRefusal)
 
   auto tx = undo_stack_->begin_transaction (QStringLiteral ("Batch rename"));
   auto applied = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Intro"          }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Intro" } });
   ASSERT_TRUE (applied.applied ());
   auto refused = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track)                 },
-      { "new_name", std::string ("Bad\xC3\x28 name") }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) },
+      { "new_name", std::string ("Bad\xC3\x28 name") } });
   ASSERT_TRUE (refused.refused ());
   ASSERT_TRUE (tx->abort ());
 
@@ -1690,31 +1709,28 @@ TEST_F (OperationsTest, InTransactionEditsThreadExpectedRevisionsFromReports)
 
   auto tx = undo_stack_->begin_transaction (QStringLiteral ("Batch rename"));
   auto first = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Intro"          }
-  });
+    OperationId{
+      "track", "set_name"
+  },
+    { { "track", uuid_of (*track) }, { "new_name", "Intro" } });
   ASSERT_TRUE (first.applied ()) << first.message;
 
   // the first push moved the revision, so the revision from before the
   // transaction is stale now
   auto stale = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Drums"          }
+    OperationId{
+      "track", "set_name"
   },
+    { { "track", uuid_of (*track) }, { "new_name", "Drums" } },
     DispatchOptions{ .expected_revision = first.revision_before });
   EXPECT_TRUE (stale.refused ());
 
   // each report's revision_after is the revision the next call must pass
   auto second = dispatch (
-    "track.set_name",
-    {
-      { "track",    uuid_of (*track) },
-      { "new_name", "Drums"          }
+    OperationId{
+      "track", "set_name"
   },
+    { { "track", uuid_of (*track) }, { "new_name", "Drums" } },
     DispatchOptions{ .expected_revision = first.revision_after });
   ASSERT_TRUE (second.applied ()) << second.message;
 
@@ -1732,10 +1748,10 @@ TEST_F (OperationsTest, EditReportsErrorWhenTheEngineRefusesTheCommands)
 
   drop_push_requests_from_ = 1;
   auto report = dispatch (
-    "track.add",
-    {
-      { "type", "Audio" }
-  });
+    OperationId{
+      "track", "add"
+  },
+    { { "type", "Audio" } });
   ASSERT_TRUE (report.failed ());
   EXPECT_NE (report.message.find ("refused"), std::string::npos);
   EXPECT_TRUE (report.command_texts.empty ());
@@ -1748,10 +1764,10 @@ TEST_F (OperationsTest, EditReportsErrorWhenTheEngineRefusesTheCommands)
   // the same edit applies once the engine cooperates again
   drop_push_requests_from_ = 0;
   auto retry = dispatch (
-    "track.add",
-    {
-      { "type", "Audio" }
-  });
+    OperationId{
+      "track", "add"
+  },
+    { { "type", "Audio" } });
   ASSERT_TRUE (retry.applied ()) << retry.message;
   EXPECT_EQ (track_collection_->track_count (), count_before + 1);
   EXPECT_GT (retry.revision_after, retry.revision_before);
@@ -1764,10 +1780,10 @@ TEST_F (OperationsTest, PartiallyRefusedEditReportsErrorWithTheCommandsThatRan)
   // the track is added, its master routing is refused
   drop_push_requests_from_ = 2;
   auto report = dispatch (
-    "track.add",
-    {
-      { "type", "Audio" }
-  });
+    OperationId{
+      "track", "add"
+  },
+    { { "type", "Audio" } });
 
   ASSERT_TRUE (report.failed ());
   EXPECT_NE (report.message.find ("refused 1"), std::string::npos);
@@ -1795,11 +1811,10 @@ TEST_F (OperationsTest, PortConnectAddsUndoableConnection)
   auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
 
   auto report = dispatch (
-    "port.connect",
-    {
-      { "source",      uuid_of (*src)  },
-      { "destination", uuid_of (*dest) }
-  });
+    OperationId{
+      "port", "connect"
+  },
+    { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_TRUE (port_connections_manager_->connection_exists (
@@ -1820,41 +1835,38 @@ TEST_F (OperationsTest, PortConnectRefusesInvalidPairings)
   auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
 
   const auto self = dispatch (
-    "port.connect",
-    {
-      { "source",      uuid_of (*src) },
-      { "destination", uuid_of (*src) }
-  });
+    OperationId{
+      "port", "connect"
+  },
+    { { "source", uuid_of (*src) }, { "destination", uuid_of (*src) } });
   ASSERT_TRUE (self.refused ());
   EXPECT_NE (self.message.find ("itself"), std::string::npos);
 
   const auto direction = dispatch (
-    "port.connect",
-    {
-      { "source",      uuid_of (*dest) },
-      { "destination", uuid_of (*src)  }
-  });
+    OperationId{
+      "port", "connect"
+  },
+    { { "source", uuid_of (*dest) }, { "destination", uuid_of (*src) } });
   ASSERT_TRUE (direction.refused ());
   EXPECT_NE (direction.message.find ("input port"), std::string::npos);
 
   const auto unknown_port = dispatch (
-    "port.connect",
-    {
-      { "source",      uuid_of (*src)                                      },
+    OperationId{
+      "port", "connect"
+  },
+    { { "source", uuid_of (*src) },
       { "destination",
-       QUuid::createUuid ().toString (QUuid::WithoutBraces).toStdString () }
-  });
+        QUuid::createUuid ().toString (QUuid::WithoutBraces).toStdString () } });
   ASSERT_TRUE (unknown_port.refused ());
   EXPECT_NE (unknown_port.message.find ("no port with UUID"), std::string::npos);
 
   port_connections_manager_->add_default_connection (
     src->get_uuid (), dest->get_uuid (), false);
   const auto duplicate = dispatch (
-    "port.connect",
-    {
-      { "source",      uuid_of (*src)  },
-      { "destination", uuid_of (*dest) }
-  });
+    OperationId{
+      "port", "connect"
+  },
+    { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } });
   ASSERT_TRUE (duplicate.refused ());
   EXPECT_NE (duplicate.message.find ("already connected"), std::string::npos);
 
@@ -1880,11 +1892,10 @@ TEST_F (OperationsTest, PortConnectRefusesWhenGraphRejects)
     });
 
   auto report = dispatch (
-    "port.connect",
-    {
-      { "source",      uuid_of (*src)  },
-      { "destination", uuid_of (*dest) }
-  });
+    OperationId{
+      "port", "connect"
+  },
+    { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } });
 
   ASSERT_TRUE (report.refused ());
   EXPECT_NE (report.message.find ("signal loop"), std::string::npos);
@@ -1903,19 +1914,17 @@ TEST_F (OperationsTest, PortDisconnectRemovesAndUndoRestores)
   auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
   ASSERT_TRUE (
     dispatch (
-      "port.connect",
-      {
-        { "source",      uuid_of (*src)  },
-        { "destination", uuid_of (*dest) }
-  })
+      OperationId{
+        "port", "connect"
+  },
+      { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } })
       .applied ());
 
   auto report = dispatch (
-    "port.disconnect",
-    {
-      { "source",      uuid_of (*src)  },
-      { "destination", uuid_of (*dest) }
-  });
+    OperationId{
+      "port", "disconnect"
+  },
+    { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } });
 
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_FALSE (port_connections_manager_->connection_exists (
@@ -1936,20 +1945,18 @@ TEST_F (OperationsTest, PortDisconnectRefusesMissingAndLocked)
     src->get_uuid (), locked_dest->get_uuid (), true);
 
   const auto missing = dispatch (
-    "port.disconnect",
-    {
-      { "source",      uuid_of (*src)  },
-      { "destination", uuid_of (*dest) }
-  });
+    OperationId{
+      "port", "disconnect"
+  },
+    { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } });
   ASSERT_TRUE (missing.refused ());
   EXPECT_NE (missing.message.find ("no connection"), std::string::npos);
 
   const auto locked = dispatch (
-    "port.disconnect",
-    {
-      { "source",      uuid_of (*src)         },
-      { "destination", uuid_of (*locked_dest) }
-  });
+    OperationId{
+      "port", "disconnect"
+  },
+    { { "source", uuid_of (*src) }, { "destination", uuid_of (*locked_dest) } });
   ASSERT_TRUE (locked.refused ());
   EXPECT_NE (locked.message.find ("locked"), std::string::npos);
   EXPECT_TRUE (port_connections_manager_->connection_exists (
@@ -1968,11 +1975,10 @@ TEST_F (OperationsTest, PortMultiplierUpdatesMergeAndElide)
   auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
   ASSERT_TRUE (
     dispatch (
-      "port.connect",
-      {
-        { "source",      uuid_of (*src)  },
-        { "destination", uuid_of (*dest) }
-  })
+      OperationId{
+        "port", "connect"
+  },
+      { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } })
       .applied ());
   const auto * conn = port_connections_manager_->get_connection (
     src->get_uuid (), dest->get_uuid ());
@@ -1980,12 +1986,12 @@ TEST_F (OperationsTest, PortMultiplierUpdatesMergeAndElide)
 
   const auto set_multiplier = [&] (double value) {
     return dispatch (
-      "port.set_connection_multiplier",
-      {
-        { "source",      uuid_of (*src)  },
+      OperationId{
+        "port", "set_connection_multiplier"
+    },
+      { { "source", uuid_of (*src) },
         { "destination", uuid_of (*dest) },
-        { "multiplier",  value           }
-    });
+        { "multiplier", value } });
   };
 
   auto first = set_multiplier (0.5);
@@ -2020,23 +2026,22 @@ TEST_F (OperationsTest, PortMultiplierRefusesInvalidInput)
   auto * midi_dest = midi_dest_ref.get ();
   ASSERT_TRUE (
     dispatch (
-      "port.connect",
-      {
-        { "source",      uuid_of (*src)  },
-        { "destination", uuid_of (*dest) }
-  })
+      OperationId{
+        "port", "connect"
+  },
+      { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } })
       .applied ());
   port_connections_manager_->add_default_connection (
     src->get_uuid (), midi_dest->get_uuid (), false);
 
   const auto set_multiplier = [&] (const dsp::Port &port, double value) {
     return dispatch (
-      "port.set_connection_multiplier",
-      {
-        { "source",      uuid_of (*src) },
+      OperationId{
+        "port", "set_connection_multiplier"
+    },
+      { { "source", uuid_of (*src) },
         { "destination", uuid_of (port) },
-        { "multiplier",  value          }
-    });
+        { "multiplier", value } });
   };
 
   const auto wire_range = set_multiplier (*dest, 2.5);
@@ -2069,11 +2074,10 @@ TEST_F (OperationsTest, PortEnabledTogglesAndElides)
   auto * dest = add_cv_port (u8"CV in", dsp::PortFlow::Input);
   ASSERT_TRUE (
     dispatch (
-      "port.connect",
-      {
-        { "source",      uuid_of (*src)  },
-        { "destination", uuid_of (*dest) }
-  })
+      OperationId{
+        "port", "connect"
+  },
+      { { "source", uuid_of (*src) }, { "destination", uuid_of (*dest) } })
       .applied ());
   const auto * conn = port_connections_manager_->get_connection (
     src->get_uuid (), dest->get_uuid ());
@@ -2082,12 +2086,12 @@ TEST_F (OperationsTest, PortEnabledTogglesAndElides)
 
   const auto set_enabled = [&] (bool enabled) {
     return dispatch (
-      "port.set_connection_enabled",
-      {
-        { "source",      uuid_of (*src)  },
+      OperationId{
+        "port", "set_connection_enabled"
+    },
+      { { "source", uuid_of (*src) },
         { "destination", uuid_of (*dest) },
-        { "enabled",     enabled         }
-    });
+        { "enabled", enabled } });
   };
 
   auto disabled = set_enabled (false);
@@ -2109,12 +2113,12 @@ TEST_F (OperationsTest, PortEnabledTogglesAndElides)
   port_connections_manager_->add_default_connection (
     src->get_uuid (), locked_dest->get_uuid (), true);
   const auto locked = dispatch (
-    "port.set_connection_enabled",
-    {
-      { "source",      uuid_of (*src)         },
+    OperationId{
+      "port", "set_connection_enabled"
+  },
+    { { "source", uuid_of (*src) },
       { "destination", uuid_of (*locked_dest) },
-      { "enabled",     false                  }
-  });
+      { "enabled", false } });
   ASSERT_TRUE (locked.refused ());
   EXPECT_NE (locked.message.find ("locked"), std::string::npos);
 }
@@ -2129,11 +2133,10 @@ TEST_F (OperationsTest, ParameterSetValueAppliesAndUndoes)
   param->setBaseValue (0.5f);
 
   auto report = dispatch (
-    "parameter.set_value",
-    {
-      { "parameter", uuid_of (*param) },
-      { "value",     0.75             }
-  });
+    OperationId{
+      "parameter", "set_value"
+  },
+    { { "parameter", uuid_of (*param) }, { "value", 0.75 } });
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_FLOAT_EQ (param->baseValue (), 0.75f);
   EXPECT_GT (report.revision_after, report.revision_before);
@@ -2151,11 +2154,10 @@ TEST_F (OperationsTest, ParameterSetValueElidesCurrentValue)
   param->setBaseValue (0.5f);
 
   const auto report = dispatch (
-    "parameter.set_value",
-    {
-      { "parameter", uuid_of (*param) },
-      { "value",     0.5              }
-  });
+    OperationId{
+      "parameter", "set_value"
+  },
+    { { "parameter", uuid_of (*param) }, { "value", 0.5 } });
   ASSERT_TRUE (report.applied ());
   EXPECT_FLOAT_EQ (param->baseValue (), 0.5f);
   EXPECT_EQ (undo_stack_->count (), 0);
@@ -2168,11 +2170,10 @@ TEST_F (OperationsTest, ParameterSetValueRefusesOutOfRangeValue)
   param->setBaseValue (0.5f);
 
   const auto report = dispatch (
-    "parameter.set_value",
-    {
-      { "parameter", uuid_of (*param) },
-      { "value",     1.5              }
-  });
+    OperationId{
+      "parameter", "set_value"
+  },
+    { { "parameter", uuid_of (*param) }, { "value", 1.5 } });
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::OutOfRange);
   EXPECT_FLOAT_EQ (param->baseValue (), 0.5f);
@@ -2182,11 +2183,11 @@ TEST_F (OperationsTest, ParameterSetValueRefusesOutOfRangeValue)
 TEST_F (OperationsTest, ParameterSetValueRefusesUnknownParameter)
 {
   const auto report = dispatch (
-    "parameter.set_value",
-    {
-      { "parameter", "11111111-2222-3333-4444-555555555555" },
-      { "value",     0.5                                    }
-  });
+    OperationId{
+      "parameter", "set_value"
+  },
+    { { "parameter", "11111111-2222-3333-4444-555555555555" },
+      { "value", 0.5 } });
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::NotFound);
 }
@@ -2196,10 +2197,10 @@ TEST_F (OperationsTest, ParameterSetValueRefusesMissingValue)
   auto * param = add_parameter (u8"gain");
 
   const auto report = dispatch (
-    "parameter.set_value",
-    {
-      { "parameter", uuid_of (*param) }
-  });
+    OperationId{
+      "parameter", "set_value"
+  },
+    { { "parameter", uuid_of (*param) } });
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::MissingParameter);
   EXPECT_EQ (undo_stack_->count (), 0);
@@ -2215,11 +2216,10 @@ TEST_F (OperationsTest, ParameterSetValueLiveAppliesWithoutCommands)
   param->setBaseValue (0.f);
 
   const auto report = dispatch (
-    "parameter.set_value_live",
-    {
-      { "parameter", uuid_of (*param) },
-      { "value",     1.0              }
-  });
+    OperationId{
+      "parameter", "set_value_live"
+  },
+    { { "parameter", uuid_of (*param) }, { "value", 1.0 } });
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_FLOAT_EQ (param->baseValue (), 1.f);
   EXPECT_EQ (undo_stack_->count (), 0);
@@ -2232,11 +2232,10 @@ TEST_F (OperationsTest, ParameterSetValueLiveElidesCurrentValue)
   param->setBaseValue (0.5f);
 
   const auto report = dispatch (
-    "parameter.set_value_live",
-    {
-      { "parameter", uuid_of (*param) },
-      { "value",     0.5              }
-  });
+    OperationId{
+      "parameter", "set_value_live"
+  },
+    { { "parameter", uuid_of (*param) }, { "value", 0.5 } });
   ASSERT_TRUE (report.applied ());
   EXPECT_FLOAT_EQ (param->baseValue (), 0.5f);
   EXPECT_TRUE (report.affected_objects.empty ());
@@ -2248,11 +2247,10 @@ TEST_F (OperationsTest, ParameterSetValueLiveRefusesOutOfRangeValue)
   param->setBaseValue (0.f);
 
   const auto report = dispatch (
-    "parameter.set_value_live",
-    {
-      { "parameter", uuid_of (*param) },
-      { "value",     -0.5             }
-  });
+    OperationId{
+      "parameter", "set_value_live"
+  },
+    { { "parameter", uuid_of (*param) }, { "value", -0.5 } });
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::OutOfRange);
   EXPECT_FLOAT_EQ (param->baseValue (), 0.f);
@@ -2261,11 +2259,11 @@ TEST_F (OperationsTest, ParameterSetValueLiveRefusesOutOfRangeValue)
 TEST_F (OperationsTest, ParameterSetValueLiveRefusesUnknownParameter)
 {
   const auto report = dispatch (
-    "parameter.set_value_live",
-    {
-      { "parameter", "11111111-2222-3333-4444-555555555555" },
-      { "value",     0.5                                    }
-  });
+    OperationId{
+      "parameter", "set_value_live"
+  },
+    { { "parameter", "11111111-2222-3333-4444-555555555555" },
+      { "value", 0.5 } });
   ASSERT_TRUE (report.refused ());
   EXPECT_EQ (report.refusal_kind, utils::RefusalKind::NotFound);
 }
@@ -2330,15 +2328,15 @@ TEST_F (OperationsTest, EveryOperationHandlesEmptyArguments)
   for (const auto &op : operation_registry_.operations ())
     {
       auto report = operation_registry_.dispatch (
-        op.name (), nlohmann::json::object (), *environment_);
+        op.id (), nlohmann::json::object (), *environment_);
       if (report.refused ())
         {
           EXPECT_FALSE (report.message.empty ())
-            << op.name () << " refused without a reason";
+            << op.id ().to_string () << " refused without a reason";
         }
       else
         {
-          EXPECT_TRUE (report.applied ()) << op.name ();
+          EXPECT_TRUE (report.applied ()) << op.id ().to_string ();
         }
       EXPECT_TRUE (report.command_texts.empty () || report.applied ());
     }
@@ -2346,7 +2344,7 @@ TEST_F (OperationsTest, EveryOperationHandlesEmptyArguments)
 
 TEST_F (OperationsTest, UnknownOperationFails)
 {
-  auto report = dispatch ("track.does_not_exist");
+  auto report = dispatch ({ "track", "does_not_exist" });
 
   ASSERT_TRUE (report.failed ());
   EXPECT_NE (report.message.find ("unknown operation"), std::string::npos);

@@ -48,11 +48,14 @@ inline const auto &
 track_set_name_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.set_name", "Rename a track",
+    OperationKind::Edit,
+    OperationId{
+      "track", "set_name"
+  },
+    "Rename a track",
     std::array<ParamSpec, 2>{
       { { "track", "UUID of the track to rename" },
-       { "new_name", "New track name (1 to 128 bytes)" } }
-  },
+        { "new_name", "New track name (1 to 128 bytes)" } } },
     [] (OperationContext &ctx, TrackParam track, StringParam<1, 128> new_name)
       -> OperationReport {
       ctx.push_command (
@@ -72,11 +75,14 @@ inline const auto &
 track_set_color_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.set_color", "Set a track's color",
+    OperationKind::Edit,
+    OperationId{
+      "track", "set_color"
+  },
+    "Set a track's color",
     std::array<ParamSpec, 2>{
       { { "track", "UUID of the track" },
-       { "color", "New color as a hex string, e.g. \"#ff5588\"" } }
-  },
+        { "color", "New color as a hex string, e.g. \"#ff5588\"" } } },
     [] (OperationContext &ctx, TrackParam track, HexColorParam color)
       -> OperationReport {
       const utils::Color current (track.value ()->color ());
@@ -101,7 +107,7 @@ inline const auto &
 track_unset_color_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.unset_color",
+    OperationKind::Edit, { "track", "unset_color" },
     "Reset a track's color to its type-derived default",
     std::array<ParamSpec, 1>{ { { "track", "UUID of the track" } } },
     [] (OperationContext &ctx, TrackParam track) -> OperationReport {
@@ -129,12 +135,15 @@ inline const auto &
 track_set_comment_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.set_comment", "Set a track's comment",
+    OperationKind::Edit,
+    OperationId{
+      "track", "set_comment"
+  },
+    "Set a track's comment",
     std::array<ParamSpec, 2>{
       { { "track", "UUID of the track" },
-       { "comment",
-          "New comment (0 to 4096 bytes); an empty string clears it" } }
-  },
+        { "comment",
+          "New comment (0 to 4096 bytes); an empty string clears it" } } },
     [] (
       OperationContext &ctx, TrackParam track,
       StringParam<0, kMaxTrackCommentBytes> comment) -> OperationReport {
@@ -161,11 +170,14 @@ inline const auto &
 track_set_timebase_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.set_timebase", "Set a track's timebase override",
+    OperationKind::Edit,
+    OperationId{
+      "track", "set_timebase"
+  },
+    "Set a track's timebase override",
     std::array<ParamSpec, 2>{
       { { "track", "UUID of the track" },
-       { "timebase", "New timebase override" } }
-  },
+        { "timebase", "New timebase override" } } },
     [] (
       OperationContext &ctx, TrackParam track,
       EnumParam<dsp::Timebase> timebase) -> OperationReport {
@@ -192,11 +204,14 @@ inline const auto &
 track_route_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.route", "Route a track to another track",
+    OperationKind::Edit,
+    OperationId{
+      "track", "route"
+  },
+    "Route a track to another track",
     std::array<ParamSpec, 2>{
       { { "track", "UUID of the track to route" },
-       { "target", "UUID of the routing target" } }
-  },
+        { "target", "UUID of the routing target" } } },
     [] (OperationContext &ctx, TrackParam track, TrackParam target)
       -> OperationReport {
       auto      &routing = ctx.environment ().track_routing ();
@@ -232,7 +247,7 @@ inline const auto &
 track_unroute_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.unroute", "Remove a track's route",
+    OperationKind::Edit, { "track", "unroute" }, "Remove a track's route",
     std::array<ParamSpec, 1>{ { { "track", "UUID of the track to unroute" } } },
     [] (OperationContext &ctx, TrackParam track) -> OperationReport {
       auto &routing = ctx.environment ().track_routing ();
@@ -289,11 +304,14 @@ inline const auto &
 track_add_send_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.add_send", "Add a send to a track's channel",
+    OperationKind::Edit,
+    OperationId{
+      "track", "add_send"
+  },
+    "Add a send to a track's channel",
     std::array<ParamSpec, 2>{
       { { "track", "UUID of the track" },
-       { "is_prefader", "Whether the send taps before the fader" } }
-  },
+        { "is_prefader", "Whether the send taps before the fader" } } },
     [] (OperationContext &ctx, TrackParam track, BoolParam is_prefader)
       -> OperationReport {
       if (track.value ()->channel () == nullptr)
@@ -331,12 +349,14 @@ inline const auto &
 track_remove_send_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.remove_send",
+    OperationKind::Edit,
+    OperationId{
+      "track", "remove_send"
+  },
     "Remove a send from a track's channel",
     std::array<ParamSpec, 2>{
       { { "track", "UUID of the track that owns the send" },
-       { "send", "UUID of the send" } }
-  },
+        { "send", "UUID of the send" } } },
     [] (OperationContext &ctx, TrackParam track, SendParam send)
       -> OperationReport {
       const auto group = send_group_owning (track, send);
@@ -362,12 +382,14 @@ inline const auto &
 track_set_send_prefader_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.set_send_prefader",
+    OperationKind::Edit,
+    OperationId{
+      "track", "set_send_prefader"
+  },
     "Move a send's tap point before or after the channel fader",
     std::array<ParamSpec, 2>{
       { { "send", "UUID of the send" },
-       { "is_prefader", "Whether the send taps before the fader" } }
-  },
+        { "is_prefader", "Whether the send taps before the fader" } } },
     [] (OperationContext &ctx, SendParam send, BoolParam is_prefader)
       -> OperationReport {
       if (send.value ()->isPrefader () == is_prefader.value ())
@@ -395,13 +417,15 @@ inline const auto &
 track_set_send_target_track_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.set_send_target_track",
+    OperationKind::Edit,
+    OperationId{
+      "track", "set_send_target_track"
+  },
     "Point a channel send at a track",
     std::array<ParamSpec, 3>{
       { { "track", "UUID of the track that owns the send" },
-       { "send", "UUID of the send" },
-       { "target_track", "UUID of the destination track" } }
-  },
+        { "send", "UUID of the send" },
+        { "target_track", "UUID of the destination track" } } },
     [] (
       OperationContext &ctx, TrackParam track, SendParam send,
       TrackParam target_track) -> OperationReport {
@@ -458,13 +482,15 @@ inline const auto &
 track_set_send_target_port_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.set_send_target_port",
+    OperationKind::Edit,
+    OperationId{
+      "track", "set_send_target_port"
+  },
     "Point a channel send at a plugin sidechain input",
     std::array<ParamSpec, 3>{
       { { "track", "UUID of the track that owns the send" },
-       { "send", "UUID of the send" },
-       { "target_port", "UUID of the destination sidechain port" } }
-  },
+        { "send", "UUID of the send" },
+        { "target_port", "UUID of the destination sidechain port" } } },
     [] (
       OperationContext &ctx, TrackParam track, SendParam send,
       AudioPortParam target_port) -> OperationReport {
@@ -514,12 +540,14 @@ inline const auto &
 track_clear_send_target_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.clear_send_target",
+    OperationKind::Edit,
+    OperationId{
+      "track", "clear_send_target"
+  },
     "Clear a channel send's destination",
     std::array<ParamSpec, 2>{
       { { "track", "UUID of the track that owns the send" },
-       { "send", "UUID of the send" } }
-  },
+        { "send", "UUID of the send" } } },
     [] (OperationContext &ctx, TrackParam track, SendParam send)
       -> OperationReport {
       const auto group = send_group_owning (track, send);
@@ -551,7 +579,7 @@ inline const auto &
 track_add_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Edit, "track.add", "Add a new empty track",
+    OperationKind::Edit, { "track", "add" }, "Add a new empty track",
     std::array<ParamSpec, 1>{ { { "type", "Type of track to add" } } },
     [] (OperationContext &ctx, EnumParam<structure::tracks::Track::Type> type)
       -> OperationReport {
@@ -619,12 +647,15 @@ inline const auto &
 track_list_operation ()
 {
   static const auto operation = TypedOperation (
-    OperationKind::Query, "track.list", "List the project's tracks",
+    OperationKind::Query,
+    OperationId{
+      "track", "list"
+  },
+    "List the project's tracks",
     std::array<ParamSpec, 2>{
       { { "limit", "Maximum number of tracks to return" },
-       { "cursor",
-          "Opaque pagination cursor from a previous response's next_cursor" } }
-  },
+        { "cursor",
+          "Opaque pagination cursor from a previous response's next_cursor" } } },
     [] (OperationContext &ctx, LimitParam limit, CursorParam cursor)
       -> OperationReport {
       auto       &collection = ctx.environment ().track_collection ();

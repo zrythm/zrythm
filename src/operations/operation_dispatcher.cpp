@@ -18,11 +18,11 @@ OperationDispatcher::OperationDispatcher (
 
 OperationReport
 OperationDispatcher::dispatch (
-  std::string_view       name,
+  OperationId            id,
   const nlohmann::json  &args,
   const DispatchOptions &options) const
 {
-  return registry_.dispatch (name, args, environment_, options);
+  return registry_.dispatch (id, args, environment_, options);
 }
 
 } // namespace zrythm::operations

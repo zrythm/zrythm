@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <array>
 #include <ranges>
+#include <regex>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -489,20 +491,62 @@ TEST_F (McpFrontendTest, ToolCatalogMatchesRegistry)
 
   for (const auto &operation : operation_registry_.operations ())
     {
-      const auto kind = catalog->kinds_by_name.find (operation.name ());
-      ASSERT_NE (kind, catalog->kinds_by_name.end ())
-        << "missing kind for " << operation.name ();
-      EXPECT_EQ (kind->second, operation.kind ());
+      const auto tool_name = mcp_tool_name (operation.id ());
+      const auto entry = catalog->by_name.find (tool_name);
+      ASSERT_NE (entry, catalog->by_name.end ())
+        << "missing catalog entry for " << operation.id ().to_string ();
+      EXPECT_EQ (entry->second.id, operation.id ());
+      EXPECT_EQ (entry->second.kind, operation.kind ());
 
       const auto tool = std::ranges::find_if (
-        catalog->tools, [&operation] (const zrythm::mcp::Tool &candidate) {
-          return candidate.name () == operation.name ();
+        catalog->tools, [&tool_name] (const zrythm::mcp::Tool &candidate) {
+          return candidate.name () == tool_name;
         });
       ASSERT_NE (tool, catalog->tools.end ());
-      // The server publishes the definition of the registry unchanged.
-      EXPECT_EQ (tool->to_json (), operation.tool_definition ())
-        << operation.name ();
+      // The server publishes the definition the registry builds for the
+      // tool name.
+      EXPECT_EQ (tool->to_json (), operation.tool_definition (tool_name))
+        << tool_name;
     }
+}
+
+TEST_F (McpFrontendTest, ToolNamesFollowTheClientContract)
+{
+  const auto catalog = make_tool_catalog (operation_registry_);
+  ASSERT_TRUE (catalog.has_value ()) << catalog.error ();
+  ASSERT_FALSE (catalog->tools.empty ());
+  EXPECT_EQ (mcp_tool_name ({ "track", "set_name" }), "track_set_name");
+
+  // The function-calling name rules of MCP clients: a lowercase letter,
+  // then lowercase letters, digits or underscores, at most 64 characters.
+  const std::regex client_name_pattern (R"(^[a-z][a-z0-9_]*$)");
+  auto             names = std::set<std::string>{};
+  for (const auto &tool : catalog->tools)
+    {
+      const auto &name = tool.name ();
+      EXPECT_TRUE (std::regex_match (name, client_name_pattern)) << name;
+      EXPECT_LE (name.size (), kMaxToolNameLength) << name;
+      EXPECT_TRUE (names.insert (name).second) << "duplicate tool name " << name;
+    }
+}
+
+TEST_F (McpFrontendTest, ToolCatalogRefusesAToolNameOverTheLimit)
+{
+  const std::string             long_function (kMaxToolNameLength, 'a');
+  const operations::OperationId long_id{ "track", long_function };
+  operations::OperationRegistry registry;
+  registry.register_operation (
+    operations::Operation (
+      operations::TypedOperation (
+        operations::OperationKind::Query, long_id, "A query with a long name",
+        std::array<operations::ParamSpec, 1>{ { { "name", "A name" } } },
+        [] (operations::OperationContext &ctx, operations::StringParam<1, 128>)
+          -> operations::OperationReport { return ctx.applied (); })));
+
+  const auto catalog = make_tool_catalog (registry);
+
+  ASSERT_FALSE (catalog.has_value ());
+  EXPECT_NE (catalog.error ().find (mcp_tool_name (long_id)), std::string::npos);
 }
 
 // ============================================================================
@@ -783,7 +827,7 @@ TEST_F (McpFrontendTest, StatelessRevisionListsAndCallsTools)
   auto *     track = add_audio_track ();
   const auto track_uuid = uuid_of (*track);
   const auto list_result =
-    stateless_call (full_client, full_token, 2, "track.list");
+    stateless_call (full_client, full_token, 2, "track_list");
   EXPECT_FALSE (list_result.value ("isError", false));
   EXPECT_EQ (report_of (list_result).at ("status"), "applied");
 
@@ -791,7 +835,7 @@ TEST_F (McpFrontendTest, StatelessRevisionListsAndCallsTools)
   // the undo history.
   const auto revision = undo_stack_->revision ();
   const auto edit_result = stateless_call (
-    full_client, full_token, 3, "track.set_name",
+    full_client, full_token, 3, "track_set_name",
     {
       { "track",             track_uuid },
       { "new_name",          "Renamed"  },
@@ -806,7 +850,7 @@ TEST_F (McpFrontendTest, StatelessRevisionListsAndCallsTools)
   // The same edit with the stale revision is refused with the current
   // revision in the report.
   const auto stale_result = stateless_call (
-    full_client, full_token, 4, "track.set_name",
+    full_client, full_token, 4, "track_set_name",
     {
       { "track",             track_uuid },
       { "new_name",          "Stale"    },
@@ -827,7 +871,7 @@ TEST_F (McpFrontendTest, StatelessRevisionListsAndCallsTools)
       nlohmann::json ("1") })
     {
       const auto result = stateless_call (
-        full_client, full_token, 7, "track.set_name",
+        full_client, full_token, 7, "track_set_name",
         {
           { "track",             track_uuid },
           { "new_name",          "Invalid"  },
@@ -840,7 +884,7 @@ TEST_F (McpFrontendTest, StatelessRevisionListsAndCallsTools)
   // A query grant cannot edit.
   http_test::McpHttpClient query_client (port);
   const auto               refused_result = stateless_call (
-    query_client, QByteArray ("query-secret"), 5, "track.set_name",
+    query_client, QByteArray ("query-secret"), 5, "track_set_name",
     {
       { "track",    track_uuid },
       { "new_name", "Nope"     }
@@ -920,11 +964,13 @@ TEST_F (McpFrontendTest, LegacyRevisionForwardsJournalEntries)
   // stack; its journal entry must reach the subscribed client.
   auto *     track = add_audio_track ();
   const auto report = dispatcher_->dispatch (
-    "track.set_name",
+    operations::OperationId{
+      "track", "set_name"
+  },
     nlohmann::json{
-      { "track",    uuid_of (*track) },
-      { "new_name", "Journal Test"   },
-  });
+      { "track", uuid_of (*track) },
+      { "new_name", "Journal Test" },
+    });
   ASSERT_TRUE (report.applied ());
   ASSERT_EQ (undo_stack_->count (), 1);
 

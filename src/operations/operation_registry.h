@@ -29,18 +29,25 @@ class Operation
 public:
   template <typename Handler, std::size_t NumParams>
   Operation (const TypedOperation<Handler, NumParams> &op)
-      : kind_ (op.kind ()), name_ (op.name ()), summary_ (op.summary ()),
-        tool_definition_ (op.make_tool_definition ()),
+      : kind_ (op.kind ()), id_ (op.id ()), summary_ (op.summary ()),
+        make_tool_definition_ ([op] (std::string_view tool_name) -> nlohmann::json {
+          return op.make_tool_definition (tool_name);
+        }),
         invoke_ (
           [op] (const nlohmann::json &args, OperationEnvironment &env)
             -> OperationReport { return op.invoke (args, env); })
   {
   }
 
-  OperationKind         kind () const { return kind_; }
-  const std::string    &name () const { return name_; }
-  const std::string    &summary () const { return summary_; }
-  const nlohmann::json &tool_definition () const { return tool_definition_; }
+  OperationKind      kind () const { return kind_; }
+  const OperationId &id () const { return id_; }
+  const std::string &summary () const { return summary_; }
+
+  /** The tool definition of the operation, published under @p tool_name. */
+  nlohmann::json tool_definition (std::string_view tool_name) const
+  {
+    return make_tool_definition_ (tool_name);
+  }
 
   OperationReport
   invoke (const nlohmann::json &args, OperationEnvironment &env) const
@@ -49,10 +56,10 @@ public:
   }
 
 private:
-  OperationKind  kind_;
-  std::string    name_;
-  std::string    summary_;
-  nlohmann::json tool_definition_;
+  OperationKind                                    kind_;
+  OperationId                                      id_;
+  std::string                                      summary_;
+  std::function<nlohmann::json (std::string_view)> make_tool_definition_;
   std::function<OperationReport (const nlohmann::json &, OperationEnvironment &)>
     invoke_;
 };
@@ -75,22 +82,30 @@ struct DispatchOptions
 };
 
 /**
- * The set of operations available in a session, by name.
+ * The operations available in a session, found by id.
  */
 class OperationRegistry
 {
 public:
   /**
-   * Registers an operation, or ignores it with a warning when its name is
-   * already taken.
+   * Registers an operation, or ignores it with a warning when its id
+   * breaks a naming rule or is already registered.
    */
   void register_operation (Operation op)
   {
-    if (find (op.name ()) != nullptr)
+    if (
+      const auto broken_rule = check_operation_id (op.id ());
+      broken_rule.has_value ())
       {
         z_warning (
-          "Ignoring operation '{}': this name is already registered",
-          op.name ());
+          "Ignoring operation '{}': {}", op.id ().to_string (), *broken_rule);
+        return;
+      }
+    if (find (op.id ()) != nullptr)
+      {
+        z_warning (
+          "Ignoring operation '{}': this id is already registered",
+          op.id ().to_string ());
         return;
       }
     operations_.push_back (std::move (op));
@@ -104,50 +119,38 @@ public:
       }
   }
 
-  /** Returns the operation with the given name, or null. */
-  const Operation * find (std::string_view name) const
+  /** Returns the operation with the given id, or null. */
+  const Operation * find (OperationId id) const
   {
     const auto it = std::ranges::find_if (
-      operations_, [name] (const Operation &op) { return op.name () == name; });
+      operations_, [id] (const Operation &op) { return op.id () == id; });
     return it != operations_.end () ? &*it : nullptr;
   }
 
   /** All registered operations, in registration order. */
   const std::vector<Operation> &operations () const { return operations_; }
 
-  /** The MCP-style tool definitions of all operations. */
-  std::vector<nlohmann::json> tool_definitions () const
-  {
-    auto defs = std::vector<nlohmann::json>{};
-    defs.reserve (operations_.size ());
-    for (const auto &op : operations_)
-      {
-        defs.push_back (op.tool_definition ());
-      }
-    return defs;
-  }
-
   /**
-   * Looks up the operation by name and runs it.
+   * Looks up the operation by id and runs it.
    *
-   * An unknown name is an Error report; anything the operation rejects is a
+   * An unknown id is an Error report; anything the operation rejects is a
    * Refused report. The expected-revision check runs before argument
    * validation. Dispatch is not synchronized: every call must happen on
    * one thread.
    */
   OperationReport dispatch (
-    std::string_view       name,
+    OperationId            id,
     const nlohmann::json  &args,
     OperationEnvironment  &env,
     const DispatchOptions &options = {}) const
   {
     const auto   current_revision = env.undo_stack ().revision ();
-    const auto * op = find (name);
+    const auto * op = find (id);
     if (op == nullptr)
       {
         OperationReport report;
         report.status = OperationStatus::Error;
-        report.message = fmt::format ("unknown operation '{}'", name);
+        report.message = fmt::format ("unknown operation '{}'", id.to_string ());
         report.revision_before = current_revision;
         report.revision_after = current_revision;
         return report;

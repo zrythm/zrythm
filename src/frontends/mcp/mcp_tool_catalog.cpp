@@ -8,6 +8,12 @@
 namespace zrythm::frontends::mcp
 {
 
+std::string
+mcp_tool_name (const operations::OperationId &id)
+{
+  return fmt::format ("{}_{}", id.group, id.function);
+}
+
 std::expected<McpToolCatalog, std::string>
 make_tool_catalog (const operations::OperationRegistry &registry)
 {
@@ -15,15 +21,27 @@ make_tool_catalog (const operations::OperationRegistry &registry)
   catalog.tools.reserve (registry.operations ().size ());
   for (const auto &operation : registry.operations ())
     {
-      auto tool = zrythm::mcp::Tool::from_json (operation.tool_definition ());
+      const auto &id = operation.id ();
+      const auto  tool_name = mcp_tool_name (id);
+      if (tool_name.size () > kMaxToolNameLength)
+        {
+          return std::unexpected (
+            fmt::format (
+              "the MCP tool name '{}' of the operation '{}' is longer than "
+              "{} characters",
+              tool_name, id.to_string (), kMaxToolNameLength));
+        }
+      auto tool =
+        zrythm::mcp::Tool::from_json (operation.tool_definition (tool_name));
       if (!tool.has_value ())
         {
           return std::unexpected (
             fmt::format (
               "the tool definition of the operation '{}' is not valid: {}",
-              operation.name (), tool.error ()));
+              id.to_string (), tool.error ()));
         }
-      catalog.kinds_by_name.emplace (operation.name (), operation.kind ());
+      catalog.by_name.emplace (
+        tool_name, McpCatalogTool{ id, operation.kind () });
       catalog.tools.push_back (std::move (*tool));
     }
   return catalog;

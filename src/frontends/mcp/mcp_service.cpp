@@ -564,7 +564,7 @@ McpService::run_dispatch (const McpDispatchRequest &request)
   operations::DispatchOptions options;
   options.expected_revision = request.expected_revision;
   const auto report =
-    dispatcher_.dispatch (request.tool, request.arguments, options);
+    dispatcher_.dispatch (request.operation, request.arguments, options);
   const auto result = render_report (report);
   QMetaObject::invokeMethod (
     worker_,

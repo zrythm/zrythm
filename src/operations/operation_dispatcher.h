@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <string_view>
-
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -19,7 +17,7 @@ namespace zrythm::operations
 /**
  * Wraps an operation registry and environment in a QObject.
  *
- * Both dispatch by name and typed invocation run against the wrapped
+ * Both dispatch by id and typed invocation run against the wrapped
  * environment.
  */
 class OperationDispatcher : public QObject
@@ -35,13 +33,13 @@ public:
     QObject *                parent = nullptr);
 
   /**
-   * Looks up the operation by name and runs it against the environment.
+   * Looks up the operation by id and runs it against the environment.
    *
-   * An unknown name is an Error report; anything the operation rejects
+   * An unknown id is an Error report; anything the operation rejects
    * is a Refused report.
    */
   [[nodiscard]] OperationReport dispatch (
-    std::string_view       name,
+    OperationId            id,
     const nlohmann::json  &args = nlohmann::json::object (),
     const DispatchOptions &options = {}) const;
 

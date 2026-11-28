@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -28,6 +30,58 @@ enum class OperationKind
   Control,
   Query,
 };
+
+/**
+ * The identity of an operation: the group it belongs to and its function
+ * inside that group.
+ *
+ * The group is one lowercase word. The function is lowercase snake_case:
+ * a lowercase letter, then lowercase letters, digits and underscores. A
+ * frontend renders the two parts in the syntax of its protocol. Both
+ * strings must have static storage duration, like string literals.
+ */
+struct OperationId
+{
+  std::string_view group;
+  std::string_view function;
+
+  bool operator== (const OperationId &) const = default;
+
+  /** The id in its written form, "group.function". */
+  [[nodiscard]] std::string to_string () const
+  {
+    return std::string (group) + "." + std::string (function);
+  }
+};
+
+/** The naming rule @p id breaks, or no value when the id is valid. */
+[[nodiscard]] inline std::optional<std::string_view>
+check_operation_id (OperationId id)
+{
+  const auto is_letter = [] (char c) { return c >= 'a' && c <= 'z'; };
+  const auto is_digit = [] (char c) { return c >= '0' && c <= '9'; };
+  if (id.group.empty () || !is_letter (id.group.front ()))
+    {
+      return "the group must start with a lowercase letter";
+    }
+  if (!std::ranges::all_of (id.group, [&] (char c) {
+        return is_letter (c) || is_digit (c);
+      }))
+    {
+      return "the group must be one lowercase word";
+    }
+  if (id.function.empty () || !is_letter (id.function.front ()))
+    {
+      return "the function must start with a lowercase letter";
+    }
+  if (!std::ranges::all_of (id.function, [&] (char c) {
+        return is_letter (c) || is_digit (c) || c == '_';
+      }))
+    {
+      return "the function must be lowercase snake_case";
+    }
+  return std::nullopt;
+}
 
 /** Why an operation rejected its input or state. */
 struct Refusal

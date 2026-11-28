@@ -31,10 +31,10 @@ namespace
 {
 
 operations::OperationReport
-dispatch (ProjectSession &session, std::string_view name, nlohmann::json args)
+dispatch (ProjectSession &session, operations::OperationId id, nlohmann::json args)
 {
   return session.operation_registry ()->dispatch (
-    name, args, *session.operation_environment ());
+    id, args, *session.operation_environment ());
 }
 
 } // namespace
@@ -65,11 +65,11 @@ TEST_F (ProjectSessionOperationsTest, SessionLiveWritesApplicationParameter)
       .toString (QUuid::WithoutBraces)
       .toStdString ();
   const auto report = dispatch (
-    *session, "parameter.set_value_live",
+    *session,
     {
-      { "parameter", param_uuid },
-      { "value",     0.9        }
-  });
+      "parameter", "set_value_live"
+  },
+    { { "parameter", param_uuid }, { "value", 0.9 } });
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_FLOAT_EQ (app_param->baseValue (), 0.9f);
   EXPECT_EQ (session->undoStack ()->index (), 0);
@@ -77,11 +77,11 @@ TEST_F (ProjectSessionOperationsTest, SessionLiveWritesApplicationParameter)
   // the undoable variant refuses application state: the undo history is
   // project-scoped
   const auto edit_report = dispatch (
-    *session, "parameter.set_value",
+    *session,
     {
-      { "parameter", param_uuid },
-      { "value",     0.2        }
-  });
+      "parameter", "set_value"
+  },
+    { { "parameter", param_uuid }, { "value", 0.2 } });
   EXPECT_TRUE (edit_report.refused ());
   EXPECT_FLOAT_EQ (app_param->baseValue (), 0.9f);
   EXPECT_EQ (session->undoStack ()->index (), 0);
@@ -103,7 +103,8 @@ TEST_F (ProjectSessionOperationsTest, SessionDispatchesOperations)
   // tracks are created after the session installed its recording callback
   session->project ()->add_default_tracks ();
 
-  auto report = dispatch (*session, "track.list", nlohmann::json::object ());
+  auto report =
+    dispatch (*session, { "track", "list" }, nlohmann::json::object ());
   ASSERT_TRUE (report.applied ()) << report.message;
   EXPECT_GT (report.result.at ("total_count").get<int> (), 0);
 
@@ -111,11 +112,11 @@ TEST_F (ProjectSessionOperationsTest, SessionDispatchesOperations)
   const auto uuid =
     report.result.at ("items").at (0).at ("uuid").get<std::string> ();
   auto applied = dispatch (
-    *session, "track.set_name",
+    *session,
     {
-      { "track",    uuid              },
-      { "new_name", "Session Renamed" }
-  });
+      "track", "set_name"
+  },
+    { { "track", uuid }, { "new_name", "Session Renamed" } });
   ASSERT_TRUE (applied.applied ()) << applied.message;
   EXPECT_GT (applied.revision_after, applied.revision_before);
   EXPECT_EQ (session->undoStack ()->index (), 1);
@@ -143,16 +144,17 @@ TEST_F (ProjectSessionOperationsTest, SessionTracksUnsavedChanges)
   QSignalSpy changed (session.get (), &ProjectSession::hasUnsavedChangesChanged);
   EXPECT_FALSE (session->hasUnsavedChanges ());
 
-  auto report = dispatch (*session, "track.list", nlohmann::json::object ());
+  auto report =
+    dispatch (*session, { "track", "list" }, nlohmann::json::object ());
   ASSERT_TRUE (report.applied ()) << report.message;
   const auto uuid =
     report.result.at ("items").at (0).at ("uuid").get<std::string> ();
   auto applied = dispatch (
-    *session, "track.set_name",
+    *session,
     {
-      { "track",    uuid             },
-      { "new_name", "Unsaved Rename" }
-  });
+      "track", "set_name"
+  },
+    { { "track", uuid }, { "new_name", "Unsaved Rename" } });
   ASSERT_TRUE (applied.applied ()) << applied.message;
   EXPECT_TRUE (session->hasUnsavedChanges ());
   EXPECT_EQ (changed.size (), 1);

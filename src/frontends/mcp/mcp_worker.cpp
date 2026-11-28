@@ -229,13 +229,13 @@ McpWorkerController::start_server (Config config)
     [this] (
       const zrythm::mcp::ToolCall &call, const Server::RequestContext &context)
       -> QFuture<zrythm::mcp::CallToolResult> {
-      const auto kind = config_.catalog.kinds_by_name.find (call.name);
-      // The catalog holds a kind for every tool that it publishes.
+      const auto tool = config_.catalog.by_name.find (call.name);
+      // The catalog holds an entry for every tool that it publishes.
       z_return_val_if_fail (
-        kind != config_.catalog.kinds_by_name.end (),
+        tool != config_.catalog.by_name.end (),
         finished_with (
-          zrythm::mcp::CallToolResult::error ("the tool has no operation kind")));
-      if (!grant_allows (context.identity.grant, kind->second))
+          zrythm::mcp::CallToolResult::error ("the tool has no operation")));
+      if (!grant_allows (context.identity.grant, tool->second.kind))
         {
           return finished_with (
             zrythm::mcp::CallToolResult::error (
@@ -249,7 +249,7 @@ McpWorkerController::start_server (Config config)
 
       auto arguments = call.arguments.value_or (nlohmann::json::object ());
       McpDispatchRequest dispatch;
-      dispatch.tool = call.name;
+      dispatch.operation = tool->second.id;
       if (
         const auto expected = arguments.find ("expected_revision");
         expected != arguments.end ())

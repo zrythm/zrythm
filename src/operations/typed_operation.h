@@ -84,18 +84,17 @@ public:
 
   TypedOperation (
     OperationKind                    kind,
-    std::string_view                 name,
+    OperationId                      id,
     std::string_view                 summary,
     std::array<ParamSpec, NumParams> specs,
     Handler                          handler)
-      : kind_ (kind), name_ (std::string (name)),
-        summary_ (std::string (summary)), specs_ (specs),
-        handler_ (std::move (handler))
+      : kind_ (kind), id_ (id), summary_ (std::string (summary)),
+        specs_ (specs), handler_ (std::move (handler))
   {
   }
 
   OperationKind      kind () const { return kind_; }
-  const std::string &name () const { return name_; }
+  const OperationId &id () const { return id_; }
   const std::string &summary () const { return summary_; }
 
   /**
@@ -136,7 +135,8 @@ public:
   }
 
   /**
-   * The MCP-style tool definition derived from this declaration.
+   * The MCP-style tool definition derived from this declaration,
+   * published under @p tool_name.
    *
    * A query carries the annotations that it changes nothing, so no call of it
    * destroys anything and a repeated call has no further effect. An edit also
@@ -144,7 +144,7 @@ public:
    * caller last saw. The other kinds carry no annotations, so each hint keeps
    * its default.
    */
-  nlohmann::json make_tool_definition () const
+  nlohmann::json make_tool_definition (std::string_view tool_name) const
   {
     nlohmann::json properties = nlohmann::json::object ();
     nlohmann::json required = nlohmann::json::array ();
@@ -161,14 +161,14 @@ public:
         };
       }
     nlohmann::json definition{
-      { "name",        name_    },
-      { "description", summary_ },
+      { "name",        std::string (tool_name) },
+      { "description", summary_                },
       { "inputSchema",
        {
           { "type", "object" },
           { "properties", std::move (properties) },
           { "required", std::move (required) },
-        }                       },
+        }                                      },
     };
     if (kind_ == OperationKind::Query)
       {
@@ -335,7 +335,7 @@ private:
   }
 
   OperationKind                    kind_;
-  std::string                      name_;
+  OperationId                      id_;
   std::string                      summary_;
   std::array<ParamSpec, NumParams> specs_;
   Handler                          handler_;
@@ -347,7 +347,7 @@ private:
 template <typename Handler, std::size_t NumParams>
 TypedOperation (
   OperationKind,
-  std::string_view,
+  OperationId,
   std::string_view,
   std::array<ParamSpec, NumParams>,
   Handler) -> TypedOperation<Handler, NumParams>;
