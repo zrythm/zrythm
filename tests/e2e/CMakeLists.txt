@@ -13,6 +13,7 @@ add_executable(zrythm_e2e_tests
   new_project_test.cpp
   user_data_dir_test.cpp
   launcher.h
+  mcp_client.h
 )
 
 set_target_properties(zrythm_e2e_tests PROPERTIES
@@ -22,6 +23,7 @@ set_target_properties(zrythm_e2e_tests PROPERTIES
 target_link_libraries(zrythm_e2e_tests PRIVATE
   GTest::gtest
   Qt6::Core
+  Qt6::Network
   zrythm::all_compile_options
   zrythm_test_warning_suppressions_link_last
 )

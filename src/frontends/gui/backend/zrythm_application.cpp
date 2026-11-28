@@ -168,6 +168,13 @@ public:
   QString new_project_parent_dir_;
 
   /**
+   * Directory of the template for the project requested with
+   * --new-project, given with --new-project-with-template. Empty without
+   * the option and once the creation started.
+   */
+  QString new_project_template_dir_;
+
+  /**
    * EXIT_FAILURE when a project load or creation failed or startup timed
    * out.
    */
@@ -409,11 +416,14 @@ ZrythmApplication::post_exec_initialization ()
   // The creation ends through projectLoaded or projectLoadingFailed
   const auto new_project_parent_dir =
     std::exchange (impl_->new_project_parent_dir_, QString{});
+  const auto new_project_template_dir =
+    std::exchange (impl_->new_project_template_dir_, QString{});
   if (!new_project_parent_dir.isEmpty ())
     {
       // The project name is also the name of the project directory
       impl_->project_manager_->createNewProject (
-        QUrl::fromLocalFile (new_project_parent_dir), u"Untitled Project"_s);
+        QUrl::fromLocalFile (new_project_parent_dir), u"Untitled Project"_s,
+        new_project_template_dir);
     }
 
   setup_ipc ();
@@ -707,8 +717,11 @@ ZrythmApplication::setup_command_line_options ()
       {
        u"new-project"_s, tr ("Create a new project in the given directory, then open it"),
        u"directory"_s, },
-      { u"new-project-with-template"_s, tr ("Create new project with template"),
-       u"new-project-with-template"_s, u"new-project-with-template"_s },
+      { u"new-project-with-template"_s,
+       tr (
+          "Create the new project from the project in the given directory, "
+          "together with --new-project"),
+       u"directory"_s },
       { u"user-data-dir"_s,
        tr (
           "Keep settings, data and caches in the given directory instead "
@@ -746,8 +759,19 @@ ZrythmApplication::validate_command_line () const
     {
       exit_with_error (tr ("Give --new-project only once."));
     }
+  const auto template_dirs =
+    cmd_line_parser_.values (u"new-project-with-template"_s);
+  if (template_dirs.size () > 1)
+    {
+      exit_with_error (tr ("Give --new-project-with-template only once."));
+    }
   if (new_project_dirs.isEmpty ())
     {
+      if (!template_dirs.isEmpty ())
+        {
+          exit_with_error (
+            tr ("Option --new-project-with-template needs --new-project."));
+        }
       return;
     }
   if (new_project_dirs.front ().trimmed ().isEmpty ())
@@ -763,6 +787,11 @@ ZrythmApplication::validate_command_line () const
     {
       exit_with_error (
         tr ("A project argument cannot be used together with --new-project."));
+    }
+  if (!template_dirs.isEmpty () && template_dirs.front ().trimmed ().isEmpty ())
+    {
+      exit_with_error (
+        tr ("Option --new-project-with-template needs a directory."));
     }
 }
 
@@ -800,6 +829,13 @@ ZrythmApplication::process_command_line ()
       impl_->new_project_parent_dir_ =
         QFileInfo (cmd_line_parser_.value (u"new-project"_s).trimmed ())
           .absoluteFilePath ();
+      if (cmd_line_parser_.isSet (u"new-project-with-template"_s))
+        {
+          impl_->new_project_template_dir_ =
+            QFileInfo (
+              cmd_line_parser_.value (u"new-project-with-template"_s).trimmed ())
+              .absoluteFilePath ();
+        }
     }
   else if (cmd_line_parser_.isSet (u"project"_s))
     {

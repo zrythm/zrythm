@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <filesystem>
+#include <functional>
+
 #include "controllers/clipboard.h"
 #include "frontends/gui/backend/project_session.h"
 #include "frontends/gui/backend/recent_projects_model.h"
@@ -105,17 +108,31 @@ public:
    * @brief Creates a new project in a directory named after the project
    * name, inside the given parent directory.
    *
-   * On a refusal (a project is open, another project load or creation is
-   * in progress, invalid name, unusable parent, or a target the project
-   * must not write to), projectLoadingFailed is emitted synchronously.
+   * With a template directory, the project starts from the project saved
+   * in that directory: its contents become the contents of the new
+   * project, which gets the given name and an identity of its own. The
+   * UI state saved in the template is restored like after a project
+   * load, open plugin windows included. The template directory is only
+   * read.
    *
+   * On a refusal (a project is open, another project load or creation is
+   * in progress, invalid name, unusable parent, a target the project
+   * must not write to, or a template directory that is relative or
+   * holds no project file), projectLoadingFailed is emitted
+   * synchronously.
+   *
+   * @param directory Directory to create the project directory in.
+   * @param name Project name, used as the project directory's name and
+   * as the project's title.
+   * @param templateDirectory Absolute path of the directory of the
+   * project to start from, or empty for a blank project.
    * @return True when project creation started, false when the call was
    * refused.
    */
   Q_INVOKABLE bool createNewProject (
     const QUrl    &directory,
     const QString &name,
-    const QUrl    &templateUrl = QUrl{});
+    const QString &templateDirectory = {});
 
   /**
    * @brief Loads a project from the specified directory.
@@ -172,29 +189,56 @@ private:
    */
   void init_templates ();
 
-  // void create_or_load_project (const QString &filepath, bool is_template);
+  /** Reports a stage of a project load or creation. */
+  using StageReporter = std::function<void (int value, const QString &text)>;
 
   /**
-   * @brief Loads a project from a file (either actual project or template).
+   * @brief Creates a session whose project lives in @p project_dir.
    *
+   * Main thread only.
+   *
+   * @throw ZrythmException if no audio device is open.
    */
-  void load_from_file ();
+  [[nodiscard]] utils::QObjectUniquePtr<ProjectSession>
+  make_session (const std::filesystem::path &project_dir);
 
   /**
-   * Creates a default project.
+   * @brief Makes @p session, which lives in @p project_dir, the active
+   * session.
    *
-   * This is only used internally or for generating projects from scripts.
+   * The session is prepared like a loaded project: the generic plugin
+   * UIs are attached, the audio graph is rebuilt and the engine is
+   * started before the session becomes active and projectLoaded is
+   * emitted.
    *
-   * @param prj_dir The parent directory of the project to create (without the
-   * project name).
-   * @param name The name/title of the project to create. This will be appended
-   * to @p prj_dir.
+   * @param report_stage Reports the graph and engine stages when given.
+   * @return True when @p session became active. False when a project
+   * became active in the meantime: projectLoadingFailed is emitted and
+   * @p session is destroyed.
+   *
+   * A step of the preparation that throws destroys @p session before
+   * the exception propagates.
+   *
+   * Main thread only.
+   */
+  bool adopt_session (
+    utils::QObjectUniquePtr<ProjectSession> session,
+    const std::filesystem::path            &project_dir,
+    const StageReporter                    &report_stage);
+
+  /**
+   * @brief Creates a session with a blank project.
+   *
+   * Must be called from another thread than the main thread: the
+   * session is built on the main thread.
+   *
+   * @param project_dir Directory of the project to create.
+   * @param name The name/title of the project.
    * @throw ZrythmException if an error occurred.
    */
   utils::QObjectUniquePtr<ProjectSession> create_default (
-    const std::filesystem::path &prj_dir,
-    const utils::Utf8String     &name,
-    bool                         with_engine);
+    const std::filesystem::path &project_dir,
+    const utils::Utf8String     &name);
 
   /**
    * @brief Creates a toplevel window for the given plugin
@@ -221,15 +265,8 @@ private:
 private:
   utils::AppSettings &app_settings_;
 
-  /** Array of project template paths. */
+  /** Project template directories. */
   TemplateList templates_;
-
-  /**
-   * Demo project template used when running for the first time.
-   *
-   * This is normally part of @ref templates_.
-   */
-  Template demo_template_;
 
   RecentProjectsModel * recent_projects_model_ = nullptr;
 
