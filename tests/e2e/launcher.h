@@ -404,16 +404,6 @@ ZrythmLauncher::environment () const
   env.insert (QStringLiteral ("QT_QPA_PLATFORM"), QStringLiteral ("offscreen"));
   env.insert (QStringLiteral ("ZRYTHM_FATAL_DIALOG"), QStringLiteral ("0"));
   env.insert (QStringLiteral ("ZRYTHM_SKIP_PLUGIN_SCAN"), QStringLiteral ("1"));
-  // With the leak check of an AddressSanitizer build on, --help and
-  // --version end with status 1 and without their text: the check runs in
-  // an exit handler and ends the process before the output is flushed
-  const auto inherited_asan_options =
-    env.value (QStringLiteral ("ASAN_OPTIONS"));
-  env.insert (
-    QStringLiteral ("ASAN_OPTIONS"),
-    inherited_asan_options.isEmpty ()
-      ? QStringLiteral ("detect_leaks=0")
-      : inherited_asan_options + QStringLiteral (":detect_leaks=0"));
 #if defined(Q_OS_WIN)
   // the build tree holds only the Windows platform plugin; the Qt
   // installation also holds the offscreen plugin

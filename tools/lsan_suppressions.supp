@@ -7,3 +7,8 @@
 # Qt's xdgdesktopportal platform theme leaks D-Bus watcher connections
 # when QApplication initializes
 leak:QXdgDesktopPortalTheme
+
+# Qt Quick Controls keeps an observer alive for a popup window until
+# its parent window is exposed, and never deletes it (openPopup in
+# qquickpopup.cpp)
+leak:openPopup
